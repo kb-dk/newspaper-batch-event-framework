@@ -24,16 +24,15 @@ public class IteratorForFileSystems extends AbstractIterator<File>{
 
 
     private final File prefix;
-
-    private IteratorForFileSystems delegate = null;
+    private final Collection<File> attributes;
 
     public IteratorForFileSystems(File dir, final File prefix) {
         super(dir,null,"");
 
         this.prefix = prefix;
 
-        Collection<File> attributes = FileUtils.listFiles(dir, FileFileFilter.FILE, null);
-        attributeIterator = attributes.iterator();
+        attributes = FileUtils.listFiles(dir, FileFileFilter.FILE, null);
+        reset();
 
     }
 
@@ -67,5 +66,11 @@ public class IteratorForFileSystems extends AbstractIterator<File>{
     @Override
     protected String getIdOfAttribute(File attributeID) {
         return attributeID.getName();
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        attributeIterator = attributes.iterator();
     }
 }

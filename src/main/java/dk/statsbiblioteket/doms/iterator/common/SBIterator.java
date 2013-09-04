@@ -11,5 +11,7 @@ import java.util.Iterator;
  */
 public interface SBIterator extends Iterator<Event> {
 
-    public void skipToEnd();
+    public SBIterator skipToNextSibling();
+
+
 }

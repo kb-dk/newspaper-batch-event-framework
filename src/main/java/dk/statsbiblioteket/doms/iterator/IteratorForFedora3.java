@@ -36,6 +36,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     //The iterator stuff
     private final Client client;
     private final String restUrl;
+    private final List<String> attributes;
     private ContentModelFilter filter;
 
 
@@ -50,9 +51,11 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
+        reset();
         types = getTypes(id, client);
-        List<String> attributes = getAttributes(id, client, types);
-        attributeIterator = attributes.iterator();
+        attributes = getAttributes(id, client, types);
+        reset();
+
 
     }
 
@@ -138,6 +141,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 client.resource(restUrl).path(id).path("/datastreams/").path(attributeID).path("/content"));
     }
 
+
+    @Override
+    protected void reset() {
+        super.reset();    //To change body of overridden methods use File | Settings | File Templates.
+        attributeIterator = attributes.iterator();
+    }
 }
 
 

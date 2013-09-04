@@ -126,12 +126,39 @@ public abstract class  AbstractIterator<T> implements SBIterator{
     public void remove() {
         throw new UnsupportedOperationException("Remove not supported");
     }
-    public void skipToEnd() {
+
+    //find the second lowest
+    //the lowest has delegate null
+    //the second lowest is the one that should advance to the next child
+
+
+    public SBIterator skipToNextSibling() {
         if (delegate != null) {
-            delegate.skipToEnd();
+            //we have a delegate, so we are not the lowest
+            if (delegate.getDelegate() == null){
+                //but our delegate is the lowest
+                AbstractIterator oldDelegate = delegate;
+                delegate = null;
+                oldDelegate.reset();
+                return oldDelegate;
+            } else {
+                return delegate.skipToNextSibling();
+            }
         } else {
-            attributeIterator = null;
-            childrenIterator = null;
+            return null;
         }
     }
+
+    protected void reset(){
+        delegate = null;
+        done = false;
+        begun = false;
+        childrenIterator = null;
+    }
+
+    public AbstractIterator getDelegate() {
+        return delegate;
+    }
+
+
 }

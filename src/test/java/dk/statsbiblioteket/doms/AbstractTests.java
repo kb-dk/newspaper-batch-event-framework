@@ -3,9 +3,10 @@ package dk.statsbiblioteket.doms;
 import dk.statsbiblioteket.doms.iterator.common.Event;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,14 +24,72 @@ public abstract class AbstractTests {
 
     private static final String indentString = "..................................................";
 
-    @Test
+
     public void testIterator() throws Exception {
 
+
+        printStructure(getIterator());
+    }
+
+    private String printEvent(Event next) {
+        switch (next.getType()){
+            case NodeBegin:
+                return "<"+next.getLocalname()+">";
+            case NodeEnd:
+                return "</"+next.getLocalname()+">";
+            case Attribute:
+                return "<"+next.getLocalname()+"/>";
+            default:
+                return next.toString();
+        }
+    }
+
+    public void testIteratorWithSkipping() throws Exception {
+
+        List<SBIterator> avisIterators = new ArrayList<SBIterator>();
+
+
+        System.out.println("Print the batch and film, and store the iterators for the aviser");
         int indent = 0;
         while (getIterator().hasNext()){
             Event next = getIterator().next();
 
+            String s;
+            switch (next.getType()){
+                case NodeBegin:
+                    s = getIndent(indent);
+                    System.out.println(s+printEvent(next));
+                    indent+=2;
+                    if (indent > 4){
+                        SBIterator avis = getIterator().skipToNextSibling();
+                        avisIterators.add(avis);
+                        indent-=2;
+                    }
+                    break;
+                case NodeEnd:
+                    indent-=2;
+                    s = getIndent(indent);
+                    System.out.println(s+printEvent(next));
+                    break;
+                case Attribute:
+                    s = getIndent(indent);
+                    System.out.println(s+printEvent(next));
+                    break;
+            }
+        }
 
+        System.out.println("Print each of the newspapers in order");
+        for (SBIterator avisIterator : avisIterators) {
+            System.out.println("We found this newspaper");
+            printStructure(avisIterator);
+        }
+
+    }
+
+    private void printStructure(SBIterator avisIterator) throws IOException {
+        int indent = 0;
+        while (avisIterator.hasNext()) {
+            Event next = avisIterator.next();
             switch (next.getType()){
                 case NodeBegin:
                 {
@@ -59,48 +118,7 @@ public abstract class AbstractTests {
                     break;
                 }
             }
-        }
-    }
 
-    private String printEvent(Event next) {
-        switch (next.getType()){
-            case NodeBegin:
-                return "<"+next.getLocalname()+">";
-            case NodeEnd:
-                return "</"+next.getLocalname()+">";
-            case Attribute:
-                return "<"+next.getLocalname()+"/>";
-            default:
-                return next.toString();
-        }
-    }
-
-    @Test
-    public void testIteratorWithSkipping() throws Exception {
-        int indent = 0;
-        while (getIterator().hasNext()){
-            Event next = getIterator().next();
-
-            String s;
-            switch (next.getType()){
-                case NodeBegin:
-                    s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
-                    indent+=2;
-                    if (indent > 2){
-                        getIterator().skipToEnd();
-                    }
-                    break;
-                case NodeEnd:
-                    indent-=2;
-                    s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
-                    break;
-                case Attribute:
-                    s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
-                    break;
-            }
         }
     }
 

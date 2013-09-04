@@ -2,6 +2,7 @@ package dk.statsbiblioteket.doms;
 
 import dk.statsbiblioteket.doms.iterator.IteratorForFileSystems;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
+import org.junit.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -26,5 +27,17 @@ public class IteratorForFileSystemsTest extends AbstractTests {
         }
         return iterator;
 
+    }
+
+    @Override
+    @Test
+    public void testIterator() throws Exception {
+        super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    @Test
+    public void testIteratorWithSkipping() throws Exception {
+        super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }
