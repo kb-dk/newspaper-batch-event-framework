@@ -1,4 +1,6 @@
-idea/
+.idea/
 *.ipr
+*.iml
 **/*.iml
+target/
 
