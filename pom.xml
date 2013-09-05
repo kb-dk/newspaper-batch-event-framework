@@ -14,6 +14,20 @@
     <artifactId>treeProcessor</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>State and University Library, Denmark</name>
+        <url>http://www.statsbiblioteket.dk</url>
+    </organization>
+
     <build>
         <plugins>
             <plugin>
