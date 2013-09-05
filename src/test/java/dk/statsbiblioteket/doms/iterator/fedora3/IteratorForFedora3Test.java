@@ -1,10 +1,11 @@
-package dk.statsbiblioteket.doms;
+package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import dk.statsbiblioteket.doms.iterator.IteratorForFedora3;
+import dk.statsbiblioteket.doms.AbstractTests;
 import dk.statsbiblioteket.doms.iterator.common.ContentModelFilter;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
+import org.junit.Test;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  * Time: 12:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public class IteratorForFedora3Test extends AbstractTests{
+public class IteratorForFedora3Test extends AbstractTests {
 
     private SBIterator iterator;
 
@@ -47,5 +48,17 @@ public class IteratorForFedora3Test extends AbstractTests{
             }
             return false;
         }
+    }
+
+    @Override
+    @Test
+    public void testIterator() throws Exception {
+        super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    @Test
+    public void testIteratorWithSkipping() throws Exception {
+        super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

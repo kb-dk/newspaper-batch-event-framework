@@ -1,10 +1,10 @@
-package dk.statsbiblioteket.doms.iterator;
+package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import dk.statsbiblioteket.doms.iterator.AbstractIterator;
 import dk.statsbiblioteket.doms.iterator.common.ContentModelFilter;
 import dk.statsbiblioteket.doms.iterator.common.Event;
-import dk.statsbiblioteket.doms.iterator.common.JerseyAttributeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,7 +51,6 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
-        reset();
         types = getTypes(id, client);
         attributes = getAttributes(id, client, types);
         reset();

@@ -1,7 +1,9 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import dk.statsbiblioteket.doms.iterator.common.Event;
+import dk.statsbiblioteket.doms.iterator.common.EventType;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,7 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.doms.iterator.filesystem;
+
+import dk.statsbiblioteket.doms.iterator.common.Event;
+import dk.statsbiblioteket.doms.iterator.common.EventType;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,6 +1,7 @@
-package dk.statsbiblioteket.doms;
+package dk.statsbiblioteket.doms.iterator.filesystem;
 
-import dk.statsbiblioteket.doms.iterator.IteratorForFileSystems;
+import dk.statsbiblioteket.doms.AbstractTests;
+import dk.statsbiblioteket.doms.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
 import org.junit.Test;
 

@@ -1,7 +1,7 @@
-package dk.statsbiblioteket.doms.iterator;
+package dk.statsbiblioteket.doms.iterator.filesystem;
 
+import dk.statsbiblioteket.doms.iterator.AbstractIterator;
 import dk.statsbiblioteket.doms.iterator.common.Event;
-import dk.statsbiblioteket.doms.iterator.common.FileAttributeEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * Time: 11:05 AM
  * To change this template use File | Settings | File Templates.
  */
-public class IteratorForFileSystems extends AbstractIterator<File>{
+public class IteratorForFileSystems extends AbstractIterator<File> {
 
 
     private final File prefix;
