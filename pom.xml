@@ -10,8 +10,8 @@
         <version>12</version>
     </parent>
 
-    <groupId>SaxForDoms</groupId>
-    <artifactId>SaxForDoms</artifactId>
+    <groupId>dk.statsbiblioteket.doms</groupId>
+    <artifactId>treeProcessor</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <build>
