@@ -5,7 +5,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import dk.statsbiblioteket.doms.AbstractTests;
 import dk.statsbiblioteket.doms.iterator.common.ContentModelFilter;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -24,11 +24,11 @@ public class IteratorForFedora3Test extends AbstractTests {
     @Override
     public SBIterator getIterator() throws URISyntaxException {
         if (iterator == null){
-
+            System.out.println(System.getProperty("fedora.admin.username"));
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter("fedoraAdmin","fedoraAdminPass"));
+            client.addFilter(new HTTPBasicAuthFilter(System.getProperty("fedora.admin.username"),System.getProperty("fedora.admin.password")));
             iterator = new IteratorForFedora3("doms:ContentModel_Program", client,
-                    "http://ci-build-001:7880/fedora/objects/",new TestFilter());
+                    System.getProperty("fedora.server"),new TestFilter());
         }
         return iterator;
     }
@@ -51,14 +51,14 @@ public class IteratorForFedora3Test extends AbstractTests {
     }
 
     @Override
-    @Test
+    @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIterator();
     }
 
     @Override
-    @Test
+    @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIteratorWithSkipping();
     }
 }

@@ -1,9 +1,8 @@
 package dk.statsbiblioteket.doms.iterator.filesystem;
 
 import dk.statsbiblioteket.doms.AbstractTests;
-import dk.statsbiblioteket.doms.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
