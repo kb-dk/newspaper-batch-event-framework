@@ -6,6 +6,20 @@ import java.util.Date;
  * An event that have taken place on a batch
  */
 public class Event {
+
+
+
+    public static final String Initial = "Initial";
+    public static final String Added_to_shipping_container = "Added_to_shipping_container";
+    public static final String Shipped_to_supplier = "Shipped_to_supplier";
+
+    public static final String Shipped_from_supplier = "Shipped_from_supplier";
+
+    public static final String Received_from_supplier = "Received_from_supplier";
+    public static final String FollowUp = "FollowUp";
+    public static final String Approved = "Approved";
+
+
     private String eventID;
     private boolean success;
     private String details;
