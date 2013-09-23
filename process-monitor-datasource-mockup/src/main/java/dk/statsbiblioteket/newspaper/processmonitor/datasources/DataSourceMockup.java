@@ -26,15 +26,15 @@ public class DataSourceMockup implements DataSource {
 */
 
         Event e1 = new Event();
-        e1.setEventID(Event.Shipped_to_supplier);
+        e1.setEventID(EventID.Shipped_to_supplier);
         e1.setSuccess(true);
 
         Event e2 = new Event();
-        e2.setEventID("data-received");
+        e2.setEventID(EventID.Data_Received);
         e2.setSuccess(false);
 
         Event e3 = new Event();
-        e3.setEventID("data-archived");
+        e3.setEventID(EventID.Data_Archived);
         e3.setSuccess(true);
         List<Event> b1Events = new ArrayList<Event>();
         b1Events.add(e1);
@@ -46,15 +46,15 @@ public class DataSourceMockup implements DataSource {
         b1.setEventList(b1Events);
 
         Event e4 = new Event();
-        e4.setEventID(Event.Shipped_to_supplier);
+        e4.setEventID(EventID.Shipped_to_supplier);
         e4.setSuccess(true);
 
         Event e5 = new Event();
-        e5.setEventID("data-received");
+        e5.setEventID(EventID.Data_Received);
         e5.setSuccess(false);
 
         Event e6 = new Event();
-        e6.setEventID("data-archived");
+        e6.setEventID(EventID.Data_Archived);
         e6.setSuccess(false);
 
         List<Event> b2Events = new ArrayList<Event>();
@@ -115,10 +115,11 @@ public class DataSourceMockup implements DataSource {
     @Override
     public Event getBatchEvent(String batchID, String eventID, boolean includeDetails) throws NotFoundException {
         Event event = null;
+        EventID id = EventID.valueOf(eventID);
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {
                 for (Event e : b.getEventList()) {
-                    if (e.getEventID().equals(eventID)) {
+                    if (e.getEventID().equals(id)) {
                         event = e;
                     }
                 }

@@ -28,14 +28,8 @@ public class DataSourceMockupTest extends TCKTestSuite {
     }
 
     @Override
-    public String getValidAndSucessfullEventIDForValidBatch() {
-        return Event.Shipped_to_supplier;
+    public EventID getValidAndSucessfullEventIDForValidBatch() {
+        return EventID.Shipped_to_supplier;
     }
-
-    @Override
-    public String getInvalidEventIDForValidBatch() {
-        return "invalidEvent";  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
 
 }

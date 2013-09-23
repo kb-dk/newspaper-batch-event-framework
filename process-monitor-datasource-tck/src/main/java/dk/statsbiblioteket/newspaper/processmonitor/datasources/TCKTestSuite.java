@@ -21,9 +21,8 @@ public abstract class TCKTestSuite {
 
     public abstract String getInvalidBatchID();
 
-    public abstract String getValidAndSucessfullEventIDForValidBatch();
+    public abstract EventID getValidAndSucessfullEventIDForValidBatch();
 
-    public abstract String getInvalidEventIDForValidBatch();
 
 
     @Test(groups = "integrationTest")
@@ -99,7 +98,7 @@ public abstract class TCKTestSuite {
 
         Event event = null;
         try {
-            event = getDataSource().getBatchEvent(getValidBatchID(), getValidAndSucessfullEventIDForValidBatch(), true);
+            event = getDataSource().getBatchEvent(getValidBatchID(), getValidAndSucessfullEventIDForValidBatch().toString(), true);
             assertNotNull(event, "Do not return null");
         } catch (NotFoundException e) {
             fail("The valid batch event was not found", e);
@@ -107,22 +106,6 @@ public abstract class TCKTestSuite {
         assertEquals(event.getEventID(), getValidAndSucessfullEventIDForValidBatch(), "The event have a wrong ID");
         //   Assert.assertNotNull(event.getDetails(), "We requested details, so that must be not null");
         assertTrue(event.isSuccess(), "The event must be successful");
-
-
-    }
-
-
-    @Test(groups = "integrationTest")
-    public void testGetInvalidEvent() throws NotWorkingProperlyException {
-
-        Event event = null;
-        try {
-            event = getDataSource().getBatchEvent(getValidBatchID(), getInvalidEventIDForValidBatch(), true);
-            assertNotNull(event, "Do not return null");
-            fail("The invalid event was found");
-        } catch (NotFoundException e) {
-
-        }
 
 
     }
