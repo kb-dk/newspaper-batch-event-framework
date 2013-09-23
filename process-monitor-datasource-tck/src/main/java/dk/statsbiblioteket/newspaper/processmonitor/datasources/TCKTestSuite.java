@@ -13,7 +13,9 @@ public abstract class TCKTestSuite {
 
 
     @Deprecated
-    public abstract boolean isRunNrInBatchID();
+    public boolean isRunNrInBatchID(){
+        return false;
+    }
 
     public abstract DataSource getDataSource();
 
