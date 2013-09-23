@@ -29,7 +29,7 @@ public class DataSourceMockupTest extends TCKTestSuite {
 
     @Override
     public String getValidAndSucessfullEventIDForValidBatch() {
-        return "reels-sent";
+        return Event.Shipped_to_supplier;
     }
 
     @Override
