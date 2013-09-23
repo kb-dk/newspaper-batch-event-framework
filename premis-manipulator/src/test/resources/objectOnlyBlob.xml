@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<premis version="2.2" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns="info:lc/xmlns/premis-v2">
+    <object xsi:type="representation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <objectIdentifier>
+            <objectIdentifierType>Newspaper_digitisation_project</objectIdentifierType>
+            <objectIdentifierValue>B400022028241-RT1</objectIdentifierValue>
+        </objectIdentifier>
+    </object>
+</premis>
