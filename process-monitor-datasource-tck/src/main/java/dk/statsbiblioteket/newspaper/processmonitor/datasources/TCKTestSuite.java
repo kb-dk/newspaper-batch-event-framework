@@ -100,7 +100,7 @@ public abstract class TCKTestSuite {
 
         Event event = null;
         try {
-            event = getDataSource().getBatchEvent(getValidBatchID(), getValidAndSucessfullEventIDForValidBatch().toString(), true);
+            event = getDataSource().getBatchEvent(getValidBatchID(), getValidAndSucessfullEventIDForValidBatch(), true);
             assertNotNull(event, "Do not return null");
         } catch (NotFoundException e) {
             fail("The valid batch event was not found", e);

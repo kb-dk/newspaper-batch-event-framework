@@ -50,6 +50,6 @@ public interface DataSource {
      * @throws NotFoundException           if the batch is not found, or the batch does not have an event by this name
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    Event getBatchEvent(String batchID, String eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
+    Event getBatchEvent(String batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
 
 }

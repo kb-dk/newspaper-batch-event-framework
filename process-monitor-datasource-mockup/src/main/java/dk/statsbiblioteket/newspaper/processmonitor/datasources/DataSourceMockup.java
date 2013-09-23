@@ -113,13 +113,12 @@ public class DataSourceMockup implements DataSource {
     }
 
     @Override
-    public Event getBatchEvent(String batchID, String eventID, boolean includeDetails) throws NotFoundException {
+    public Event getBatchEvent(String batchID, EventID eventID, boolean includeDetails) throws NotFoundException {
         Event event = null;
-        EventID id = EventID.valueOf(eventID);
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {
                 for (Event e : b.getEventList()) {
-                    if (e.getEventID().equals(id)) {
+                    if (e.getEventID().equals(eventID)) {
                         event = e;
                     }
                 }
