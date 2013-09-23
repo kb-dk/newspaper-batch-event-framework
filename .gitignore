@@ -1,6 +1,6 @@
 target/
 *.ipr
-idea/
+.idea/
 *.iws
 *.iml
 **/*.iml
