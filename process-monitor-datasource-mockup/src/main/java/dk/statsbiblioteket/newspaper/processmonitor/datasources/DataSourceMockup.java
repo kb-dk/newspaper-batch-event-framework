@@ -26,7 +26,7 @@ public class DataSourceMockup implements DataSource {
 */
 
         Event e1 = new Event();
-        e1.setEventID("reels-sent");
+        e1.setEventID(Event.Shipped_to_supplier);
         e1.setSuccess(true);
 
         Event e2 = new Event();
@@ -46,7 +46,7 @@ public class DataSourceMockup implements DataSource {
         b1.setEventList(b1Events);
 
         Event e4 = new Event();
-        e4.setEventID("reels-sent");
+        e4.setEventID(Event.Shipped_to_supplier);
         e4.setSuccess(true);
 
         Event e5 = new Event();
