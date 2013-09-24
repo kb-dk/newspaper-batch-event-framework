@@ -10,7 +10,7 @@ public class NewspaperIDFormatter implements IDFormatter<Long>{
 
     @Override
     public Long unformatBatchID(String batchID) {
-        return Long.parseLong(batchID.replaceFirst("^B",""));
+        return Long.parseLong(batchID.replaceFirst("^B", ""));
     }
 
     @Override
@@ -22,7 +22,7 @@ public class NewspaperIDFormatter implements IDFormatter<Long>{
     public SplitID<Long> unformatFullID(String fullID) {
         String[] splits = fullID.split("-RT");
 
-        return new SplitID<Long>(Long.parseLong(splits[0].replaceFirst("B","")),
+        return new SplitID<>(Long.parseLong(splits[0].replaceFirst("B","")),
                 Integer.parseInt(splits[1]));
     }
 }

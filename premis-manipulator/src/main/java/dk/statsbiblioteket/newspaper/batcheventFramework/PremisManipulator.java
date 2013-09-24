@@ -65,6 +65,10 @@ public class PremisManipulator<T> {
     }
 
 
+    /**
+     * Make this Premis as a Batch. Know that some things get lost here
+     * @return the blob as a Batch
+     */
     public Batch<T> toBatch() {
         Batch<T> result = new Batch<>();
         String fullID = getObjectID();
@@ -75,12 +79,21 @@ public class PremisManipulator<T> {
         return result;
     }
 
-    public String getObjectID() {
+
+    /**
+     * Get the id of the object object in premis
+     * @return the object
+     */
+    private String getObjectID() {
         Representation object = (Representation) premis.getObject().get(0);
         return object.getObjectIdentifier().get(0).getObjectIdentifierValue();
     }
 
-    public List<Event> getEvents() {
+    /**
+     * convert the events to a list of Events
+     * @return the Events
+     */
+    private List<Event> getEvents() {
         List<EventComplexType> premisEvents = premis.getEvent();
         List<Event> result = new ArrayList<>(premisEvents.size());
         for (EventComplexType premisEvent : premisEvents) {
@@ -90,6 +103,11 @@ public class PremisManipulator<T> {
 
     }
 
+    /**
+     * Convert one event to a Event
+     * @param premisEvent the event
+     * @return the Event
+     */
     private Event convert(EventComplexType premisEvent) {
         Event result = new Event();
         result.setEventID(EventID.valueOf(premisEvent.getEventType()));
@@ -118,6 +136,16 @@ public class PremisManipulator<T> {
         return result;
     }
 
+    /**
+     * Add an event to the premis blob. Not thread safe. Will return the premis manipulator, but the premis manipulator
+     * will have been modified. Do not think this class will clone and return.
+     * @param agent the agent that did it
+     * @param timestamp when the thing was done
+     * @param details details about how it went
+     * @param eventType the kind of thing that was done
+     * @param outcome was it successful?
+     * @return the premis with the event added.
+     */
     public PremisManipulator<T> addEvent(String agent,
                                          Date timestamp,
                                          String details,
@@ -162,6 +190,10 @@ public class PremisManipulator<T> {
 
     }
 
+    /**
+     * Get the premis as xml
+     * @return the premis as xml
+     */
     public String toXML() {
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
@@ -174,6 +206,11 @@ public class PremisManipulator<T> {
         }
     }
 
+    /**
+     * Add the object. Will add it even if it is there
+     * @param object the list to add it to
+     * @param fullID the full id of the object
+     */
     private void addObject(List<ObjectComplexType> object, String fullID) {
         ObjectFactory factory = new ObjectFactory();
         Representation representation = factory.createRepresentation();
@@ -184,9 +221,14 @@ public class PremisManipulator<T> {
         object.add(representation);
     }
 
-    private void addAgentIfNessesary(List<AgentComplexType> agent, String agent1) {
+    /**
+     * Add the agentList, if it is not there already
+     * @param agentList the agent list to add the agent to
+     * @param agent1 the agent name
+     */
+    private void addAgentIfNessesary(List<AgentComplexType> agentList, String agent1) {
         ObjectFactory factory = new ObjectFactory();
-        for (AgentComplexType agentComplexType : agent) {
+        for (AgentComplexType agentComplexType : agentList) {
             for (AgentIdentifierComplexType agentIdentifierComplexType : agentComplexType.getAgentIdentifier()) {
                 if (agentIdentifierComplexType.getAgentIdentifierValue().equals(agent1)) {
                     return;
@@ -200,6 +242,6 @@ public class PremisManipulator<T> {
 
         AgentComplexType agentCreated = factory.createAgentComplexType();
         agentCreated.getAgentIdentifier().add(identifier);
-        agent.add(agentCreated);
+        agentList.add(agentCreated);
     }
 }

@@ -11,27 +11,39 @@ public class PremisManipulatorFactory <T> {
 
     private String type;
 
-    public PremisManipulatorFactory() {
-        this.format = format;
-        this.type = TYPE;
-    }
-
-
+    /**
+     * Create a new factory for premis manipulators.
+     * @param format the formatter to convert IDs
+     * @param type the type to use in premis
+     */
     public PremisManipulatorFactory(IDFormatter<T> format, String type) {
         this.format = format;
         this.type = type;
     }
 
+    /**
+     * Create a new premisManipulator from an inputstream of premis. We assume that the premis have a Object.
+     * @param blob the blob to read from
+     * @return a premis manipulator
+     * @throws JAXBException if the parsing failed
+     */
     public PremisManipulator<T> createFromBlob(InputStream blob) throws JAXBException {
-        PremisManipulator that = new PremisManipulator(blob,format,type);
-        return that;
+        return new PremisManipulator(blob,format,type);
     }
 
 
-    //Here we assume that an object exists
+
+
+    /**
+     * Create a new premisManipulator from the id's of a batch. The premis will be initialised with an Object with
+     * the correct identifier.
+     * @param BatchID the batch id
+     * @param runNr the run nr
+     * @return a premis manipulator.
+     * @throws JAXBException if the parsing failed
+     */
     public PremisManipulator<T> createInitialPremisBlob(T BatchID, int runNr) throws JAXBException {
-        PremisManipulator that = new PremisManipulator(BatchID,runNr,format,type);
-        return that;
+        return new PremisManipulator(BatchID,runNr,format,type);
     }
 
 }
