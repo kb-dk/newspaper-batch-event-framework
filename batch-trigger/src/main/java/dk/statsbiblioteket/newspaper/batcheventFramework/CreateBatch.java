@@ -8,7 +8,7 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
  * To change this template use File | Settings | File Templates.
  */
 public class CreateBatch {
-    public static void Main(String[] args) {
+    public static void main(String[] args) {
         System.out.println("sdfsdfsddf");
 
     }
