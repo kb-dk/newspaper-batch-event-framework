@@ -16,12 +16,13 @@ cd "$PATH_TO_DIR_OF_BATCHES"
 
 for batch_dirname in *; do
 	echo $batch_dirname
-	# TODO valideer
+	# Check format of dirname
+	if [[ "$batch_dirname" =~ "^B[^-]+\-RT[0-9]+$" ]]; then
+		# Dirname not recognized as a batch, skip it
+		continue
+	fi
 
-	$batch_id=`echo "$batch_dirname" | sed -r -e '^B\([^-]+[-]RT[0-9]+\)$'`
-
-	#echo `expr "$batch_dirname" : '^B\([^-]+[-]RT[0-9]+\)$'`
+	batch_id=`echo "$batch_dirname" | sed -r 's/^B([^-]+).+/\1/g'`
+	roundtrip=`echo "$batch_dirname" | sed -r 's/^B[^-]+\-RT([0-9]+)/\1/g'`
 done
-
-
 
