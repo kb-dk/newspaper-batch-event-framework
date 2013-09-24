@@ -5,6 +5,8 @@ import dk.statsbiblioteket.newspaper.premis.AgentIdentifierComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventIdentifierComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventOutcomeInformationComplexType;
+import dk.statsbiblioteket.newspaper.premis.LinkingAgentIdentifierComplexType;
+import dk.statsbiblioteket.newspaper.premis.LinkingObjectIdentifierComplexType;
 import dk.statsbiblioteket.newspaper.premis.ObjectComplexType;
 import dk.statsbiblioteket.newspaper.premis.ObjectFactory;
 import dk.statsbiblioteket.newspaper.premis.ObjectIdentifierComplexType;
@@ -136,6 +138,17 @@ public class PremisManipulator {
         String outcomeString = (outcome ? "success" : "failure");
         outcomeObject.getContent().add(factory.createEventOutcome(outcomeString));
         event.getEventOutcomeInformation().add(outcomeObject);
+
+        LinkingAgentIdentifierComplexType linkingAgentObject = factory.createLinkingAgentIdentifierComplexType();
+        linkingAgentObject.setLinkingAgentIdentifierType(TYPE);
+        linkingAgentObject.setLinkingAgentIdentifierValue(agent);
+        event.getLinkingAgentIdentifier().add(linkingAgentObject);
+
+        LinkingObjectIdentifierComplexType linkingObjectObject = factory.createLinkingObjectIdentifierComplexType();
+        linkingObjectObject.setLinkingObjectIdentifierType(TYPE);
+        linkingObjectObject.setLinkingObjectIdentifierValue(getBatchID());
+        event.getLinkingObjectIdentifier().add(linkingObjectObject);
+
         premis.getEvent().add(event);
         return this;
 

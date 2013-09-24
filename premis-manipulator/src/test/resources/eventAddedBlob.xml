@@ -17,6 +17,16 @@
         <eventOutcomeInformation>
             <eventOutcome>success</eventOutcome>
         </eventOutcomeInformation>
+
+        <linkingAgentIdentifier>
+            <linkingAgentIdentifierType>Newspaper_digitisation_project</linkingAgentIdentifierType>
+            <linkingAgentIdentifierValue>batch_uploaded_trigger</linkingAgentIdentifierValue>
+        </linkingAgentIdentifier>
+
+        <linkingObjectIdentifier>
+            <linkingObjectIdentifierType>Newspaper_digitisation_project</linkingObjectIdentifierType>
+            <linkingObjectIdentifierValue>B400022028241-RT1</linkingObjectIdentifierValue>
+        </linkingObjectIdentifier>
     </event>
     <agent>
         <agentIdentifier>
