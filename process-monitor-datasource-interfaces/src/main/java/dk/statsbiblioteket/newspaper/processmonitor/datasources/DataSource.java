@@ -38,7 +38,7 @@ public interface DataSource {
      * @throws NotFoundException           If no batch with this ID is found
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    Batch getBatch(String batchID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
+    Batch getBatch(int batchID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
 
     /**
      * Get information about the specific event on the specific batch
@@ -50,6 +50,6 @@ public interface DataSource {
      * @throws NotFoundException           if the batch is not found, or the batch does not have an event by this name
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    Event getBatchEvent(String batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
+    Event getBatchEvent(int batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
 
 }

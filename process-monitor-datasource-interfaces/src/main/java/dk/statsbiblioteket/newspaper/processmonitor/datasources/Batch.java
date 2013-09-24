@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Batch {
 
-    private String batchID;
+    private int batchID;
     private int runNr = 0;
     private List<Event> eventList;
 
@@ -30,7 +30,7 @@ public class Batch {
      *
      * @return as above
      */
-    public String getBatchID() {
+    public int getBatchID() {
         return batchID;
     }
 
@@ -39,7 +39,7 @@ public class Batch {
      *
      * @param batchID to set
      */
-    public void setBatchID(String batchID) {
+    public void setBatchID(int batchID) {
         this.batchID = batchID;
     }
 

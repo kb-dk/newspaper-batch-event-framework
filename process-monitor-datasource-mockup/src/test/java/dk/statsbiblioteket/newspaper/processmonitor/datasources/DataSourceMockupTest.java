@@ -4,10 +4,6 @@ public class DataSourceMockupTest extends TCKTestSuite {
 
     private DataSource dataSource = null;
 
-    @Override
-    public boolean isRunNrInBatchID() {
-        return false;
-    }
 
     @Override
     public synchronized DataSource getDataSource() {
@@ -18,13 +14,13 @@ public class DataSourceMockupTest extends TCKTestSuite {
     }
 
     @Override
-    public String getValidBatchID() {
-        return "hans";
+    public int getValidBatchID() {
+        return 3001;
     }
 
     @Override
-    public String getInvalidBatchID() {
-        return "steffen";
+    public int getInvalidBatchID() {
+        return 8001;
     }
 
     @Override

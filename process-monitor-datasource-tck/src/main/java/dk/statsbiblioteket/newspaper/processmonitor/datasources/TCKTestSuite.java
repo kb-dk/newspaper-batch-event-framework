@@ -19,9 +19,9 @@ public abstract class TCKTestSuite {
 
     public abstract DataSource getDataSource();
 
-    public abstract String getValidBatchID();
+    public abstract int getValidBatchID();
 
-    public abstract String getInvalidBatchID();
+    public abstract int getInvalidBatchID();
 
     public abstract EventID getValidAndSucessfullEventIDForValidBatch();
 
@@ -39,7 +39,7 @@ public abstract class TCKTestSuite {
             if (eventList.size() > 0) {
                 anEventHaveBeenSeen = true;
             }
-            if (batch.getBatchID().equals(getValidBatchID())) {
+            if (batch.getBatchID()==getValidBatchID()) {
                 validHaveBeenFound = true;
                 boolean goodEventFound = false;
                 for (Event event : eventList) {
