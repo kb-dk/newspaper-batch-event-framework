@@ -9,13 +9,17 @@
     <event>
         <eventIdentifier>
             <eventIdentifierType>Newspaper_digitisation_project</eventIdentifierType>
-            <eventIdentifierValue>0</eventIdentifierValue>
+            <eventIdentifierValue>B400022028241-RT1-0</eventIdentifierValue>
+            <!--TODO is this unique? How to make it unique?-->
+            <!--Use fortløbende number-->
         </eventIdentifier>
         <eventType>Data_Received</eventType>
         <eventDateTime>1970-01-01T01:00:00.000+0100</eventDateTime>
-        <eventDetail>details here</eventDetail>
         <eventOutcomeInformation>
-            <eventOutcome>success</eventOutcome>
+            <eventOutcome>success</eventOutcome><!--or failure-->
+            <eventOutcomeDetail>
+                <eventOutcomeDetailNote>details here</eventOutcomeDetailNote>
+            </eventOutcomeDetail>
         </eventOutcomeInformation>
 
         <linkingAgentIdentifier>
@@ -32,6 +36,7 @@
         <agentIdentifier>
             <agentIdentifierType>Newspaper_digitisation_project</agentIdentifierType>
             <agentIdentifierValue>batch_uploaded_trigger</agentIdentifierValue>
+            <!--Version embedded in identifier-->
         </agentIdentifier>
     </agent>
 </premis>

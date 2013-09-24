@@ -18,15 +18,19 @@ import java.util.List;
 public class PremisManipulatorTest {
 
 
-    public static final String BATCH_ID = "B400022028241-RT1";
+    public static final Long BATCH_ID = 400022028241l;
+    public static final int RUN_NR = 1;
 
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
-        PremisManipulator manipulator = PremisManipulator.createInitialPremisBlob(BATCH_ID);
-        String blobString = manipulator.toString();
+
+        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator<Long> manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
+        String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
         Reader control = new InputStreamReader(getFile("objectOnlyBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreComments(true);
         Diff diff = XMLUnit.compareXML(control, test);
         if ( ! diff.identical()){
             System.out.println(diff.toString());
@@ -37,17 +41,18 @@ public class PremisManipulatorTest {
 
     @Test
     public void testAddEvent() throws Exception {
-        PremisManipulator manipulator = PremisManipulator.createInitialPremisBlob(BATCH_ID);
-        //2006-07-16T19:20:30+01:00
+        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator<Long> manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
         Date date = new Date(0);
 
         manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", EventID.Data_Received,true);
-        StringReader test = new StringReader(manipulator.toString());
+        StringReader test = new StringReader(manipulator.toXML());
         Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreComments(true);
         Diff diff = XMLUnit.compareXML(control, test);
         if ( ! diff.identical()){
-            System.out.println(manipulator.toString());
+            System.out.println(manipulator.toXML());
             System.out.println(diff.toString());
         }
         Assert.assertTrue(diff.similar());
@@ -61,9 +66,11 @@ public class PremisManipulatorTest {
 
     @Test
     public void testGetAsBatch() throws Exception {
-        PremisManipulator premisBlob = PremisManipulator.createFromBlob(getFile("eventAddedBlob.xml"));
-        Batch batch = premisBlob.asBatch();
-        Assert.assertEquals("B"+batch.getBatchID()+"-RT"+batch.getRunNr(),BATCH_ID);
+        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator<Long> premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
+        Batch<Long> batch = premisBlob.toBatch();
+        //TODO
+        Assert.assertEquals(BATCH_ID,batch.getBatchID());
         List<Event> events = batch.getEventList();
         for (Event event : events) {
             Assert.assertTrue(event.isSuccess());

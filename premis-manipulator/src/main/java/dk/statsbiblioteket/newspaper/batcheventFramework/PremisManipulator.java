@@ -4,6 +4,7 @@ import dk.statsbiblioteket.newspaper.premis.AgentComplexType;
 import dk.statsbiblioteket.newspaper.premis.AgentIdentifierComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventIdentifierComplexType;
+import dk.statsbiblioteket.newspaper.premis.EventOutcomeDetailComplexType;
 import dk.statsbiblioteket.newspaper.premis.EventOutcomeInformationComplexType;
 import dk.statsbiblioteket.newspaper.premis.LinkingAgentIdentifierComplexType;
 import dk.statsbiblioteket.newspaper.premis.LinkingObjectIdentifierComplexType;
@@ -29,60 +30,57 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PremisManipulator {
+//TODO javadoc
+//Document not thread safe
+public class PremisManipulator<T> {
 
     private final static QName _EventOutcome_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcome");
+    private final static QName _EventOutcomeDetailNote_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcomeDetailNote");
+    private final static QName _EventOutcomeDetail_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcomeDetail");
 
-    private final static String TYPE="Newspaper_digitisation_project";
+
     private final PremisComplexType premis;
     private final JAXBContext context;
+
+
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
+    private final String type;
+    private final IDFormatter<T> idFormat;
 
-
-    public PremisManipulator(PremisComplexType premis) throws JAXBException {
-        this.premis = premis;
-        context = JAXBContext.newInstance(ObjectFactory.class);
-    }
-
-    public PremisManipulator(InputStream premis) throws JAXBException {
-        context = JAXBContext.newInstance(ObjectFactory.class);
-        this.premis = ((JAXBElement< PremisComplexType >) context.createUnmarshaller().unmarshal(premis)).getValue();
-    }
-
-
-
-
-    public static PremisManipulator createFromBlob(InputStream blob) throws JAXBException {
-        PremisManipulator that = new PremisManipulator(blob);
-        return that;
-    }
-
-
-    public static PremisManipulator createInitialPremisBlob(String BatchID) throws JAXBException {
-        PremisComplexType premis = new ObjectFactory().createPremisComplexType();
+    PremisManipulator(T batchID, int runNr, IDFormatter<T> idFormat, String type) throws JAXBException {
+        premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
-        PremisManipulator that = new PremisManipulator(premis);
-        that.addObject(premis.getObject(), BatchID);
-        return that;
+        this.idFormat = idFormat;
+        this.type = type;
+        context = JAXBContext.newInstance(ObjectFactory.class);
+        addObject(premis.getObject(), idFormat.formatFullID(batchID, runNr));
+
+    }
+
+    PremisManipulator(InputStream premis, IDFormatter<T> idFormat, String type) throws JAXBException {
+        this.idFormat = idFormat;
+        this.type = type;
+        context = JAXBContext.newInstance(ObjectFactory.class);
+        this.premis = ((JAXBElement<PremisComplexType>) context.createUnmarshaller().unmarshal(premis)).getValue();
     }
 
 
-    public Batch asBatch(){
-        Batch result = new Batch();
-        String fullID = getBatchID();
-        String[] splits = fullID.replaceAll("^B", "").replaceAll("RT", "").split("-");
-        result.setBatchID(splits[0]);
-        result.setRunNr(Integer.parseInt(splits[1]));
+    public Batch<T> toBatch() {
+        Batch<T> result = new Batch<>();
+        String fullID = getObjectID();
+        IDFormatter.SplitID<T> splits = idFormat.unformatFullID(fullID);
+        result.setBatchID(splits.getBatchID());
+        result.setRunNr(splits.getRunNr());
         result.setEventList(getEvents());
         return result;
     }
 
-    public String getBatchID(){
+    public String getObjectID() {
         Representation object = (Representation) premis.getObject().get(0);
         return object.getObjectIdentifier().get(0).getObjectIdentifierValue();
     }
 
-    public List<Event> getEvents(){
+    public List<Event> getEvents() {
         List<EventComplexType> premisEvents = premis.getEvent();
         List<Event> result = new ArrayList<>(premisEvents.size());
         for (EventComplexType premisEvent : premisEvents) {
@@ -103,21 +101,28 @@ public class PremisManipulator {
         }
         EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation().get(0);
         for (JAXBElement<?> jaxbElement : eventOutcomeInformation.getContent()) {
-            if (jaxbElement.getName().equals(_EventOutcome_QNAME)){
+            if (jaxbElement.getName().equals(_EventOutcome_QNAME)) {
                 String value = jaxbElement.getValue().toString();
-                if (value.equals("success")){
+                if (value.equals("success")) {
                     result.setSuccess(true);
+                }
+            }
+            if (jaxbElement.getName().equals(_EventOutcomeDetail_QNAME)) {
+                EventOutcomeDetailComplexType detailBlobs = (EventOutcomeDetailComplexType) jaxbElement.getValue();
+                String details = detailBlobs.getEventOutcomeDetailNote();
+                if (details != null) {
+                    result.setDetails(details);
                 }
             }
         }
         return result;
     }
 
-    public PremisManipulator addEvent(String agent,
-                                      Date timestamp,
-                                      String details,
-                                      EventID eventType,
-                                      boolean outcome){
+    public PremisManipulator<T> addEvent(String agent,
+                                         Date timestamp,
+                                         String details,
+                                         EventID eventType,
+                                         boolean outcome) {
 
         addAgentIfNessesary(premis.getAgent(), agent);
 
@@ -125,28 +130,31 @@ public class PremisManipulator {
         EventComplexType event = factory.createEventComplexType();
 
         event.setEventDateTime(format.format(timestamp));
-        event.setEventDetail(details);
         event.setEventType(eventType.toString());
 
 
         EventIdentifierComplexType identifier = factory.createEventIdentifierComplexType();
-        identifier.setEventIdentifierType(TYPE);
-        identifier.setEventIdentifierValue(String.valueOf(timestamp.getTime()));
+        identifier.setEventIdentifierType(type);
+        identifier.setEventIdentifierValue(getObjectID() + "-" + String.valueOf(timestamp.getTime()));
         event.setEventIdentifier(identifier);
 
         EventOutcomeInformationComplexType outcomeObject = factory.createEventOutcomeInformationComplexType();
         String outcomeString = (outcome ? "success" : "failure");
         outcomeObject.getContent().add(factory.createEventOutcome(outcomeString));
+        EventOutcomeDetailComplexType eventOutcomeDetail = factory.createEventOutcomeDetailComplexType();
+        eventOutcomeDetail.setEventOutcomeDetailNote(details);
+        outcomeObject.getContent().add(factory.createEventOutcomeDetail(eventOutcomeDetail));
+
         event.getEventOutcomeInformation().add(outcomeObject);
 
         LinkingAgentIdentifierComplexType linkingAgentObject = factory.createLinkingAgentIdentifierComplexType();
-        linkingAgentObject.setLinkingAgentIdentifierType(TYPE);
+        linkingAgentObject.setLinkingAgentIdentifierType(type);
         linkingAgentObject.setLinkingAgentIdentifierValue(agent);
         event.getLinkingAgentIdentifier().add(linkingAgentObject);
 
         LinkingObjectIdentifierComplexType linkingObjectObject = factory.createLinkingObjectIdentifierComplexType();
-        linkingObjectObject.setLinkingObjectIdentifierType(TYPE);
-        linkingObjectObject.setLinkingObjectIdentifierValue(getBatchID());
+        linkingObjectObject.setLinkingObjectIdentifierType(type);
+        linkingObjectObject.setLinkingObjectIdentifierValue(getObjectID());
         event.getLinkingObjectIdentifier().add(linkingObjectObject);
 
         premis.getEvent().add(event);
@@ -154,24 +162,24 @@ public class PremisManipulator {
 
     }
 
-    public String toString(){
+    public String toXML() {
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
             Marshaller marshaller = context.createMarshaller();
             StringWriter writer = new StringWriter();
-            marshaller.marshal(new ObjectFactory().createPremis(premis),writer);
+            marshaller.marshal(new ObjectFactory().createPremis(premis), writer);
             return writer.toString();
         } catch (JAXBException e) {
             return null;
         }
     }
 
-    private void addObject(List<ObjectComplexType> object, String batchID) {
+    private void addObject(List<ObjectComplexType> object, String fullID) {
         ObjectFactory factory = new ObjectFactory();
         Representation representation = factory.createRepresentation();
         ObjectIdentifierComplexType objectIdentifier = factory.createObjectIdentifierComplexType();
-        objectIdentifier.setObjectIdentifierType(TYPE);
-        objectIdentifier.setObjectIdentifierValue(batchID);
+        objectIdentifier.setObjectIdentifierType(type);
+        objectIdentifier.setObjectIdentifierValue(fullID);
         representation.getObjectIdentifier().add(objectIdentifier);
         object.add(representation);
     }
@@ -180,7 +188,7 @@ public class PremisManipulator {
         ObjectFactory factory = new ObjectFactory();
         for (AgentComplexType agentComplexType : agent) {
             for (AgentIdentifierComplexType agentIdentifierComplexType : agentComplexType.getAgentIdentifier()) {
-                if (agentIdentifierComplexType.getAgentIdentifierValue().equals(agent1)){
+                if (agentIdentifierComplexType.getAgentIdentifierValue().equals(agent1)) {
                     return;
                 }
             }
@@ -188,7 +196,7 @@ public class PremisManipulator {
         }
         AgentIdentifierComplexType identifier = factory.createAgentIdentifierComplexType();
         identifier.setAgentIdentifierValue(agent1);
-        identifier.setAgentIdentifierType(TYPE);
+        identifier.setAgentIdentifierType(type);
 
         AgentComplexType agentCreated = factory.createAgentComplexType();
         agentCreated.getAgentIdentifier().add(identifier);
