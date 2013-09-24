@@ -41,7 +41,6 @@ for batch_dirname in *; do
 
 	# Create batch in DOMS
 	# TODO
-	java -cp 'lib/*' dk.statsbiblioteket.newspaper.batcheventFramework.CreateBatch
 	echo $batch_id
 	echo $roundtrip
 
