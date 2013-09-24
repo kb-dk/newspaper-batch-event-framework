@@ -4,17 +4,17 @@
 #
 
 # Where the received newspaper batches are placed
-PATH_TO_DIR_OF_BATCHES='/batches'
+path_to_dir_of_batches='/batches'
 
 # URL to use for calls to DOMS
-URL_TO_DOMS='...'
+url_to_doms='...'
 
 # Username for calls to DOMS
-DOMS_USERNAME='...'
+doms_username='...'
 
 # Password for calls to DOMS
-DOMS_PASSWORD='...'
+doms_password='...'
 
 # Name of the trigger-script
-TRIGGER_NAME='register-batch-trigger'
+trigger_name='register-batch-trigger'
 
