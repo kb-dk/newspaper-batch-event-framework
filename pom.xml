@@ -15,6 +15,7 @@
 
     <modules>
         <module>premis-manipulator</module>
+        <module>doms-event-client</module>
     </modules>
     <dependencyManagement>
         <dependencies>
