@@ -15,12 +15,13 @@ source "$CONFIG_FILENAME"
 cd "$PATH_TO_DIR_OF_BATCHES"
 
 for batch_dirname in *; do
-	echo $batch_dirname
 	# Check format of dirname
-	if [[ "$batch_dirname" =~ "^B[^-]+\-RT[0-9]+$" ]]; then
+	if [[ ! "$batch_dirname" =~ ^B[^-]+\-RT[0-9]+$ ]]; then
+	#if [[ "$batch_dirname" =~ "^B[^-]+\-RT[0-9]+$" ]]; then
 		# Dirname not recognized as a batch, skip it
 		continue
 	fi
+	echo "'$batch_dirname'"
 
 	batch_id=`echo "$batch_dirname" | sed -r 's/^B([^-]+).+/\1/g'`
 	roundtrip=`echo "$batch_dirname" | sed -r 's/^B[^-]+\-RT([0-9]+)/\1/g'`
