@@ -9,7 +9,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public abstract class TCKTestSuite {
+public abstract class TCKTestSuite<T> {
 
 
     @Deprecated
@@ -17,11 +17,11 @@ public abstract class TCKTestSuite {
         return false;
     }
 
-    public abstract DataSource getDataSource();
+    public abstract DataSource<T> getDataSource();
 
-    public abstract int getValidBatchID();
+    public abstract T getValidBatchID();
 
-    public abstract int getInvalidBatchID();
+    public abstract T getInvalidBatchID();
 
     public abstract EventID getValidAndSucessfullEventIDForValidBatch();
 
@@ -29,17 +29,17 @@ public abstract class TCKTestSuite {
 
     @Test(groups = "integrationTest")
     public void testGetBatches() throws NotWorkingProperlyException {
-        List<Batch> batches = getDataSource().getBatches(false, null);
+        List<Batch<T>> batches = getDataSource().getBatches(false, null);
         assertTrue(batches.size() > 0, "The datasource have no content");
         boolean validHaveBeenFound = false;
         boolean anEventHaveBeenSeen = false;
-        for (Batch batch : batches) {
+        for (Batch<T> batch : batches) {
             List<Event> eventList = batch.getEventList();
             assertNotNull(eventList, "The event list cannot be null");
             if (eventList.size() > 0) {
                 anEventHaveBeenSeen = true;
             }
-            if (batch.getBatchID()==getValidBatchID()) {
+            if (batch.getBatchID().equals(getValidBatchID())) {
                 validHaveBeenFound = true;
                 boolean goodEventFound = false;
                 for (Event event : eventList) {
@@ -66,7 +66,7 @@ public abstract class TCKTestSuite {
     @Test(groups = "integrationTest")
     public void testGetInvalidBatch() throws NotWorkingProperlyException {
         try {
-            Batch batch = getDataSource().getBatch(getInvalidBatchID(), false);
+            Batch<T> batch = getDataSource().getBatch(getInvalidBatchID(), false);
             assertNotNull(batch, "Do not return null");
             fail("The invalid batch was found");
         } catch (NotFoundException e) {
@@ -76,9 +76,8 @@ public abstract class TCKTestSuite {
 
     @Test(groups = "integrationTest")
     public void testGetValidBatch() throws NotWorkingProperlyException {
-        Batch validBatch = null;
+        Batch<T> validBatch = null;
         try {
-
             validBatch = getDataSource().getBatch(getValidBatchID(), true);
             assertNotNull(validBatch, "Do not return null");
         } catch (NotFoundException e) {

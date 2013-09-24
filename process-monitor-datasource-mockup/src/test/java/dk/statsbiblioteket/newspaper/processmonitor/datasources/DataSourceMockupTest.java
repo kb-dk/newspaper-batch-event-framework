@@ -1,12 +1,12 @@
 package dk.statsbiblioteket.newspaper.processmonitor.datasources;
 
-public class DataSourceMockupTest extends TCKTestSuite {
+public class DataSourceMockupTest extends TCKTestSuite<Long> {
 
-    private DataSource dataSource = null;
+    private DataSource<Long> dataSource = null;
 
 
     @Override
-    public synchronized DataSource getDataSource() {
+    public synchronized DataSource<Long> getDataSource() {
         if (dataSource == null) {
             dataSource = new DataSourceMockup();
         }
@@ -14,13 +14,13 @@ public class DataSourceMockupTest extends TCKTestSuite {
     }
 
     @Override
-    public int getValidBatchID() {
-        return 3001;
+    public Long getValidBatchID() {
+        return 3001l;
     }
 
     @Override
-    public int getInvalidBatchID() {
-        return 8001;
+    public Long getInvalidBatchID() {
+        return 8001l;
     }
 
     @Override

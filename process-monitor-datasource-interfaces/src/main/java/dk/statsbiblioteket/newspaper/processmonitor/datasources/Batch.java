@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * This class represents a batch, a specific thing on which work will be done
  */
-public class Batch {
+public class Batch<T> {
 
-    private int batchID;
+    private T batchID;
     private int runNr = 0;
     private List<Event> eventList;
 
@@ -30,7 +30,7 @@ public class Batch {
      *
      * @return as above
      */
-    public int getBatchID() {
+    public T getBatchID() {
         return batchID;
     }
 
@@ -39,7 +39,7 @@ public class Batch {
      *
      * @param batchID to set
      */
-    public void setBatchID(int batchID) {
+    public void setBatchID(T batchID) {
         this.batchID = batchID;
     }
 
