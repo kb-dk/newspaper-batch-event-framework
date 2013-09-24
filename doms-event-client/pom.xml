@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
-            <artifactId>centralWebservice-interface</artifactId>
+            <artifactId>centralWebservice-lib</artifactId>
             <version>0.0.28-SNAPSHOT</version>
         </dependency>
         <dependency>

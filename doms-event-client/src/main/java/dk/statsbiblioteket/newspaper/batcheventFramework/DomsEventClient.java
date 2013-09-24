@@ -4,9 +4,9 @@ import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import java.util.Date;
 
-public interface DomsEventClient {
+public interface DomsEventClient<T> {
 
-    void addEventToBatch(String batchId, int runNr,
+    void addEventToBatch(T batchId, int runNr,
                          String agent,
                          Date timestamp,
                          String details,
@@ -14,6 +14,6 @@ public interface DomsEventClient {
                          boolean outcome,
                          String outcomeDetails) throws CommunicationException;
 
-    String createBatchRun(String batchId, int runNr) throws CommunicationException;
+    String createBatchRun(T batchId, int runNr) throws CommunicationException;
 
 }
