@@ -7,13 +7,13 @@
 path_to_dir_of_batches='/batches'
 
 # URL to use for calls to DOMS
-url_to_doms='...'
+url_to_doms='http://domsurl'
 
 # Username for calls to DOMS
-doms_username='...'
+doms_username='domsuser'
 
 # Password for calls to DOMS
-doms_password='...'
+doms_password='domspass'
 
 # Name of the trigger-script
 trigger_name='register-batch-trigger'

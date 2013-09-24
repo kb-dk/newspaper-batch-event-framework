@@ -9,7 +9,17 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
  */
 public class CreateBatch {
     public static void main(String[] args) {
-        System.out.println("sdfsdfsddf");
+        System.out.println("CreateBatch says:");
+        if (args.length != 6) {
+			System.out.println("Not the right amount of arguments");
+		}
 
+        System.out.println("Received:" + args[0]);
+        System.out.println("Received:" + args[1]);
+        System.out.println("Received:" + args[2]);
+        System.out.println("Received:" + args[3]);
+        System.out.println("Received:" + args[4]);
+        System.out.println("Received:" + args[5]);
     }
 }
+
