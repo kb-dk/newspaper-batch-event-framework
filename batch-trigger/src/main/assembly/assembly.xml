@@ -24,6 +24,9 @@
     </dependencySets>
     <fileSets>
         <fileSet>
+            <filtered>
+                true
+            </filtered>
             <directory>
                 src/main/scripts
             </directory>
