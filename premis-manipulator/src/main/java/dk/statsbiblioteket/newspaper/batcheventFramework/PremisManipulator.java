@@ -153,7 +153,7 @@ public class PremisManipulator {
                                       boolean outcome) {
 
         String eventID = getEventID(timestamp);
-        if (!eventExists(eventID)){
+        if (eventExists(eventID)){
             return this;
         }
         addAgentIfNessesary(premis.getAgent(), agent);
