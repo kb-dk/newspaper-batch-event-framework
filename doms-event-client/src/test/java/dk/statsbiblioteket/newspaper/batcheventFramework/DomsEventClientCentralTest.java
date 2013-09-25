@@ -12,7 +12,8 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch1() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
 
         doms.addEventToBatch(400022028241l, 1,
                 "agent",
@@ -34,7 +35,7 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupBatchNoRun(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
 
         doms.addEventToBatch(400022028241l, 1,
                 "agent",
@@ -57,7 +58,7 @@ public class DomsEventClientCentralTest {
     public void testCreateBatchRun() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
         doms.createBatchRun(400022028241l, 1);
         Assert.assertEquals(8,log.size());
         for (String s : log) {
