@@ -152,6 +152,10 @@ public class PremisManipulator {
                                       EventID eventType,
                                       boolean outcome) {
 
+        String eventID = getEventID(timestamp);
+        if (!eventExists(eventID)){
+            return this;
+        }
         addAgentIfNessesary(premis.getAgent(), agent);
 
         ObjectFactory factory = new ObjectFactory();
@@ -163,7 +167,8 @@ public class PremisManipulator {
 
         EventIdentifierComplexType identifier = factory.createEventIdentifierComplexType();
         identifier.setEventIdentifierType(type);
-        identifier.setEventIdentifierValue(getObjectID() + "-" + String.valueOf(timestamp.getTime()));
+
+        identifier.setEventIdentifierValue(eventID);
         event.setEventIdentifier(identifier);
 
         EventOutcomeInformationComplexType outcomeObject = factory.createEventOutcomeInformationComplexType();
@@ -188,6 +193,25 @@ public class PremisManipulator {
         premis.getEvent().add(event);
         return this;
 
+    }
+
+    /**
+     * Returns true, if an event with the same identifier in the same type exists
+     * @param eventID the event id to search for
+     * @return true if found
+     */
+    private boolean eventExists(String eventID) {
+        for (EventComplexType event : premis.getEvent()) {
+            if (event.getEventIdentifier().getEventIdentifierType().equals(type) &&
+                    event.getEventIdentifier().getEventIdentifierValue().equals(eventID)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getEventID(Date timestamp) {
+        return getObjectID() + "-" + String.valueOf(timestamp.getTime());
     }
 
     /**
