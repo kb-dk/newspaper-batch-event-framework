@@ -198,6 +198,7 @@ public class PremisManipulator {
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
             Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
             StringWriter writer = new StringWriter();
             marshaller.marshal(new ObjectFactory().createPremis(premis), writer);
             return writer.toString();
