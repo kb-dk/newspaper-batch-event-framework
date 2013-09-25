@@ -27,7 +27,7 @@ public class DomsEventClientIntegrationTest {
         DomsEventClient doms = factory.createDomsEventClient();
 
 
-        Long batchId = 400022028241l;
+        Long batchId = 400022028242l;
         int runNr = 1;
         Date timestamp = new Date(0);
         EventID eventID = EventID.Data_Received;
@@ -44,6 +44,30 @@ public class DomsEventClientIntegrationTest {
         Assert.assertEquals(batch.getRunNr(),runNr);
 
         boolean found = false;
+        for (Event event : batch.getEventList()) {
+            if (event.getEventID().equals(eventID)){
+                found = true;
+                Assert.assertEquals(event.getDate(), timestamp);
+                Assert.assertEquals(event.getDetails(),details);
+                Assert.assertEquals(event.isSuccess(),true);
+            }
+        }
+        Assert.assertTrue(found);
+
+
+        int newRun = runNr + 5;
+        doms.addEventToBatch(batchId, newRun,
+                "agent",
+                timestamp,
+                details,
+                eventID,
+                true);
+
+        batch = doms.getBatch(batchId, newRun);
+        Assert.assertEquals(batch.getBatchID(),batchId);
+        Assert.assertEquals(batch.getRunNr(),newRun);
+
+        found = false;
         for (Event event : batch.getEventList()) {
             if (event.getEventID().equals(eventID)){
                 found = true;
