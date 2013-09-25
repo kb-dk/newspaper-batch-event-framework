@@ -11,9 +11,9 @@ import java.util.Map;
  * Time: 10:32 AM
  * To change this template use File | Settings | File Templates.
  */
-public class DataSourceMockup implements DataSource<Long> {
+public class DataSourceMockup implements DataSource {
 
-    private List<Batch<Long>> dummyBatches;
+    private List<Batch> dummyBatches;
 
     private String username;
     private String password;
@@ -41,7 +41,7 @@ public class DataSourceMockup implements DataSource<Long> {
         b1Events.add(e2);
         b1Events.add(e3);
 
-        Batch<Long> b1 = new Batch<>();
+        Batch b1 = new Batch();
         b1.setBatchID(3001l);
         b1.setEventList(b1Events);
 
@@ -62,7 +62,7 @@ public class DataSourceMockup implements DataSource<Long> {
         b2Events.add(e5);
         b2Events.add(e6);
 
-        Batch<Long> b2 = new Batch<>();
+        Batch b2 = new Batch();
         b2.setBatchID(3002l);
         b2.setEventList(b2Events);
 
@@ -90,12 +90,12 @@ public class DataSourceMockup implements DataSource<Long> {
 
 
     @Override
-    public List<Batch<Long>> getBatches(boolean includeDetails, Map<String, String> filters) {
+    public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) {
         return dummyBatches;
     }
 
     @Override
-    public Batch<Long> getBatch(Long batchID, boolean includeDetails) throws NotFoundException {
+    public Batch getBatch(Long batchID, boolean includeDetails) throws NotFoundException {
         Batch batch = null;
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {
@@ -111,7 +111,7 @@ public class DataSourceMockup implements DataSource<Long> {
     @Override
     public Event getBatchEvent(Long batchID, EventID eventID, boolean includeDetails) throws NotFoundException {
         Event event = null;
-        for (Batch<Long> b : dummyBatches) {
+        for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {
                 for (Event e : b.getEventList()) {
                     if (e.getEventID().equals(eventID)) {

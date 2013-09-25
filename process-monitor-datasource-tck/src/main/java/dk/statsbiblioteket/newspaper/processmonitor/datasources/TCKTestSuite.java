@@ -9,7 +9,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public abstract class TCKTestSuite<T> {
+public abstract class TCKTestSuite {
 
 
     @Deprecated
@@ -17,11 +17,11 @@ public abstract class TCKTestSuite<T> {
         return false;
     }
 
-    public abstract DataSource<T> getDataSource();
+    public abstract DataSource getDataSource();
 
-    public abstract T getValidBatchID();
+    public abstract Long getValidBatchID();
 
-    public abstract T getInvalidBatchID();
+    public abstract Long getInvalidBatchID();
 
     public abstract EventID getValidAndSucessfullEventIDForValidBatch();
 
@@ -29,11 +29,11 @@ public abstract class TCKTestSuite<T> {
 
     @Test(groups = "integrationTest")
     public void testGetBatches() throws NotWorkingProperlyException {
-        List<Batch<T>> batches = getDataSource().getBatches(false, null);
+        List<Batch> batches = getDataSource().getBatches(false, null);
         assertTrue(batches.size() > 0, "The datasource have no content");
         boolean validHaveBeenFound = false;
         boolean anEventHaveBeenSeen = false;
-        for (Batch<T> batch : batches) {
+        for (Batch batch : batches) {
             List<Event> eventList = batch.getEventList();
             assertNotNull(eventList, "The event list cannot be null");
             if (eventList.size() > 0) {
@@ -66,7 +66,7 @@ public abstract class TCKTestSuite<T> {
     @Test(groups = "integrationTest")
     public void testGetInvalidBatch() throws NotWorkingProperlyException {
         try {
-            Batch<T> batch = getDataSource().getBatch(getInvalidBatchID(), false);
+            Batch batch = getDataSource().getBatch(getInvalidBatchID(), false);
             assertNotNull(batch, "Do not return null");
             fail("The invalid batch was found");
         } catch (NotFoundException e) {
@@ -76,7 +76,7 @@ public abstract class TCKTestSuite<T> {
 
     @Test(groups = "integrationTest")
     public void testGetValidBatch() throws NotWorkingProperlyException {
-        Batch<T> validBatch = null;
+        Batch validBatch = null;
         try {
             validBatch = getDataSource().getBatch(getValidBatchID(), true);
             assertNotNull(validBatch, "Do not return null");

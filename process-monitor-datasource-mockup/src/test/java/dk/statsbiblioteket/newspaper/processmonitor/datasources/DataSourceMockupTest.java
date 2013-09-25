@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.newspaper.processmonitor.datasources;
 
-public class DataSourceMockupTest extends TCKTestSuite<Long> {
+public class DataSourceMockupTest extends TCKTestSuite {
 
     private DataSource<Long> dataSource = null;
 

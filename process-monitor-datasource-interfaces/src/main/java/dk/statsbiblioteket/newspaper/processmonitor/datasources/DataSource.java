@@ -7,7 +7,7 @@ import java.util.Map;
  * Interface the the process Monitor data sources.
  * Implementations of this class must have a no-args constructor. All properties must be set by getters and setters.
  */
-public interface DataSource<T> {
+public interface DataSource {
 
 
     /**
@@ -19,7 +19,7 @@ public interface DataSource<T> {
      * @return a List of Batch objects. If no batch objects are found, returns an empty list
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    List<Batch<T>> getBatches(boolean includeDetails, Map<String, String> filters) throws NotWorkingProperlyException;
+    List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws NotWorkingProperlyException;
 
     /**
      * Get information about a specific batch
@@ -30,7 +30,7 @@ public interface DataSource<T> {
      * @throws NotFoundException           If no batch with this ID is found
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    Batch<T> getBatch(T batchID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
+    Batch getBatch(Long batchID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
 
     /**
      * Get information about the specific event on the specific batch
@@ -42,6 +42,6 @@ public interface DataSource<T> {
      * @throws NotFoundException           if the batch is not found, or the batch does not have an event by this name
      * @throws NotWorkingProperlyException If the datasource does not function right now
      */
-    Event getBatchEvent(T batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
+    Event getBatchEvent(Long batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException;
 
 }
