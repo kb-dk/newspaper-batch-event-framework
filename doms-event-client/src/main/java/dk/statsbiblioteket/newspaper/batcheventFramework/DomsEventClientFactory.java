@@ -36,7 +36,7 @@ public class DomsEventClientFactory {
 
     public DomsEventClient createDomsEventClient() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
-        EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(creds, fedoraLocation, pidGeneratorLocation, null);
+        EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(creds, fedoraLocation.replaceFirst("/(objects)?/?$",""), pidGeneratorLocation, null);
         return new DomsEventClientCentral(fedora,idFormatter, premisIdentifierType,batchTemplate,runTemplate,hasPartRelation,eventsDatastream);
     }
 
