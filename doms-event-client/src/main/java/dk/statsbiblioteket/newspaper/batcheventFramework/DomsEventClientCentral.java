@@ -17,19 +17,27 @@ import java.util.List;
 public class DomsEventClientCentral implements DomsEventClient {
 
 
-    //Extract factory with these properties. Perhaps constructor
-    private static final String BATCH_TEMPLATE = "TODO";
-    private static final String RUN_TEMPLATE = "TODO";
-    private static final String HAS_PART = "info:fedora/fedora-system:def/relations-external#hasPart";
-    private static final String EVENTS = "EVENTS";
-
     private final EnhancedFedora fedora;
-    private IDFormatter idFormatter;
-    private PremisManipulatorFactory premisFactory;
+    private final IDFormatter idFormatter;
+    private final String batchTemplate;
+    private final String runTemplate;
+    private final String hasPart_relation;
+    private final String eventsDatastream;
+    private final PremisManipulatorFactory premisFactory;
 
-    public DomsEventClientCentral(EnhancedFedora fedora, IDFormatter idFormatter, String type) {
+    DomsEventClientCentral(EnhancedFedora fedora,
+                           IDFormatter idFormatter,
+                           String type,
+                           String batchTemplate,
+                           String runTemplate,
+                           String hasPart_relation,
+                           String eventsDatastream) {
         this.fedora = fedora;
         this.idFormatter = idFormatter;
+        this.batchTemplate = batchTemplate;
+        this.runTemplate = runTemplate;
+        this.hasPart_relation = hasPart_relation;
+        this.eventsDatastream = eventsDatastream;
         premisFactory = new PremisManipulatorFactory(idFormatter, type);
     }
 
@@ -47,7 +55,7 @@ public class DomsEventClientCentral implements DomsEventClient {
         try {
             PremisManipulator premisObject;
             try {
-                String premisPreBlob = fedora.getXMLDatastreamContents(runObject, EVENTS, null);
+                String premisPreBlob = fedora.getXMLDatastreamContents(runObject, eventsDatastream, null);
 
                 premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             } catch (BackendInvalidResourceException e) {
@@ -56,7 +64,7 @@ public class DomsEventClientCentral implements DomsEventClient {
             }
             premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
             try {
-                fedora.modifyDatastreamByValue(runObject, EVENTS, premisObject.toXML(), "comments");
+                fedora.modifyDatastreamByValue(runObject, eventsDatastream, premisObject.toXML(), "comments");
             } catch (BackendInvalidResourceException e1) {
                 //But I just created the object, it must be there
                 throw new CommunicationException(e1);
@@ -88,7 +96,7 @@ public class DomsEventClientCentral implements DomsEventClient {
                 //no batch object either, more sad
                 //create it, then
                 try {
-                    batchObject = fedora.cloneTemplate(BATCH_TEMPLATE, Arrays.asList(idFormatter.formatBatchID(batchId)), "comment");
+                    batchObject = fedora.cloneTemplate(batchTemplate, Arrays.asList(idFormatter.formatBatchID(batchId)), "comment");
                 } catch (ObjectIsWrongTypeException | BackendInvalidResourceException e) {
                     throw new CommunicationException(e);
                 }
@@ -101,7 +109,7 @@ public class DomsEventClientCentral implements DomsEventClient {
             }
             String runObject;
             try {
-                runObject = fedora.cloneTemplate(RUN_TEMPLATE, Arrays.asList(id), "comment");
+                runObject = fedora.cloneTemplate(runTemplate, Arrays.asList(id), "comment");
             } catch (ObjectIsWrongTypeException | BackendInvalidResourceException e) {
                 throw new CommunicationException(e);
             }
@@ -113,7 +121,7 @@ public class DomsEventClientCentral implements DomsEventClient {
                 //connect batch object to run object
                 fedora.addRelation(batchObject,
                         toFedoraID(batchObject),
-                        HAS_PART,
+                        hasPart_relation,
                         toFedoraID(runObject),
                         false,
                         "comment");
@@ -121,7 +129,7 @@ public class DomsEventClientCentral implements DomsEventClient {
                 //create the initial EVENTS datastream
                 try {
                     String premisBlob = premisFactory.createInitialPremisBlob(batchId,runNr).toXML();
-                    fedora.modifyDatastreamByValue(runObject, EVENTS, premisBlob, "comment");
+                    fedora.modifyDatastreamByValue(runObject, eventsDatastream, premisBlob, "comment");
                 } catch (JAXBException e) {
                     //how can this fail???
                     throw new RuntimeException(e);
