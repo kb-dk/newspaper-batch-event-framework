@@ -11,9 +11,9 @@ public interface DomsEventClient {
                          Date timestamp,
                          String details,
                          EventID eventType,
-                         boolean outcome,
-                         String outcomeDetails) throws CommunicationException;
+                         boolean outcome) throws CommunicationException;
 
     String createBatchRun(Long batchId, int runNr) throws CommunicationException;
+
 
 }

@@ -48,8 +48,7 @@ public class DomsEventClientCentral implements DomsEventClient {
                                 Date timestamp,
                                 String details,
                                 EventID eventType,
-                                boolean outcome,
-                                String outcomeDetails) throws CommunicationException {
+                                boolean outcome) throws CommunicationException {
         String runObject = createBatchRun(batchId, runNr);
 
         try {
