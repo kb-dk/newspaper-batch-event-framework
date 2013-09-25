@@ -3,11 +3,11 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 
-public class PremisManipulatorFactory <T> {
+public class PremisManipulatorFactory{
 
     public final static String TYPE="Newspaper_digitisation_project";
 
-    private IDFormatter<T> format;
+    private IDFormatter format;
 
     private String type;
 
@@ -16,7 +16,7 @@ public class PremisManipulatorFactory <T> {
      * @param format the formatter to convert IDs
      * @param type the type to use in premis
      */
-    public PremisManipulatorFactory(IDFormatter<T> format, String type) {
+    public PremisManipulatorFactory(IDFormatter format, String type) {
         this.format = format;
         this.type = type;
     }
@@ -27,7 +27,7 @@ public class PremisManipulatorFactory <T> {
      * @return a premis manipulator
      * @throws JAXBException if the parsing failed
      */
-    public PremisManipulator<T> createFromBlob(InputStream blob) throws JAXBException {
+    public PremisManipulator createFromBlob(InputStream blob) throws JAXBException {
         return new PremisManipulator(blob,format,type);
     }
 
@@ -37,13 +37,13 @@ public class PremisManipulatorFactory <T> {
     /**
      * Create a new premisManipulator from the id's of a batch. The premis will be initialised with an Object with
      * the correct identifier.
-     * @param BatchID the batch id
+     * @param batchID the batch id
      * @param runNr the run nr
      * @return a premis manipulator.
      * @throws JAXBException if the parsing failed
      */
-    public PremisManipulator<T> createInitialPremisBlob(T BatchID, int runNr) throws JAXBException {
-        return new PremisManipulator(BatchID,runNr,format,type);
+    public PremisManipulator createInitialPremisBlob(Long batchID, int runNr) throws JAXBException {
+        return new PremisManipulator(batchID,runNr,format,type);
     }
 
 }

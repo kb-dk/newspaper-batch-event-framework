@@ -12,7 +12,7 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch1() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral<Long> doms = new DomsEventClientCentral<>(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
 
         doms.addEventToBatch(400022028241l, 1,
                 "agent",
@@ -34,7 +34,7 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupBatchNoRun(log);
-        DomsEventClientCentral<Long> doms = new DomsEventClientCentral<>(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
 
         doms.addEventToBatch(400022028241l, 1,
                 "agent",
@@ -57,7 +57,7 @@ public class DomsEventClientCentralTest {
     public void testCreateBatchRun() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral<Long> doms = new DomsEventClientCentral<>(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
         doms.createBatchRun(400022028241l, 1);
         Assert.assertEquals(8,log.size());
         for (String s : log) {

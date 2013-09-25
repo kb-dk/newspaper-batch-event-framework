@@ -32,7 +32,7 @@ import java.util.List;
 
 //TODO javadoc
 //Document not thread safe
-public class PremisManipulator<T> {
+public class PremisManipulator {
 
     private final static QName _EventOutcome_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcome");
     private final static QName _EventOutcomeDetailNote_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcomeDetailNote");
@@ -43,21 +43,21 @@ public class PremisManipulator<T> {
     private final JAXBContext context;
 
 
-    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
     private final String type;
-    private final IDFormatter<T> idFormat;
+    private final IDFormatter idFormat;
 
-    PremisManipulator(T batchID, int runNr, IDFormatter<T> idFormat, String type) throws JAXBException {
+    PremisManipulator(Long batchID, int runNr, IDFormatter idFormat, String type) throws JAXBException {
         premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
         this.idFormat = idFormat;
         this.type = type;
         context = JAXBContext.newInstance(ObjectFactory.class);
-        addObject(premis.getObject(), idFormat.formatFullID(batchID, runNr));
+        addObjectIfNessesary(premis.getObject(), idFormat.formatFullID(batchID, runNr));
 
     }
 
-    PremisManipulator(InputStream premis, IDFormatter<T> idFormat, String type) throws JAXBException {
+    PremisManipulator(InputStream premis, IDFormatter idFormat, String type) throws JAXBException {
         this.idFormat = idFormat;
         this.type = type;
         context = JAXBContext.newInstance(ObjectFactory.class);
@@ -69,10 +69,10 @@ public class PremisManipulator<T> {
      * Make this Premis as a Batch. Know that some things get lost here
      * @return the blob as a Batch
      */
-    public Batch<T> toBatch() {
-        Batch<T> result = new Batch<>();
+    public Batch toBatch() {
+        Batch result = new Batch();
         String fullID = getObjectID();
-        IDFormatter.SplitID<T> splits = idFormat.unformatFullID(fullID);
+        IDFormatter.SplitID splits = idFormat.unformatFullID(fullID);
         result.setBatchID(splits.getBatchID());
         result.setRunNr(splits.getRunNr());
         result.setEventList(getEvents());
@@ -113,7 +113,7 @@ public class PremisManipulator<T> {
         result.setEventID(EventID.valueOf(premisEvent.getEventType()));
         result.setDetails(premisEvent.getEventDetail());
         try {
-            result.setDate(format.parse(premisEvent.getEventDateTime()));
+            result.setDate(dateFormat.parse(premisEvent.getEventDateTime()));
         } catch (ParseException e) {
             //log this, no date is set, then
         }
@@ -146,18 +146,18 @@ public class PremisManipulator<T> {
      * @param outcome was it successful?
      * @return the premis with the event added.
      */
-    public PremisManipulator<T> addEvent(String agent,
-                                         Date timestamp,
-                                         String details,
-                                         EventID eventType,
-                                         boolean outcome) {
+    public PremisManipulator addEvent(String agent,
+                                      Date timestamp,
+                                      String details,
+                                      EventID eventType,
+                                      boolean outcome) {
 
         addAgentIfNessesary(premis.getAgent(), agent);
 
         ObjectFactory factory = new ObjectFactory();
         EventComplexType event = factory.createEventComplexType();
 
-        event.setEventDateTime(format.format(timestamp));
+        event.setEventDateTime(dateFormat.format(timestamp));
         event.setEventType(eventType.toString());
 
 
@@ -207,18 +207,20 @@ public class PremisManipulator<T> {
     }
 
     /**
-     * Add the object. Will add it even if it is there
-     * @param object the list to add it to
-     * @param fullID the full id of the object
+     * Add the objectList
+     * @param objectList the list to add it to
+     * @param fullID the full id of the objectList
      */
-    private void addObject(List<ObjectComplexType> object, String fullID) {
-        ObjectFactory factory = new ObjectFactory();
-        Representation representation = factory.createRepresentation();
-        ObjectIdentifierComplexType objectIdentifier = factory.createObjectIdentifierComplexType();
-        objectIdentifier.setObjectIdentifierType(type);
-        objectIdentifier.setObjectIdentifierValue(fullID);
-        representation.getObjectIdentifier().add(objectIdentifier);
-        object.add(representation);
+    private void addObjectIfNessesary(List<ObjectComplexType> objectList, String fullID) {
+        if (objectList.size() == 0){
+            ObjectFactory factory = new ObjectFactory();
+            Representation representation = factory.createRepresentation();
+            ObjectIdentifierComplexType objectIdentifier = factory.createObjectIdentifierComplexType();
+            objectIdentifier.setObjectIdentifierType(type);
+            objectIdentifier.setObjectIdentifierValue(fullID);
+            representation.getObjectIdentifier().add(objectIdentifier);
+            objectList.add(representation);
+        }
     }
 
     /**

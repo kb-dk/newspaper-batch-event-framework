@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
-public class NewspaperIDFormatter implements IDFormatter<Long>{
+public class NewspaperIDFormatter implements IDFormatter{
 
 
     @Override
@@ -19,10 +19,10 @@ public class NewspaperIDFormatter implements IDFormatter<Long>{
     }
 
     @Override
-    public SplitID<Long> unformatFullID(String fullID) {
+    public SplitID unformatFullID(String fullID) {
         String[] splits = fullID.split("-RT");
 
-        return new SplitID<>(Long.parseLong(splits[0].replaceFirst("B","")),
+        return new SplitID(Long.parseLong(splits[0].replaceFirst("B","")),
                 Integer.parseInt(splits[1]));
     }
 }

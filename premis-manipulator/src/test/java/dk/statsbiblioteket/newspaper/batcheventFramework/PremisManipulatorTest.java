@@ -24,8 +24,8 @@ public class PremisManipulatorTest {
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
-        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
-        PremisManipulator<Long> manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
         Reader control = new InputStreamReader(getFile("objectOnlyBlob.xml"));
@@ -41,8 +41,8 @@ public class PremisManipulatorTest {
 
     @Test
     public void testAddEvent() throws Exception {
-        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
-        PremisManipulator<Long> manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
         Date date = new Date(0);
 
         manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", EventID.Data_Received,true);
@@ -66,10 +66,9 @@ public class PremisManipulatorTest {
 
     @Test
     public void testGetAsBatch() throws Exception {
-        PremisManipulatorFactory<Long> factory = new PremisManipulatorFactory<>(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
-        PremisManipulator<Long> premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
-        Batch<Long> batch = premisBlob.toBatch();
-        //TODO
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
+        Batch batch = premisBlob.toBatch();
         Assert.assertEquals(BATCH_ID,batch.getBatchID());
         List<Event> events = batch.getEventList();
         for (Event event : events) {

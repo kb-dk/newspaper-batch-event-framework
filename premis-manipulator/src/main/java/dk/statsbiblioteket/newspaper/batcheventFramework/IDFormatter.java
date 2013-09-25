@@ -1,25 +1,24 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
 /**
- * This class is to format and unformat ids from strings to T
- * @param <T> the batch
- */
-public interface IDFormatter<T> {
+ * This class is to format and unformat ids from strings to Long
+  */
+public interface IDFormatter {
 
     /**
      * Format a batch to String
      * @param batchID the batch id
      * @return as a string
      */
-    String formatBatchID(T batchID);
+    String formatBatchID(Long batchID);
 
     /**
      * Undo formatBatchID
      * @param batchID batchIDs as a string
-     * @return as a T
-     * @see IDFormatter#formatBatchID(Object)
+     * @return as a Long
+     * @see IDFormatter#formatBatchID(Long)
      */
-    T unformatBatchID(String batchID);
+    Long unformatBatchID(String batchID);
 
     /**
      * Format a full id
@@ -27,26 +26,26 @@ public interface IDFormatter<T> {
      * @param runNr the runNar
      * @return as a String
      */
-    String formatFullID(T batchID, int runNr);
+    String formatFullID(Long batchID, int runNr);
 
     /**
      * Undo formatFullID
      * @param fullID the full ID
      * @return as a SplitID because java does not have Pairs
-     * @see #formatFullID(Object, int)
+     * @see #formatFullID(Long, int)
      */
-    SplitID<T> unformatFullID(String fullID);
+    SplitID unformatFullID(String fullID);
 
-    public static class SplitID<T>{
-        private T batchID;
+    public static class SplitID{
+        private Long batchID;
         private int runNr;
 
-        public SplitID(T batchID, int runNr) {
+        public SplitID(Long batchID, int runNr) {
             this.batchID = batchID;
             this.runNr = runNr;
         }
 
-        public T getBatchID() {
+        public Long getBatchID() {
             return batchID;
         }
 

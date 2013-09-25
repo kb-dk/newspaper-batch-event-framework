@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class DomsEventClientCentral<T> implements DomsEventClient<T> {
+public class DomsEventClientCentral implements DomsEventClient {
 
 
     //Extract factory with these properties. Perhaps constructor
@@ -24,17 +24,17 @@ public class DomsEventClientCentral<T> implements DomsEventClient<T> {
     private static final String EVENTS = "EVENTS";
 
     private final EnhancedFedora fedora;
-    private IDFormatter<T> idFormatter;
-    private PremisManipulatorFactory<T> premisFactory;
+    private IDFormatter idFormatter;
+    private PremisManipulatorFactory premisFactory;
 
-    public DomsEventClientCentral(EnhancedFedora fedora, IDFormatter<T> idFormatter, String type) {
+    public DomsEventClientCentral(EnhancedFedora fedora, IDFormatter idFormatter, String type) {
         this.fedora = fedora;
         this.idFormatter = idFormatter;
-        premisFactory = new PremisManipulatorFactory<>(idFormatter, type);
+        premisFactory = new PremisManipulatorFactory(idFormatter, type);
     }
 
     @Override
-    public void addEventToBatch(T batchId,
+    public void addEventToBatch(Long batchId,
                                 int runNr,
                                 String agent,
                                 Date timestamp,
@@ -45,7 +45,7 @@ public class DomsEventClientCentral<T> implements DomsEventClient<T> {
         String runObject = createBatchRun(batchId, runNr);
 
         try {
-            PremisManipulator<T> premisObject;
+            PremisManipulator premisObject;
             try {
                 String premisPreBlob = fedora.getXMLDatastreamContents(runObject, EVENTS, null);
 
@@ -67,7 +67,7 @@ public class DomsEventClientCentral<T> implements DomsEventClient<T> {
     }
 
     @Override
-    public String createBatchRun(T batchId, int runNr) throws CommunicationException {
+    public String createBatchRun(Long batchId, int runNr) throws CommunicationException {
         String id = idFormatter.formatFullID(batchId, runNr);
         try {
             //find the run object
