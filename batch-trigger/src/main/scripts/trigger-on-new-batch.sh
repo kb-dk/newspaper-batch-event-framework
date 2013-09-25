@@ -2,11 +2,14 @@
 #
 # Check for newly arrived newspaper batch(es), and initiate creation in DOMS
 #
+# Parameters:
+# $1 : path to config file
+#
 
 donedir='batches-done'
 
 config_filename="$1"
-if [ -z "$config_filename" ]; then
+if [[ -z "$config_filename" ]]; then
 	echo 'config-filename not received' >&2
 	exit 1
 fi
@@ -17,7 +20,7 @@ source "$config_filename"
 # Get path to directory of this script
 my_path="`dirname \"$0\"`"              # relative
 my_path="`( cd \"$my_path\" && pwd )`"  # absolutized and normalized
-if [ -z "$my_path" ] ; then
+if [[ -z "$my_path" ]] ; then
 	echo 'could not access path' >&2
     exit 1
 fi
@@ -32,7 +35,7 @@ for batch_dirname in *; do
 	fi
 
 	# Skip batches that are already done
-	if [ -f "$my_path/$donedir/$batch_dirname" ]; then
+	if [[ -f "$my_path/$donedir/$batch_dirname" ]]; then
 		continue
 	fi
 

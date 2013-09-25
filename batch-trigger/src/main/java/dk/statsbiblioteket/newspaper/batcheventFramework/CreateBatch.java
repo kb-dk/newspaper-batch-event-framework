@@ -1,5 +1,8 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jrg
@@ -15,6 +18,9 @@ public class CreateBatch {
         String premisAgent;
         String batchId;
         String roundTrip;
+        DomsEventClientFactory domsEventClientFactory = new DomsEventClientFactory();
+        DomsEventClient domsEventClient;
+        Date now = new Date();
 
         if (args.length != 6) {
             System.out.println("Not the right amount of arguments");
@@ -34,10 +40,20 @@ public class CreateBatch {
         premisAgent = args[2];
         domsUrl = args[3];
         domsUser = args[4];
-        domsPass = args[0];
+        domsPass = args[5];
 
-        // TODO
+        domsEventClientFactory.setFedoraLocation(domsUrl);
+        domsEventClientFactory.setUsername(domsUser);
+        domsEventClientFactory.setPassword(domsPass);
 
+        try {
+            domsEventClient = domsEventClientFactory.createDomsEventClient();
+
+            domsEventClient.addEventToBatch(Long.parseLong(batchId), Integer.parseInt(roundTrip), premisAgent, now, "",
+                    EventID.Data_Received, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }
-
