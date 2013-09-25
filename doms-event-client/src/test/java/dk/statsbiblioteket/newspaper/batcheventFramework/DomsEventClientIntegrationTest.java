@@ -17,7 +17,9 @@ public class DomsEventClientIntegrationTest {
         factory.setFedoraLocation(props.getProperty("fedora.location").replaceFirst("/objects/",""));
         factory.setUsername(props.getProperty("fedora.username"));
         factory.setPassword(props.getProperty("fedora.password"));
-        factory.setPidGeneratorLocation(props.getProperty("pidGenerator.location"));
+        factory.setPidGeneratorLocation(props.getProperty("pidgenerator.location"));
+
+
 
         DomsEventClient doms = factory.createDomsEventClient();
 
