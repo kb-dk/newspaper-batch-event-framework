@@ -2,11 +2,11 @@ package dk.statsbiblioteket.newspaper.processmonitor.datasources;
 
 public class DataSourceMockupTest extends TCKTestSuite {
 
-    private DataSource<Long> dataSource = null;
+    private DataSource dataSource = null;
 
 
     @Override
-    public synchronized DataSource<Long> getDataSource() {
+    public synchronized DataSource getDataSource() {
         if (dataSource == null) {
             dataSource = new DataSourceMockup();
         }
