@@ -6,14 +6,14 @@
 # Where the received newspaper batches are placed
 path_to_dir_of_batches='/batches'
 
-# URL to use for calls to DOMS
-url_to_doms='http://domsurl'
+# Fedora location
+url_to_doms='${fedora.server}'
 
 # Username for calls to DOMS
-doms_username='domsuser'
+doms_username='${fedora.admin.username}'
 
 # Password for calls to DOMS
-doms_password='domspass'
+doms_password='${fedora.admin.password}'
 
 # Name of the trigger-script
 trigger_name='register-batch-trigger'
