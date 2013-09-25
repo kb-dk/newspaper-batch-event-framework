@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import java.util.Date;
@@ -16,4 +17,5 @@ public interface DomsEventClient {
     String createBatchRun(Long batchId, int runNr) throws CommunicationException;
 
 
+    Batch getBatch(Long batchId, int runNr) throws CommunicationException;
 }

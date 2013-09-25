@@ -6,6 +6,7 @@ import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import javax.xml.bind.JAXBException;
@@ -143,6 +144,37 @@ public class DomsEventClientCentral implements DomsEventClient {
         }
 
 
+    }
+
+    @Override
+    public Batch getBatch(Long batchId, int runNr) throws CommunicationException{
+
+        String runID = null;
+        try {
+            runID = getRunId(batchId, runNr);
+            String premisPreBlob = fedora.getXMLDatastreamContents(runID, eventsDatastream, null);
+            PremisManipulator premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            return premisObject.toBatch();
+        } catch (BackendInvalidResourceException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
+            throw new CommunicationException(e);
+        }
+
+
+    }
+
+    private String getRunId(Long batchId, int runNr) throws CommunicationException, BackendInvalidResourceException {
+
+        String id = idFormatter.formatFullID(batchId, runNr);
+        try {
+            //find the run object
+            List<String> founds = fedora.listObjectsWithThisLabel(id);
+            if (founds.size() > 0) {
+                return founds.get(0);
+            }
+            throw new BackendInvalidResourceException("run object not found");
+        } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
+            throw new CommunicationException(e);
+        }
     }
 
     private String toFedoraID(String batchObject) {

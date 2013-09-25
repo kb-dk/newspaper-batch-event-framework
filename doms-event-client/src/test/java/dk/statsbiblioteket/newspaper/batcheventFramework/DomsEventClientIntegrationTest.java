@@ -1,6 +1,9 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -24,13 +27,34 @@ public class DomsEventClientIntegrationTest {
         DomsEventClient doms = factory.createDomsEventClient();
 
 
-        doms.addEventToBatch(400022028241l, 1,
+        Long batchId = 400022028241l;
+        int runNr = 1;
+        Date timestamp = new Date(0);
+        EventID eventID = EventID.Data_Received;
+        String details = "Details here";
+        doms.addEventToBatch(batchId, runNr,
                 "agent",
-                new Date(0),
-                "Details here",
-                EventID.Data_Received,
-                true,
-                "");
+                timestamp,
+                details,
+                eventID,
+                true);
+
+        Batch batch = doms.getBatch(batchId, runNr);
+        Assert.assertEquals(batch.getBatchID(),batchId);
+        Assert.assertEquals(batch.getRunNr(),runNr);
+
+        boolean found = false;
+        for (Event event : batch.getEventList()) {
+            if (event.getEventID().equals(eventID)){
+                found = true;
+                Assert.assertEquals(event.getDate(),timestamp);
+                Assert.assertEquals(event.getDetails(),details);
+                Assert.assertEquals(event.isSuccess(),true);
+            }
+        }
+        Assert.assertTrue(found);
+
+
     }
 
 }

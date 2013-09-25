@@ -20,8 +20,7 @@ public class DomsEventClientCentralTest {
                 new Date(0),
                 "Details here",
                 EventID.Data_Received,
-                true,
-                "");
+                true);
 
         Assert.assertEquals(10, log.size());
         for (String s : log) {
@@ -42,8 +41,7 @@ public class DomsEventClientCentralTest {
                 new Date(0),
                 "Details here",
                 EventID.Data_Received,
-                true,
-                "");
+                true);
 
         Assert.assertEquals(3,log.size());
         for (String s : log) {
