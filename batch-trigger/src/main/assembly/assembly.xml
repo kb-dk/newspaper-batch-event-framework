@@ -40,6 +40,23 @@
                 775
             </directoryMode>
         </fileSet>
+        <fileSet>
+            <filtered>
+                true
+            </filtered>
+            <directory>
+                src/main/config
+            </directory>
+            <outputDirectory>
+                conf
+            </outputDirectory>
+            <fileMode>
+                555
+            </fileMode>
+            <directoryMode>
+                775
+            </directoryMode>
+        </fileSet>
     </fileSets>
 
 </assembly>

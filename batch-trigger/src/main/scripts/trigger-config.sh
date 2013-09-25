@@ -15,6 +15,8 @@ doms_username='${fedora.admin.username}'
 # Password for calls to DOMS
 doms_password='${fedora.admin.password}'
 
+# Location of PID generator
+url_to_pid_gen='${pidgenerator.location}'
+
 # Name of the trigger-script
 trigger_name='register-batch-trigger'
-

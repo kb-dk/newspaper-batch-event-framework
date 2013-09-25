@@ -1,7 +1,11 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
+import org.apache.log4j.spi.LoggerFactory;
+import org.slf4j.Logger;
+
 import java.util.Date;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +15,8 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class CreateBatch {
+    public static Logger log = org.slf4j.LoggerFactory.getLogger(CreateBatch.class);
+
     public static void main(String[] args) {
         String domsUrl;
         String domsUser;
@@ -18,22 +24,17 @@ public class CreateBatch {
         String premisAgent;
         String batchId;
         String roundTrip;
+        String urlToPidGen;
         DomsEventClientFactory domsEventClientFactory = new DomsEventClientFactory();
         DomsEventClient domsEventClient;
         Date now = new Date();
 
-        if (args.length != 6) {
-            System.out.println("Not the right amount of arguments");
-        }
+        log.info("Entered main");
 
-        // For testing purposes, remove
-        System.out.println("CreateBatch says:");
-        System.out.println("Received:" + args[0]);
-        System.out.println("Received:" + args[1]);
-        System.out.println("Received:" + args[2]);
-        System.out.println("Received:" + args[3]);
-        System.out.println("Received:" + args[4]);
-        System.out.println("Received:" + args[5]);
+        if (args.length != 7) {
+            System.out.println("Not the right amount of arguments");
+            System.exit(1);
+        }
 
         batchId = args[0];
         roundTrip = args[1];
@@ -41,10 +42,12 @@ public class CreateBatch {
         domsUrl = args[3];
         domsUser = args[4];
         domsPass = args[5];
+        urlToPidGen=args[6];
 
         domsEventClientFactory.setFedoraLocation(domsUrl);
         domsEventClientFactory.setUsername(domsUser);
         domsEventClientFactory.setPassword(domsPass);
+        domsEventClientFactory.setPidGeneratorLocation(urlToPidGen);
 
         try {
             domsEventClient = domsEventClientFactory.createDomsEventClient();

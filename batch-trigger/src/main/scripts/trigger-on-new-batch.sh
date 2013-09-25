@@ -43,7 +43,7 @@ for batch_dirname in *; do
 	roundtrip=`echo "$batch_dirname" | sed -r 's/^B[^-]+\-RT([0-9]+)/\1/g'`
 
 	# Create batch in DOMS
-	java -classpath $my_path/../lib/'*' dk.statsbiblioteket.newspaper.batcheventFramework.CreateBatch "$batch_id" "$roundtrip" "$trigger_name" "$url_to_doms" "$doms_username" "$doms_password"
+	java -classpath $my_path/../config/:$my_path/../lib/'*' dk.statsbiblioteket.newspaper.batcheventFramework.CreateBatch "$batch_id" "$roundtrip" "$trigger_name" "$url_to_doms" "$doms_username" "$doms_password" "$url_to_pid_gen"
 
 	# Mark batch as done, by creating an empty file with the batch's name
 	touch "$my_path/$donedir/$batch_dirname"
