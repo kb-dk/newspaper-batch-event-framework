@@ -8,22 +8,27 @@ import java.util.Date;
 
 
 /**
- * Created with IntelliJ IDEA.
- * User: jrg
- * Date: 9/24/13
- * Time: 2:11 PM
- * To change this template use File | Settings | File Templates.
+ * Called from shell script with arguments to create a batch object in DOMS with proper Premis event added.
+ *
+ * @author jrg
  */
 public class CreateBatch {
     public static Logger log = org.slf4j.LoggerFactory.getLogger(CreateBatch.class);
 
+    /**
+     * Receives the following arguments to create a batch object in DOMS:
+     * Batch ID, roundtrip number, Premis agent name, URL to DOMS/Fedora, DOMS username, DOMS password,
+     * URL to PID generator.
+     *
+     * @param args The command line arguments received from calling shell script. Explained above.
+     */
     public static void main(String[] args) {
+        String batchId;
+        String roundTrip;
+        String premisAgent;
         String domsUrl;
         String domsUser;
         String domsPass;
-        String premisAgent;
-        String batchId;
-        String roundTrip;
         String urlToPidGen;
         DomsEventClientFactory domsEventClientFactory = new DomsEventClientFactory();
         DomsEventClient domsEventClient;
