@@ -2,6 +2,8 @@
 #
 # Config file for trigger-on-new-batch.sh
 #
+# Author: jrg
+#
 
 # Where the received newspaper batches are placed
 path_to_dir_of_batches='/batches'

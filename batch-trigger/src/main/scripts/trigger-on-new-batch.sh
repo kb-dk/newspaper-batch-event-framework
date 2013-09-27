@@ -5,6 +5,8 @@
 # Parameters:
 # $1 : path to config file
 #
+# Author: jrg
+#
 
 donedir='batches-done'
 
