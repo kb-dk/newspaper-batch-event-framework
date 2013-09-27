@@ -10,16 +10,16 @@ import java.util.Date;
 public class DomsEventClientCentralTest {
 
     public static final long BATCH_ID = 400022028241l;
-    public static final int RUN_NR = 1;
+    public static final int ROUND_TRIP_NUMBER = 1;
 
     @Test
     public void testAddEventToBatch3() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, RUN_NR+1,
+        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER +1,
                 "agent",
                 new Date(0),
                 "Details here",
@@ -40,9 +40,9 @@ public class DomsEventClientCentralTest {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, RUN_NR,
+        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER,
                 "agent",
                 new Date(0),
                 "Details here",
@@ -60,10 +60,10 @@ public class DomsEventClientCentralTest {
     @Test
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
-        FedoraMockupEmpty fedora = new FedoraMockupBatchNoRun(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        FedoraMockupEmpty fedora = new FedoraMockupBatchNoRoundTripObject(log);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, RUN_NR,
+        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER,
                 "agent",
                 new Date(0),
                 "Details here",
@@ -80,11 +80,11 @@ public class DomsEventClientCentralTest {
 
 
     @Test
-    public void testCreateBatchRun() throws Exception {
+    public void testCreateBatchRoundTrip() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.RUN_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
-        doms.createBatchRun(BATCH_ID, RUN_NR);
+        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        doms.createBatchRoundTrip(BATCH_ID, ROUND_TRIP_NUMBER);
         Assert.assertEquals(8,log.size());
         for (String s : log) {
             Assert.assertNotSame(s,AbstractFedoraMockup.UNEXPECTED_METHOD);

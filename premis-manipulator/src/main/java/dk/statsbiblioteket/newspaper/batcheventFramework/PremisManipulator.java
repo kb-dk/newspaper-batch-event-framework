@@ -47,13 +47,13 @@ public class PremisManipulator {
     private final String type;
     private final IDFormatter idFormat;
 
-    PremisManipulator(Long batchID, int runNr, IDFormatter idFormat, String type) throws JAXBException {
+    PremisManipulator(Long batchID, int roundTripNumber, IDFormatter idFormat, String type) throws JAXBException {
         premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
         this.idFormat = idFormat;
         this.type = type;
         context = JAXBContext.newInstance(ObjectFactory.class);
-        addObjectIfNessesary(premis.getObject(), idFormat.formatFullID(batchID, runNr));
+        addObjectIfNessesary(premis.getObject(), idFormat.formatFullID(batchID, roundTripNumber));
 
     }
 
@@ -74,7 +74,7 @@ public class PremisManipulator {
         String fullID = getObjectID();
         IDFormatter.SplitID splits = idFormat.unformatFullID(fullID);
         result.setBatchID(splits.getBatchID());
-        result.setRunNr(splits.getRunNr());
+        result.setRoundTripNumber(splits.getRoundTripNumber());
         result.setEventList(getEvents());
         return result;
     }

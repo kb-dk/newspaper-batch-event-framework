@@ -7,15 +7,15 @@ import java.util.Date;
 
 public interface DomsEventClient {
 
-    void addEventToBatch(Long batchId, int runNr,
+    void addEventToBatch(Long batchId, int roundTripNumber,
                          String agent,
                          Date timestamp,
                          String details,
                          EventID eventType,
                          boolean outcome) throws CommunicationException;
 
-    String createBatchRun(Long batchId, int runNr) throws CommunicationException;
+    String createBatchRoundTrip(Long batchId, int roundTripNumber) throws CommunicationException;
 
 
-    Batch getBatch(Long batchId, int runNr) throws CommunicationException;
+    Batch getBatch(Long batchId, int roundTripNumber) throws CommunicationException;
 }

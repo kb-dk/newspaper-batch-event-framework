@@ -6,10 +6,10 @@ import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FedoraMockupBatchNoRun extends FedoraMockupEmpty {
+public class FedoraMockupBatchNoRoundTripObject extends FedoraMockupEmpty {
 
 
-    public FedoraMockupBatchNoRun(List<String> log) {
+    public FedoraMockupBatchNoRoundTripObject(List<String> log) {
         super(log);
     }
 

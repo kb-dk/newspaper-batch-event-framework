@@ -12,11 +12,6 @@ import static org.testng.Assert.fail;
 public abstract class TCKTestSuite {
 
 
-    @Deprecated
-    public boolean isRunNrInBatchID(){
-        return false;
-    }
-
     public abstract DataSource getDataSource();
 
     public abstract Long getValidBatchID();

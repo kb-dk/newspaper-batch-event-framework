@@ -28,20 +28,20 @@ public class DomsEventClientIntegrationTest {
 
 
         Long batchId = 400022028242l;
-        int runNr = 1;
+        int roundTripNumber = 1;
         Date timestamp = new Date(0);
         EventID eventID = EventID.Data_Received;
         String details = "Details here";
-        doms.addEventToBatch(batchId, runNr,
+        doms.addEventToBatch(batchId, roundTripNumber,
                 "agent",
                 timestamp,
                 details,
                 eventID,
                 true);
 
-        Batch batch = doms.getBatch(batchId, runNr);
+        Batch batch = doms.getBatch(batchId, roundTripNumber);
         Assert.assertEquals(batch.getBatchID(),batchId);
-        Assert.assertEquals(batch.getRunNr(),runNr);
+        Assert.assertEquals(batch.getRoundTripNumber(),roundTripNumber);
 
         boolean found = false;
         for (Event event : batch.getEventList()) {
@@ -55,17 +55,17 @@ public class DomsEventClientIntegrationTest {
         Assert.assertTrue(found);
 
 
-        int newRun = runNr + 5;
-        doms.addEventToBatch(batchId, newRun,
+        int newRoundTripNumber = roundTripNumber + 5;
+        doms.addEventToBatch(batchId, newRoundTripNumber,
                 "agent",
                 timestamp,
                 details,
                 eventID,
                 true);
 
-        batch = doms.getBatch(batchId, newRun);
+        batch = doms.getBatch(batchId, newRoundTripNumber);
         Assert.assertEquals(batch.getBatchID(),batchId);
-        Assert.assertEquals(batch.getRunNr(),newRun);
+        Assert.assertEquals(batch.getRoundTripNumber(),newRoundTripNumber);
 
         found = false;
         for (Event event : batch.getEventList()) {

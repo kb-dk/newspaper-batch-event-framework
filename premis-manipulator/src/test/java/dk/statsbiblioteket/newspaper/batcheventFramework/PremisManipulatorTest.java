@@ -19,13 +19,13 @@ public class PremisManipulatorTest {
 
 
     public static final Long BATCH_ID = 400022028241l;
-    public static final int RUN_NR = 1;
+    public static final int ROUND_TRIP_NUMBER = 1;
 
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
         PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
-        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
         Reader control = new InputStreamReader(getFile("objectOnlyBlob.xml"));
@@ -42,7 +42,7 @@ public class PremisManipulatorTest {
     @Test
     public void testAddEvent() throws Exception {
         PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
-        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID,RUN_NR);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         Date date = new Date(0);
 
         manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", EventID.Data_Received,true);

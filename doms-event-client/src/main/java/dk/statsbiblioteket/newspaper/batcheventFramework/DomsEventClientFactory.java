@@ -12,7 +12,7 @@ public class DomsEventClientFactory {
 
     //Extract factory with these properties. Perhaps constructor
     public static final String BATCH_TEMPLATE = "doms:Template_Batch";
-    public static final String RUN_TEMPLATE = "doms:Template_Run";
+    public static final String ROUND_TRIP_TEMPLATE = "doms:Template_RoundTrip";
     public static final String HAS_PART = "info:fedora/fedora-system:def/relations-external#hasPart";
     public static final String EVENTS = "EVENTS";
     public static final String USERNAME = "fedoraAdmin";
@@ -29,7 +29,7 @@ public class DomsEventClientFactory {
     private IDFormatter idFormatter = NEWSPAPER_ID_FORMATTER;
     private String premisIdentifierType = PremisManipulatorFactory.TYPE;
     private String batchTemplate = BATCH_TEMPLATE;
-    private String runTemplate = RUN_TEMPLATE;
+    private String roundTripTemplate = ROUND_TRIP_TEMPLATE;
     private String hasPartRelation = HAS_PART;
     private String eventsDatastream = EVENTS;
 
@@ -37,7 +37,7 @@ public class DomsEventClientFactory {
     public DomsEventClient createDomsEventClient() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(creds, fedoraLocation.replaceFirst("/(objects)?/?$",""), pidGeneratorLocation, null);
-        return new DomsEventClientCentral(fedora,idFormatter, premisIdentifierType,batchTemplate,runTemplate,hasPartRelation,eventsDatastream);
+        return new DomsEventClientCentral(fedora,idFormatter, premisIdentifierType,batchTemplate, roundTripTemplate,hasPartRelation,eventsDatastream);
     }
 
     public String getUsername() {
@@ -96,12 +96,12 @@ public class DomsEventClientFactory {
         this.batchTemplate = batchTemplate;
     }
 
-    public String getRunTemplate() {
-        return runTemplate;
+    public String getRoundTripTemplate() {
+        return roundTripTemplate;
     }
 
-    public void setRunTemplate(String runTemplate) {
-        this.runTemplate = runTemplate;
+    public void setRoundTripTemplate(String roundTripTemplate) {
+        this.roundTripTemplate = roundTripTemplate;
     }
 
     public String getHasPartRelation() {

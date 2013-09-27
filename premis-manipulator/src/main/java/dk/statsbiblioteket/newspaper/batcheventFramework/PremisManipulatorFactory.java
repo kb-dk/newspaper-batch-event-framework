@@ -38,12 +38,12 @@ public class PremisManipulatorFactory{
      * Create a new premisManipulator from the id's of a batch. The premis will be initialised with an Object with
      * the correct identifier.
      * @param batchID the batch id
-     * @param runNr the run nr
+     * @param roundTripNumber the round trip number
      * @return a premis manipulator.
      * @throws JAXBException if the parsing failed
      */
-    public PremisManipulator createInitialPremisBlob(Long batchID, int runNr) throws JAXBException {
-        return new PremisManipulator(batchID,runNr,format,type);
+    public PremisManipulator createInitialPremisBlob(Long batchID, int roundTripNumber) throws JAXBException {
+        return new PremisManipulator(batchID,roundTripNumber,format,type);
     }
 
 }

@@ -23,10 +23,10 @@ public interface IDFormatter {
     /**
      * Format a full id
      * @param batchID the batchID
-     * @param runNr the runNar
+     * @param roundTripNumber the round trip number
      * @return as a String
      */
-    String formatFullID(Long batchID, int runNr);
+    String formatFullID(Long batchID, int roundTripNumber);
 
     /**
      * Undo formatFullID
@@ -38,19 +38,19 @@ public interface IDFormatter {
 
     public static class SplitID{
         private Long batchID;
-        private int runNr;
+        private int roundTripNumber;
 
-        public SplitID(Long batchID, int runNr) {
+        public SplitID(Long batchID, int roundTripNumber) {
             this.batchID = batchID;
-            this.runNr = runNr;
+            this.roundTripNumber = roundTripNumber;
         }
 
         public Long getBatchID() {
             return batchID;
         }
 
-        public int getRunNr() {
-            return runNr;
+        public int getRoundTripNumber() {
+            return roundTripNumber;
         }
     }
 
