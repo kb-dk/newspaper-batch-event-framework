@@ -8,7 +8,7 @@ import java.util.List;
 public class Batch{
 
     private Long batchID;
-    private int runNr = 0;
+    private int roundTripNumber = 1;
     private List<Event> eventList;
 
     /**
@@ -17,16 +17,16 @@ public class Batch{
     public Batch() {
     }
 
-    public int getRunNr() {
-        return runNr;
+    public int getRoundTripNumber() {
+        return roundTripNumber;
     }
 
-    public void setRunNr(int runNr) {
-        this.runNr = runNr;
+    public void setRoundTripNumber(int roundTripNumber) {
+        this.roundTripNumber = roundTripNumber;
     }
 
     /**
-     * Get the Batch id. This id can contain the runNr, but this is dependent on the datasource that provided this batch
+     * Get the Batch id.
      *
      * @return as above
      */
