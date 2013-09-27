@@ -17,6 +17,7 @@
         <module>premis-manipulator</module>
         <module>doms-event-client</module>
         <module>batch-trigger</module>
+        <module>process-monitor-datasource</module>
     </modules>
     <dependencyManagement>
         <dependencies>
