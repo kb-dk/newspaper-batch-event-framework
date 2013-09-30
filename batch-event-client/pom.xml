@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dk.statsbiblioteket.newspaper</groupId>
+        <artifactId>newspaper-batch-event-framework</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>batch-event-client</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>doms-event-client</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.statsbiblioteket.doms.central</groupId>
+            <artifactId>summaSearch-interface</artifactId>
+            <version>0.0.28-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <classifier>jdk15</classifier>
+            <version>2.4</version>
+        </dependency>
+
+    </dependencies>
+    
+</project>

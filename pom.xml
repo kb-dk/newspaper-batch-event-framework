@@ -18,6 +18,8 @@
         <module>doms-event-client</module>
         <module>batch-trigger</module>
         <module>process-monitor-datasource</module>
+        <module>batch-event-client</module>
+        <module>autonomous-component</module>
     </modules>
     <dependencyManagement>
         <dependencies>
