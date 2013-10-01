@@ -1,49 +1,45 @@
 package dk.statsbiblioteket.doms.iterator.common;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 11:04 AM
- * To change this template use File | Settings | File Templates.
+ * This class represents an Event, which is the basic building block of the iterator. An event will happen
+ * at a given path in the parsing of the tree structure. Get this path with the getPath method.
+ * An event will be of a type. Get this with the getType method
  */
 public abstract class Event {
 
     protected final EventType type;
-    protected final String path;
     protected final String localname;
 
-
-
-
-    public Event(String localname, String path, EventType type) {
+    public Event(String localname, EventType type) {
         this.localname = localname;
-        this.path = path;
         this.type = type;
     }
 
-    public String getLocalname() {
+    /**
+     * This represents the "location" of the parser when the event was encountered. It will be a series of
+     * identifiers separated by File.separator
+     * @return the path
+     */
+    public String getPath() {
         return localname;
     }
 
-    public String getPath() {
-        return path;
-    }
 
+    /**
+     * Get the type of event.
+     * @see EventType
+     * @return the type
+     */
     public EventType getType() {
         return type;
     }
 
-    public abstract InputStream getText() throws IOException;
 
     @Override
     public String toString() {
         return "Event{" +
                 "type=" + type +
-                ", path='" + path +"/"+ localname+'\'' +
+                ", path=' +/"+ localname+'\'' +
                 "} ";
     }
 }

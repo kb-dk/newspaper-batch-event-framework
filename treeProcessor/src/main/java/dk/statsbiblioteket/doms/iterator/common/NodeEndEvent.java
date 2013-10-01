@@ -1,24 +1,14 @@
 package dk.statsbiblioteket.doms.iterator.common;
 
-import java.io.InputStream;
-
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 12:13 PM
- * To change this template use File | Settings | File Templates.
+ * This event represents the iterator leaving a node. It is given when the iterator is finished processing all attributes
+ * and subtrees from the current node, just before leaving it.
  */
 public class NodeEndEvent extends Event {
 
 
-    public NodeEndEvent(String localname, String path) {
-        super(localname, path, EventType.NodeEnd);
-    }
-
-    @Override
-    public InputStream getText() {
-        throw new UnsupportedOperationException("Nodes do not have text");
+    public NodeEndEvent(String localname) {
+        super(localname, EventType.NodeEnd);
     }
 
 

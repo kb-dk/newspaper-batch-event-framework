@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import java.util.List;
 

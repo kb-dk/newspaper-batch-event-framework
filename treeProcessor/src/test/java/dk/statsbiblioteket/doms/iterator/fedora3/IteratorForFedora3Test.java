@@ -3,8 +3,7 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import dk.statsbiblioteket.doms.AbstractTests;
-import dk.statsbiblioteket.doms.iterator.common.ContentModelFilter;
-import dk.statsbiblioteket.doms.iterator.common.SBIterator;
+import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -23,10 +22,10 @@ import java.util.Properties;
  */
 public class IteratorForFedora3Test extends AbstractTests {
 
-    private SBIterator iterator;
+    private TreeIterator iterator;
 
     @Override
-    public SBIterator getIterator() throws URISyntaxException, IOException {
+    public TreeIterator getIterator() throws URISyntaxException, IOException {
         if (iterator == null){
             Properties properties = new Properties();
             properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));

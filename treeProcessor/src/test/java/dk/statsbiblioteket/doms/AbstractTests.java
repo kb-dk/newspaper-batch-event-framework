@@ -1,10 +1,10 @@
 package dk.statsbiblioteket.doms;
 
+import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
 import dk.statsbiblioteket.doms.iterator.common.Event;
-import dk.statsbiblioteket.doms.iterator.common.SBIterator;
+import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 import org.apache.commons.io.IOUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class AbstractTests {
 
 
-    public abstract SBIterator getIterator() throws URISyntaxException, IOException;
+    public abstract TreeIterator getIterator() throws URISyntaxException, IOException;
 
 
     private static final String indentString = "..................................................";
@@ -35,11 +35,11 @@ public abstract class AbstractTests {
     private String printEvent(Event next) {
         switch (next.getType()){
             case NodeBegin:
-                return "<"+next.getLocalname()+">";
+                return "<"+next.getPath()+">";
             case NodeEnd:
-                return "</"+next.getLocalname()+">";
+                return "</"+next.getPath()+">";
             case Attribute:
-                return "<"+next.getLocalname()+"/>";
+                return "<"+next.getPath()+"/>";
             default:
                 return next.toString();
         }
@@ -47,7 +47,7 @@ public abstract class AbstractTests {
 
     public void testIteratorWithSkipping() throws Exception {
 
-        List<SBIterator> avisIterators = new ArrayList<SBIterator>();
+        List<TreeIterator> avisIterators = new ArrayList<TreeIterator>();
 
 
         System.out.println("Print the batch and film, and store the iterators for the aviser");
@@ -62,7 +62,7 @@ public abstract class AbstractTests {
                     System.out.println(s+printEvent(next));
                     indent+=2;
                     if (indent > 4){
-                        SBIterator avis = getIterator().skipToNextSibling();
+                        TreeIterator avis = getIterator().skipToNextSibling();
                         avisIterators.add(avis);
                         indent-=2;
                     }
@@ -80,14 +80,14 @@ public abstract class AbstractTests {
         }
 
         System.out.println("Print each of the newspapers in order");
-        for (SBIterator avisIterator : avisIterators) {
+        for (TreeIterator avisIterator : avisIterators) {
             System.out.println("We found this newspaper");
             printStructure(avisIterator);
         }
 
     }
 
-    private void printStructure(SBIterator avisIterator) throws IOException {
+    private void printStructure(TreeIterator avisIterator) throws IOException {
         int indent = 0;
         while (avisIterator.hasNext()) {
             Event next = avisIterator.next();
@@ -110,7 +110,8 @@ public abstract class AbstractTests {
                 }
                 case Attribute: {
                     String s = getIndent(indent);
-                    List<String> content = IOUtils.readLines(next.getText());
+                    AttributeEvent attributeEvent = (AttributeEvent) next;
+                    List<String> content = IOUtils.readLines(attributeEvent.getText());
                     System.out.println(s+printEvent(next));
                     s = getIndent(indent+2);
                     for (String s1 : content) {

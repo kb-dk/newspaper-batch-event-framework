@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.doms.iterator.filesystem;
 
-import dk.statsbiblioteket.doms.iterator.common.Event;
+import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
 import dk.statsbiblioteket.doms.iterator.common.EventType;
 
 import java.io.File;
@@ -15,13 +15,13 @@ import java.io.InputStream;
  * Time: 12:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class FileAttributeEvent extends Event {
+public class FileAttributeEvent extends AttributeEvent {
 
 
     private File file;
 
-    public FileAttributeEvent(String localname, String path, File file) {
-        super(localname, path, EventType.Attribute);
+    public FileAttributeEvent(String localname, File file) {
+        super(localname, EventType.Attribute);
         this.file = file;
     }
 
