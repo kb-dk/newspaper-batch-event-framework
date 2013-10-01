@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>newspaper-parent</groupId>
-        <artifactId>newspaper-parent</artifactId>
+        <groupId>dk.statsbiblioteket.newspaper</groupId>
+        <artifactId>newspaper-batch-event-framework</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
