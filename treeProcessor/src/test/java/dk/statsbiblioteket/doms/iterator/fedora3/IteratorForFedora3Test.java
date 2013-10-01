@@ -7,8 +7,12 @@ import dk.statsbiblioteket.doms.iterator.common.ContentModelFilter;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,13 +26,15 @@ public class IteratorForFedora3Test extends AbstractTests {
     private SBIterator iterator;
 
     @Override
-    public SBIterator getIterator() throws URISyntaxException {
+    public SBIterator getIterator() throws URISyntaxException, IOException {
         if (iterator == null){
-            System.out.println(System.getProperty("fedora.admin.username"));
+            Properties properties = new Properties();
+            properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
+            System.out.println(properties.getProperty("fedora.admin.username"));
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(System.getProperty("fedora.admin.username"),System.getProperty("fedora.admin.password")));
+            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),properties.getProperty("fedora.admin.password")));
             iterator = new IteratorForFedora3("doms:ContentModel_Program", client,
-                    System.getProperty("fedora.server"),new TestFilter());
+                    properties.getProperty("fedora.server"),new TestFilter());
         }
         return iterator;
     }

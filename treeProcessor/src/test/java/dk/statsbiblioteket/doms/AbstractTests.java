@@ -4,6 +4,7 @@ import dk.statsbiblioteket.doms.iterator.common.Event;
 import dk.statsbiblioteket.doms.iterator.common.SBIterator;
 import org.apache.commons.io.IOUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
 public abstract class AbstractTests {
 
 
-    public abstract SBIterator getIterator() throws URISyntaxException;
+    public abstract SBIterator getIterator() throws URISyntaxException, IOException;
 
 
     private static final String indentString = "..................................................";
