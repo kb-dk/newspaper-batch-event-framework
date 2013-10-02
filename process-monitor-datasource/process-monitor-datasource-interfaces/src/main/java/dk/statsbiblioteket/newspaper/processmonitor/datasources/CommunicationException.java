@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.newspaper.batcheventFramework;
+package dk.statsbiblioteket.newspaper.processmonitor.datasources;
 
 public class CommunicationException extends Exception{
     public CommunicationException() {

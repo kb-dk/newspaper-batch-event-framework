@@ -1,20 +1,32 @@
 package dk.statsbiblioteket.autonomous;
 
-import com.netflix.curator.test.TestingServer;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
-public class TestingComponent extends AbstractComponent{
+public class TestingComponent implements RunnableComponent {
 
-    TestingServer server;
 
-    public TestingComponent() throws Exception {
-        server = new TestingServer();
+
+
+    @Override
+    public String getComponentName() {
+        return "TestingComponent";
 
     }
 
+    @Override
+    public String getComponentVersion() {
+        return "0.1-SNAPSHOT";
+    }
 
-    public void doWorkOnBatch(Long batchId, int roundTripNumber, ResultCollector resultCollector) throws Exception{
+    @Override
+    public EventID getEventID() {
+        return EventID.Data_Archived;
+    }
+
+    @Override
+    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
         System.out.println("working");
+        resultCollector.setSuccess(true);
     }
-
-
 }
