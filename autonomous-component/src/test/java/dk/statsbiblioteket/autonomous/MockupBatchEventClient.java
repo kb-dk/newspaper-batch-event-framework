@@ -54,6 +54,11 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
+    public Batch getBatch(String domsID) throws CommunicationException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
         return batches.iterator();
     }
