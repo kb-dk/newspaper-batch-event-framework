@@ -14,14 +14,14 @@ import java.net.URISyntaxException;
  * Time: 12:02 PM
  * To change this template use File | Settings | File Templates.
  */
-public class IteratorForFileSystemsTest extends AbstractTests {
+public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
 
     private TreeIterator iterator;
 
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
         if (iterator == null){
-            File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
+            File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch-testdata/testdata/small-test-batch_contents-included/B400022028241-RT1").toURI());
             System.out.println(file);
             iterator = new IteratorForFileSystems(file,file.getParentFile());
         }

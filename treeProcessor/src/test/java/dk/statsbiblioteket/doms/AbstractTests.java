@@ -114,9 +114,10 @@ public abstract class AbstractTests {
                     List<String> content = IOUtils.readLines(attributeEvent.getText());
                     System.out.println(s+printEvent(next));
                     s = getIndent(indent+2);
-                    for (String s1 : content) {
-                        System.out.println(s+s1);
-                    }
+                    System.out.println(s + "[" + content.size() +  " lines of content]");
+                    //for (String s1 : content) {
+                    //    System.out.println(s+s1);
+                   // }
                     break;
                 }
             }
