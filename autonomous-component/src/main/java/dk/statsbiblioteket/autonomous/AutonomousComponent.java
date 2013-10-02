@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This is the Autonomous Component mail class. It should contain all the harnessing stuff that allows a system to
+ * work in the autonomous mindset
+ */
 public class AutonomousComponent {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
@@ -32,6 +36,13 @@ public class AutonomousComponent {
     private final long pausePollTime = 1000;
 
 
+    /**
+     * Create a new Autonomous Component
+     * @param runnable the is the class that will be doing the actual work
+     * @param configuration the Configuration as a set of properties
+     * @param lockClient Client to the netflix curator zookeeper lockserver
+     * @param batchEventClient the client for quering and adding events
+     */
     public AutonomousComponent(RunnableComponent runnable,
                                Properties configuration,
                                CuratorFramework lockClient,
@@ -43,13 +54,6 @@ public class AutonomousComponent {
         SBOI_timeout = Long.parseLong(configuration.getProperty("SBOI.timeout", "5000"));
         batch_timeout = Long.parseLong(configuration.getProperty("batch_timeout", "2000"));
         this.lockClient.getConnectionStateListenable().addListener(new ConcurrencyConnectionStateListener(this));
-
-
-        /*if (lockClient != null){
-            lockClient.close();
-        }
-        lockClient = CuratorFrameworkFactory.newClient(properties.getProperty("zookeeper.connectString"), new ExponentialBackoffRetry(1000, 3));
-        */
     }
 
 
@@ -153,6 +157,11 @@ public class AutonomousComponent {
 
     }
 
+    /**
+     * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until
+     * errors are being thrown.
+     * @param lock the lock to release
+     */
     private void releaseQuietly(InterProcessLock lock) {
         boolean released = false;
         while (!released){
@@ -164,11 +173,15 @@ public class AutonomousComponent {
         }
     }
 
+    /**
+     * Checks the paused and stopped flags to pause or halt execution
+     * @throws CommunicationException If the component have been stopped
+     */
     private void stated() throws CommunicationException {
         if (stopped) {
             throw new CommunicationException("Lost connection to lock server");
         }
-        while (paused) {
+        while (paused && !stopped) {
             try {
                 Thread.sleep(pausePollTime);
             } catch (InterruptedException e) {
@@ -218,14 +231,24 @@ public class AutonomousComponent {
         return "/"+runnable.getComponentName() + "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
     }
 
+    /**
+     * Pause the component. Will not immediately pause execution. Rather, it will hold at some predetermined points
+     * in the exection flow
+     */
     public void pause() {
         paused = true;
     }
 
+    /**
+     * Unpause the component, if it was paused already
+     */
     public void unpause() {
         paused = false;
     }
 
+    /**
+     * Stop the component
+     */
     public void stop() {
         stopped = true;
     }
