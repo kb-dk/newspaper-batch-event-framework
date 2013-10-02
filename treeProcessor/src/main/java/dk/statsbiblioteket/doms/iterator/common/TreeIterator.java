@@ -29,7 +29,11 @@ public interface TreeIterator extends Iterator<Event> {
      */
     void reset();
 
-
+    /**
+     * Return the TreeIterator (if any) of the child-element over which this element is currently iterating, or null if
+     * one if the delegate has not yet been initialised.
+     * @return
+     */
     TreeIterator getDelegate();
 
 }

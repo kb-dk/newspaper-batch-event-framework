@@ -44,7 +44,15 @@ public abstract class AbstractIterator<T> implements TreeIterator {
     }
 
 
-
+    /**
+     * This iterator iterates over the current node. It lists first all attributes of the current node and then begins
+     * iterating over the child nodes. It has the side effect that once it is finished iterating over attributes, it
+     * will create the first delegate (ie first child node to be iterated over). The delegate is set back to null when the
+     * lass child has been read. Therefore calls to this method will have the side effect of changing subsequent calls to
+     * getDelegate() from null, to non-null, and back to null again at various points in the iteration cycle.
+     * @return the next Even
+     * @throws NoSuchElementException if we are already finished iterating this object.
+     */
     @Override
     public final Event next() {
         if (!hasNext()) {//general catch-all, we know there is something to come from this iterator
@@ -108,17 +116,41 @@ public abstract class AbstractIterator<T> implements TreeIterator {
         return childrenIterator;
     }
 
+    /**
+     * This is a factory method which creates an iterator over all the children of this element. Typically it will
+     * just call a constructor defined in an implementation of this class for each child and return an iterator of the
+     * resulting objects.
+     * @return
+     */
     protected abstract Iterator<TreeIterator> initializeChildrenIterator();
 
 
+    /**
+     * Get the iterator over attributes of the current element, initializing it of needed.
+     * @return
+     */
     protected synchronized Iterator<T> getAttributeIterator(){
         if (attributeIterator == null){
             attributeIterator = initilizeAttributeIterator();
         }
         return attributeIterator;
     }
+
+
+    /**
+     * This is a factory method which creates an iterator over all attributes of this element, for example all files
+     * in a directory.
+     * @return
+     */
     protected abstract Iterator<T> initilizeAttributeIterator();
 
+    /**
+     * Returns an instance of a concrete subclass of AttributeEvent appropriate for this attribute. There could be different
+     * kinds of attribute in a given element and these could be identified and given different behaviours.
+     * @param id
+     * @param attributeID
+     * @return
+     */
     protected abstract AttributeEvent makeAttributeEvent(T id, T attributeID);
 
     /**
@@ -140,8 +172,13 @@ public abstract class AbstractIterator<T> implements TreeIterator {
     }
 
 
+    @Override
     public TreeIterator skipToNextSibling() {
-
+        /**
+         * This method follows the chain of delegates down from the root of the tree to the node currently being
+         * processed. It identifies the node currently being processed as being that node which has a delegate, but whose
+         * delegate has no delegate.
+         */
 
         if (delegate == null) {
             //we have no delegate, so the current node is the root node of the tree

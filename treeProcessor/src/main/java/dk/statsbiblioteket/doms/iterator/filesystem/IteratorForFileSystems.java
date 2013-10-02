@@ -23,13 +23,13 @@ import java.util.Iterator;
 public class IteratorForFileSystems extends AbstractIterator<File> {
 
 
-    private final File prefix;
-
-    public IteratorForFileSystems(File dir, final File prefix) {
+    /**
+     * Construct an iterator rooted at a given directory
+     * @param dir the directory at which to root the iterator.
+     */
+    public IteratorForFileSystems(File dir) {
         super(dir);
-        this.prefix = prefix;
     }
-
 
     @Override
     protected Iterator<TreeIterator> initializeChildrenIterator() {
@@ -48,7 +48,7 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
     }
 
     private AbstractIterator makeDelegate(File id, File childID) {
-        return new IteratorForFileSystems(childID,prefix);
+        return new IteratorForFileSystems(childID);
     }
 
     @Override
@@ -56,6 +56,10 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
         return new FileAttributeEvent(getIdOfAttribute(attributeID), attributeID);
     }
 
+    /**
+     * The name of the directory is used as the Id of the node.
+     * @return the name of the directory.
+     */
     @Override
     protected String getIdOfNode() {
         return id.getName();
