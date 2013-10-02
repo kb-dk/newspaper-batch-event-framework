@@ -10,8 +10,8 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>treeProcessor</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>tree-processor</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <licenses>
         <license>

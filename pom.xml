@@ -20,7 +20,8 @@
         <module>process-monitor-datasource</module>
         <module>batch-event-client</module>
         <module>autonomous-component</module>
-        <module>treeProcessor</module>
+        <module>tree-processor</module>
+        <module>sample-autonomous-component</module>
     </modules>
     <dependencyManagement>
         <dependencies>
