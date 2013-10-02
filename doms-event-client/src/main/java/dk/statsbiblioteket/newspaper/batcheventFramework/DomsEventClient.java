@@ -19,4 +19,6 @@ public interface DomsEventClient {
 
 
     Batch getBatch(Long batchId, int roundTripNumber) throws CommunicationException;
+
+    Batch getBatch(String domsID) throws CommunicationException;
 }

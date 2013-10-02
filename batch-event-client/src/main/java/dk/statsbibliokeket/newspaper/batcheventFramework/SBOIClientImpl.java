@@ -2,8 +2,9 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
 import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
 import dk.statsbiblioteket.util.xml.DOM;
 import net.sf.json.JSONObject;
@@ -25,10 +26,12 @@ import java.util.List;
 public class SBOIClientImpl implements SBOIInterface {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
+    private DomsEventClient doms;
     private String summaLocation;
 
 
-    public SBOIClientImpl(String summaLocation) {
+    public SBOIClientImpl(DomsEventClient doms, String summaLocation) {
+        this.doms = doms;
         this.summaLocation = summaLocation;
     }
 
@@ -39,6 +42,7 @@ public class SBOIClientImpl implements SBOIInterface {
             SearchWS summaSearch = new SearchWSService(new java.net.URL(summaLocation),
                     new QName("http://statsbiblioteket.dk/summa/search", "SearchWSService")).getSearchWS();
             JSONObject jsonQuery = new JSONObject();
+            jsonQuery.put("search.document.resultfields", "batchuuid,runuuid");
             jsonQuery.put("search.document.query", toQueryString(pastEvents,pastEventsExclude,futureEvents));
             jsonQuery.put("search.document.startindex", 0);
             jsonQuery.put("search.document.maxrecords", 10);
@@ -50,7 +54,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
 
             NodeList nodeList = (NodeList) xPath.evaluate(
-                    "//responsecollection/response/documentresult/record/field/shortrecord",
+                    "//responsecollection/response/documentresult/record/field[@name='runuuid']",
                     searchResultDOM.getDocumentElement(), XPathConstants.NODESET);
 
             java.lang.Long hitCount = java.lang.Long.parseLong((String) (xPath.evaluate(
@@ -60,10 +64,8 @@ public class SBOIClientImpl implements SBOIInterface {
             List<Batch> results = new ArrayList<>(hitCount.intValue());
             for (int i=0; i<nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
-                Batch batch = new Batch();
-                batch.setBatchID(Long.parseLong(xPath.evaluate("batchID",node)));
-                batch.setRoundTripNumber(Integer.parseInt(xPath.evaluate("roundTripNumber", node)));
-                results.add(batch);
+
+                results.add(doms.getBatch(node.getTextContent().trim()));
             }
             return results.iterator();
         } catch (MalformedURLException e) {
@@ -80,7 +82,20 @@ public class SBOIClientImpl implements SBOIInterface {
 
 
     private String toQueryString(List<String> successfulPastEvents, List<String> failedPastEvents, List<String> futureEvents) {
-        return "*";
+        String base = " recordBase:doms_sboiCollection ";
+
+        StringBuilder events = new StringBuilder();
+        for (String successfulPastEvent : successfulPastEvents) {
+            events.append(" successevent:\""+successfulPastEvent+"\" ");
+        }
+        for (String failedPastEvent : failedPastEvents) {
+            events.append(" failevent:\""+failedPastEvent+"\" ");
+        }
+        for (String futureEvent : futureEvents) {
+            events.append(" -sucessevent:\""+futureEvent+"\" ");
+        }
+        return base + events.toString();
+
     }
 
 

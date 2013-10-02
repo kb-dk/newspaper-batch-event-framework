@@ -153,6 +153,19 @@ public class DomsEventClientCentral implements DomsEventClient {
         String roundTripID = null;
         try {
             roundTripID = getRoundTripID(batchId, roundTripNumber);
+            return getBatch(roundTripID);
+        } catch (BackendInvalidResourceException e) {
+            throw new CommunicationException(e);
+        }
+
+
+    }
+
+    @Override
+    public Batch getBatch(String domsId) throws CommunicationException{
+
+        String roundTripID = domsId;
+        try {
             String premisPreBlob = fedora.getXMLDatastreamContents(roundTripID, eventsDatastream, null);
             PremisManipulator premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             return premisObject.toBatch();
@@ -162,6 +175,7 @@ public class DomsEventClientCentral implements DomsEventClient {
 
 
     }
+
 
     private String getRoundTripID(Long batchId, int roundTripNumber) throws CommunicationException, BackendInvalidResourceException {
 
