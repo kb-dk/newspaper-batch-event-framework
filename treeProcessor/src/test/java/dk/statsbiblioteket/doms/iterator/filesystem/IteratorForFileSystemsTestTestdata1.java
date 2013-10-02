@@ -7,6 +7,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import static org.testng.Assert.assertTrue;
+
 /**
  * Created with IntelliJ IDEA.
  * User: abr
@@ -21,24 +23,24 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
         if (iterator == null){
-            File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch-testdata/testdata/small-test-batch_contents-included/B400022028241-RT1").toURI());
-            System.out.println(file);
-            iterator = new IteratorForFileSystems(file,file.getParentFile());
+            File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
+            File testRoot = new File(rootTestdataDir, "small-test-batch_contents-included/B400022028241-RT1");
+            assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
+            iterator = new IteratorForFileSystems(testRoot);
         }
         return iterator;
-
     }
 
 
 
     @Override
-    @Test
+    @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
         super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
-    @Test
+    @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
     }

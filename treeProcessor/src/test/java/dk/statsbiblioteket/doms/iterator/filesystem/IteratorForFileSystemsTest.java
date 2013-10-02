@@ -23,7 +23,7 @@ public class IteratorForFileSystemsTest extends AbstractTests {
         if (iterator == null){
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new IteratorForFileSystems(file,file.getParentFile());
+            iterator = new IteratorForFileSystems(file);
         }
         return iterator;
 
