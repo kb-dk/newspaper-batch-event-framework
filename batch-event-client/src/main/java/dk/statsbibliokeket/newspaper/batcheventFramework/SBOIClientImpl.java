@@ -5,6 +5,7 @@ import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
 import dk.statsbiblioteket.util.xml.DOM;
 import net.sf.json.JSONObject;
@@ -38,12 +39,16 @@ public class SBOIClientImpl implements SBOIInterface {
     @Override
     public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
 
+        return search(null,pastEvents, pastEventsExclude, futureEvents);
+    }
+
+    private Iterator<Batch> search(Long batchID, List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
         try {
             SearchWS summaSearch = new SearchWSService(new java.net.URL(summaLocation),
                     new QName("http://statsbiblioteket.dk/summa/search", "SearchWSService")).getSearchWS();
             JSONObject jsonQuery = new JSONObject();
             jsonQuery.put("search.document.resultfields", "batchuuid,runuuid");
-            jsonQuery.put("search.document.query", toQueryString(pastEvents,pastEventsExclude,futureEvents));
+            jsonQuery.put("search.document.query", toQueryString(batchID,pastEvents,pastEventsExclude,futureEvents));
             jsonQuery.put("search.document.startindex", 0);
             jsonQuery.put("search.document.maxrecords", 10);
 
@@ -57,7 +62,7 @@ public class SBOIClientImpl implements SBOIInterface {
                     "//responsecollection/response/documentresult/record/field[@name='runuuid']",
                     searchResultDOM.getDocumentElement(), XPathConstants.NODESET);
 
-            java.lang.Long hitCount = java.lang.Long.parseLong((String) (xPath.evaluate(
+            Long hitCount = Long.parseLong((String) (xPath.evaluate(
                     "//responsecollection/response/documentresult/@hitCount",
                     searchResultDOM.getDocumentElement(), XPathConstants.STRING)));
 
@@ -80,19 +85,37 @@ public class SBOIClientImpl implements SBOIInterface {
         }
     }
 
+    @Override
+    public Batch getBatch(Long batchID) throws CommunicationException, NotFoundException {
+        Iterator<Batch> result = search(batchID, null, null, null);
+        while (result.hasNext()) {
+            return result.next();
+        }
+        throw new NotFoundException("batchid "+batchID.toString()+" not found");
+    }
 
-    private String toQueryString(List<String> successfulPastEvents, List<String> failedPastEvents, List<String> futureEvents) {
+
+    private String toQueryString(Long batchID, List<String> successfulPastEvents, List<String> failedPastEvents, List<String> futureEvents) {
         String base = " recordBase:doms_sboiCollection ";
+        if (batchID != null){
+            base = base + " batchid=B"+batchID.toString();
+        }
 
         StringBuilder events = new StringBuilder();
-        for (String successfulPastEvent : successfulPastEvents) {
-            events.append(" successevent:\""+successfulPastEvent+"\" ");
+        if (successfulPastEvents != null){
+            for (String successfulPastEvent : successfulPastEvents) {
+                events.append(" successevent:\""+successfulPastEvent+"\" ");
+            }
         }
-        for (String failedPastEvent : failedPastEvents) {
-            events.append(" failevent:\""+failedPastEvent+"\" ");
+        if (failedPastEvents != null){
+            for (String failedPastEvent : failedPastEvents) {
+                events.append(" failevent:\""+failedPastEvent+"\" ");
+            }
         }
-        for (String futureEvent : futureEvents) {
-            events.append(" -sucessevent:\""+futureEvent+"\" ");
+        if (futureEvents != null){
+            for (String futureEvent : futureEvents) {
+                events.append(" -sucessevent:\""+futureEvent+"\" ");
+            }
         }
         return base + events.toString();
 

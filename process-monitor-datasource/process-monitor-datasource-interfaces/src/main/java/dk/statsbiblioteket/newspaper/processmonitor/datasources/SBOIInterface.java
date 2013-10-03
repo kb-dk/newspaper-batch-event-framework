@@ -10,8 +10,5 @@ public interface SBOIInterface {
                                       List<String> pastEventsExclude,
                                       List<String> futureEvents) throws CommunicationException;
 
-/*    public void registerEvent(Long batchID, Integer runNr, EventID eventID, String agent, Date timestamp, String details, boolean success);
-
-
-    public Batch getBatch(Long batchID, Integer runNr);*/
+    public Batch getBatch(Long batchID) throws CommunicationException, NotFoundException;
 }
