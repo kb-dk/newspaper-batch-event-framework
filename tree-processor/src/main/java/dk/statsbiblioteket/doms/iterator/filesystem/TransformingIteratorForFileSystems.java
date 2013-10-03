@@ -24,7 +24,7 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
 
 
 
-    protected TransformingIteratorForFileSystems(File id, String groupingChar, String dataFilePattern) {
+    public TransformingIteratorForFileSystems(File id, String groupingChar, String dataFilePattern) {
         super(id, dataFilePattern);
         this.groupingChar = groupingChar;
         this.dataFilePattern = dataFilePattern;
