@@ -14,18 +14,17 @@ public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
     protected String prefix;
     private List<File> group;
     private List<DelegatingTreeIterator> virtualChildren;
-    private String groupingChar;
 
 
     public VirtualIteratorForFileSystems(File id,
                                          String prefix,
                                          String dataFilePattern,
                                          List<File> group,
-                                         String groupingChar) {
-        super(new File(id,prefix),dataFilePattern);
+                                         String groupingChar,
+                                         String checksumPostfix) {
+        super(new File(id,prefix),dataFilePattern,checksumPostfix,groupingChar);
         this.prefix = prefix;
         this.group = group;
-        this.groupingChar = groupingChar;
         virtualChildren = new ArrayList<>();
     }
 
@@ -39,21 +38,21 @@ public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
         Collection<File> datafiles = getDataFiles(group);
         for (File dataFile : datafiles) {
             group.remove(dataFile);
-            virtualChildren.add(new DatafileIterator(dataFile));
+            virtualChildren.add(new DatafileIterator(dataFile,getChecksumPostfix(),getGroupingChar()));
         }
         return group.iterator();
     }
 
 
     @Override
-    protected AttributeParsingEvent makeAttributeEvent(File nodeID,
-                                                       File attributeID) {
-        return new FileAttributeParsingEvent(getIdOfAttribute(attributeID), attributeID);
+    protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
+        return new FileAttributeParsingEvent(getIdOfAttribute(attributeID), attributeID,getChecksumPostfix());
     }
+
 
     protected String getIdOfAttribute(File attributeID) {
         //cut the prefix from the name, including the grouping char
-        return attributeID.getName().replace(prefix,"").replaceFirst(groupingChar, "");
+        return attributeID.getName().replace(prefix,"").replaceFirst(getGroupingChar(), "");
     }
 
 

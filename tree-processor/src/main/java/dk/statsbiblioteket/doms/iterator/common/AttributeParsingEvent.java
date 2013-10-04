@@ -21,4 +21,11 @@ public abstract class AttributeParsingEvent extends ParsingEvent {
      */
     public abstract InputStream getText() throws IOException;
 
+    /**
+     * Returns the checksum of the content or null
+     * @return the checksum
+     * @throws IOException if there was a problem retrieving the data
+     */
+    public abstract String getChecksum() throws IOException;
+
 }

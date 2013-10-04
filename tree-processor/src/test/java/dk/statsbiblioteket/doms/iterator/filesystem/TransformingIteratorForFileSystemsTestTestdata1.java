@@ -27,7 +27,7 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
             File testRoot = new File(rootTestdataDir, "small-test-batch_contents-included/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
-            iterator = new TransformingIteratorForFileSystems(testRoot,"\\.",".*\\.jp2");
+            iterator = new TransformingIteratorForFileSystems(testRoot,"\\.",".*\\.jp2",".md5");
         }
         return iterator;
     }

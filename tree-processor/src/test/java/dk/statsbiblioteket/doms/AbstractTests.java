@@ -108,9 +108,13 @@ public abstract class AbstractTests {
                     System.out.println(s+printEvent(next));
                     s = getIndent(indent+2);
                     System.out.println(s + "[" + content.size() +  " lines of content]");
+                    String checksum = attributeEvent.getChecksum();
+                    if (checksum != null){
+                        System.out.println(s + "md5: " + checksum +  "");
+                    }
                     //for (String s1 : content) {
                     //    System.out.println(s+s1);
-                   // }
+                    // }
                     break;
                 }
             }

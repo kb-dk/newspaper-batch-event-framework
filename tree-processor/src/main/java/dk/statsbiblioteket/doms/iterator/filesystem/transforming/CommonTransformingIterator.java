@@ -16,10 +16,18 @@ import java.util.Map;
  */
 public abstract class CommonTransformingIterator extends AbstractIterator<File> {
     private String dataFilePattern;
+    private String checksumPostfix;
+    private final String groupingChar;
 
-    protected CommonTransformingIterator(File id, String dataFilePattern) {
+
+    protected CommonTransformingIterator(File id,
+                                         String dataFilePattern,
+                                         String checksumPostfix,
+                                         String groupingChar) {
         super(id);
         this.dataFilePattern = dataFilePattern;
+        this.checksumPostfix = checksumPostfix;
+        this.groupingChar = groupingChar;
     }
 
     /**
@@ -68,7 +76,7 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent(attributeID.getName(), attributeID);
+        return new FileAttributeParsingEvent(attributeID.getName(), attributeID,checksumPostfix);
     }
 
 
@@ -77,4 +85,26 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
         return id.getName();
     }
 
+
+    public String getChecksumPostfix() {
+        return checksumPostfix;
+    }
+
+    public String getDataFilePattern() {
+        return dataFilePattern;
+    }
+
+    /**
+     * Get the prefix of a file
+     * @param file the file
+     * @return the prefix
+     * @see #groupingChar
+     */
+    protected String getPrefix(File file) {
+        return file.getName().split(groupingChar)[0];
+    }
+
+    public String getGroupingChar() {
+        return groupingChar;
+    }
 }

@@ -10,8 +10,10 @@ import org.apache.commons.io.filefilter.FileFileFilter;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Iterator for parsing a tree structure backed by a file system. Each iterator represents a node. A node corresponds
@@ -32,6 +34,7 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         //The id attribute is the id of this node, ie. the File corresponding to the directory
         File[] children = id.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+        Arrays.sort(children);
         ArrayList<DelegatingTreeIterator> result = new ArrayList<>(children.length);
         for (File child : children) {
             result.add(new IteratorForFileSystems(child));
@@ -41,7 +44,8 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
 
     @Override
     protected Iterator<File> initilizeAttributeIterator() {
-        Collection<File> attributes = FileUtils.listFiles(id, FileFileFilter.FILE, null);
+        List<File> attributes = new ArrayList<>(FileUtils.listFiles(id, FileFileFilter.FILE, null));
+        Collections.sort(attributes);
         return attributes.iterator();
     }
 

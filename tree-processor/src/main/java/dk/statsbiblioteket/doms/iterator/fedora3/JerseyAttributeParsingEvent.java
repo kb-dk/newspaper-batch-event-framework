@@ -31,4 +31,12 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
         }
         throw new IOException(response.getStatus()+"");
     }
+
+    @Override
+    public String getChecksum()
+            throws
+            IOException {
+        //TODO
+        return null;
+    }
 }

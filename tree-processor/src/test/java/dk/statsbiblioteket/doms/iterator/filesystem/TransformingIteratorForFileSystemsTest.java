@@ -18,7 +18,7 @@ public class TransformingIteratorForFileSystemsTest extends AbstractTests {
         if (iterator == null){
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new TransformingIteratorForFileSystems(file,"\\.",".*\\.jp2");
+            iterator = new TransformingIteratorForFileSystems(file,"\\.",".*\\.jp2",".md5");
         }
         return iterator;
 

@@ -16,8 +16,8 @@ import java.util.Iterator;
 public class DatafileIterator extends CommonTransformingIterator {
 
 
-    public DatafileIterator(File dataFile) {
-        super(dataFile,null);
+    public DatafileIterator(File dataFile, String checksumPostfix, String groupingChar) {
+        super(dataFile,null,checksumPostfix, groupingChar);
     }
 
     @Override
@@ -34,7 +34,8 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent("contents",attributeID);
+        return new FileAttributeParsingEvent("contents",attributeID,getChecksumPostfix());
+
     }
 
 
