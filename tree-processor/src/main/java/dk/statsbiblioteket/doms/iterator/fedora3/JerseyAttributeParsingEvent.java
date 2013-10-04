@@ -2,8 +2,7 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
-import dk.statsbiblioteket.doms.iterator.common.EventType;
+import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,11 +14,12 @@ import java.io.InputStream;
  * Time: 4:15 PM
  * To change this template use File | Settings | File Templates.
  */
-public class JerseyAttributeEvent extends AttributeEvent {
+public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     private WebResource resource;
 
-    public JerseyAttributeEvent(String localname, WebResource resource) {
-        super(localname, EventType.Attribute);
+    public JerseyAttributeParsingEvent(String localname,
+                                       WebResource resource) {
+        super(localname);
         this.resource = resource;
     }
 

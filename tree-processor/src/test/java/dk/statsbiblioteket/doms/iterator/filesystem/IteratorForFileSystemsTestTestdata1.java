@@ -9,13 +9,6 @@ import java.net.URISyntaxException;
 
 import static org.testng.Assert.assertTrue;
 
-/**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 12:02 PM
- * To change this template use File | Settings | File Templates.
- */
 public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
 
     private TreeIterator iterator;
@@ -36,12 +29,12 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
     @Override
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIterator();
     }
 
     @Override
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIteratorWithSkipping();
     }
 }

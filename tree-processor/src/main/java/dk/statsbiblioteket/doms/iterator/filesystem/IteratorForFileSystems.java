@@ -1,8 +1,8 @@
 package dk.statsbiblioteket.doms.iterator.filesystem;
 
 import dk.statsbiblioteket.doms.iterator.AbstractIterator;
-import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -14,11 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 11:05 AM
- * To change this template use File | Settings | File Templates.
+ * Iterator for parsing a tree structure backed by a file system. Each iterator represents a node. A node corresponds
+ * to a directory.
  */
 public class IteratorForFileSystems extends AbstractIterator<File> {
 
@@ -32,11 +29,12 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
     }
 
     @Override
-    protected Iterator<TreeIterator> initializeChildrenIterator() {
+    protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
+        //The id attribute is the id of this node, ie. the File corresponding to the directory
         File[] children = id.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        ArrayList<TreeIterator> result = new ArrayList<>(children.length);
+        ArrayList<DelegatingTreeIterator> result = new ArrayList<>(children.length);
         for (File child : children) {
-            result.add(makeDelegate(id,child));
+            result.add(new IteratorForFileSystems(child));
         }
         return result.iterator();
     }
@@ -47,13 +45,9 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
         return attributes.iterator();
     }
 
-    private AbstractIterator makeDelegate(File id, File childID) {
-        return new IteratorForFileSystems(childID);
-    }
-
     @Override
-    protected AttributeEvent makeAttributeEvent(File id, File attributeID) {
-        return new FileAttributeEvent(getIdOfAttribute(attributeID), attributeID);
+    protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
+        return new FileAttributeParsingEvent(attributeID.getName(), attributeID);
     }
 
     /**
@@ -63,11 +57,6 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
     @Override
     protected String getIdOfNode() {
         return id.getName();
-    }
-
-    @Override
-    protected String getIdOfAttribute(File attributeID) {
-        return attributeID.getName();
     }
 
 

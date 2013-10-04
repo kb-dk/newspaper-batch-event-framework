@@ -2,6 +2,7 @@ package dk.statsbiblioteket.doms.iterator.filesystem;
 
 import dk.statsbiblioteket.doms.AbstractTests;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.doms.iterator.filesystem.transforming.TransformingIteratorForFileSystems;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -36,12 +37,12 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
     @Override
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIterator();
     }
 
     @Override
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();    //To change body of overridden methods use File | Settings | File Templates.
+        super.testIteratorWithSkipping();
     }
 }

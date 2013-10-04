@@ -1,7 +1,7 @@
 package dk.statsbiblioteket.doms;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
-import dk.statsbiblioteket.doms.iterator.common.Event;
+import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 import org.apache.commons.io.IOUtils;
 
@@ -10,13 +10,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 2:44 PM
- * To change this template use File | Settings | File Templates.
- */
 public abstract class AbstractTests {
 
 
@@ -32,7 +25,7 @@ public abstract class AbstractTests {
         printStructure(getIterator());
     }
 
-    private String printEvent(Event next) {
+    private String printEvent(ParsingEvent next) {
         switch (next.getType()){
             case NodeBegin:
                 return "<"+next.getPath()+">";
@@ -53,7 +46,7 @@ public abstract class AbstractTests {
         System.out.println("Print the batch and film, and store the iterators for the aviser");
         int indent = 0;
         while (getIterator().hasNext()){
-            Event next = getIterator().next();
+            ParsingEvent next = getIterator().next();
 
             String s;
             switch (next.getType()){
@@ -90,7 +83,7 @@ public abstract class AbstractTests {
     private void printStructure(TreeIterator avisIterator) throws IOException {
         int indent = 0;
         while (avisIterator.hasNext()) {
-            Event next = avisIterator.next();
+            ParsingEvent next = avisIterator.next();
             switch (next.getType()){
                 case NodeBegin:
                 {
@@ -110,7 +103,7 @@ public abstract class AbstractTests {
                 }
                 case Attribute: {
                     String s = getIndent(indent);
-                    AttributeEvent attributeEvent = (AttributeEvent) next;
+                    AttributeParsingEvent attributeEvent = (AttributeParsingEvent) next;
                     List<String> content = IOUtils.readLines(attributeEvent.getText());
                     System.out.println(s+printEvent(next));
                     s = getIndent(indent+2);

@@ -7,11 +7,11 @@ import java.io.InputStream;
  * This class represents an attribute in the tree. An attribute is a node containing data directly, such as a
  * file system file or a fedora datastream.
  */
-public abstract class AttributeEvent extends Event{
+public abstract class AttributeParsingEvent extends ParsingEvent {
 
 
-    public AttributeEvent(String localname, EventType type) {
-        super(localname, type);
+    public AttributeParsingEvent(String localname) {
+        super(localname, EventType.Attribute);
     }
 
     /**

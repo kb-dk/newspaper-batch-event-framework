@@ -3,8 +3,8 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import dk.statsbiblioteket.doms.iterator.AbstractIterator;
-import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,11 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 12:43 PM
- * To change this template use File | Settings | File Templates.
+ * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the REST api, and parses xml
+ * with regular expressions. Not production ready.
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
 
@@ -76,12 +73,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     }
 
     @Override
-    protected Iterator<TreeIterator> initializeChildrenIterator() {
+    protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
         String relationsShips = resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
         List<String> children = parseRelationsToList(relationsShips, types);
-        List<TreeIterator> result = new ArrayList<>(children.size());
+        List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
             result.add(makeDelegate(id,child));
         }
@@ -111,14 +108,14 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     }
 
 
-    protected AbstractIterator makeDelegate(String id, String childID) {
+    protected DelegatingTreeIterator makeDelegate(String id, String childID) {
         return new IteratorForFedora3(childID, client, restUrl, filter);
     }
 
     @Override
-    protected AttributeEvent makeAttributeEvent(String id, String attributeID) {
-        return new JerseyAttributeEvent(getIdOfAttribute(attributeID),
-                client.resource(restUrl).path(id).path("/datastreams/").path(attributeID).path("/content"));
+    protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
+        return new JerseyAttributeParsingEvent(attributeID,
+                client.resource(restUrl).path(nodeID).path("/datastreams/").path(attributeID).path("/content"));
     }
 }
 

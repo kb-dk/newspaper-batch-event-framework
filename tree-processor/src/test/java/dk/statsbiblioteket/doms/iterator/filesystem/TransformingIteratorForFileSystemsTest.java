@@ -2,13 +2,14 @@ package dk.statsbiblioteket.doms.iterator.filesystem;
 
 import dk.statsbiblioteket.doms.AbstractTests;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.doms.iterator.filesystem.transforming.TransformingIteratorForFileSystems;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
 
-public class IteratorForFileSystemsTest extends AbstractTests {
+public class TransformingIteratorForFileSystemsTest extends AbstractTests {
 
     private TreeIterator iterator;
 
@@ -17,7 +18,7 @@ public class IteratorForFileSystemsTest extends AbstractTests {
         if (iterator == null){
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new IteratorForFileSystems(file);
+            iterator = new TransformingIteratorForFileSystems(file,"\\.",".*\\.jp2");
         }
         return iterator;
 

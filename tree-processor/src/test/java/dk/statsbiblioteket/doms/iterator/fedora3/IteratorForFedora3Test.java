@@ -13,13 +13,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 12:02 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class IteratorForFedora3Test extends AbstractTests {
 
     private TreeIterator iterator;

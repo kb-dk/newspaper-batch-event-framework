@@ -3,17 +3,20 @@ package dk.statsbiblioteket.doms.iterator.common;
 import java.util.Iterator;
 
 /**
- * The iterator interface for the tree structure. Iterates over the tree, which will be given as a series of Events
+ * The iterator interface for the tree structure. Iterates over the tree, which will be expressed as a
+ * series of parsing events.
  *
- * @see Event
+ *
+ *
+ * @see ParsingEvent
  * @see EventType
- * @see AttributeEvent
- * @see NodeBeginsEvent
- * @see NodeBeginsEvent
+ * @see AttributeParsingEvent
+ * @see NodeBeginsParsingEvent
+ * @see NodeBeginsParsingEvent
  *
  *
  */
-public interface TreeIterator extends Iterator<Event> {
+public interface TreeIterator extends Iterator<ParsingEvent> {
 
     /**
      * Do:
@@ -24,16 +27,5 @@ public interface TreeIterator extends Iterator<Event> {
     public TreeIterator skipToNextSibling();
 
 
-    /**
-     * Reset this iterator/node, so that iteration from here will start fresh.
-     */
-    void reset();
-
-    /**
-     * Return the TreeIterator (if any) of the child-element over which this element is currently iterating, or null if
-     * one if the delegate has not yet been initialised.
-     * @return
-     */
-    TreeIterator getDelegate();
 
 }

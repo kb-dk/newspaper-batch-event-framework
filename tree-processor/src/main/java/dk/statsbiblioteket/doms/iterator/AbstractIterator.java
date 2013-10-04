@@ -1,9 +1,10 @@
 package dk.statsbiblioteket.doms.iterator;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeEvent;
-import dk.statsbiblioteket.doms.iterator.common.Event;
-import dk.statsbiblioteket.doms.iterator.common.NodeBeginsEvent;
-import dk.statsbiblioteket.doms.iterator.common.NodeEndEvent;
+import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.doms.iterator.common.NodeBeginsParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.NodeEndParsingEvent;
+import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 
 import java.util.Iterator;
@@ -21,14 +22,14 @@ import java.util.NoSuchElementException;
  *
  * @param <T> The type of identifier used for the nodes.
  */
-public abstract class AbstractIterator<T> implements TreeIterator {
+public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
 
-    private Iterator<TreeIterator> childrenIterator;
+    private Iterator<DelegatingTreeIterator> childrenIterator;
     private Iterator<T> attributeIterator;
     protected final T id;
 
-    private TreeIterator delegate = null;
+    private DelegatingTreeIterator delegate = null;
     private boolean done = false;
     private boolean begun = false;
 
@@ -48,13 +49,13 @@ public abstract class AbstractIterator<T> implements TreeIterator {
      * This iterator iterates over the current node. It lists first all attributes of the current node and then begins
      * iterating over the child nodes. It has the side effect that once it is finished iterating over attributes, it
      * will create the first delegate (ie first child node to be iterated over). The delegate is set back to null when the
-     * lass child has been read. Therefore calls to this method will have the side effect of changing subsequent calls to
-     * getDelegate() from null, to non-null, and back to null again at various points in the iteration cycle.
-     * @return the next Even
+     * last child has been read. Therefore calls to this method will have the side effect of changing subsequent calls to
+     * getDelegate() from null to non-null, and back to null again at various points in the iteration cycle.
+     * @return the next ParsingEvent
      * @throws NoSuchElementException if we are already finished iterating this object.
      */
     @Override
-    public final Event next() {
+    public final ParsingEvent next() {
         if (!hasNext()) {//general catch-all, we know there is something to come from this iterator
             throw new NoSuchElementException("The iterator is out of objects");
         }
@@ -63,9 +64,9 @@ public abstract class AbstractIterator<T> implements TreeIterator {
         //We have not sent the "NodeBeginEvent" yet, so get that done before anything else
         if (!begun) {
             //!begun implied delegate==null
-            Event event = new NodeBeginsEvent(getIdOfNode());
+            ParsingEvent parsingEvent = new NodeBeginsParsingEvent(getIdOfNode());
             begun = true;
-            return event;
+            return parsingEvent;
         }
         //After the NodeBeginsEvent, iterate the AttributeEvents
         if (getAttributeIterator().hasNext()) {
@@ -98,18 +99,18 @@ public abstract class AbstractIterator<T> implements TreeIterator {
             } else {
                 //We have not given the "NodeEndEvent" so return this.
                 done = true;
-                return new NodeEndEvent(getIdOfNode());
+                return new NodeEndParsingEvent(getIdOfNode());
             }
         }
+
     }
 
     /**
-     * Get the children iterator, initilise if if needed. As initialising the children iterator can be a somewhat expensive
-     * task, do not do it before requested
+     * Get the children iterator, initilised lazily.
      *
      * @return the children iterator
      */
-    protected synchronized Iterator<TreeIterator> getChildrenIterator() {
+    protected synchronized Iterator<DelegatingTreeIterator> getChildrenIterator() {
         if (childrenIterator == null) {
             childrenIterator = initializeChildrenIterator();
         }
@@ -120,14 +121,14 @@ public abstract class AbstractIterator<T> implements TreeIterator {
      * This is a factory method which creates an iterator over all the children of this element. Typically it will
      * just call a constructor defined in an implementation of this class for each child and return an iterator of the
      * resulting objects.
-     * @return
+     * @return the children iterator
      */
-    protected abstract Iterator<TreeIterator> initializeChildrenIterator();
+    protected abstract Iterator<DelegatingTreeIterator> initializeChildrenIterator();
 
 
     /**
-     * Get the iterator over attributes of the current element, initializing it of needed.
-     * @return
+     * Get the iterator over attributes of the current element, initializing it needed.
+     * @return the attribute iterator
      */
     protected synchronized Iterator<T> getAttributeIterator(){
         if (attributeIterator == null){
@@ -145,44 +146,36 @@ public abstract class AbstractIterator<T> implements TreeIterator {
     protected abstract Iterator<T> initilizeAttributeIterator();
 
     /**
-     * Returns an instance of a concrete subclass of AttributeEvent appropriate for this attribute. There could be different
-     * kinds of attribute in a given element and these could be identified and given different behaviours.
-     * @param id
-     * @param attributeID
-     * @return
+     * Returns an instance of a concrete subclass of AttributeEvent appropriate for this attribute. There could be
+     * different kinds of attribute in a given element and these could be identified and given different behaviours.
+     * @param nodeID the identifier of the node that the attribute resides in
+     * @param attributeID the identifier of the attribute.
+     * @return an AttributeParsingEvent
      */
-    protected abstract AttributeEvent makeAttributeEvent(T id, T attributeID);
-
-    /**
-     * Convert a attributeID to a human readable string
-     *
-     * @param attributeID the attribute id
-     * @return the readable version
-     */
-    protected String getIdOfAttribute(T attributeID) {
-        return attributeID.toString();
-    }
+    protected abstract AttributeParsingEvent makeAttributeEvent(T nodeID, T attributeID);
 
     protected String getIdOfNode() {
         return id.toString();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("Remove not supported");
     }
 
 
     @Override
+    /**
+     * This method recursively follows the chain of delegates down from the node it was called on to the node currently
+     * being processed. It identifies the node currently being processed as being that node which has a delegate, but
+     * whose delegate has no delegate.
+     */
     public TreeIterator skipToNextSibling() {
-        /**
-         * This method follows the chain of delegates down from the root of the tree to the node currently being
-         * processed. It identifies the node currently being processed as being that node which has a delegate, but whose
-         * delegate has no delegate.
-         */
 
         if (delegate == null) {
-            //we have no delegate, so the current node is the root node of the tree
-            //So this is a not very useful function.
+            //we have no delegate. The only way this can happen is if this method have been called on the
+            //root node. We would never recurse to a node without a delegate.
+            //Return this, as there is not very much else to do
             return this;
         }
         //Okay, so we are not the root node, as we have a delegate.
@@ -197,7 +190,7 @@ public abstract class AbstractIterator<T> implements TreeIterator {
         //the correct location
 
         //Save our delegate
-        TreeIterator oldDelegate = delegate;
+        DelegatingTreeIterator oldDelegate = delegate;
         //disconnect it. If the delegate is null, the children iterator will be next'ed to get a next child as
         //delegate on the following next operation
         delegate = null;
@@ -212,6 +205,7 @@ public abstract class AbstractIterator<T> implements TreeIterator {
     /**
      * Reset this iterator/node, so that iteration from here will start fresh.
      */
+    @Override
     public void reset() {
         delegate = null;
         done = false;
@@ -220,6 +214,7 @@ public abstract class AbstractIterator<T> implements TreeIterator {
         attributeIterator = null;
     }
 
+    @Override
     public final TreeIterator getDelegate() {
         return delegate;
     }

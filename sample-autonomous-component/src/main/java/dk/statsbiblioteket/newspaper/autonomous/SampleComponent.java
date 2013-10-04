@@ -8,7 +8,7 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.autonomous.AutonomousComponent;
 import dk.statsbiblioteket.autonomous.ResultCollector;
 import dk.statsbiblioteket.autonomous.RunnableComponent;
-import dk.statsbiblioteket.doms.iterator.common.Event;
+import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 import dk.statsbiblioteket.doms.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
@@ -115,7 +115,7 @@ public class SampleComponent implements RunnableComponent{
         int numberOfFiles = 0;
         int numberOfDirectories = 0;
         while (iterator.hasNext()) {
-            Event next = iterator.next();
+            ParsingEvent next = iterator.next();
             switch (next.getType()){
                 case NodeBegin:
                 {
