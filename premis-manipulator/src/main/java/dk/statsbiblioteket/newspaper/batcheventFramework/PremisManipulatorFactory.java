@@ -3,13 +3,17 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
 import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 
+/**
+ * This is the factory for creaing new PremisManipulators. Instances of this factory is thread safe, but the created
+ * PremisManipulators are not.
+ */
 public class PremisManipulatorFactory{
 
     public final static String TYPE="Newspaper_digitisation_project";
 
-    private IDFormatter format;
+    private final IDFormatter format;
 
-    private String type;
+    private final String type;
 
     /**
      * Create a new factory for premis manipulators.

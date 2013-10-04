@@ -1,5 +1,8 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
+/**
+ * This class formats batchs IDs to the form B324o0893404-RT1
+ */
 public class NewspaperIDFormatter implements IDFormatter{
 
 

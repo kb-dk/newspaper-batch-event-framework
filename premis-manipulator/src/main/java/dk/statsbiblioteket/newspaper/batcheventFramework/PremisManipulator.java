@@ -16,6 +16,7 @@ import dk.statsbiblioteket.newspaper.premis.Representation;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
+import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -30,9 +31,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//TODO javadoc
-//Document not thread safe
+/**
+ * Class for transforming the premis structure. Contains methods for creating the premis from scratch, and for adding
+ * events.
+ * The class is not thread safe, so do not use it as such
+ */
 public class PremisManipulator {
+
+    //TODO logging in all the methods
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(PremisManipulator.class);
+
 
     private final static QName _EventOutcome_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcome");
     private final static QName _EventOutcomeDetailNote_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcomeDetailNote");
@@ -66,7 +74,8 @@ public class PremisManipulator {
 
 
     /**
-     * Make this Premis as a Batch. Know that some things get lost here
+     * Make this Premis as a Batch. The Event class is poorer than the Premis events, so the "agent" information
+     * will not be included
      * @return the blob as a Batch
      */
     public Batch toBatch() {
@@ -115,7 +124,8 @@ public class PremisManipulator {
         try {
             result.setDate(dateFormat.parse(premisEvent.getEventDateTime()));
         } catch (ParseException e) {
-            //log this, no date is set, then
+            //no date is set, then
+            log.warn("Premis event {} have no date set",result.getEventID());
         }
         EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation().get(0);
         for (JAXBElement<?> jaxbElement : eventOutcomeInformation.getContent()) {
@@ -137,8 +147,7 @@ public class PremisManipulator {
     }
 
     /**
-     * Add an event to the premis blob. Not thread safe. Will return the premis manipulator, but the premis manipulator
-     * will have been modified. Do not think this class will clone and return.
+     * Add an event to the premis blob. Will return itself to allow for method chaining.
      * @param agent the agent that did it
      * @param timestamp when the thing was done
      * @param details details about how it went
