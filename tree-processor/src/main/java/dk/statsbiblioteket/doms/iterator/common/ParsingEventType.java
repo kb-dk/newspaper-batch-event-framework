@@ -3,7 +3,7 @@ package dk.statsbiblioteket.doms.iterator.common;
 /**
  * The event types.
  */
-public enum EventType {
+public enum ParsingEventType {
     /**
      * Node begin is given when we enter a fedora object / filesystem directory
      */

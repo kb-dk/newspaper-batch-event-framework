@@ -11,7 +11,7 @@ public abstract class AttributeParsingEvent extends ParsingEvent {
 
 
     public AttributeParsingEvent(String localname) {
-        super(localname, EventType.Attribute);
+        super(localname, ParsingEventType.Attribute);
     }
 
     /**

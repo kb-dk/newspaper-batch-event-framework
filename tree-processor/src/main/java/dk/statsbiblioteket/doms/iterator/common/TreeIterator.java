@@ -9,7 +9,7 @@ import java.util.Iterator;
  *
  *
  * @see ParsingEvent
- * @see EventType
+ * @see ParsingEventType
  * @see AttributeParsingEvent
  * @see NodeBeginsParsingEvent
  * @see NodeBeginsParsingEvent

@@ -8,7 +8,7 @@ public class NodeBeginsParsingEvent extends ParsingEvent {
 
 
     public NodeBeginsParsingEvent(String localname) {
-        super(localname, EventType.NodeBegin);
+        super(localname, ParsingEventType.NodeBegin);
     }
 
 

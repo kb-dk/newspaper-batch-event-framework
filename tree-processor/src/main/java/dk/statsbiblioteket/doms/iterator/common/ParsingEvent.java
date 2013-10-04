@@ -7,11 +7,11 @@ package dk.statsbiblioteket.doms.iterator.common;
  */
 public abstract class ParsingEvent {
 
-    protected final EventType type;
+    protected final ParsingEventType type;
     protected final String localname;
 
     public ParsingEvent(String localname,
-                        EventType type) {
+                        ParsingEventType type) {
         this.localname = localname;
         this.type = type;
     }
@@ -30,9 +30,9 @@ public abstract class ParsingEvent {
      * Get the type of event.
      *
      * @return the type
-     * @see EventType
+     * @see ParsingEventType
      */
-    public EventType getType() {
+    public ParsingEventType getType() {
         return type;
     }
 
