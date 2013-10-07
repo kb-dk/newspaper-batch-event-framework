@@ -28,7 +28,7 @@ public class DomsEventClientIntegrationTest {
 
 
         Long batchId = 400022028242l;
-        int roundTripNumber = 1;
+        Integer roundTripNumber = 1;
         Date timestamp = new Date(0);
         EventID eventID = EventID.Data_Received;
         String details = "Details here";
@@ -55,7 +55,7 @@ public class DomsEventClientIntegrationTest {
         Assert.assertTrue(found);
 
 
-        int newRoundTripNumber = roundTripNumber + 5;
+        Integer newRoundTripNumber = roundTripNumber + 5;
         doms.addEventToBatch(batchId, newRoundTripNumber,
                 "agent",
                 timestamp,

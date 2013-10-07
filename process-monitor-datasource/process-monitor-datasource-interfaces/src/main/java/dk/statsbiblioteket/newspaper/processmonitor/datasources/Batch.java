@@ -8,7 +8,7 @@ import java.util.List;
 public class Batch{
 
     private Long batchID;
-    private int roundTripNumber = 1;
+    private Integer roundTripNumber = 1;
     private List<Event> eventList;
 
     /**
@@ -17,11 +17,11 @@ public class Batch{
     public Batch() {
     }
 
-    public int getRoundTripNumber() {
+    public Integer getRoundTripNumber() {
         return roundTripNumber;
     }
 
-    public void setRoundTripNumber(int roundTripNumber) {
+    public void setRoundTripNumber(Integer roundTripNumber) {
         this.roundTripNumber = roundTripNumber;
     }
 

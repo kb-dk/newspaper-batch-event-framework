@@ -81,7 +81,7 @@ public abstract class TCKTestSuite {
             fail("The valid batch was not found", e);
         }
         assertEquals(validBatch.getBatchID(), getValidBatchID().getLeft(), "The batch have a wrong ID");
-        assertEquals(validBatch.getRoundTripNumber(), getValidBatchID().getRight().intValue(), "The batch have a wrong ID");
+        assertEquals(validBatch.getRoundTripNumber(), getValidBatchID().getRight(), "The batch have a wrong ID");
         List<Event> eventList = validBatch.getEventList();
         assertTrue(eventList.size() > 0, "The valid batch must have at least one event");
         for (Event event : eventList) {
