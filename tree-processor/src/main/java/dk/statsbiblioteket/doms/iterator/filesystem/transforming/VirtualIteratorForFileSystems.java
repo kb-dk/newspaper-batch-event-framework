@@ -41,19 +41,4 @@ public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
         return group.iterator();
     }
 
-
-/*
-    @Override
-    protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent(getIdOfAttribute(attributeID), attributeID,getChecksumPostfix());
-    }
-
-
-    protected String getIdOfAttribute(File attributeID) {
-        //cut the prefix from the name, including the grouping char
-        return attributeID.getName().replace(prefix,"").replaceFirst(getGroupingChar(), "");
-    }
-
-*/
-
 }
