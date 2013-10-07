@@ -155,4 +155,80 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
         addToLog(UNEXPECTED_METHOD);
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public String newEmptyObject(List<String> oldIDs,
+                                 List<String> collections,
+                                 String logMessage)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            PIDGeneratorException {
+        addToLog(UNEXPECTED_METHOD);
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void modifyDatastreamByValue(String pid,
+                                        String datastream,
+                                        String contents,
+                                        String md5sum,
+                                        String comment)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void modifyDatastreamByValue(String pid,
+                                        String datastream,
+                                        String contents,
+                                        String checksumType,
+                                        String checksum,
+                                        String comment)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void addExternalDatastream(String pid,
+                                      String datastream,
+                                      String filename,
+                                      String permanentURL,
+                                      String formatURI,
+                                      String mimetype,
+                                      String checksumType,
+                                      String checksum,
+                                      String comment)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void addExternalDatastream(String pid,
+                                      String datastream,
+                                      String filename,
+                                      String permanentURL,
+                                      String formatURI,
+                                      String mimetype,
+                                      String md5sum,
+                                      String comment)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
