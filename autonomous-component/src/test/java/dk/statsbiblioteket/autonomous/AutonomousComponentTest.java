@@ -49,6 +49,14 @@ public class AutonomousComponentTest {
         autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient);
     }
 
+    /**
+     * This test performs the following tasks
+     * 1. request a specific batch from the event client, to make sure the thing is there and in the right state
+     * 2. starts the autonomous component, with parameters indicating that it should poll for batches in the state checked
+     * above.
+     * 3. Request the batch afterwards, to check that the new state have been added from the work in 2.
+     * @throws Exception
+     */
     @Test
     public void testPollAndWork() throws Exception {
 

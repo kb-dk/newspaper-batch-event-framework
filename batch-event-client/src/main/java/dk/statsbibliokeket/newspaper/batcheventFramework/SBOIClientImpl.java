@@ -26,6 +26,9 @@ import java.util.List;
 
 public class SBOIClientImpl implements SBOIInterface {
 
+    private static final String SUCCESSEVENT = "successevent:";
+    private static final String FAILEVENT = "failevent:";
+    private static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
     private DomsEventClient doms;
     private String summaLocation;
@@ -62,11 +65,7 @@ public class SBOIClientImpl implements SBOIInterface {
                     "//responsecollection/response/documentresult/record/field[@name='runuuid']",
                     searchResultDOM.getDocumentElement(), XPathConstants.NODESET);
 
-            Long hitCount = Long.parseLong((String) (xPath.evaluate(
-                    "//responsecollection/response/documentresult/@hitCount",
-                    searchResultDOM.getDocumentElement(), XPathConstants.STRING)));
-
-            List<Batch> results = new ArrayList<>(hitCount.intValue());
+            List<Batch> results = new ArrayList<>(nodeList.getLength());
             for (int i=0; i<nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
 
@@ -95,8 +94,16 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
 
+    private String spaced(String string){
+        return " "+string.trim()+" ";
+    }
+
+    private String quoted(String string){
+        return "\""+string+"\"";
+    }
     private String toQueryString(Long batchID, List<String> successfulPastEvents, List<String> failedPastEvents, List<String> futureEvents) {
-        String base = " recordBase:doms_sboiCollection ";
+
+        String base = spaced(RECORD_BASE);
         if (batchID != null){
             base = base + " batchid=B"+batchID.toString();
         }
@@ -104,17 +111,17 @@ public class SBOIClientImpl implements SBOIInterface {
         StringBuilder events = new StringBuilder();
         if (successfulPastEvents != null){
             for (String successfulPastEvent : successfulPastEvents) {
-                events.append(" successevent:\""+successfulPastEvent+"\" ");
+                events.append(spaced(SUCCESSEVENT + quoted(successfulPastEvent)));
             }
         }
         if (failedPastEvents != null){
             for (String failedPastEvent : failedPastEvents) {
-                events.append(" failevent:\""+failedPastEvent+"\" ");
+                events.append(spaced(FAILEVENT + quoted(failedPastEvent)));
             }
         }
         if (futureEvents != null){
             for (String futureEvent : futureEvents) {
-                events.append(" -sucessevent:\""+futureEvent+"\" ");
+                events.append(spaced("-" + SUCCESSEVENT + quoted(futureEvent)));
             }
         }
         return base + events.toString();

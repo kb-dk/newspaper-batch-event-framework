@@ -44,7 +44,7 @@ public class ResultCollector {
      * Return the added messages as one string, each message separated by a newline
      * @return the messages as a string
      */
-    public String toSummary(){
+    public String toReport(){
         StringBuilder builder = new StringBuilder();
         for (String message : messages) {
             builder.append(message).append("\n");
