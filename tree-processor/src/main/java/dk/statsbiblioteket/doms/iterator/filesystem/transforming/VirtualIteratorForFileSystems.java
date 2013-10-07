@@ -1,8 +1,6 @@
 package dk.statsbiblioteket.doms.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.doms.iterator.filesystem.FileAttributeParsingEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,6 +42,7 @@ public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
     }
 
 
+/*
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
         return new FileAttributeParsingEvent(getIdOfAttribute(attributeID), attributeID,getChecksumPostfix());
@@ -55,5 +54,6 @@ public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
         return attributeID.getName().replace(prefix,"").replaceFirst(getGroupingChar(), "");
     }
 
+*/
 
 }
