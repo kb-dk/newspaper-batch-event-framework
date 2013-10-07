@@ -44,7 +44,7 @@ public class SBOIDatasource implements DataSource {
             List<Batch> results = new ArrayList<>();
             while (batches.hasNext()) {
                 Batch next = batches.next();
-                Batch better = client.getBatch(next.getBatchID(), next.getRoundTripNumber());
+                Batch better = getClient().getBatch(next.getBatchID(), next.getRoundTripNumber());
                 results.add(better);
             }
             return stripDetails(results.iterator(),includeDetails);
