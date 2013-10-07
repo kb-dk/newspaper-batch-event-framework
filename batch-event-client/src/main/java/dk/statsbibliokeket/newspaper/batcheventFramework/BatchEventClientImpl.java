@@ -44,7 +44,7 @@ public class BatchEventClientImpl implements BatchEventClient {
 
     private SBOIInterface getSboiClient() {
         if (sboiClient == null){
-            sboiClient = new SBOIClientImpl(getDomsEventClient(),summaLocation);
+            sboiClient = new SBOIClientImpl(summaLocation);
         }
         return sboiClient;
     }

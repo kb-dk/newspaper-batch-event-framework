@@ -15,7 +15,7 @@ import java.util.Properties;
 public class SBOIClientImplTest {
 
     //TODO fix for new summa field names
-    @Test(groups = "integrationTest",enabled = false)
+    @Test(groups = "integrationTest",enabled = true)
     public void testGetBatches() throws Exception {
 
         Properties props = new Properties();
@@ -30,7 +30,7 @@ public class SBOIClientImplTest {
 
         DomsEventClient doms = factory.createDomsEventClient();
 
-        SBOIClientImpl summa = new SBOIClientImpl(doms, props.getProperty("sboi.summa"));
+        SBOIClientImpl summa = new SBOIClientImpl(props.getProperty("sboi.summa"));
         Iterator<Batch> batches = summa.getBatches(
                 Arrays.asList(EventID.Data_Received.name()),
                 new ArrayList<String>(),
