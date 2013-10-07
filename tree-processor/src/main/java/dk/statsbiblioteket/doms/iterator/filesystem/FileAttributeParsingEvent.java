@@ -53,7 +53,7 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
                 if (firstLine == null){
                     return null;
                 }
-                return firstWord(firstLine);
+                return firstWord(firstLine).trim().toLowerCase();
             }
         }
         return null;
