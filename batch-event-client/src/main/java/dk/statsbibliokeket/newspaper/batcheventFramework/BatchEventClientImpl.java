@@ -76,7 +76,7 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Batch getBatch(Long batchId, int roundTripNumber) throws CommunicationException, NotFoundException {
+    public Batch getBatch(Long batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         return getDomsEventClient().getBatch(batchId, roundTripNumber);
     }
 
@@ -89,10 +89,5 @@ public class BatchEventClientImpl implements BatchEventClient {
     public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
         return getSboiClient().getBatches(pastEvents, pastEventsExclude, futureEvents);
 
-    }
-
-    @Override
-    public Batch getBatch(Long batchID) throws CommunicationException, NotFoundException {
-        return getSboiClient().getBatch(batchID);
     }
 }

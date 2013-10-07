@@ -48,7 +48,7 @@ public interface DomsEventClient {
      * @throws NotFoundException if the batch is not found
      * @throws CommunicationException if communication with doms failed
      */
-    Batch getBatch(Long batchId, int roundTripNumber) throws NotFoundException, CommunicationException;
+    Batch getBatch(Long batchId, Integer roundTripNumber) throws NotFoundException, CommunicationException;
 
     /**
      * Retrieve a batch

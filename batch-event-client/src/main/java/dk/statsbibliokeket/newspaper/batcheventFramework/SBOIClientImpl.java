@@ -44,10 +44,11 @@ public class SBOIClientImpl implements SBOIInterface {
             throws
             CommunicationException {
 
-        return search(null, pastEvents, pastEventsExclude, futureEvents);
+        return search(null, null, pastEvents, pastEventsExclude, futureEvents);
     }
 
     private Iterator<Batch> search(Long batchID,
+                                   Integer roundTripNumber,
                                    List<String> pastEvents,
                                    List<String> pastEventsExclude,
                                    List<String> futureEvents)
@@ -62,7 +63,7 @@ public class SBOIClientImpl implements SBOIInterface {
             JSONObject jsonQuery = new JSONObject();
             jsonQuery.put("search.document.resultfields",
                           BATCH_ID + "," + ROUND_TRIP_NO + "," + SUCCESSEVENT + "," + FAILEVENT + "");
-            jsonQuery.put("search.document.query", toQueryString(batchID, pastEvents, pastEventsExclude, futureEvents));
+            jsonQuery.put("search.document.query", toQueryString(batchID, roundTripNumber,pastEvents, pastEventsExclude, futureEvents));
             jsonQuery.put("search.document.startindex", 0);
             jsonQuery.put("search.document.maxrecords", 10);
 
@@ -132,11 +133,11 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     @Override
-    public Batch getBatch(Long batchID)
+    public Batch getBatch(Long batchID, Integer roundTripNumber)
             throws
             CommunicationException,
             NotFoundException {
-        Iterator<Batch> result = search(batchID, null, null, null);
+        Iterator<Batch> result = search(batchID, roundTripNumber, null, null, null);
         while (result.hasNext()) {
             return result.next();
         }
@@ -152,6 +153,7 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     private String toQueryString(Long batchID,
+                                 Integer roundTripNumber,
                                  List<String> successfulPastEvents,
                                  List<String> failedPastEvents,
                                  List<String> futureEvents) {
@@ -159,6 +161,9 @@ public class SBOIClientImpl implements SBOIInterface {
         String base = spaced(RECORD_BASE);
         if (batchID != null) {
             base = base + " " + BATCH_ID + ":B" + batchID.toString();
+        }
+        if (roundTripNumber != null){
+            base = base + " "+ROUND_TRIP_NO+":RT"+roundTripNumber.toString();
         }
 
         StringBuilder events = new StringBuilder();

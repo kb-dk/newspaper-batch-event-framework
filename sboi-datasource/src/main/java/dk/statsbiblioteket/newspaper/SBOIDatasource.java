@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.newspaper;
 
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
+import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIClientImpl;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.DataSource;
@@ -9,6 +8,7 @@ import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotWorkingProperlyException;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,19 +20,15 @@ public class SBOIDatasource implements DataSource {
 
     SBOIDatasourceConfiguration configuration;
 
-    private BatchEventClient client = null;
+    private SBOIInterface client = null;
 
     public SBOIDatasource(SBOIDatasourceConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    private synchronized BatchEventClient getClient(){
+    private synchronized SBOIInterface getClient(){
         if (client == null){
-            client = new BatchEventClientImpl(configuration.getSummaLocation(),
-                    configuration.getDomsUrl(),
-                    configuration.getDomsUser(),
-                    configuration.getDomsPass(),
-                    configuration.getUrlToPidGen());
+            client = new SBOIClientImpl(configuration.getSummaLocation());
         }
         return client;
     }
@@ -74,9 +70,9 @@ public class SBOIDatasource implements DataSource {
     }
 
     @Override
-    public Batch getBatch(Long batchID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
+    public Batch getBatch(Long batchID, Integer roundTripNumber, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
         try {
-            return stripDetails(getClient().getBatch(batchID), includeDetails);
+            return stripDetails(getClient().getBatch(batchID,roundTripNumber), includeDetails);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }
@@ -84,8 +80,8 @@ public class SBOIDatasource implements DataSource {
     }
 
     @Override
-    public Event getBatchEvent(Long batchID, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
-        Batch batch = getBatch(batchID, includeDetails);
+    public Event getBatchEvent(Long batchID, Integer roundTripNumber, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
+        Batch batch = getBatch(batchID,roundTripNumber, includeDetails);
         for (Event event : batch.getEventList()) {
             if (event.getEventID().equals(eventID)){
                 return event;

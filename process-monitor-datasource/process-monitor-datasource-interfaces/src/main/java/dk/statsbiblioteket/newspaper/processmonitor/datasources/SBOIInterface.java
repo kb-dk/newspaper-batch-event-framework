@@ -10,5 +10,5 @@ public interface SBOIInterface {
                                       List<String> pastEventsExclude,
                                       List<String> futureEvents) throws CommunicationException;
 
-    public Batch getBatch(Long batchID) throws CommunicationException, NotFoundException;
+    public Batch getBatch(Long batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException;
 }

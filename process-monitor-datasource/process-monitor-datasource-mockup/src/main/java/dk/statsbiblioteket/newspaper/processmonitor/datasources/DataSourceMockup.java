@@ -95,7 +95,7 @@ public class DataSourceMockup implements DataSource {
     }
 
     @Override
-    public Batch getBatch(Long batchID, boolean includeDetails) throws NotFoundException {
+    public Batch getBatch(Long batchID, Integer roundTripNumber, boolean includeDetails) throws NotFoundException {
         Batch batch = null;
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {
@@ -109,7 +109,7 @@ public class DataSourceMockup implements DataSource {
     }
 
     @Override
-    public Event getBatchEvent(Long batchID, EventID eventID, boolean includeDetails) throws NotFoundException {
+    public Event getBatchEvent(Long batchID, Integer roundTripNumber, EventID eventID, boolean includeDetails) throws NotFoundException {
         Event event = null;
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {

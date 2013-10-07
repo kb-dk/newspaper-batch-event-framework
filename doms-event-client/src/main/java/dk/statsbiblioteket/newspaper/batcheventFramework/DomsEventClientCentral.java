@@ -156,7 +156,7 @@ public class DomsEventClientCentral implements DomsEventClient {
     }
 
     @Override
-    public Batch getBatch(Long batchId, int roundTripNumber) throws CommunicationException{
+    public Batch getBatch(Long batchId, Integer roundTripNumber) throws CommunicationException{
         String roundTripID;
         try {
             roundTripID = getRoundTripID(batchId, roundTripNumber);

@@ -5,7 +5,6 @@ import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -45,7 +44,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Batch getBatch(Long batchId, int roundTripNumber) throws CommunicationException {
+    public Batch getBatch(Long batchId, Integer roundTripNumber) throws CommunicationException {
         for (Batch batch : batches) {
             if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber){
                 return batch;
@@ -62,10 +61,5 @@ public class MockupBatchEventClient implements BatchEventClient {
     @Override
     public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
         return batches.iterator();
-    }
-
-    @Override
-    public Batch getBatch(Long batchID) throws CommunicationException, NotFoundException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -3,6 +3,7 @@ package dk.statsbiblioteket.newspaper;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.DataSource;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.TCKTestSuite;
+import dk.statsbiblioteket.util.Pair;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -29,13 +30,13 @@ public class SBOIDatasourceTest extends TCKTestSuite {
     }
 
     @Override
-    public Long getValidBatchID() {
-        return 400022028241l;
+    public Pair<Long,Integer> getValidBatchID() {
+        return new Pair<>(400022028241l,2);
     }
 
     @Override
-    public Long getInvalidBatchID() {
-        return 300022028241l;
+    public Pair<Long,Integer> getInvalidBatchID() {
+        return new Pair<>(300022028241l,1);
     }
 
     @Override
