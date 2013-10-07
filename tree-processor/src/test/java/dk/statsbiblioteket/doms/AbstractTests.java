@@ -28,11 +28,11 @@ public abstract class AbstractTests {
     private String printEvent(ParsingEvent next) {
         switch (next.getType()){
             case NodeBegin:
-                return "<"+next.getPath()+">";
+                return "<"+next.getLocalname()+">";
             case NodeEnd:
-                return "</"+next.getPath()+">";
+                return "</"+next.getLocalname()+">";
             case Attribute:
-                return "<"+next.getPath()+"/>";
+                return "<"+next.getLocalname()+"/>";
             default:
                 return next.toString();
         }

@@ -17,12 +17,10 @@ public abstract class ParsingEvent {
     }
 
     /**
-     * This represents the "location" of the parser when the event was encountered. It will be a series of identifiers
-     * separated by File.separator
-     *
-     * @return the path
+     * This represents the "name" of the the directory/file/object when the event was encountered.
+     * @return the local name
      */
-    public String getPath() {
+    public String getLocalname() {
         return localname;
     }
 
