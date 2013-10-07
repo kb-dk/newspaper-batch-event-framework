@@ -41,8 +41,14 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws NotWorkingProperlyException {
         try {
             Iterator<Batch> batches = getClient().getBatches(Arrays.asList(EventID.Data_Received.name()), new ArrayList<String>(), new ArrayList<String>());
-            return stripDetails(batches,includeDetails);
-        } catch (CommunicationException e) {
+            List<Batch> results = new ArrayList<>();
+            while (batches.hasNext()) {
+                Batch next = batches.next();
+                Batch better = client.getBatch(next.getBatchID(), next.getRoundTripNumber());
+                results.add(better);
+            }
+            return stripDetails(results.iterator(),includeDetails);
+        } catch (CommunicationException | NotFoundException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI",e);
         }
 

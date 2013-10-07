@@ -158,7 +158,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
         String base = spaced(RECORD_BASE);
         if (batchID != null) {
-            base = base + " " + BATCH_ID + "=B" + batchID.toString();
+            base = base + " " + BATCH_ID + ":B" + batchID.toString();
         }
 
         StringBuilder events = new StringBuilder();

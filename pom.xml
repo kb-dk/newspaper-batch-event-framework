@@ -22,7 +22,7 @@
         <module>autonomous-component</module>
         <module>tree-processor</module>
         <module>sample-autonomous-component</module>
-<!--        <module>sboi-datasource</module>-->
+        <module>sboi-datasource</module>
     </modules>
     <dependencyManagement>
         <dependencies>
