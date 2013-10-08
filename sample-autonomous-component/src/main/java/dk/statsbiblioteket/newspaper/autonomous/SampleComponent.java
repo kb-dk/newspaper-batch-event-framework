@@ -135,8 +135,6 @@ public class SampleComponent implements RunnableComponent{
         }
         resultCollector.setSuccess(true);
         resultCollector.setTimestamp(new Date());
-        resultCollector.addMessage("Number of files: "+numberOfFiles);
-        resultCollector.addMessage("Number of dirs: "+numberOfDirectories);
     }
 
 }

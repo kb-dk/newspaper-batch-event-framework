@@ -63,7 +63,8 @@ public class AutonomousComponent {
      *                                  processed.
      * @throws LockingException         if the locking framework fails
      * @throws CommunicationException   if communication with SBOI fails
-     * @throws WorkException if the runnable component threw an exception, it will be wrapped as a work exception
+     * @throws WorkException            if the runnable component threw an exception, it will be wrapped as a work
+     *                                  exception
      */
     public synchronized boolean pollAndWork(List<String> pastEvents,
                                             List<String> pastEventsExclude,
@@ -130,9 +131,13 @@ public class AutonomousComponent {
             } catch (Exception e) {
                 //the work failed
                 result.setSuccess(false);
-                result.addMessage(e.getMessage());
+                result.addFailure(getBatchFormattetID(lockedBatch),
+                                  "Component Failure",
+                                  getComponentFormattetName(),
+                                  "Component threw exception",
+                                  e.getMessage());
                 log.error("Failed", e);
-                throw new WorkException(result.toReport(),e);
+                throw new WorkException(result.toReport(), e);
 
             } finally {
                 try {
@@ -148,6 +153,10 @@ public class AutonomousComponent {
             releaseQuietly(SBOI_lock);
             releaseQuietly(batchlock);
         }
+    }
+
+    private String getComponentFormattetName() {
+        return runnable.getComponentName() + "-" + runnable.getComponentVersion();
     }
 
     /**
@@ -214,7 +223,7 @@ public class AutonomousComponent {
             CommunicationException {
         batchEventClient.addEventToBatch(batch.getBatchID(),
                                          batch.getRoundTripNumber(),
-                                         runnable.getComponentName() + "-" + runnable.getComponentVersion(),
+                                         getComponentFormattetName(),
                                          result.getTimestamp(),
                                          result.toReport(),
                                          runnable.getEventID(),
@@ -238,7 +247,11 @@ public class AutonomousComponent {
      * @return the zookeepr lock path
      */
     private String getBatchLockPath(Batch batch) {
-        return "/" + runnable.getComponentName() + "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
+        return "/" + runnable.getComponentName() + getBatchFormattetID(batch);
+    }
+
+    private String getBatchFormattetID(Batch batch) {
+        return "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
     }
 
     /**

@@ -32,12 +32,26 @@ public class ResultCollector {
     }
 
     /**
-     * Add a string to the evergrowing execution outcome message. This does not have to be set if success is true, but if the
-     * component is not successful, it must be set.
-     * @param message the message to add
+     * Add a specific failure to the result collector. All these parameters must be non-null and non-empty
+     * @param reference the reference to the file/object that caused the failure
+     * @param type the type of failure
+     * @param component the component that failed
+     * @param description Description of the failure.
      */
-    public void addMessage(String message) {
-        messages.add(message);
+    public void addFailure(String reference, String type, String component, String description){
+
+    }
+
+    /**
+     * Add a specific failure to the result collector. All these parameters must be non-null and non-empty
+     * @param reference the reference to the file/object that caused the failure
+     * @param type the type of failure
+     * @param component the component that failed
+     * @param description Description of the failure.
+     * @param details additional details, can be null
+     */
+    public void addFailure(String reference, String type, String component, String description, String details){
+
     }
 
     /**
