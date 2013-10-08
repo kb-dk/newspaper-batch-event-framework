@@ -8,27 +8,40 @@ import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import org.slf4j.Logger;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
  * This is the Autonomous Component main class. It should contain all the harnessing stuff that allows a system to work
  * in the autonomous mindset
  */
-public class AutonomousComponent {
+public class AutonomousComponent
+        implements Callable<Map<String, Boolean>> {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
+    private static Logger log = org.slf4j
+            .LoggerFactory
+            .getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
     private final BatchEventClient batchEventClient;
     private final long timeoutSBOI;
     private final long timeoutBatch;
     private final RunnableComponent runnable;
     private final long pausePollTime = 1000;
+    private int simultaneousProcesses;
     private boolean paused = false;
     private boolean stopped = false;
+    private List<String> pastEvents;
+    private List<String> pastEventsExclude;
+    private List<String> futureEvents;
 
 
     /**
@@ -42,14 +55,71 @@ public class AutonomousComponent {
     public AutonomousComponent(RunnableComponent runnable,
                                Properties configuration,
                                CuratorFramework lockClient,
-                               BatchEventClient batchEventClient) {
+                               BatchEventClient batchEventClient,
+                               int simultaneousProcesses) {
 
         this.runnable = runnable;
         this.lockClient = lockClient;
         this.batchEventClient = batchEventClient;
+        this.simultaneousProcesses = simultaneousProcesses;
         timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
         timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
-        this.lockClient.getConnectionStateListenable().addListener(new ConcurrencyConnectionStateListener(this));
+        this.lockClient
+                .getConnectionStateListenable()
+                .addListener(new ConcurrencyConnectionStateListener(this));
+    }
+
+    /**
+     * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until errors
+     * are being thrown.
+     *
+     * @param lock the lock to release
+     */
+    protected static void releaseQuietly(InterProcessLock lock) {
+        boolean released = false;
+        while (!released) {
+            try {
+                lock.release();
+            } catch (Exception e) {
+                released = true;
+            }
+        }
+    }
+
+    protected static boolean acquireQuietly(InterProcessLock lock,
+                                            long timeout)
+            throws
+            LockingException {
+        try {
+            return lock.acquire(timeout, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            throw new LockingException("Failed to acquire lock", e);
+        }
+    }
+
+    /**
+     * Get the zookeeper lockpath for the SBOI instance for this component
+     *
+     * @return the lock path
+     */
+    private static String getSBOILockpath(RunnableComponent runnable) {
+        return "/SBOI/" + runnable.getComponentName();
+    }
+
+    /**
+     * Get the lock path for this batch for this component
+     *
+     * @param batch the batch to lock
+     *
+     * @return the zookeepr lock path
+     */
+    private static String getBatchLockPath(RunnableComponent runnable,
+                                           Batch batch) {
+        return "/" + runnable.getComponentName() + getBatchFormattetID(batch);
+    }
+
+    protected static String getBatchFormattetID(Batch batch) {
+        return "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
     }
 
     /**
@@ -66,31 +136,24 @@ public class AutonomousComponent {
      * @throws WorkException            if the runnable component threw an exception, it will be wrapped as a work
      *                                  exception
      */
-    public synchronized boolean pollAndWork(List<String> pastEvents,
-                                            List<String> pastEventsExclude,
-                                            List<String> futureEvents)
+    @Override
+    public Map<String, Boolean> call()
             throws
-            CouldNotGetLockException,
-            LockingException,
-            CommunicationException,
-            WorkException {
+            Exception {
+
         InterProcessLock SBOI_lock = null;
-        InterProcessLock batchlock = null;
+        Map<String, Boolean> result = new HashMap<>();
+        Map<BatchWorker, InterProcessLock> workers = new HashMap<>();
         try {
             //lock SBOI for this component name
-
-            SBOI_lock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath());
-
-            boolean sboi_locked = acquireQuietly(SBOI_lock, timeoutSBOI);
-            if (!sboi_locked) {
-                throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
-            }
-
-            Batch lockedBatch = null;
-
-
-            //get batches, lock one, release the SBOI
+            SBOI_lock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
             try {
+                boolean sboi_locked = acquireQuietly(SBOI_lock, timeoutSBOI);
+                if (!sboi_locked) {
+                    throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
+                }
+
+                //get batches, lock n, release the SBOI
                 //get batches
                 Iterator<Batch> batches = batchEventClient.getBatches(pastEvents, pastEventsExclude, futureEvents);
                 //for each batch
@@ -98,94 +161,63 @@ public class AutonomousComponent {
                     Batch batch = batches.next();
 
                     //attempt to lock
-                    batchlock = new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(batch));
+                    InterProcessLock batchlock =
+                            new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
-                        //break loop
-                        lockedBatch = batch;
-                        break;
+                        BatchWorker worker = new BatchWorker(runnable, new ResultCollector(), batch, batchEventClient);
+                        workers.put(worker, batchlock);
+                        if (workers.size() >= simultaneousProcesses) {
+                            break;
+                        }
                     }
                 }
             } catch (RuntimeException runtimeException) {
-                releaseQuietly(batchlock);
+                for (InterProcessLock interProcessLock : workers.values()) {
+                    releaseQuietly(interProcessLock);
+                }
                 throw runtimeException;
             } finally {
                 releaseQuietly(SBOI_lock);
             }
 
-            //If the lockedbatch is != null, it is locked now
-            if (lockedBatch == null) {
-                //no batch available
-                return false;
+
+            ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
+
+
+
+
+            ArrayList<Future<?>> futures = new ArrayList<>();
+            for (BatchWorker batchWorker : workers.keySet()) {
+                Future<?> future = pool.submit(batchWorker);
+                futures.add(future);
             }
 
-            ResultCollector result = new ResultCollector();
-            try {
-                //do work
-                stated();
-                result.setTimestamp(new Date());
-                runnable.doWorkOnBatch(lockedBatch, result);
+            pool.shutdown();
+            while (!pool.isTerminated()) {
+                pool.awaitTermination(100, TimeUnit.MILLISECONDS);
+            }
 
-                return true;
-
-            } catch (Exception e) {
-                //the work failed
-                result.setSuccess(false);
-                result.addFailure(getBatchFormattetID(lockedBatch),
-                                  "Component Failure",
-                                  getComponentFormattetName(),
-                                  "Component threw exception",
-                                  e.getMessage());
-                log.error("Failed", e);
-                throw new WorkException(result.toReport(), e);
-
-            } finally {
-                try {
-                    stated();
-                    //preserve the result
-                    preserveResult(lockedBatch, result);
-                } finally {
-                    //unlock Batch
-                    releaseQuietly(batchlock);
+            boolean allDone = false;
+            while (!allDone){
+                allDone = true;
+                for (Future<?> future : futures) {
+                    allDone = allDone && future.isDone();
                 }
+                Thread.sleep(100);
+            }
+            for (BatchWorker batchWorker : workers.keySet()) {
+                result.put(getBatchFormattetID(batchWorker.getBatch()),batchWorker.getResultCollector().isSuccess());
             }
         } finally {
-            releaseQuietly(SBOI_lock);
-            releaseQuietly(batchlock);
-        }
-    }
-
-    private String getComponentFormattetName() {
-        return runnable.getComponentName() + "-" + runnable.getComponentVersion();
-    }
-
-    /**
-     * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until errors
-     * are being thrown.
-     *
-     * @param lock the lock to release
-     */
-    private void releaseQuietly(InterProcessLock lock) {
-        boolean released = false;
-        while (!released) {
-            try {
-                lock.release();
-            } catch (Exception e) {
-                released = true;
+            for (InterProcessLock batchLock : workers.values()) {
+                releaseQuietly(batchLock);
             }
+            releaseQuietly(SBOI_lock);
         }
+        return result;
     }
 
-    private boolean acquireQuietly(InterProcessLock lock,
-                                   long timeout)
-            throws
-            LockingException {
-        try {
-            return lock.acquire(timeout, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            throw new LockingException("Failed to acquire lock", e);
-        }
-    }
 
     /**
      * Checks the paused and stopped flags to pause or halt execution
@@ -212,49 +244,6 @@ public class AutonomousComponent {
     }
 
     /**
-     * This method stores the event back into DOMS, so it should be visible to the SBOI soonish
-     *
-     * @param batch  the batch worked on
-     * @param result the result of the work
-     */
-    private void preserveResult(Batch batch,
-                                ResultCollector result)
-            throws
-            CommunicationException {
-        batchEventClient.addEventToBatch(batch.getBatchID(),
-                                         batch.getRoundTripNumber(),
-                                         getComponentFormattetName(),
-                                         result.getTimestamp(),
-                                         result.toReport(),
-                                         runnable.getEventID(),
-                                         result.isSuccess());
-    }
-
-    /**
-     * Get the zookeeper lockpath for the SBOI instance for this component
-     *
-     * @return the lock path
-     */
-    private final String getSBOILockpath() {
-        return "/SBOI/" + runnable.getComponentName();
-    }
-
-    /**
-     * Get the lock path for this batch for this component
-     *
-     * @param batch the batch to lock
-     *
-     * @return the zookeepr lock path
-     */
-    private String getBatchLockPath(Batch batch) {
-        return "/" + runnable.getComponentName() + getBatchFormattetID(batch);
-    }
-
-    private String getBatchFormattetID(Batch batch) {
-        return "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
-    }
-
-    /**
      * Pause the component. Will not immediately pause execution. Rather, it will hold at some predetermined points in
      * the exection flow
      */
@@ -277,5 +266,16 @@ public class AutonomousComponent {
     }
 
 
+    public void setPastEvents(List<String> pastEvents) {
+        this.pastEvents = pastEvents;
+    }
+
+    public void setPastEventsExclude(List<String> pastEventsExclude) {
+        this.pastEventsExclude = pastEventsExclude;
+    }
+
+    public void setFutureEvents(List<String> futureEvents) {
+        this.futureEvents = futureEvents;
+    }
 }
 

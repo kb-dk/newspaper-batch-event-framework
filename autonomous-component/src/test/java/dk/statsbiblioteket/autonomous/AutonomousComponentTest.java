@@ -46,7 +46,10 @@ public class AutonomousComponentTest {
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-        autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient);
+        autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient,1);
+        autonoumous.setPastEvents(Arrays.asList(EventID.Data_Received.name()));
+        autonoumous.setPastEventsExclude(stringList());
+        autonoumous.setFutureEvents(stringList());
     }
 
     /**
@@ -70,7 +73,7 @@ public class AutonomousComponentTest {
         }
         Assert.assertFalse("Found test event before test, invalid test",testEventFound);
 
-        autonoumous.pollAndWork(Arrays.asList(EventID.Data_Received.name()), stringList(), stringList());
+        autonoumous.call();
 
         Batch batchAfter = eventClient.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> eventsAfter = batchAfter.getEventList();

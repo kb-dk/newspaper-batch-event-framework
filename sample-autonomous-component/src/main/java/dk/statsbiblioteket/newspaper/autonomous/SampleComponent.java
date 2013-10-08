@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class SampleComponent implements RunnableComponent{
@@ -43,11 +44,12 @@ public class SampleComponent implements RunnableComponent{
                 new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
         BatchEventClient eventClient = createEventClient(properties);
-        AutonomousComponent autonoumous = new AutonomousComponent(component, properties, lockClient, eventClient);
-        autonoumous.pollAndWork(
-                toEvents(properties.getProperty("pastevents")),
-                toEvents(properties.getProperty("pasteventsExclude")),
-                toEvents(properties.getProperty("futureEvents")));
+        AutonomousComponent autonoumous = new AutonomousComponent(component, properties, lockClient, eventClient,1);
+        autonoumous.setPastEvents(toEvents(properties.getProperty("pastevents")));
+        autonoumous.setPastEventsExclude(toEvents(properties.getProperty("pasteventsExclude")));
+        autonoumous.setFutureEvents(toEvents(properties.getProperty("futureEvents")));
+        Map<String, Boolean> result = autonoumous.call();
+        //TODO what to do with the result?
     }
 
     private static List<String> toEvents(String events) {
