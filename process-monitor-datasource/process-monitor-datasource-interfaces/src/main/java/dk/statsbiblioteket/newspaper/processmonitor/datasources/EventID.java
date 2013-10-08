@@ -7,6 +7,7 @@ public enum EventID {
     Shipped_to_supplier,
     Data_Received,
     Data_Archived,
+    Structure_Checked,
 
 
     Shipped_from_supplier,
