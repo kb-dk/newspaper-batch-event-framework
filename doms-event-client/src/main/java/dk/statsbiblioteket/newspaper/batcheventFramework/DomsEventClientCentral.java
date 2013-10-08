@@ -70,7 +70,7 @@ public class DomsEventClientCentral implements DomsEventClient {
             }
             premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
             try {
-                fedora.modifyDatastreamByValue(roundTripObjectPid, eventsDatastream, premisObject.toXML(),
+                fedora.modifyDatastreamByValue(roundTripObjectPid, eventsDatastream, premisObject.toXML(),null,
                                                addEventToBatchComment);
             } catch (BackendInvalidResourceException e1) {
                 //But I just created the object, it must be there
@@ -136,7 +136,7 @@ public class DomsEventClientCentral implements DomsEventClient {
                 //create the initial EVENTS datastream
                 try {
                     String premisBlob = premisFactory.createInitialPremisBlob(batchId, roundTripNumber).toXML();
-                    fedora.modifyDatastreamByValue(roundTripObject, eventsDatastream, premisBlob, createBatchRoundTripComment);
+                    fedora.modifyDatastreamByValue(roundTripObject, eventsDatastream, premisBlob, null,createBatchRoundTripComment);
                 } catch (JAXBException e) {
                     //how can this fail???
                     throw new RuntimeException(e);

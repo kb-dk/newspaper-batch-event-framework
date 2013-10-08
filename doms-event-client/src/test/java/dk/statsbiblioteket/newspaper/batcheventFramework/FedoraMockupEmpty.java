@@ -31,7 +31,7 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
 
 
     @Override
-    public void modifyDatastreamByValue(String pid, String datastream, String contents, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
+    public void modifyDatastreamByValue(String pid, String datastream, String contents, List<String> alternatives, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
         addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
     }
 

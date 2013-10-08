@@ -54,11 +54,6 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void modifyDatastreamByValue(String pid, String datastream, String contents, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
-        addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     @Override
     public String getXMLDatastreamContents(String pid, String datastream, Long asOfTime) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
@@ -66,11 +61,7 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void addExternalDatastream(String pid, String contents, String filename, String permanentURL, String formatURI, String s, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
-        addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+
 
     @Override
     public List<String> listObjectsWithThisLabel(String label) throws BackendInvalidCredsException, BackendMethodFailedException {
@@ -168,67 +159,120 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
     @Override
-    public void modifyDatastreamByValue(String pid,
-                                        String datastream,
-                                        String contents,
-                                        String md5sum,
-                                        String comment)
+    public void deleteObject(String s,
+                             String s2)
             throws
             BackendInvalidCredsException,
             BackendMethodFailedException,
             BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
-    public void modifyDatastreamByValue(String pid,
-                                        String datastream,
-                                        String contents,
-                                        String checksumType,
-                                        String checksum,
-                                        String comment)
+    public void modifyDatastreamByValue(String s,
+                                        String s2,
+                                        String s3,
+                                        List<String> strings,
+                                        String s4)
             throws
             BackendInvalidCredsException,
             BackendMethodFailedException,
             BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
-    public void addExternalDatastream(String pid,
-                                      String datastream,
-                                      String filename,
-                                      String permanentURL,
-                                      String formatURI,
-                                      String mimetype,
-                                      String checksumType,
-                                      String checksum,
-                                      String comment)
+    public void modifyDatastreamByValue(String s,
+                                        String s2,
+                                        String s3,
+                                        String s4,
+                                        List<String> strings,
+                                        String s5)
             throws
             BackendInvalidCredsException,
             BackendMethodFailedException,
             BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void addExternalDatastream(String pid,
-                                      String datastream,
-                                      String filename,
-                                      String permanentURL,
-                                      String formatURI,
-                                      String mimetype,
-                                      String md5sum,
-                                      String comment)
+    public void modifyDatastreamByValue(String s,
+                                        String s2,
+                                        String s3,
+                                        String s4,
+                                        String s5,
+                                        List<String> strings,
+                                        String s6)
             throws
             BackendInvalidCredsException,
             BackendMethodFailedException,
             BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
-        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void deleteDatastream(String s,
+                                 String s2,
+                                 String s3)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+    }
+
+    @Override
+    public void addExternalDatastream(String s,
+                                      String s2,
+                                      String s3,
+                                      String s4,
+                                      String s5,
+                                      String s6,
+                                      List<String> strings,
+                                      String s7)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+    }
+
+    @Override
+    public void addExternalDatastream(String s,
+                                      String s2,
+                                      String s3,
+                                      String s4,
+                                      String s5,
+                                      String s6,
+                                      String s7,
+                                      String s8,
+                                      List<String> strings,
+                                      String s9)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
+    }
+
+    @Override
+    public void addExternalDatastream(String s,
+                                      String s2,
+                                      String s3,
+                                      String s4,
+                                      String s5,
+                                      String s6,
+                                      String s7,
+                                      List<String> strings,
+                                      String s8)
+            throws
+            BackendInvalidCredsException,
+            BackendMethodFailedException,
+            BackendInvalidResourceException {
+        addToLog(UNEXPECTED_METHOD);
     }
 }
