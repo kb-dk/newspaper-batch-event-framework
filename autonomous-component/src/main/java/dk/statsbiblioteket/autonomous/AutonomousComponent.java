@@ -36,7 +36,8 @@ public class AutonomousComponent
     private final long timeoutSBOI;
     private final long timeoutBatch;
     private final RunnableComponent runnable;
-    private final long pausePollTime = 1000;
+    private final long pollTime = 100;
+    private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private int simultaneousProcesses;
     private List<EventID> pastSuccessfulEvents;
     private List<EventID> pastFailedEvents;
@@ -71,9 +72,10 @@ public class AutonomousComponent
         this.futureEvents = futureEvents;
         timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
         timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
+        concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
         this.lockClient
                 .getConnectionStateListenable()
-                .addListener(new ConcurrencyConnectionStateListener(this));
+                .addListener(concurrencyConnectionStateListener);
     }
 
     /**
@@ -189,20 +191,19 @@ public class AutonomousComponent
             }
 
 
+            stated();
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
-
-
-
-
             ArrayList<Future<?>> futures = new ArrayList<>();
             for (BatchWorker batchWorker : workers.keySet()) {
+                concurrencyConnectionStateListener.add(batchWorker);
                 Future<?> future = pool.submit(batchWorker);
                 futures.add(future);
             }
 
             pool.shutdown();
             while (!pool.isTerminated()) {
-                pool.awaitTermination(100, TimeUnit.MILLISECONDS);
+                stated(pool);
+                pool.awaitTermination(pollTime, TimeUnit.MILLISECONDS);
             }
 
             boolean allDone = false;
@@ -211,7 +212,8 @@ public class AutonomousComponent
                 for (Future<?> future : futures) {
                     allDone = allDone && future.isDone();
                 }
-                Thread.sleep(100);
+                stated(pool);
+                Thread.sleep(pollTime);
             }
             for (BatchWorker batchWorker : workers.keySet()) {
                 result.put(getBatchFormattetID(batchWorker.getBatch()),batchWorker.getResultCollector().isSuccess());
@@ -225,52 +227,50 @@ public class AutonomousComponent
         return result;
     }
 
-
-    /**
-     * Checks the paused and stopped flags to pause or halt execution
-     *
-     * @throws CommunicationException If the component have been stopped
-     */
     private void stated()
             throws
             CommunicationException {
-        if (stopped) {
-            throw new CommunicationException("Lost connection to lock server");
-        }
+        stated(null);
+    }
+
+
+    /**
+     * Checks the paused and stopped flags to pause or halt execution. It will stop the execution as best as it is
+     * able
+     *
+     * @throws CommunicationException If the component have been stopped
+     */
+    private void stated(ExecutorService pool)
+            throws
+            CommunicationException {
+        stop(pool);
         while (paused && !stopped) {
             try {
-                Thread.sleep(pausePollTime);
+                Thread.sleep(pollTime);
             } catch (InterruptedException e) {
 
             }
         }
+        stop(pool);
+    }
+
+    private void stop(ExecutorService pool)
+            throws
+            CommunicationException {
         if (stopped) {
+            if (pool != null){
+                pool.shutdownNow();
+            }
             throw new CommunicationException("Lost connection to lock server");
         }
-
     }
 
-    /**
-     * Pause the component. Will not immediately pause execution. Rather, it will hold at some predetermined points in
-     * the exection flow
-     */
-    public void pause() {
-        paused = true;
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 
-    /**
-     * Unpause the component, if it was paused already
-     */
-    public void unpause() {
-        paused = false;
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
-
-    /**
-     * Stop the component
-     */
-    public void stop() {
-        stopped = true;
-    }
-
 }
 

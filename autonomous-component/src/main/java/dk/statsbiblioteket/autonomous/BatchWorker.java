@@ -3,6 +3,7 @@ package dk.statsbiblioteket.autonomous;
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.util.Strings;
 
 import java.util.Date;
 
@@ -14,6 +15,9 @@ public class BatchWorker
     private Batch batch;
     private DomsEventClient batchEventClient;
 
+    private boolean pause = false;
+    private boolean stop = false;
+
     public BatchWorker(RunnableComponent component,
                        ResultCollector resultCollector,
                        Batch batch,
@@ -24,13 +28,9 @@ public class BatchWorker
         this.batchEventClient = batchEventClient;
     }
 
-
-    private  String getComponentFormattetName() {
-        return component.getComponentName()
-               + "-"
-               + component.getComponentVersion();
+    private String getComponentFormattetName() {
+        return component.getComponentName() + "-" + component.getComponentVersion();
     }
-
 
     @Override
     public void run() {
@@ -41,14 +41,13 @@ public class BatchWorker
         } catch (Exception e) {
             //the work failed
             resultCollector.setSuccess(false);
-            resultCollector.addFailure(AutonomousComponent.getBatchFormattetID(batch), "Component Failure",
-                                       getComponentFormattetName(), "Component threw exception", e.getMessage());
+            resultCollector.addFailure(AutonomousComponent.getBatchFormattetID(batch),
+                                       "Component Failure",
+                                       getComponentFormattetName(),
+                                       "Component threw exception",
+                                       e.getMessage());
         }
-        try {
-            preserveResult(batch,resultCollector);
-        } catch (CommunicationException e) {
-            //ignore
-        }
+        preserveResult(batch, resultCollector);
     }
 
     public ResultCollector getResultCollector() {
@@ -62,15 +61,44 @@ public class BatchWorker
      * @param result the result of the work
      */
     private void preserveResult(Batch batch,
-                                ResultCollector result)
-            throws
-            CommunicationException {
-        batchEventClient.addEventToBatch(batch.getBatchID(), batch.getRoundTripNumber(), getComponentFormattetName(),
-                                         result.getTimestamp(), result.toReport(), component.getEventID(),
-                                         result.isSuccess());
+                                ResultCollector result) {
+        try {
+            while (pause && !stop){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+            if (stop){
+                return;
+            }
+            batchEventClient.addEventToBatch(batch.getBatchID(),
+                                             batch.getRoundTripNumber(),
+                                             getComponentFormattetName(),
+                                             result.getTimestamp(),
+                                             result.toReport(),
+                                             component.getEventID(),
+                                             result.isSuccess());
+        } catch (CommunicationException e) {
+            resultCollector.setSuccess(false);
+            resultCollector.addFailure("Autonomous Component System",
+                                       e.getClass().getName(),
+                                       component.getComponentName(),
+                                       e.getMessage(),
+                                       Strings.getStackTrace(e));
+        }
     }
 
     public Batch getBatch() {
         return batch;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
     }
 }
