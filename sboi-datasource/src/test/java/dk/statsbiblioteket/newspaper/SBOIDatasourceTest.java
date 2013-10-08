@@ -54,7 +54,7 @@ public class SBOIDatasourceTest
                         //Wait for the Summa system to reindex the doms
                         Thread.sleep(6*MINUTES);
                     } catch (InterruptedException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                       //so, if you want to interruped me, fix it yourself.
                     }
                 }
 

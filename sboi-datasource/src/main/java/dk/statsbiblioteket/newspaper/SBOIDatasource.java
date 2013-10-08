@@ -36,7 +36,7 @@ public class SBOIDatasource implements DataSource {
     @Override
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws NotWorkingProperlyException {
         try {
-            Iterator<Batch> batches = getClient().getBatches(Arrays.asList(EventID.Data_Received.name()), new ArrayList<String>(), new ArrayList<String>());
+            Iterator<Batch> batches = getClient().getBatches(Arrays.asList(EventID.Data_Received), new ArrayList<EventID>(), new ArrayList<EventID>());
             List<Batch> results = new ArrayList<>();
             while (batches.hasNext()) {
                 Batch next = batches.next();

@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SampleComponent implements RunnableComponent{
+public class SampleComponent
+        implements RunnableComponent {
 
 
     private Properties properties;
@@ -33,7 +34,9 @@ public class SampleComponent implements RunnableComponent{
         this.properties = properties;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)
+            throws
+            Exception {
 
         Properties properties = parseArgs(args);
 
@@ -41,40 +44,45 @@ public class SampleComponent implements RunnableComponent{
 
 
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(properties.getProperty("lockserver"),
-                new ExponentialBackoffRetry(1000, 3));
+                                                                        new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
         BatchEventClient eventClient = createEventClient(properties);
-        AutonomousComponent autonoumous = new AutonomousComponent(component, properties, lockClient, eventClient,1);
-        autonoumous.setPastEvents(toEvents(properties.getProperty("pastevents")));
-        autonoumous.setPastEventsExclude(toEvents(properties.getProperty("pasteventsExclude")));
-        autonoumous.setFutureEvents(toEvents(properties.getProperty("futureEvents")));
+        AutonomousComponent autonoumous = new AutonomousComponent(component, properties, lockClient, eventClient, 1,
+                                                                  toEvents(properties.getProperty("pastevents")),
+                                                                  toEvents(properties.getProperty("pasteventsExclude")),
+                                                                  toEvents(properties.getProperty("futureEvents")));
         Map<String, Boolean> result = autonoumous.call();
         //TODO what to do with the result?
     }
 
-    private static List<String> toEvents(String events) {
+    private static List<EventID> toEvents(String events) {
         String[] eventSplits = events.split(",");
-        List<String> result = new ArrayList<>();
+        List<EventID> result = new ArrayList<>();
         for (String eventSplit : eventSplits) {
-            result.add(eventSplit.trim());
+            try {
+            result.add(EventID.valueOf(eventSplit.trim()));
+            } catch (IllegalArgumentException e){
+                //TODO log this
+            }
         }
         return result;
     }
 
     private static BatchEventClient createEventClient(Properties properties) {
-        return new BatchEventClientImpl(
-                properties.getProperty("summa"),
-                properties.getProperty("domsUrl"),
-                properties.getProperty("domsUser"),
-                properties.getProperty("domsPass"),
-                properties.getProperty("pidGenerator"));
+        return new BatchEventClientImpl(properties.getProperty("summa"), properties.getProperty("domsUrl"),
+                                        properties.getProperty("domsUser"), properties.getProperty("domsPass"),
+                                        properties.getProperty("pidGenerator"));
     }
 
-    private static Properties parseArgs(String[] args) throws IOException {
+    private static Properties parseArgs(String[] args)
+            throws
+            IOException {
         Properties properties = new Properties();
-        for (int i = 0; i < args.length; i++) {
+        for (int i = 0;
+             i < args.length;
+             i++) {
             String arg = args[i];
-            if (arg.equals("-c")){
+            if (arg.equals("-c")) {
                 String configFile = args[i + 1];
                 properties.load(new FileInputStream(configFile));
             }
@@ -98,9 +106,10 @@ public class SampleComponent implements RunnableComponent{
         return EventID.Data_Archived;
     }
 
-    private TreeIterator createIterator(Properties properties, Batch batch) {
-        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("useFileSystem","true"));
-        if (useFileSystem){
+    private TreeIterator createIterator(Properties properties,
+                                        Batch batch) {
+        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("useFileSystem", "true"));
+        if (useFileSystem) {
             File scratchDir = new File(properties.getProperty("scratch"));
             File batchDir = new File(scratchDir, "B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber());
             return new IteratorForFileSystems(batchDir);
@@ -109,27 +118,27 @@ public class SampleComponent implements RunnableComponent{
         throw new UnsupportedOperationException("Presently only supported for filesystems, sorry");
     }
 
-
     @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
+    public void doWorkOnBatch(Batch batch,
+                              ResultCollector resultCollector)
+            throws
+            Exception {
         TreeIterator iterator = createIterator(properties, batch);
 
         int numberOfFiles = 0;
         int numberOfDirectories = 0;
         while (iterator.hasNext()) {
             ParsingEvent next = iterator.next();
-            switch (next.getType()){
-                case NodeBegin:
-                {
-                    numberOfDirectories+=1;
+            switch (next.getType()) {
+                case NodeBegin: {
+                    numberOfDirectories += 1;
                     break;
                 }
-                case NodeEnd:
-                {
+                case NodeEnd: {
                     break;
                 }
                 case Attribute: {
-                    numberOfFiles+=1;
+                    numberOfFiles += 1;
                     break;
                 }
             }

@@ -6,9 +6,9 @@ import java.util.List;
 public interface SBOIInterface {
 
 
-    public Iterator<Batch> getBatches(List<String> pastEvents,
-                                      List<String> pastEventsExclude,
-                                      List<String> futureEvents) throws CommunicationException;
+    public Iterator<Batch> getBatches(List<EventID> pastSuccessfulEvents,
+                                      List<EventID> pastFailedEvents,
+                                      List<EventID> futureEvents) throws CommunicationException;
 
     public Batch getBatch(Long batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException;
 }

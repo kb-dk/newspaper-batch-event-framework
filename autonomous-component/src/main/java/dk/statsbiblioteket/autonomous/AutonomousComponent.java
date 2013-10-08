@@ -6,6 +6,7 @@ import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -37,11 +38,11 @@ public class AutonomousComponent
     private final RunnableComponent runnable;
     private final long pausePollTime = 1000;
     private int simultaneousProcesses;
+    private List<EventID> pastSuccessfulEvents;
+    private List<EventID> pastFailedEvents;
+    private List<EventID> futureEvents;
     private boolean paused = false;
     private boolean stopped = false;
-    private List<String> pastEvents;
-    private List<String> pastEventsExclude;
-    private List<String> futureEvents;
 
 
     /**
@@ -56,12 +57,18 @@ public class AutonomousComponent
                                Properties configuration,
                                CuratorFramework lockClient,
                                BatchEventClient batchEventClient,
-                               int simultaneousProcesses) {
+                               int simultaneousProcesses,
+                               List<EventID> pastSuccessfulEvents,
+                               List<EventID> pastFailedEvents,
+                               List<EventID> futureEvents) {
 
         this.runnable = runnable;
         this.lockClient = lockClient;
         this.batchEventClient = batchEventClient;
         this.simultaneousProcesses = simultaneousProcesses;
+        this.pastSuccessfulEvents = pastSuccessfulEvents;
+        this.pastFailedEvents = pastFailedEvents;
+        this.futureEvents = futureEvents;
         timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
         timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
         this.lockClient
@@ -155,7 +162,7 @@ public class AutonomousComponent
 
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = batchEventClient.getBatches(pastEvents, pastEventsExclude, futureEvents);
+                Iterator<Batch> batches = batchEventClient.getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
@@ -265,17 +272,5 @@ public class AutonomousComponent
         stopped = true;
     }
 
-
-    public void setPastEvents(List<String> pastEvents) {
-        this.pastEvents = pastEvents;
-    }
-
-    public void setPastEventsExclude(List<String> pastEventsExclude) {
-        this.pastEventsExclude = pastEventsExclude;
-    }
-
-    public void setFutureEvents(List<String> futureEvents) {
-        this.futureEvents = futureEvents;
-    }
 }
 

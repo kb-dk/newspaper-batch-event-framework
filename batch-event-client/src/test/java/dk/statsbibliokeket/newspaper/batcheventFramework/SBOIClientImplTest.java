@@ -32,9 +32,9 @@ public class SBOIClientImplTest {
 
         SBOIClientImpl summa = new SBOIClientImpl(props.getProperty("sboi.summa"));
         Iterator<Batch> batches = summa.getBatches(
-                Arrays.asList(EventID.Data_Received.name()),
-                new ArrayList<String>(),
-                Arrays.asList(EventID.Data_Archived.name()));
+                Arrays.asList(EventID.Data_Received),
+                new ArrayList<EventID>(),
+                Arrays.asList(EventID.Data_Archived));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();

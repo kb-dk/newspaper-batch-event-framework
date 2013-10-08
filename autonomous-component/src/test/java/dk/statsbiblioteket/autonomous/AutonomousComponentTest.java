@@ -25,7 +25,9 @@ public class AutonomousComponentTest {
     MockupBatchEventClient eventClient;
 
     @BeforeMethod
-    public void setUp() throws Exception {
+    public void setUp()
+            throws
+            Exception {
         testingServer = new TestingServer();
         TestingComponent component = new TestingComponent();
 
@@ -43,35 +45,39 @@ public class AutonomousComponentTest {
 
         eventClient.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
 
-        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
+        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(testingServer.getConnectString(),
+                                                                        new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-        autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient,1);
-        autonoumous.setPastEvents(Arrays.asList(EventID.Data_Received.name()));
-        autonoumous.setPastEventsExclude(stringList());
-        autonoumous.setFutureEvents(stringList());
+
+        autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient, 1,
+                                              Arrays.asList(EventID.Data_Received), null, null);
+
     }
 
     /**
-     * This test performs the following tasks
-     * 1. request a specific batch from the event client, to make sure the thing is there and in the right state
-     * 2. starts the autonomous component, with parameters indicating that it should poll for batches in the state checked
-     * above.
-     * 3. Request the batch afterwards, to check that the new state have been added from the work in 2.
+     * This test performs the following tasks 1. request a specific batch from the event client, to make sure the thing
+     * is there and in the right state 2. starts the autonomous component, with parameters indicating that it should
+     * poll for batches in the state checked above. 3. Request the batch afterwards, to check that the new state have
+     * been added from the work in 2.
+     *
      * @throws Exception
      */
     @Test
-    public void testPollAndWork() throws Exception {
+    public void testPollAndWork()
+            throws
+            Exception {
 
         Batch batch = eventClient.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
-            if (event.getEventID().equals(EventID.Data_Archived)){
+            if (event.getEventID()
+                     .equals(EventID.Data_Archived)) {
                 testEventFound = true;
             }
         }
-        Assert.assertFalse("Found test event before test, invalid test",testEventFound);
+        Assert.assertFalse("Found test event before test, invalid test", testEventFound);
 
         autonoumous.call();
 
@@ -79,15 +85,16 @@ public class AutonomousComponentTest {
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {
-            if (event.getEventID().equals(EventID.Data_Archived)){
+            if (event.getEventID()
+                     .equals(EventID.Data_Archived)) {
                 testEventFound = true;
             }
         }
-        Assert.assertTrue("Test event not found after test",testEventFound);
+        Assert.assertTrue("Test event not found after test", testEventFound);
 
     }
 
-    private List<String> stringList(){
+    private List<String> stringList() {
         return new ArrayList<>();
     }
 }

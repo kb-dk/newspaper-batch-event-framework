@@ -59,7 +59,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
+    public Iterator<Batch> getBatches(List<EventID> pastEvents, List<EventID> pastEventsExclude, List<EventID> futureEvents) throws CommunicationException {
         return batches.iterator();
     }
 }
