@@ -1,85 +1,144 @@
 package dk.statsbiblioteket.autonomous;
 
+import dk.statsbiblioteket.newspaper.autonomous.Details;
+import dk.statsbiblioteket.newspaper.autonomous.Failure;
+import dk.statsbiblioteket.newspaper.autonomous.Failures;
+import dk.statsbiblioteket.newspaper.autonomous.ObjectFactory;
+import dk.statsbiblioteket.newspaper.autonomous.Result;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
  * This class collects the result of a run of a component.
  */
 public class ResultCollector {
-    private boolean success;
-    private Date timestamp = new Date();
 
-    private List<String> messages;
+    private Result resultStructure;
 
-
-    /**
-     * Set the success Value of the execution
-     * @param success the sucesss
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
-        messages = new LinkedList<>();
+    public ResultCollector(String tool,
+                           String version) {
+        resultStructure = new ObjectFactory().createResult();
+        setSuccess(false);
+        resultStructure.setFailures(new Failures());
+        resultStructure.setTool(tool);
+        resultStructure.setVersion(version);
+        setTimestamp(new Date());
     }
 
     /**
      * Get the success value of the execution
+     *
      * @return the success
      */
     public boolean isSuccess() {
-        return success;
+        return "Success".equals(resultStructure.getOutcome());
+    }
+
+    /**
+     * Set the success Value of the execution
+     *
+     * @param success the sucesss
+     */
+    public void setSuccess(boolean success) {
+        resultStructure.setOutcome(success ? "Success" : "Failure");
     }
 
     /**
      * Add a specific failure to the result collector. All these parameters must be non-null and non-empty
-     * @param reference the reference to the file/object that caused the failure
-     * @param type the type of failure
-     * @param component the component that failed
+     *
+     * @param reference   the reference to the file/object that caused the failure
+     * @param type        the type of failure
+     * @param component   the component that failed
      * @param description Description of the failure.
      */
-    public void addFailure(String reference, String type, String component, String description){
-
+    public void addFailure(String reference,
+                           String type,
+                           String component,
+                           String description) {
+        addFailure(reference, type, component, description, null);
     }
 
     /**
      * Add a specific failure to the result collector. All these parameters must be non-null and non-empty
-     * @param reference the reference to the file/object that caused the failure
-     * @param type the type of failure
-     * @param component the component that failed
+     *
+     * @param reference   the reference to the file/object that caused the failure
+     * @param type        the type of failure
+     * @param component   the component that failed
      * @param description Description of the failure.
-     * @param details additional details, can be null
+     * @param details     additional details, can be null
      */
-    public void addFailure(String reference, String type, String component, String description, String details){
-
-    }
-
-    /**
-     * Return the added messages as one string, each message separated by a newline
-     * @return the messages as a string
-     */
-    public String toReport(){
-        StringBuilder builder = new StringBuilder();
-        for (String message : messages) {
-            builder.append(message).append("\n");
+    public void addFailure(String reference,
+                           String type,
+                           String component,
+                           String description,
+                           String... details) {
+        List<Failure> list = resultStructure.getFailures().getFailure();
+        Failure failure = new Failure();
+        failure.setFilereference(reference);
+        failure.setType(type);
+        failure.setComponent(component);
+        failure.setDescription(description);
+        if (details != null) {
+            Details xmlDetails = new Details();
+            xmlDetails.getContent().addAll(Arrays.asList(details));
         }
-        return builder.toString();
+        list.add(failure);
     }
 
-
     /**
-     * Timestamp the event that this is the result of
-     * @param timestamp
+     * Return the report as xml
      */
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public String toReport() {
+        try {
+            JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(resultStructure, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
+            return null;
+        }
     }
 
     /**
      * The timestamp of the event
+     *
      * @return
      */
     public Date getTimestamp() {
-        return timestamp;
+        return resultStructure.getDate().toGregorianCalendar().getTime();
+    }
+
+    /**
+     * Timestamp the event that this is the result of
+     *
+     * @param timestamp
+     */
+    public void setTimestamp(Date timestamp) {
+        resultStructure.setDate(format(timestamp));
+
+    }
+
+    public XMLGregorianCalendar format(Date date) {
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime(date);
+        XMLGregorianCalendar date2 = null;
+        try {
+            date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+        } catch (DatatypeConfigurationException e) {
+            throw new Error(e);
+        }
+        return date2;
     }
 }

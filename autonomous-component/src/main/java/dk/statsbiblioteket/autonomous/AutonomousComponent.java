@@ -28,9 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class AutonomousComponent
         implements Callable<Map<String, Boolean>> {
 
-    private static Logger log = org.slf4j
-            .LoggerFactory
-            .getLogger(AutonomousComponent.class);
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
     private final BatchEventClient batchEventClient;
     private final long timeoutSBOI;
@@ -73,9 +71,7 @@ public class AutonomousComponent
         timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
         timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
         concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
-        this.lockClient
-                .getConnectionStateListenable()
-                .addListener(concurrencyConnectionStateListener);
+        this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
     }
 
     /**
@@ -164,7 +160,8 @@ public class AutonomousComponent
 
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = batchEventClient.getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                Iterator<Batch> batches =
+                        batchEventClient.getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
@@ -174,7 +171,11 @@ public class AutonomousComponent
                             new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
-                        BatchWorker worker = new BatchWorker(runnable, new ResultCollector(), batch, batchEventClient);
+                        BatchWorker worker = new BatchWorker(runnable,
+                                                             new ResultCollector(runnable.getComponentName(),
+                                                                                 runnable.getComponentVersion()),
+                                                             batch,
+                                                             batchEventClient);
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
                             break;
@@ -207,7 +208,7 @@ public class AutonomousComponent
             }
 
             boolean allDone = false;
-            while (!allDone){
+            while (!allDone) {
                 allDone = true;
                 for (Future<?> future : futures) {
                     allDone = allDone && future.isDone();
@@ -216,7 +217,7 @@ public class AutonomousComponent
                 Thread.sleep(pollTime);
             }
             for (BatchWorker batchWorker : workers.keySet()) {
-                result.put(getBatchFormattetID(batchWorker.getBatch()),batchWorker.getResultCollector().isSuccess());
+                result.put(getBatchFormattetID(batchWorker.getBatch()), batchWorker.getResultCollector().isSuccess());
             }
         } finally {
             for (InterProcessLock batchLock : workers.values()) {
@@ -233,10 +234,8 @@ public class AutonomousComponent
         stated(null);
     }
 
-
     /**
-     * Checks the paused and stopped flags to pause or halt execution. It will stop the execution as best as it is
-     * able
+     * Checks the paused and stopped flags to pause or halt execution. It will stop the execution as best as it is able
      *
      * @throws CommunicationException If the component have been stopped
      */
@@ -258,7 +257,7 @@ public class AutonomousComponent
             throws
             CommunicationException {
         if (stopped) {
-            if (pool != null){
+            if (pool != null) {
                 pool.shutdownNow();
             }
             throw new CommunicationException("Lost connection to lock server");

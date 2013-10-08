@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified"
+           targetNamespace="http://schemas.statsbiblioteket.dk/result/"
+           xmlns="http://schemas.statsbiblioteket.dk/result/">
+    <xs:annotation>
+        <xs:documentation>
+            This schema describes the output of a tool run.
+        </xs:documentation>
+    </xs:annotation>
+    <xs:element name="result">
+        <xs:annotation>
+            <xs:documentation>
+                The element will contain the result and optionally a list of errors.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="outcome">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This is the result of the run. May be either 'Success' or 'Failure'
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="date">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This is the time when the execution was executed
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="failures" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Contains a list of QA failures, each in their own qafailure element.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="tool" use="required">
+                <xs:annotation>
+                    <xs:documentation>
+                        This contains the tool used for generating the report.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="file"/>
+                        <xs:enumeration value="batch"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="version" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        This contains the version number of the  tool used for generating the report.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="date" type="xs:dateTime"/>
+    <xs:element name="outcome">
+        <xs:simpleType>
+            <xs:restriction base="xs:NCName">
+                <xs:enumeration value="Success">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Used to indicate the execution succeeded.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:enumeration>
+                <xs:enumeration value="Failure">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Used to indicate the execution failed. A list of failures follow.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:enumeration>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="failures">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="failure"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="failure">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="filereference">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The file in which a failure is found.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="type">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The type of error.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="component">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The name of the component that reported a failure.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="description">
+                    <xs:annotation>
+                        <xs:documentation>
+                            A human readable description of the failure.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="details" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Any other details reported by the component.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="filereference" type="xs:string"/>
+    <xs:element name="component" type="xs:NCName"/>
+    <xs:element name="type" type="xs:NCName"/>
+    <xs:element name="description" type="xs:string"/>
+    <xs:element name="details">
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:any minOccurs="0" processContents="skip"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
