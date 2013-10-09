@@ -13,17 +13,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the REST api, and parses xml
- * with regular expressions. Not production ready.
+ * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the REST api,
+ * and parses xml with regular expressions. Not production ready.
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
-
-
+    // Regexp patterns to parse xml
     private static final Pattern MODEL_PATTERN = Pattern.compile(
             Pattern.quote("<model>")
                     + "\\s*info:fedora/([^<]*)"
                     + Pattern.quote("</model>"));
-    private static final Pattern RELATIONS_PATTERN = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
+    private static final Pattern RELATIONS_PATTERN
+            = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
     private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote("<datastream")
             + "\\s+dsid=\"([^\"]*)\"");
 
@@ -76,7 +76,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
-        String relationsShips = resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
+        String relationsShips
+                = resource.path(id).path("relationships").queryParam("format",
+                "ntriples").get(String.class);
         List<String> children = parseRelationsToList(relationsShips, types);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
@@ -98,15 +100,14 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         return result;
     }
 
-
     @Override
     protected Iterator<String> initilizeAttributeIterator() {
         WebResource resource = client.resource(restUrl);
-        String datastreamXml = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
+        String datastreamXml
+                = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml, types).iterator();
     }
-
 
     protected DelegatingTreeIterator makeDelegate(String id, String childID) {
         return new IteratorForFedora3(childID, client, restUrl, filter);
@@ -115,8 +116,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     @Override
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
         return new JerseyAttributeParsingEvent(attributeID,
-                client.resource(restUrl).path(nodeID).path("/datastreams/").path(attributeID).path("/content"));
+                client.resource(restUrl).path(nodeID).path("/datastreams/")
+                        .path(attributeID).path("/content"));
     }
 }
-
-

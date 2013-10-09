@@ -22,10 +22,12 @@ public class IteratorForFedora3Test extends AbstractTests {
     public TreeIterator getIterator() throws URISyntaxException, IOException {
         if (iterator == null){
             Properties properties = new Properties();
-            properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
+            properties.load(new FileReader(new File(System.getProperty(
+                    "integration.test.newspaper.properties"))));
             System.out.println(properties.getProperty("fedora.admin.username"));
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),properties.getProperty("fedora.admin.password")));
+            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
+                    properties.getProperty("fedora.admin.password")));
 
             // The uuid below is for a test object ingested by CSR that he never deletes as part of clean-up
             iterator = new IteratorForFedora3("uuid:269f14c0-8399-466e-b481-770c33cd0753", client,
