@@ -30,7 +30,7 @@ public class IteratorForFedora3Test extends AbstractTests {
             // For testing, so far, the uuid below has to be changed each time CSR re-ingests. Get the
             // current uuid via:
             // http://achernar:7880/fedora/objects?pid=true&title=true&identifier=true&terms=&query=identifier~path%3AB400022028241-RT1&maxResults=20
-            iterator = new IteratorForFedora3("uuid:8c80a28b-c2d5-46d6-8499-bd0491535e0f", client,
+            iterator = new IteratorForFedora3("doms:ContentModel_DOMS", client,
                     properties.getProperty("fedora.server"),new TestFilter());
         }
         return iterator;
