@@ -27,9 +27,7 @@ public class IteratorForFedora3Test extends AbstractTests {
             Client client = Client.create();
             client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),properties.getProperty("fedora.admin.password")));
 
-            // For testing, so far, the uuid below has to be changed each time CSR re-ingests. Get the
-            // current uuid via:
-            // http://achernar:7880/fedora/objects?pid=true&title=true&identifier=true&terms=&query=identifier~path%3AB400022028241-RT1&maxResults=20
+            // The uuid below is for a test object ingested by CSR that he never deletes as part of clean-up
             iterator = new IteratorForFedora3("uuid:269f14c0-8399-466e-b481-770c33cd0753", client,
                     properties.getProperty("fedora.server"), new TestFilter());
         }
