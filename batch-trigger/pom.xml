@@ -26,9 +26,9 @@
         </dependency>
 
         <dependency>
-        	<groupId>ch.qos.logback</groupId>
-        	<artifactId>log4j-bridge</artifactId>
-        	<version>0.9.7</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>log4j-bridge</artifactId>
+            <version>0.9.7</version>
         </dependency>
 
     </dependencies>
@@ -40,21 +40,16 @@
                 <version>2.4</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>
-                            src/main/assembly/assembly.xml
-                        </descriptor>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
                     </descriptors>
+                    <attach>true</attach>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>
-                                assembly
-                            </goal>
+                            <goal>single</goal>
                         </goals>
-                        <phase>
-                            package
-                        </phase>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
