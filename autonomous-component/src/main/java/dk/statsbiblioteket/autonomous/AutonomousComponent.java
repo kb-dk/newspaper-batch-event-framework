@@ -158,6 +158,7 @@ public class AutonomousComponent
                     throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
                 }
 
+                log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
                 Iterator<Batch> batches =
@@ -166,11 +167,13 @@ public class AutonomousComponent
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
 
+                    log.info("Found batch B{}-RT{}",batch.getBatchID(),batch.getRoundTripNumber());
                     //attempt to lock
                     InterProcessLock batchlock =
                             new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
+                        log.info("Batch locked, creating a worker");
                         BatchWorker worker = new BatchWorker(runnable,
                                                              new ResultCollector(runnable.getComponentName(),
                                                                                  runnable.getComponentVersion()),
@@ -178,6 +181,7 @@ public class AutonomousComponent
                                                              batchEventClient);
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
+                            log.info("We now have sufficient workers, look for no more batches");
                             break;
                         }
                     }
@@ -188,6 +192,7 @@ public class AutonomousComponent
                 }
                 throw runtimeException;
             } finally {
+                log.info("Releasing SBOI lock");
                 releaseQuietly(SBOI_lock);
             }
 
@@ -196,13 +201,15 @@ public class AutonomousComponent
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
             ArrayList<Future<?>> futures = new ArrayList<>();
             for (BatchWorker batchWorker : workers.keySet()) {
+                log.info("Submitting worker for batch {}",batchWorker.getBatch().getBatchID());
                 concurrencyConnectionStateListener.add(batchWorker);
                 Future<?> future = pool.submit(batchWorker);
                 futures.add(future);
             }
-
+            log.info("Shutting down the pool, and causing the workers to terminate");
             pool.shutdown();
             while (!pool.isTerminated()) {
+                log.info("Waiting to terminate");
                 stated(pool);
                 pool.awaitTermination(pollTime, TimeUnit.MILLISECONDS);
             }
@@ -216,6 +223,7 @@ public class AutonomousComponent
                 stated(pool);
                 Thread.sleep(pollTime);
             }
+            log.info("All is now done, all workers have completed");
             for (BatchWorker batchWorker : workers.keySet()) {
                 result.put(getBatchFormattetID(batchWorker.getBatch()), batchWorker.getResultCollector().isSuccess());
             }
