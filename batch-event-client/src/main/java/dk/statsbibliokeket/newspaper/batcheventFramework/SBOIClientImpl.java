@@ -17,11 +17,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Implementation of the SBOI interface. Uses soap, json and xml to query the summa instance for batches
+ */
 public class SBOIClientImpl
         implements SBOIInterface {
 
@@ -50,6 +52,16 @@ public class SBOIClientImpl
         return search(null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 
+    /**
+     * Perform a search for batches matching the given criteria
+     * @param batchID the batch id. Can be null for all batches
+     * @param roundTripNumber the round trip number. Can be null. These two should both be set or both be null
+     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
+     * @param pastFailedEvents Events that the batch must have experienced, but which failed
+     * @param futureEvents Events that the batch must not have experienced
+     * @return An iterator over the found batches
+     * @throws CommunicationException if the communication failed
+     */
     private Iterator<Batch> search(Long batchID,
                                    Integer roundTripNumber,
                                    List<EventID> pastSuccessfulEvents,
@@ -132,15 +144,20 @@ public class SBOIClientImpl
                 results.add(batch);
             }
             return results.iterator();
-        } catch (MalformedURLException e) {
-            log.error("caught problemException", e);
-            throw new CommunicationException(e);
         } catch (Exception e) {
             log.warn("Caught Unknown Exception", e);
             throw new CommunicationException(e);
         }
     }
 
+    /**
+     * Retrieve a batch from the summa index
+     * @param batchID the batch id
+     * @param roundTripNumber the round trip number
+     * @return the batch if found
+     * @throws CommunicationException if the communication failed
+     * @throws NotFoundException if the described batch could not be found
+     */
     @Override
     public Batch getBatch(Long batchID,
                           Integer roundTripNumber)
@@ -162,6 +179,15 @@ public class SBOIClientImpl
         return "\"" + string + "\"";
     }
 
+    /**
+     * Format the retrictions as a summa query string
+     * @param batchID the batch id
+     * @param roundTripNumber the round trip number
+     * @param successfulPastEvents the successful events the batch must have experienced
+     * @param failedPastEvents the failed events the batch must have experienced
+     * @param futureEvents the events the batch must not have experienced
+     * @return the query string
+     */
     private String toQueryString(Long batchID,
                                  Integer roundTripNumber,
                                  List<EventID> successfulPastEvents,

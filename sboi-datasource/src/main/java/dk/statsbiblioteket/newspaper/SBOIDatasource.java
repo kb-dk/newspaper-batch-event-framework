@@ -16,9 +16,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Datasource implemented to SBOI
+ */
 public class SBOIDatasource implements DataSource {
 
-    SBOIDatasourceConfiguration configuration;
+    private SBOIDatasourceConfiguration configuration;
 
     private SBOIInterface client = null;
 
@@ -50,6 +53,12 @@ public class SBOIDatasource implements DataSource {
 
     }
 
+    /**
+     * Strip details if required from the batched
+     * @param batches the batches to strip
+     * @param includeDetails true if details should be stripped
+     * @return the batches as a list
+     */
     private List<Batch> stripDetails(Iterator<Batch> batches, boolean includeDetails) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
@@ -59,6 +68,12 @@ public class SBOIDatasource implements DataSource {
         return result;
     }
 
+    /**
+     * Strip details on a single batch
+     * @param batch the batch
+     * @param includeDetails true if details should be stripped
+     * @return the batch
+     */
     private Batch stripDetails(Batch batch, boolean includeDetails) {
         if (!includeDetails){
             List<Event> events = batch.getEventList();

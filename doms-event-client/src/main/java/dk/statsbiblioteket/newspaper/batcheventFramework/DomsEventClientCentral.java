@@ -19,7 +19,8 @@ import java.util.List;
 /**
  * Implementation of the DomsEventClient, using the Central Webservice library to communicate with DOMS
  */
-public class DomsEventClientCentral implements DomsEventClient {
+public class DomsEventClientCentral
+        implements DomsEventClient {
 
 
     private final EnhancedFedora fedora;
@@ -55,7 +56,9 @@ public class DomsEventClientCentral implements DomsEventClient {
                                 Date timestamp,
                                 String details,
                                 EventID eventType,
-                                boolean outcome) throws CommunicationException {
+                                boolean outcome)
+            throws
+            CommunicationException {
         String roundTripObjectPid = createBatchRoundTrip(batchId, roundTripNumber);
 
         try {
@@ -70,7 +73,10 @@ public class DomsEventClientCentral implements DomsEventClient {
             }
             premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
             try {
-                fedora.modifyDatastreamByValue(roundTripObjectPid, eventsDatastream, premisObject.toXML(),null,
+                fedora.modifyDatastreamByValue(roundTripObjectPid,
+                                               eventsDatastream,
+                                               premisObject.toXML(),
+                                               null,
                                                addEventToBatchComment);
             } catch (BackendInvalidResourceException e1) {
                 //But I just created the object, it must be there
@@ -82,13 +88,16 @@ public class DomsEventClientCentral implements DomsEventClient {
     }
 
     @Override
-    public String createBatchRoundTrip(Long batchId, int roundTripNumber) throws CommunicationException {
+    public String createBatchRoundTrip(Long batchId,
+                                       int roundTripNumber)
+            throws
+            CommunicationException {
         String id = idFormatter.formatFullID(batchId, roundTripNumber);
         try {
             try {
                 //find the roundTrip Object
                 return getRoundTripID(batchId, roundTripNumber);
-            } catch (BackendInvalidResourceException e){
+            } catch (BackendInvalidResourceException e) {
                 //no roundTripObject, so sad
             }
             //but alas, we can continue
@@ -101,54 +110,41 @@ public class DomsEventClientCentral implements DomsEventClient {
             } else {
                 //no batch object either, more sad
                 //create it, then
-                try {
-                    batchObject = fedora.cloneTemplate(batchTemplate, Arrays.asList(idFormatter.formatBatchID(batchId)), createBatchRoundTripComment);
-                } catch (ObjectIsWrongTypeException | BackendInvalidResourceException e) {
-                    throw new CommunicationException(e);
-                }
-                try {
-                    fedora.modifyObjectLabel(batchObject, idFormatter.formatBatchID(batchId), createBatchRoundTripComment);
-                } catch (BackendInvalidResourceException e) {
-                    //no, I have just created it..... So I KNOW it's there
-                    //This means that this exception reflects something other serious problem
-                    throw new CommunicationException(e);
-                }
+                batchObject = fedora.cloneTemplate(batchTemplate,
+                                                   Arrays.asList(idFormatter.formatBatchID(batchId)),
+                                                   createBatchRoundTripComment);
+                fedora.modifyObjectLabel(batchObject, idFormatter.formatBatchID(batchId), createBatchRoundTripComment);
             }
             String roundTripObject;
-            try {
-                roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(id), createBatchRoundTripComment);
-            } catch (ObjectIsWrongTypeException | BackendInvalidResourceException e) {
-                throw new CommunicationException(e);
-            }
-            try {
-                //set label
-                fedora.modifyObjectLabel(roundTripObject, id, createBatchRoundTripComment);
+
+            roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(id), createBatchRoundTripComment);
 
 
-                //connect batch object to round trip object
-                fedora.addRelation(batchObject,
-                        toFedoraID(batchObject),
-                        hasPart_relation,
-                        toFedoraID(roundTripObject),
-                        false,
-                        createBatchRoundTripComment);
+            //set label
+            fedora.modifyObjectLabel(roundTripObject, id, createBatchRoundTripComment);
 
-                //create the initial EVENTS datastream
-                try {
-                    String premisBlob = premisFactory.createInitialPremisBlob(batchId, roundTripNumber).toXML();
-                    fedora.modifyDatastreamByValue(roundTripObject, eventsDatastream, premisBlob, null,createBatchRoundTripComment);
-                } catch (JAXBException e) {
-                    //how can this fail???
-                    throw new RuntimeException(e);
-                }
-            } catch (BackendInvalidResourceException e) {
-                //round trip object not found
-                //no, I have just created it....
-                //This means that this exception reflects something other serious problem
-                throw new CommunicationException(e);
-            }
+
+            //connect batch object to round trip object
+            fedora.addRelation(batchObject,
+                               toFedoraID(batchObject),
+                               hasPart_relation,
+                               toFedoraID(roundTripObject),
+                               false,
+                               createBatchRoundTripComment);
+
+            //create the initial EVENTS datastream
+
+            String premisBlob = premisFactory.createInitialPremisBlob(batchId, roundTripNumber).toXML();
+            fedora.modifyDatastreamByValue(roundTripObject,
+                                           eventsDatastream,
+                                           premisBlob,
+                                           null,
+                                           createBatchRoundTripComment);
+
+
             return roundTripObject;
-        } catch (BackendMethodFailedException | BackendInvalidCredsException | PIDGeneratorException e) {
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | PIDGeneratorException |
+                BackendInvalidResourceException | ObjectIsWrongTypeException | JAXBException e) {
             throw new CommunicationException(e);
         }
 
@@ -156,7 +152,10 @@ public class DomsEventClientCentral implements DomsEventClient {
     }
 
     @Override
-    public Batch getBatch(Long batchId, Integer roundTripNumber) throws CommunicationException{
+    public Batch getBatch(Long batchId,
+                          Integer roundTripNumber)
+            throws
+            CommunicationException {
         String roundTripID;
         try {
             roundTripID = getRoundTripID(batchId, roundTripNumber);
@@ -169,12 +168,16 @@ public class DomsEventClientCentral implements DomsEventClient {
     }
 
     @Override
-    public Batch getBatch(String domsId) throws CommunicationException{
+    public Batch getBatch(String domsId)
+            throws
+            CommunicationException {
         try {
             String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
-            PremisManipulator premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            PremisManipulator premisObject =
+                    premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             return premisObject.toBatch();
-        } catch (BackendInvalidResourceException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
+        } catch (BackendInvalidResourceException | BackendMethodFailedException | JAXBException |
+                BackendInvalidCredsException e) {
             throw new CommunicationException(e);
         }
 
@@ -183,13 +186,20 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     /**
      * Retrieve the corresponding doms pid of the round trip object
-     * @param batchId the batch id
+     *
+     * @param batchId         the batch id
      * @param roundTripNumber the round trip number
+     *
      * @return the doms round trip pid
      * @throws CommunicationException failed to communicate
-     * @throws BackendInvalidResourceException object not found
+     * @throws BackendInvalidResourceException
+     *                                object not found
      */
-    private String getRoundTripID(Long batchId, int roundTripNumber) throws CommunicationException, BackendInvalidResourceException {
+    private String getRoundTripID(Long batchId,
+                                  int roundTripNumber)
+            throws
+            CommunicationException,
+            BackendInvalidResourceException {
         String id = idFormatter.formatFullID(batchId, roundTripNumber);
         try {
             //find the Round Trip object
@@ -205,7 +215,9 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     /**
      * Append "info:fedora/" to the fedora pid if needed
+     *
      * @param fedoraPid the fedora pid
+     *
      * @return duh
      */
     private String toFedoraID(String fedoraPid) {

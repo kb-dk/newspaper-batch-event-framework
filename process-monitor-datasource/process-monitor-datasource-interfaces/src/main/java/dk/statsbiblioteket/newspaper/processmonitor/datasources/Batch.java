@@ -17,10 +17,17 @@ public class Batch{
     public Batch() {
     }
 
+    /**
+     * The round trip number. This will never be less than 1. It counts the number of times a batch
+     * have been redelivered
+     */
     public Integer getRoundTripNumber() {
         return roundTripNumber;
     }
 
+    /**
+     * Set the round trip number
+     */
     public void setRoundTripNumber(Integer roundTripNumber) {
         this.roundTripNumber = roundTripNumber;
     }
