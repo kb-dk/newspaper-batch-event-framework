@@ -30,8 +30,8 @@ public class IteratorForFedora3Test extends AbstractTests {
             // For testing, so far, the uuid below has to be changed each time CSR re-ingests. Get the
             // current uuid via:
             // http://achernar:7880/fedora/objects?pid=true&title=true&identifier=true&terms=&query=identifier~path%3AB400022028241-RT1&maxResults=20
-            iterator = new IteratorForFedora3("doms:ContentModel_DOMS", client,
-                    properties.getProperty("fedora.server"),new TestFilter());
+            iterator = new IteratorForFedora3("uuid:269f14c0-8399-466e-b481-770c33cd0753", client,
+                    properties.getProperty("fedora.server"), new TestFilter());
         }
         return iterator;
     }
@@ -40,13 +40,28 @@ public class IteratorForFedora3Test extends AbstractTests {
 
         public boolean isAttributeDatastream(String dsid, List<String> types) {
             if (dsid.equals("DC")){
-            return true;
+                return true;
+            }
+            if (dsid.equals("MODS")){
+                return true;
+            }
+            if (dsid.equals("FILM")){
+                return true;
+            }
+            if (dsid.equals("EDITION")){
+                return true;
+            }
+            if (dsid.equals("ALTO")){
+                return true;
+            }
+            if (dsid.equals("MIX")){
+                return true;
             }
             return false;
         }
 
         public boolean isChildRel(String predicate, List<String> types) {
-            if (predicate.contains("#extendsModel")){
+            if (predicate.contains("#hasPart")){
                 return true;
             }
             return false;
