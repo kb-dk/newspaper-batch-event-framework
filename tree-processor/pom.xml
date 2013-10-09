@@ -67,12 +67,6 @@
             <version>1.17.1</version>
         </dependency>
         <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>newspaper-prompt-doms-ingester</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
             <artifactId>centralWebservice-lib</artifactId>
             <version>0.0.28-SNAPSHOT</version>
