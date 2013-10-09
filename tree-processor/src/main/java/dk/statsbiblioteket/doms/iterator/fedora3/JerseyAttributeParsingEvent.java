@@ -8,11 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 4:15 PM
- * To change this template use File | Settings | File Templates.
+ * An fedora attribute event, implemented from the jersey rest client
  */
 public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     private WebResource resource;

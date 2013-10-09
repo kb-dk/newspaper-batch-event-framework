@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,25 +40,8 @@ public class IteratorForFedora3Test extends AbstractTests {
     static class TestFilter implements ContentModelFilter{
 
         public boolean isAttributeDatastream(String dsid, List<String> types) {
-            if (dsid.equals("DC")){
-                return true;
-            }
-            if (dsid.equals("MODS")){
-                return true;
-            }
-            if (dsid.equals("FILM")){
-                return true;
-            }
-            if (dsid.equals("EDITION")){
-                return true;
-            }
-            if (dsid.equals("ALTO")){
-                return true;
-            }
-            if (dsid.equals("MIX")){
-                return true;
-            }
-            return false;
+            List<String> names = Arrays.asList("DC", "MODS", "FILM", "EDITION", "ALTO", "MIX");
+            return names.contains(dsid);
         }
 
         public boolean isChildRel(String predicate, List<String> types) {

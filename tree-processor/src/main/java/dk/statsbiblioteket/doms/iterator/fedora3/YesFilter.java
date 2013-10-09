@@ -3,11 +3,7 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: abr
- * Date: 9/4/13
- * Time: 4:05 PM
- * To change this template use File | Settings | File Templates.
+ * Stupid implementation of the ContentModelFilter that returns true for all calls.
  */
 public class YesFilter implements ContentModelFilter {
     public boolean isAttributeDatastream(String dsid, List<String> types) {
