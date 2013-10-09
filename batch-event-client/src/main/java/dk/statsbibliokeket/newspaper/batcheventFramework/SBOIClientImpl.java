@@ -216,6 +216,7 @@ public class SBOIClientImpl
         if (futureEvents != null) {
             for (EventID futureEvent : futureEvents) {
                 events.append(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent.name())));
+                events.append(spaced("-" + FAILEVENT + ":" + quoted(futureEvent.name())));
             }
         }
         return base + events.toString();
