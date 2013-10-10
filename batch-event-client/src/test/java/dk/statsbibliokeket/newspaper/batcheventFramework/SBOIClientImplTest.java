@@ -14,7 +14,6 @@ import java.util.Properties;
 
 public class SBOIClientImplTest {
 
-    //TODO fix for new summa field names
     @Test(groups = "integrationTest",enabled = true)
     public void testGetBatches() throws Exception {
 
@@ -34,7 +33,7 @@ public class SBOIClientImplTest {
         Iterator<Batch> batches = summa.getBatches(
                 Arrays.asList(EventID.Data_Received),
                 new ArrayList<EventID>(),
-                Arrays.asList(EventID.Data_Archived));
+                Arrays.asList(EventID.Approved));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();
