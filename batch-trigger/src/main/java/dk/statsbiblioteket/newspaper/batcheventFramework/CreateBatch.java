@@ -38,6 +38,9 @@ public class CreateBatch {
 
         if (args.length != 7) {
             System.out.println("Not the right amount of arguments");
+            System.out.println("Receives the following arguments (in this order) to create a batch object in DOMS:");
+            System.out.println("Batch ID, roundtrip number, Premis agent name, URL to DOMS/Fedora, DOMS username, DOMS password,");
+            System.out.println("URL to PID generator.");
             System.exit(1);
         }
 
@@ -60,7 +63,8 @@ public class CreateBatch {
             domsEventClient.addEventToBatch(Long.parseLong(batchId), Integer.parseInt(roundTrip), premisAgent, now, "",
                     EventID.Data_Received, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Failed adding event to batch, due to: " + e.getMessage());
+            log.error("Caught exception: ", e);
             System.exit(1);
         }
     }
