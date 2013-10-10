@@ -67,4 +67,12 @@ public class Batch{
     public void setEventList(List<Event> eventList) {
         this.eventList = eventList;
     }
+
+    /**
+     * Get the full ID in the form B<batchID>-RT<roundTripNumber>
+     * @return the full ID
+     */
+    public String getFullID(){
+        return "B"+batchID+"-RT"+roundTripNumber;
+    }
 }
