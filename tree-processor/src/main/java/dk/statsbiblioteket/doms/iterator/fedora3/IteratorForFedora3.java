@@ -2,9 +2,13 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.iterator.AbstractIterator;
 import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
+import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,8 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the REST api,
- * and parses xml with regular expressions. Not production ready.
+ * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the
+ * REST api, and parses xml with regular expressions. Not production ready.
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
     // Regexp patterns to parse xml
@@ -24,28 +28,51 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                     + Pattern.quote("</model>"));
     private static final Pattern RELATIONS_PATTERN
             = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
-    private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote("<datastream")
-            + "\\s+dsid=\"([^\"]*)\"");
+    private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
+            "<datastream") + "\\s+dsid=\"([^\"]*)\"");
 
+    //Default values
+    public static final String USERNAME = "fedoraAdmin";
+    public static final String PASSWORD = "fedoraAdminPass";
+    public static final String FEDORA_LOCATION = "http://localhost:8080/fedora";
+    public static final String PIDGENERATOR_LOCATION
+            = "http://localhost:8080/pidgenerator-service";
+
+    //The initial values of the properties
+    private String username = USERNAME;
+    private String password = PASSWORD;
+    private String fedoraLocation = FEDORA_LOCATION;
+    private String pidGeneratorLocation = PIDGENERATOR_LOCATION;
 
     private final List<String> types;
     private final Client client;
     private final String restUrl;
     private ContentModelFilter filter;
+    private EnhancedFedora fedora;
 
     /**
      * Constructor.
      * @param id the fedora pid of the root object
      * @param client the jersey client to use
      * @param restUrl the url to Fedora
-     * @param filter the content model filter to know with relations and datastreams to use
+     * @param filter the content model filter to know which relations and datastreams to use
      */
-    protected IteratorForFedora3(String id, Client client, String restUrl, ContentModelFilter filter) {
+    protected IteratorForFedora3(String id, Client client, String restUrl, ContentModelFilter filter)
+            throws CommunicationException {
         super(id);
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
         types = getTypes(id, client);
+        Credentials creds = new Credentials(username, password);
+        try {
+            fedora =  new EnhancedFedoraImpl(creds,
+                    fedoraLocation.replaceFirst("/(objects)?/?$", ""),
+                    pidGeneratorLocation,
+                    null);
+        } catch (Exception e) {
+            throw new CommunicationException(e);
+        }
     }
 
     /**
@@ -77,8 +104,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     }
 
     /**
-     * Parse the list of datastreams from the datastream xml list. Removes the one that should not be used, based
-     * on the content model filter
+     * Parse the list of datastreams from the datastream xml list. Removes the one that should
+     * not be used, based on the content model filter
      * @param datastreamXml the datastream xml list
      * @param types the content models of the object
      * @return the list of datastreams
@@ -94,7 +121,6 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
 
         }
         return result;
-
     }
 
     @Override
@@ -107,7 +133,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         List<String> children = parseRelationsToList(relationsShips, types);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
-            result.add(makeDelegate(id,child));
+            try {
+                DelegatingTreeIterator delegate = makeDelegate(id,child);
+                result.add(delegate);
+            } catch (Exception e) {
+                // Couldn't make delegate, ignore it
+            }
         }
         return result.iterator();
     }
@@ -132,6 +163,17 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         return result;
     }
 
+    /**
+     * Make a delegate iterator for the child
+     * @param id the id of this node
+     * @param childID the id of the child
+     * @return the iterator for the child
+     */
+    private DelegatingTreeIterator makeDelegate(String id, String childID)
+            throws CommunicationException {
+        return new IteratorForFedora3(childID, client, restUrl, filter);
+    }
+
     @Override
     protected Iterator<String> initilizeAttributeIterator() {
         WebResource resource = client.resource(restUrl);
@@ -139,16 +181,6 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml, types).iterator();
-    }
-
-    /**
-     * Make a delegate iterator for the child
-     * @param id the id of this node
-     * @param childID the id of the child
-     * @return the iterator for the child
-     */
-    protected DelegatingTreeIterator makeDelegate(String id, String childID) {
-        return new IteratorForFedora3(childID, client, restUrl, filter);
     }
 
     /**

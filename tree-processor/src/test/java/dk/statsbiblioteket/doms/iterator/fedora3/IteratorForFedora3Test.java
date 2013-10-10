@@ -4,6 +4,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import dk.statsbiblioteket.doms.AbstractTests;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.doms.pidgenerator.CommunicationException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -30,9 +31,14 @@ public class IteratorForFedora3Test extends AbstractTests {
             client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
                     properties.getProperty("fedora.admin.password")));
 
-            // The uuid below is for a test object ingested by CSR that he never deletes as part of clean-up
-            iterator = new IteratorForFedora3("uuid:269f14c0-8399-466e-b481-770c33cd0753", client,
-                    properties.getProperty("fedora.server"), new TestFilter());
+            // The uuid below is for a test object ingested by CSR that he never deletes as
+            // part of clean-up
+            try {
+                iterator = new IteratorForFedora3("uuid:37d1cf35-099a-45f1-8647-d4dbbf7e68cc", client,
+                        properties.getProperty("fedora.server"), new TestFilter());
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
         }
         return iterator;
     }
@@ -53,7 +59,7 @@ public class IteratorForFedora3Test extends AbstractTests {
     }
 
     @Override
-    @Test(groups = "integrationTest", enabled = false)
+    @Test(groups = "integrationTest", enabled = true)
     public void testIterator() throws Exception {
         super.testIterator();
     }
