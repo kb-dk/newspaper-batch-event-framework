@@ -53,13 +53,13 @@ public class IteratorForFedora3Test extends AbstractTests {
     }
 
     @Override
-    @Test(groups = "integrationTest")
+    @Test(groups = "integrationTest", enabled = false)
     public void testIterator() throws Exception {
         super.testIterator();
     }
 
     @Override
-    @Test(groups = "integrationTest")
+    @Test(groups = "integrationTest", enabled = false)
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping();
     }
