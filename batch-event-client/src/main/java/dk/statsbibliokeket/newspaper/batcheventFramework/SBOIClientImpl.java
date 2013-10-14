@@ -2,9 +2,9 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
 import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
+import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
@@ -17,6 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,14 +33,17 @@ public class SBOIClientImpl
     private static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     private static final String ROUND_TRIP_NO = "round_trip_no";
     private static final String BATCH_ID = "batch_id";
+    private static final String PREMIS = "premis";
+
     private static Logger log = org.slf4j
             .LoggerFactory
             .getLogger(BatchEventClientImpl.class);
     private String summaLocation;
+    private final PremisManipulatorFactory premisManipulatorFactory;
 
-
-    public SBOIClientImpl(String summaLocation) {
+    public SBOIClientImpl(String summaLocation, PremisManipulatorFactory premisManipulatorFactory1) {
         this.summaLocation = summaLocation;
+        this.premisManipulatorFactory = premisManipulatorFactory1;
     }
 
     @Override
@@ -75,8 +79,7 @@ public class SBOIClientImpl
                                                        new QName("http://statsbiblioteket.dk/summa/search",
                                                                  "SearchWSService")).getSearchWS();
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields",
-                          BATCH_ID + "," + ROUND_TRIP_NO + "," + SUCCESSEVENT + "," + FAILEVENT + "");
+            jsonQuery.put("search.document.resultfields", PREMIS);
             jsonQuery.put("search.document.query",
                           toQueryString(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents));
             jsonQuery.put("search.document.startindex", 0);
@@ -91,56 +94,12 @@ public class SBOIClientImpl
             NodeList nodeList =
                     xPath.selectNodeList(searchResultDOM, "//responsecollection/response/documentresult/record");
 
-
             List<Batch> results = new ArrayList<>(nodeList.getLength());
-            for (int i = 0;
-                 i < nodeList.getLength();
-                 ++i) {
+            for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
-                Batch batch = new Batch();
-                batch.setBatchID(Long.parseLong(DOM.selectString(node, "field[@name='" + BATCH_ID + "']")
-                                                   .replaceAll("\\D", "")));
-                batch.setRoundTripNumber(Integer.parseInt(DOM.selectString(node, "field[@name='" + ROUND_TRIP_NO + "']")
-                                                             .replaceAll("\\D", "")));
-
-                List<Event> events = new ArrayList<>();
-                NodeList successEvents = DOM.selectNodeList(node, "field[@name='" + SUCCESSEVENT + "']");
-                NodeList failEvents = DOM.selectNodeList(node, "field[@name='" + FAILEVENT + "']");
-                for (int j = 0;
-                     j < successEvents.getLength();
-                     j++) {
-                    Node eventNode = successEvents.item(j);
-                    Event event = new Event();
-                    event.setSuccess(true);
-                    try {
-                        EventID eventId = EventID.valueOf(eventNode.getTextContent()
-                                                                   .trim());
-                        event.setEventID(eventId);
-                    } catch (IllegalArgumentException e) {
-                        //illegal event it
-                        continue;
-                    }
-                    events.add(event);
-
-                }
-                for (int j = 0;
-                     j < failEvents.getLength();
-                     j++) {
-                    Node eventNode = failEvents.item(j);
-                    Event event = new Event();
-                    event.setSuccess(false);
-                    try {
-                        EventID eventId = EventID.valueOf(eventNode.getTextContent()
-                                                                   .trim());
-                        event.setEventID(eventId);
-                    } catch (IllegalArgumentException e) {
-                        //illegal event it
-                        continue;
-                    }
-                    events.add(event);
-
-                }
-                batch.setEventList(events);
+                Batch batch = premisManipulatorFactory
+                        .createFromBlob(new ByteArrayInputStream(
+                                DOM.selectString(node, "field[@name='" + PREMIS + "']").getBytes())).toBatch();
                 results.add(batch);
             }
             return results.iterator();

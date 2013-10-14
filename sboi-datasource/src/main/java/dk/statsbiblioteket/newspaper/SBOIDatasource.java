@@ -1,6 +1,9 @@
 package dk.statsbiblioteket.newspaper;
 
 import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIClientImpl;
+
+import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
+import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.DataSource;
@@ -31,7 +34,8 @@ public class SBOIDatasource implements DataSource {
 
     private synchronized SBOIInterface getClient(){
         if (client == null){
-            client = new SBOIClientImpl(configuration.getSummaLocation());
+            client = new SBOIClientImpl(configuration.getSummaLocation(), new PremisManipulatorFactory(new NewspaperIDFormatter(),
+                                                                         PremisManipulatorFactory.TYPE));
         }
         return client;
     }

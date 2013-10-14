@@ -3,6 +3,8 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClientFactory;
+import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
+import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
@@ -44,7 +46,8 @@ public class BatchEventClientImpl implements BatchEventClient {
 
     private SBOIInterface getSboiClient() {
         if (sboiClient == null){
-            sboiClient = new SBOIClientImpl(summaLocation);
+            sboiClient = new SBOIClientImpl(summaLocation, new PremisManipulatorFactory(new NewspaperIDFormatter(),
+                                                                         PremisManipulatorFactory.TYPE));
         }
         return sboiClient;
     }

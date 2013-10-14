@@ -2,6 +2,8 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
 import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClientFactory;
+import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
+import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.testng.Assert;
@@ -29,7 +31,8 @@ public class SBOIClientImplTest {
 
         DomsEventClient doms = factory.createDomsEventClient();
 
-        SBOIClientImpl summa = new SBOIClientImpl(props.getProperty("sboi.summa"));
+        SBOIClientImpl summa = new SBOIClientImpl(props.getProperty("sboi.summa"), new PremisManipulatorFactory(new NewspaperIDFormatter(),
+                                                                     PremisManipulatorFactory.TYPE));
         Iterator<Batch> batches = summa.getBatches(
                 Arrays.asList(EventID.Data_Received),
                 new ArrayList<EventID>(),
