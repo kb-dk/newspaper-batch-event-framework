@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+/**
+ * This is an implementation that adds the code for constructing a tree iterator
+ */
 public abstract class AbstractRunnableComponent
         implements RunnableComponent {
 
