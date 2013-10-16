@@ -1,6 +1,7 @@
-package dk.statsbiblioteket.doms.iterator.filesystem.transforming;
+package dk.statsbiblioteket.autonomous.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;

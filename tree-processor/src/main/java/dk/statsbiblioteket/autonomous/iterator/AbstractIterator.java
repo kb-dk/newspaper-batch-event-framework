@@ -1,11 +1,15 @@
-package dk.statsbiblioteket.doms.iterator;
+package dk.statsbiblioteket.autonomous.iterator;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.doms.iterator.common.NodeBeginsParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.NodeEndParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.NodeBeginsParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.NodeEndParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.NodeBeginsParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.NodeEndParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

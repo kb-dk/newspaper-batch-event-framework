@@ -1,8 +1,8 @@
-package dk.statsbiblioteket.doms.iterator.fedora3;
+package dk.statsbiblioteket.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 
 import java.io.IOException;
 import java.io.InputStream;

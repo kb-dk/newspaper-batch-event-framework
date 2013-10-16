@@ -1,12 +1,14 @@
-package dk.statsbiblioteket.doms.iterator.fedora3;
+package dk.statsbiblioteket.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
-import dk.statsbiblioteket.doms.iterator.AbstractIterator;
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 

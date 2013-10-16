@@ -2,8 +2,10 @@ package dk.statsbiblioteket.doms.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import dk.statsbiblioteket.autonomous.iterator.fedora3.ContentModelFilter;
+import dk.statsbiblioteket.autonomous.iterator.fedora3.IteratorForFedora3;
 import dk.statsbiblioteket.doms.AbstractTests;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 import dk.statsbiblioteket.doms.pidgenerator.CommunicationException;
 import org.testng.annotations.Test;
 
@@ -43,7 +45,7 @@ public class IteratorForFedora3Test extends AbstractTests {
         return iterator;
     }
 
-    static class TestFilter implements ContentModelFilter{
+    static class TestFilter implements ContentModelFilter {
 
         public boolean isAttributeDatastream(String dsid, List<String> types) {
             List<String> names = Arrays.asList("DC", "MODS", "FILM", "EDITION", "ALTO", "MIX");

@@ -8,9 +8,9 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.autonomous.AutonomousComponent;
 import dk.statsbiblioteket.autonomous.ResultCollector;
 import dk.statsbiblioteket.autonomous.RunnableComponent;
-import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
-import dk.statsbiblioteket.doms.iterator.filesystem.IteratorForFileSystems;
+import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 
 import java.io.File;

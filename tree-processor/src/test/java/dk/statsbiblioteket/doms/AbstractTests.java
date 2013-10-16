@@ -1,8 +1,8 @@
 package dk.statsbiblioteket.doms;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;

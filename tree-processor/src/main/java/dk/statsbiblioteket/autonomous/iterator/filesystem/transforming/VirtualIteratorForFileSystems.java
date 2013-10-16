@@ -1,6 +1,6 @@
-package dk.statsbiblioteket.doms.iterator.filesystem.transforming;
+package dk.statsbiblioteket.autonomous.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 
 import java.io.File;
 import java.util.ArrayList;

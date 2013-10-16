@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.autonomous.iterator.common;
 
 /**
  * This event represents the iterator leaving a node. It is given when the iterator is finished processing all attributes

@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.autonomous.iterator.common;
 
 /**
  * This class represents an Event, which is the basic building block of the iterator. An event will happen at a given

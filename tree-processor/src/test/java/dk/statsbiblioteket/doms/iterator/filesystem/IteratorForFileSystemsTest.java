@@ -1,7 +1,8 @@
 package dk.statsbiblioteket.doms.iterator.filesystem;
 
+import dk.statsbiblioteket.autonomous.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.doms.AbstractTests;
-import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 import org.testng.annotations.Test;
 
 import java.io.File;

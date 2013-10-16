@@ -1,8 +1,9 @@
-package dk.statsbiblioteket.doms.iterator.filesystem;
+package dk.statsbiblioteket.autonomous.iterator.filesystem;
 
-import dk.statsbiblioteket.doms.iterator.AbstractIterator;
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;

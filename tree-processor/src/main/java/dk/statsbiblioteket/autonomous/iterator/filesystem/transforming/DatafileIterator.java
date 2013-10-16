@@ -1,8 +1,10 @@
-package dk.statsbiblioteket.doms.iterator.filesystem.transforming;
+package dk.statsbiblioteket.autonomous.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.doms.iterator.filesystem.FileAttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.filesystem.FileAttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.autonomous.iterator.filesystem.FileAttributeParsingEvent;
 
 import java.io.File;
 import java.util.ArrayList;

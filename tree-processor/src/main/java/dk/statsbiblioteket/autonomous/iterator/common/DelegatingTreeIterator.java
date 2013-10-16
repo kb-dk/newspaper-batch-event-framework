@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.autonomous.iterator.common;
 
 /**
  * This is a specialisation of the TreeIterator. Implementations function as a series of tree iterators. Each

@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.autonomous.iterator.common;
 
 /**
  * The event types.

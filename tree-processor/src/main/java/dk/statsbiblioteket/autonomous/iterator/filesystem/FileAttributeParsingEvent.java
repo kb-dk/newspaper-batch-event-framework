@@ -1,6 +1,6 @@
-package dk.statsbiblioteket.doms.iterator.filesystem;
+package dk.statsbiblioteket.autonomous.iterator.filesystem;
 
-import dk.statsbiblioteket.doms.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 
 import java.io.BufferedReader;
 import java.io.File;

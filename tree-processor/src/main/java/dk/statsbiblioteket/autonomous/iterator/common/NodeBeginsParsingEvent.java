@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms.iterator.common;
+package dk.statsbiblioteket.autonomous.iterator.common;
 
 /**
  * This event represents the iterator encountering a node. It is given just as the iterator encounters the node, before
