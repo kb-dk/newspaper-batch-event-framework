@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.doms;
+package dk.statsbiblioteket.autonomous;
 
 import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;

@@ -1,12 +1,9 @@
-package dk.statsbiblioteket.doms.iterator.fedora3;
+package dk.statsbiblioteket.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import dk.statsbiblioteket.autonomous.iterator.fedora3.ContentModelFilter;
-import dk.statsbiblioteket.autonomous.iterator.fedora3.IteratorForFedora3;
-import dk.statsbiblioteket.doms.AbstractTests;
+import dk.statsbiblioteket.autonomous.AbstractTests;
 import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.doms.pidgenerator.CommunicationException;
 import org.testng.annotations.Test;
 
 import java.io.File;
