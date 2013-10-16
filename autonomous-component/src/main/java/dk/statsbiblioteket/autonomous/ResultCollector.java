@@ -65,7 +65,7 @@ public class ResultCollector {
                            String type,
                            String component,
                            String description) {
-        addFailure(reference, type, component, description, null);
+        addFailure(reference, type, component, description, new String[]{});
     }
 
     /**

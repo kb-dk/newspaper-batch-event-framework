@@ -6,32 +6,18 @@ import com.netflix.curator.retry.ExponentialBackoffRetry;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.autonomous.AutonomousComponent;
-import dk.statsbiblioteket.autonomous.ResultCollector;
 import dk.statsbiblioteket.autonomous.RunnableComponent;
-import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.autonomous.iterator.filesystem.IteratorForFileSystems;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SampleComponent
-        implements RunnableComponent {
+public class SampleComponent {
 
 
-    private Properties properties;
-
-    public SampleComponent(Properties properties) {
-        //To change body of created methods use File | Settings | File Templates.
-        this.properties = properties;
-    }
 
     public static void main(String[] args)
             throws
@@ -39,7 +25,7 @@ public class SampleComponent
 
         Properties properties = parseArgs(args);
 
-        RunnableComponent component = new SampleComponent(properties);
+        RunnableComponent component = new SampleRunnableComponent(properties);
 
 
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(properties.getProperty("lockserver"),
@@ -89,61 +75,5 @@ public class SampleComponent
         return properties;
     }
 
-    @Override
-    public String getComponentName() {
-        return "Sample_component";
-
-    }
-
-    @Override
-    public String getComponentVersion() {
-        return "0.1";
-    }
-
-    @Override
-    public String getEventID() {
-        return "Data_Archived";
-    }
-
-    private TreeIterator createIterator(Properties properties,
-                                        Batch batch) {
-        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("useFileSystem", "true"));
-        if (useFileSystem) {
-            File scratchDir = new File(properties.getProperty("scratch"));
-            File batchDir = new File(scratchDir, "B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber());
-            return new IteratorForFileSystems(batchDir);
-
-        }
-        throw new UnsupportedOperationException("Presently only supported for filesystems, sorry");
-    }
-
-    @Override
-    public void doWorkOnBatch(Batch batch,
-                              ResultCollector resultCollector)
-            throws
-            Exception {
-        TreeIterator iterator = createIterator(properties, batch);
-
-        int numberOfFiles = 0;
-        int numberOfDirectories = 0;
-        while (iterator.hasNext()) {
-            ParsingEvent next = iterator.next();
-            switch (next.getType()) {
-                case NodeBegin: {
-                    numberOfDirectories += 1;
-                    break;
-                }
-                case NodeEnd: {
-                    break;
-                }
-                case Attribute: {
-                    numberOfFiles += 1;
-                    break;
-                }
-            }
-
-        }
-        resultCollector.setTimestamp(new Date());
-    }
 
 }
