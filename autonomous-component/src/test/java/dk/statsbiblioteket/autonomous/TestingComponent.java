@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.autonomous;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 public class TestingComponent implements RunnableComponent {
 
@@ -20,8 +19,8 @@ public class TestingComponent implements RunnableComponent {
     }
 
     @Override
-    public EventID getEventID() {
-        return EventID.Data_Archived;
+    public String getEventID() {
+        return "Data_Archived";
     }
 
     @Override

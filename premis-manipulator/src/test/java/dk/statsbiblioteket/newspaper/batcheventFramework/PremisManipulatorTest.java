@@ -2,7 +2,6 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.testng.Assert;
@@ -45,7 +44,7 @@ public class PremisManipulatorTest {
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         Date date = new Date(0);
 
-        manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", EventID.Data_Received,true);
+        manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", "Data_Received",true);
         StringReader test = new StringReader(manipulator.toXML());
         Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
@@ -74,7 +73,7 @@ public class PremisManipulatorTest {
         for (Event event : events) {
             Assert.assertTrue(event.isSuccess());
             Assert.assertEquals(event.getDetails(),"details here");
-            Assert.assertEquals(event.getEventID(),EventID.Data_Received);
+            Assert.assertEquals(event.getEventID(),"Data_Received");
         }
 
     }

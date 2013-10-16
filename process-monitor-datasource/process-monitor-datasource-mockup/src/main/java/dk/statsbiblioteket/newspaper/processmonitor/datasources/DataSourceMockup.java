@@ -26,15 +26,15 @@ public class DataSourceMockup implements DataSource {
 */
 
         Event e1 = new Event();
-        e1.setEventID(EventID.Shipped_to_supplier);
+        e1.setEventID("Shipped_to_supplier");
         e1.setSuccess(true);
 
         Event e2 = new Event();
-        e2.setEventID(EventID.Data_Received);
+        e2.setEventID("Data_Received");
         e2.setSuccess(false);
 
         Event e3 = new Event();
-        e3.setEventID(EventID.Data_Archived);
+        e3.setEventID("Data_Archived");
         e3.setSuccess(true);
         List<Event> b1Events = new ArrayList<>();
         b1Events.add(e1);
@@ -46,15 +46,15 @@ public class DataSourceMockup implements DataSource {
         b1.setEventList(b1Events);
 
         Event e4 = new Event();
-        e4.setEventID(EventID.Shipped_to_supplier);
+        e4.setEventID("Shipped_to_supplier");
         e4.setSuccess(true);
 
         Event e5 = new Event();
-        e5.setEventID(EventID.Data_Received);
+        e5.setEventID("Data_Received");
         e5.setSuccess(false);
 
         Event e6 = new Event();
-        e6.setEventID(EventID.Data_Archived);
+        e6.setEventID("Data_Archived");
         e6.setSuccess(false);
 
         List<Event> b2Events = new ArrayList<>();
@@ -109,7 +109,7 @@ public class DataSourceMockup implements DataSource {
     }
 
     @Override
-    public Event getBatchEvent(Long batchID, Integer roundTripNumber, EventID eventID, boolean includeDetails) throws NotFoundException {
+    public Event getBatchEvent(Long batchID, Integer roundTripNumber, String eventID, boolean includeDetails) throws NotFoundException {
         Event event = null;
         for (Batch b : dummyBatches) {
             if (b.getBatchID().equals(batchID)) {

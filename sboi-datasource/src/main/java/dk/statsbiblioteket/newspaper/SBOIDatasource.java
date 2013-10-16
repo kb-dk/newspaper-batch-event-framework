@@ -1,14 +1,12 @@
 package dk.statsbiblioteket.newspaper;
 
 import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIClientImpl;
-
 import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
 import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.DataSource;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotWorkingProperlyException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
@@ -43,7 +41,7 @@ public class SBOIDatasource implements DataSource {
     @Override
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws NotWorkingProperlyException {
         try {
-            Iterator<Batch> batches = getClient().getBatches(Arrays.asList(EventID.Data_Received), new ArrayList<EventID>(), new ArrayList<EventID>());
+            Iterator<Batch> batches = getClient().getBatches(Arrays.asList("Data_Received"), new ArrayList<String>(), new ArrayList<String>());
             List<Batch> results = new ArrayList<>();
             while (batches.hasNext()) {
                 Batch next = batches.next();
@@ -99,7 +97,7 @@ public class SBOIDatasource implements DataSource {
     }
 
     @Override
-    public Event getBatchEvent(Long batchID, Integer roundTripNumber, EventID eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
+    public Event getBatchEvent(Long batchID, Integer roundTripNumber, String eventID, boolean includeDetails) throws NotFoundException, NotWorkingProperlyException {
         Batch batch = getBatch(batchID,roundTripNumber, includeDetails);
         for (Event event : batch.getEventList()) {
             if (event.getEventID().equals(eventID)){

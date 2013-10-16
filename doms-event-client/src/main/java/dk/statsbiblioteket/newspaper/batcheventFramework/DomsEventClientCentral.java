@@ -8,7 +8,6 @@ import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGenera
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -55,7 +54,7 @@ public class DomsEventClientCentral
                                 String agent,
                                 Date timestamp,
                                 String details,
-                                EventID eventType,
+                                String eventType,
                                 boolean outcome)
             throws
             CommunicationException {

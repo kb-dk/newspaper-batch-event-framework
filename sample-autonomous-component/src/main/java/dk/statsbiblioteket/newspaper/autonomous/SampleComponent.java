@@ -12,7 +12,6 @@ import dk.statsbiblioteket.doms.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.doms.iterator.common.TreeIterator;
 import dk.statsbiblioteket.doms.iterator.filesystem.IteratorForFileSystems;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,12 +54,12 @@ public class SampleComponent
         //TODO what to do with the result?
     }
 
-    private static List<EventID> toEvents(String events) {
+    private static List<String> toEvents(String events) {
         String[] eventSplits = events.split(",");
-        List<EventID> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (String eventSplit : eventSplits) {
             try {
-            result.add(EventID.valueOf(eventSplit.trim()));
+            result.add(String.valueOf(eventSplit.trim()));
             } catch (IllegalArgumentException e){
                 //TODO log this
             }
@@ -102,8 +101,8 @@ public class SampleComponent
     }
 
     @Override
-    public EventID getEventID() {
-        return EventID.Data_Archived;
+    public String getEventID() {
+        return "Data_Archived";
     }
 
     private TreeIterator createIterator(Properties properties,

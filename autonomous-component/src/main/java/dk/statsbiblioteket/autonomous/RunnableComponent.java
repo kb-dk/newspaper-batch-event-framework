@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.autonomous;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 /**
  * This is the interface a component implementer must use.
@@ -25,7 +24,7 @@ public interface RunnableComponent {
      * The EventID that the work done by this component can be identified as
      * @return the event id
      */
-    public EventID getEventID();
+    public String getEventID();
 
     /**
      * This is the worker method for the component. Once a batch have been found that match the criteria and this batch

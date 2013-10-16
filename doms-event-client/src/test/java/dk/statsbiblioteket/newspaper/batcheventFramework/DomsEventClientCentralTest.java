@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.junit.Assert;
 import org.testng.annotations.Test;
 
@@ -23,7 +22,7 @@ public class DomsEventClientCentralTest {
                 "agent",
                 new Date(0),
                 "Details here",
-                EventID.Data_Received,
+                "Data_Received",
                 true);
 
         Assert.assertEquals(10, log.size());
@@ -46,7 +45,7 @@ public class DomsEventClientCentralTest {
                 "agent",
                 new Date(0),
                 "Details here",
-                EventID.Data_Received,
+                "Data_Received",
                 true);
 
         Assert.assertEquals(10, log.size());
@@ -67,7 +66,7 @@ public class DomsEventClientCentralTest {
                 "agent",
                 new Date(0),
                 "Details here",
-                EventID.Data_Received,
+                "Data_Received",
                 true);
 
         Assert.assertEquals(3,log.size());

@@ -15,7 +15,6 @@ import dk.statsbiblioteket.newspaper.premis.PremisComplexType;
 import dk.statsbiblioteket.newspaper.premis.Representation;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -119,7 +118,7 @@ public class PremisManipulator {
      */
     private Event convert(EventComplexType premisEvent) {
         Event result = new Event();
-        result.setEventID(EventID.valueOf(premisEvent.getEventType()));
+        result.setEventID(premisEvent.getEventType());
         result.setDetails(premisEvent.getEventDetail());
         try {
             result.setDate(dateFormat.parse(premisEvent.getEventDateTime()));
@@ -158,7 +157,7 @@ public class PremisManipulator {
     public PremisManipulator addEvent(String agent,
                                       Date timestamp,
                                       String details,
-                                      EventID eventType,
+                                      String eventType,
                                       boolean outcome) {
 
         String eventID = getEventID(timestamp);

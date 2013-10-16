@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class Event {
 
-    private EventID eventID;
+    private String eventID;
     private boolean success;
     private String details;
     private Date date;
@@ -18,11 +18,11 @@ public class Event {
     public Event() {
     }
 
-    public EventID getEventID() {
+    public String getEventID() {
         return eventID;
     }
 
-    public void setEventID(EventID eventID) {
+    public void setEventID(String eventID) {
         this.eventID = eventID;
     }
 

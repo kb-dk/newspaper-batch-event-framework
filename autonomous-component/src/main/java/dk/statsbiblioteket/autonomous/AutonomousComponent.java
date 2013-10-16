@@ -6,7 +6,6 @@ import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -37,9 +36,9 @@ public class AutonomousComponent
     private final long pollTime = 100;
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private int simultaneousProcesses;
-    private List<EventID> pastSuccessfulEvents;
-    private List<EventID> pastFailedEvents;
-    private List<EventID> futureEvents;
+    private List<String> pastSuccessfulEvents;
+    private List<String> pastFailedEvents;
+    private List<String> futureEvents;
     private boolean paused = false;
     private boolean stopped = false;
 
@@ -47,19 +46,23 @@ public class AutonomousComponent
     /**
      * Create a new Autonomous Component
      *
-     * @param runnable         the is the class that will be doing the actual work
-     * @param configuration    the Configuration as a set of properties
-     * @param lockClient       Client to the netflix curator zookeeper lockserver
-     * @param batchEventClient the client for quering and adding events
+     * @param runnable              the is the class that will be doing the actual work
+     * @param configuration         the Configuration as a set of properties
+     * @param lockClient            Client to the netflix curator zookeeper lockserver
+     * @param batchEventClient      the client for quering and adding events
+     * @param simultaneousProcesses the number of batches that can be worked on simutaniously
+     * @param pastSuccessfulEvents  events that a batch must have experienced successfully to be eligible
+     * @param pastFailedEvents      events that a batch must have experienced and failed to be eligible
+     * @param futureEvents          events that a batch must not have experienced to be eligible
      */
     public AutonomousComponent(RunnableComponent runnable,
                                Properties configuration,
                                CuratorFramework lockClient,
                                BatchEventClient batchEventClient,
                                int simultaneousProcesses,
-                               List<EventID> pastSuccessfulEvents,
-                               List<EventID> pastFailedEvents,
-                               List<EventID> futureEvents) {
+                               List<String> pastSuccessfulEvents,
+                               List<String> pastFailedEvents,
+                               List<String> futureEvents) {
 
         this.runnable = runnable;
         this.lockClient = lockClient;
@@ -167,7 +170,7 @@ public class AutonomousComponent
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
 
-                    log.info("Found batch B{}-RT{}",batch.getBatchID(),batch.getRoundTripNumber());
+                    log.info("Found batch B{}-RT{}", batch.getBatchID(), batch.getRoundTripNumber());
                     //attempt to lock
                     InterProcessLock batchlock =
                             new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
@@ -201,7 +204,7 @@ public class AutonomousComponent
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
             ArrayList<Future<?>> futures = new ArrayList<>();
             for (BatchWorker batchWorker : workers.keySet()) {
-                log.info("Submitting worker for batch {}",batchWorker.getBatch().getBatchID());
+                log.info("Submitting worker for batch {}", batchWorker.getBatch().getBatchID());
                 concurrencyConnectionStateListener.add(batchWorker);
                 Future<?> future = pool.submit(batchWorker);
                 futures.add(future);

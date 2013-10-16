@@ -5,7 +5,6 @@ import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClientFactory;
 import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
 import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,9 +33,9 @@ public class SBOIClientImplTest {
         SBOIClientImpl summa = new SBOIClientImpl(props.getProperty("sboi.summa"), new PremisManipulatorFactory(new NewspaperIDFormatter(),
                                                                      PremisManipulatorFactory.TYPE));
         Iterator<Batch> batches = summa.getBatches(
-                Arrays.asList(EventID.Data_Received),
-                new ArrayList<EventID>(),
-                Arrays.asList(EventID.Approved));
+                Arrays.asList("Data_Received"),
+                new ArrayList<String>(),
+                Arrays.asList("Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();

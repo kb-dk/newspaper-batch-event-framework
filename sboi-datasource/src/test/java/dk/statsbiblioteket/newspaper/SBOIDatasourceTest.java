@@ -4,7 +4,6 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.DataSource;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.TCKTestSuite;
 import dk.statsbiblioteket.util.Pair;
@@ -75,7 +74,7 @@ public class SBOIDatasourceTest
     }
 
     @Override
-    public EventID getValidAndSucessfullEventIDForValidBatch() {
-        return EventID.Data_Received;
+    public String getValidAndSucessfullEventIDForValidBatch() {
+        return "Data_Received";
     }
 }

@@ -1,7 +1,5 @@
 package dk.statsbiblioteket.newspaper.batcheventFramework;
 
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
-import org.apache.log4j.spi.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.util.Date;
@@ -61,7 +59,7 @@ public class CreateBatch {
             domsEventClient = domsEventClientFactory.createDomsEventClient();
 
             domsEventClient.addEventToBatch(Long.parseLong(batchId), Integer.parseInt(roundTrip), premisAgent, now, "",
-                    EventID.Data_Received, true);
+                    "Data_Received", true);
         } catch (Exception e) {
             System.err.println("Failed adding event to batch, due to: " + e.getMessage());
             log.error("Caught exception: ", e);

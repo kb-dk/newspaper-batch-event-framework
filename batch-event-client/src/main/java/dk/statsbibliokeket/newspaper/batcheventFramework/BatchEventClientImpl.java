@@ -7,7 +7,6 @@ import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
 import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public void addEventToBatch(Long batchId, int roundTripNumber, String agent, Date timestamp, String details, EventID eventType, boolean outcome) throws CommunicationException {
+    public void addEventToBatch(Long batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
         getDomsEventClient().addEventToBatch(batchId, roundTripNumber, agent, timestamp, details, eventType, outcome);
     }
 
@@ -89,9 +88,9 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<EventID> pastSuccessfulEvents,
-                                          List<EventID> pastFailedEvents,
-                                          List<EventID> futureEvents) throws CommunicationException {
+    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
+                                          List<String> pastFailedEvents,
+                                          List<String> futureEvents) throws CommunicationException {
         return getSboiClient().getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
 
     }

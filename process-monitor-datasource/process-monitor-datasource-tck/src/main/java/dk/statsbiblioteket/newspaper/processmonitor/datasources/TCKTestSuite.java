@@ -20,7 +20,7 @@ public abstract class TCKTestSuite {
 
     public abstract Pair<Long,Integer> getInvalidBatchID();
 
-    public abstract EventID getValidAndSucessfullEventIDForValidBatch();
+    public abstract String getValidAndSucessfullEventIDForValidBatch();
 
 
 

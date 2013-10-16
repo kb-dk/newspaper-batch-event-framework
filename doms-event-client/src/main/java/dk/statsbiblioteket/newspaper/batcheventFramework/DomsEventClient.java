@@ -2,7 +2,6 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 
 import java.util.Date;
@@ -28,7 +27,7 @@ public interface DomsEventClient {
                          String agent,
                          Date timestamp,
                          String details,
-                         EventID eventType,
+                         String eventType,
                          boolean outcome) throws CommunicationException;
 
     /**

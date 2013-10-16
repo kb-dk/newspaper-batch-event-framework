@@ -17,9 +17,9 @@ public interface SBOIInterface {
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<Batch> getBatches(List<EventID> pastSuccessfulEvents,
-                                      List<EventID> pastFailedEvents,
-                                      List<EventID> futureEvents) throws CommunicationException;
+    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
+                                      List<String> pastFailedEvents,
+                                      List<String> futureEvents) throws CommunicationException;
 
     /**
      * Retrieve a batch from the summa index

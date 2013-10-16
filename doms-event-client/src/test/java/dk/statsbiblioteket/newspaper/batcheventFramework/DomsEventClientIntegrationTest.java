@@ -2,7 +2,6 @@ package dk.statsbiblioteket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +29,7 @@ public class DomsEventClientIntegrationTest {
         Long batchId = 400022028242l;
         Integer roundTripNumber = 1;
         Date timestamp = new Date(0);
-        EventID eventID = EventID.Data_Received;
+        String eventID = "Data_Received";
         String details = "Details here";
         doms.addEventToBatch(batchId, roundTripNumber,
                 "agent",

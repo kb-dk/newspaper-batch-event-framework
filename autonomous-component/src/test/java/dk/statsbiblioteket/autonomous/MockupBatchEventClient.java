@@ -4,7 +4,6 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -25,7 +24,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public void addEventToBatch(Long batchId, int roundTripNumber, String agent, Date timestamp, String details, EventID eventType, boolean outcome) throws CommunicationException {
+    public void addEventToBatch(Long batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
         for (Batch batch : batches) {
             if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber){
                 Event event = new Event();
@@ -59,7 +58,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<EventID> pastEvents, List<EventID> pastEventsExclude, List<EventID> futureEvents) throws CommunicationException {
+    public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
         return batches.iterator();
     }
 }

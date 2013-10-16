@@ -57,7 +57,7 @@ public interface DataSource {
      */
     Event getBatchEvent(Long batchID,
                         Integer roundTripNumber,
-                        EventID eventID,
+                        String eventID,
                         boolean includeDetails)
             throws
             NotFoundException,

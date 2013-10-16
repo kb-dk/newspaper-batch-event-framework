@@ -5,7 +5,6 @@ import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
 import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
 import dk.statsbiblioteket.util.xml.DOM;
@@ -47,9 +46,9 @@ public class SBOIClientImpl
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<EventID> pastSuccessfulEvents,
-                                      List<EventID> pastFailedEvents,
-                                      List<EventID> futureEvents)
+    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
+                                      List<String> pastFailedEvents,
+                                      List<String> futureEvents)
             throws
             CommunicationException {
 
@@ -68,9 +67,9 @@ public class SBOIClientImpl
      */
     private Iterator<Batch> search(Long batchID,
                                    Integer roundTripNumber,
-                                   List<EventID> pastSuccessfulEvents,
-                                   List<EventID> pastFailedEvents,
-                                   List<EventID> futureEvents)
+                                   List<String> pastSuccessfulEvents,
+                                   List<String> pastFailedEvents,
+                                   List<String> futureEvents)
             throws
             CommunicationException {
 
@@ -149,9 +148,9 @@ public class SBOIClientImpl
      */
     private String toQueryString(Long batchID,
                                  Integer roundTripNumber,
-                                 List<EventID> successfulPastEvents,
-                                 List<EventID> failedPastEvents,
-                                 List<EventID> futureEvents) {
+                                 List<String> successfulPastEvents,
+                                 List<String> failedPastEvents,
+                                 List<String> futureEvents) {
 
         String base = spaced(RECORD_BASE);
         if (batchID != null) {
@@ -163,19 +162,19 @@ public class SBOIClientImpl
 
         StringBuilder events = new StringBuilder();
         if (successfulPastEvents != null) {
-            for (EventID successfulPastEvent : successfulPastEvents) {
-                events.append(spaced(SUCCESSEVENT + ":" + quoted(successfulPastEvent.name())));
+            for (String successfulPastEvent : successfulPastEvents) {
+                events.append(spaced(SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
             }
         }
         if (failedPastEvents != null) {
-            for (EventID failedPastEvent : failedPastEvents) {
-                events.append(spaced(FAILEVENT + ":" + quoted(failedPastEvent.name())));
+            for (String failedPastEvent : failedPastEvents) {
+                events.append(spaced(FAILEVENT + ":" + quoted(failedPastEvent)));
             }
         }
         if (futureEvents != null) {
-            for (EventID futureEvent : futureEvents) {
-                events.append(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent.name())));
-                events.append(spaced("-" + FAILEVENT + ":" + quoted(futureEvent.name())));
+            for (String futureEvent : futureEvents) {
+                events.append(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
+                events.append(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
             }
         }
         return base + events.toString();

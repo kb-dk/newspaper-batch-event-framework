@@ -6,7 +6,6 @@ import com.netflix.curator.retry.ExponentialBackoffRetry;
 import com.netflix.curator.test.TestingServer;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.EventID;
 import junit.framework.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -36,7 +35,7 @@ public class AutonomousComponentTest {
         testBatch.setBatchID(BATCHID);
         testBatch.setRoundTripNumber(ROUNDTRIPNUMBER);
         Event testEvent = new Event();
-        testEvent.setEventID(EventID.Data_Received);
+        testEvent.setEventID("Data_Received");
         testEvent.setSuccess(true);
         testEvent.setDate(new Date());
         testEvent.setDetails("");
@@ -51,7 +50,7 @@ public class AutonomousComponentTest {
 
 
         autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient, 1,
-                                              Arrays.asList(EventID.Data_Received), null, null);
+                                              Arrays.asList("Data_Received"), null, null);
 
     }
 
@@ -73,7 +72,7 @@ public class AutonomousComponentTest {
         boolean testEventFound = false;
         for (Event event : events) {
             if (event.getEventID()
-                     .equals(EventID.Data_Archived)) {
+                     .equals("Data_Archived")) {
                 testEventFound = true;
             }
         }
@@ -86,7 +85,7 @@ public class AutonomousComponentTest {
 
         for (Event event : eventsAfter) {
             if (event.getEventID()
-                     .equals(EventID.Data_Archived)) {
+                     .equals("Data_Archived")) {
                 testEventFound = true;
             }
         }
