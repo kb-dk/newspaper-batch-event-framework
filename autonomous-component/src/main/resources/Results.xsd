@@ -32,7 +32,7 @@
                 <xs:element ref="failures" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation>
-                            Contains a list of QA failures, each in their own qafailure element.
+                            Contains a list of failures, each in their own failure element.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>

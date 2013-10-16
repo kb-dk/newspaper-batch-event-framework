@@ -143,7 +143,6 @@ public class SampleComponent
             }
 
         }
-        resultCollector.setSuccess(true);
         resultCollector.setTimestamp(new Date());
     }
 

@@ -8,12 +8,23 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This listener listens for connection events in regards to the lock server. Our locks are only valid
+ * as long as we maintain a connection to the lock server.
+ * When the connection is suspended, execution should be paused. When the connection is lost, all
+ * execution should stop, as we cannot ensure that the batches are locked anymore.
+ *
+ */
 public class ConcurrencyConnectionStateListener implements ConnectionStateListener{
     private static Logger log = org.slf4j.LoggerFactory.getLogger(ConcurrencyConnectionStateListener.class);
 
     private AutonomousComponent autonomousComponent;
     private List<BatchWorker> batchWorkerList = new ArrayList<>();
 
+    /**
+     * Constructs a new state listener
+     * @param autonomousComponent the autonomous component it listens for
+     */
     public ConcurrencyConnectionStateListener(AutonomousComponent autonomousComponent) {
         this.autonomousComponent = autonomousComponent;
     }
@@ -39,24 +50,38 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
         }
     }
 
+
+    /**
+     * Unpause all workers
+     */
     private void unpauseWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setPause(false);
         }
     }
 
+    /**
+     * Pause all workers
+     */
     private void pauseWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setPause(true);
         }
     }
 
+    /**
+     * Stop all workers
+     */
     private void stopWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setStop(true);
         }
     }
 
+    /**
+     * Add a batch worker to the list of executions to stop or suspend
+     * @param batchWorker the batch worker
+     */
     public void add(BatchWorker batchWorker) {
         batchWorkerList.add(batchWorker);
     }

@@ -35,6 +35,7 @@ public class AutonomousComponent
     private final RunnableComponent runnable;
     private final long pollTime = 100;
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
+    private final long workerTimout;
     private int simultaneousProcesses;
     private List<String> pastSuccessfulEvents;
     private List<String> pastFailedEvents;
@@ -54,6 +55,9 @@ public class AutonomousComponent
      * @param pastSuccessfulEvents  events that a batch must have experienced successfully to be eligible
      * @param pastFailedEvents      events that a batch must have experienced and failed to be eligible
      * @param futureEvents          events that a batch must not have experienced to be eligible
+     *                              <p/>
+     *                              timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
+     *                              timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
      */
     public AutonomousComponent(RunnableComponent runnable,
                                Properties configuration,
@@ -71,14 +75,16 @@ public class AutonomousComponent
         this.pastSuccessfulEvents = pastSuccessfulEvents;
         this.pastFailedEvents = pastFailedEvents;
         this.futureEvents = futureEvents;
-        timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
-        timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
+        timeoutSBOI = parseLong(configuration.getProperty("timeout_SBOI"), 5000l);
+        timeoutBatch = parseLong(configuration.getProperty("timeout_Batch"), 2000l);
+        workerTimout = parseLong(configuration.getProperty("worker_timeout"),60*60*1000l);
         concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
         this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
     }
 
     /**
-     * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until errors
+     * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until
+     * errors
      * are being thrown.
      *
      * @param lock the lock to release
@@ -88,8 +94,11 @@ public class AutonomousComponent
         while (!released) {
             try {
                 lock.release();
-            } catch (Exception e) {
+            } catch (IllegalStateException e) {
                 released = true;
+            } catch (Exception e) {
+                log.warn("Caught exception while trying to release lock", e);
+                return;
             }
         }
     }
@@ -123,17 +132,38 @@ public class AutonomousComponent
      */
     private static String getBatchLockPath(RunnableComponent runnable,
                                            Batch batch) {
-        return "/" + runnable.getComponentName() + getBatchFormattetID(batch);
-    }
-
-    protected static String getBatchFormattetID(Batch batch) {
-        return "/B" + batch.getBatchID() + "-RT" + batch.getRoundTripNumber();
+        return "/" + runnable.getComponentName() + "/" + batch.getFullID();
     }
 
     /**
-     * The primary method of the autonomous components. This method does the following Locks the SBOI gets the batches
-     * in the right state attempts to lock one when the first one is locked or no more batches in the list, unlock SBOI
-     * do the work on the batch store the results unlock the batch
+     * Parse the propertyValue as a long, and if failing, return the default value
+     *
+     * @param propertyValue the string to parse
+     * @param defaultValue  the default value
+     *
+     * @return the long value
+     */
+    private long parseLong(String propertyValue,
+                           long defaultValue) {
+        try {
+            return Long.parseLong(propertyValue);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * The primary method of the autonomous components. This method does the following
+     *
+     * <ul>
+     * <li> Locks the SBOI</li>
+     * <li> gets the batches in the right state</li>
+     * <li> attempts to lock it</li>
+     * <li> when #simultanousProcesses is locked or no more batches in the list</li>
+     * <li> unlock SBOI</li>
+     * <li> do the work on the batches and store the results for each</li>
+     * <li> when all work is completed, unlock all the batches</li>
+     * </ul>
      *
      * @return true if a batch was succesfully worked on. False if no batch was ready
      * @throws CouldNotGetLockException if no lock could be achieved within the set timeouts. This is not an anormal
@@ -149,14 +179,14 @@ public class AutonomousComponent
             throws
             Exception {
 
-        InterProcessLock SBOI_lock = null;
+        InterProcessLock SBOILock = null;
         Map<String, Boolean> result = new HashMap<>();
         Map<BatchWorker, InterProcessLock> workers = new HashMap<>();
         try {
             //lock SBOI for this component name
-            SBOI_lock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
+            SBOILock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
             try {
-                boolean sboi_locked = acquireQuietly(SBOI_lock, timeoutSBOI);
+                boolean sboi_locked = acquireQuietly(SBOILock, timeoutSBOI);
                 if (!sboi_locked) {
                     throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
                 }
@@ -170,13 +200,13 @@ public class AutonomousComponent
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
 
-                    log.info("Found batch B{}-RT{}", batch.getBatchID(), batch.getRoundTripNumber());
+                    log.info("Found batch {}", batch.getFullID());
                     //attempt to lock
                     InterProcessLock batchlock =
                             new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
-                        log.info("Batch locked, creating a worker");
+                        log.info("Batch {} locked, creating a worker", batch.getFullID());
                         BatchWorker worker = new BatchWorker(runnable,
                                                              new ResultCollector(runnable.getComponentName(),
                                                                                  runnable.getComponentVersion()),
@@ -196,11 +226,11 @@ public class AutonomousComponent
                 throw runtimeException;
             } finally {
                 log.info("Releasing SBOI lock");
-                releaseQuietly(SBOI_lock);
+                releaseQuietly(SBOILock);
             }
 
 
-            stated();
+            checkLockServerConnectionState();
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
             ArrayList<Future<?>> futures = new ArrayList<>();
             for (BatchWorker batchWorker : workers.keySet()) {
@@ -209,51 +239,69 @@ public class AutonomousComponent
                 Future<?> future = pool.submit(batchWorker);
                 futures.add(future);
             }
-            log.info("Shutting down the pool, and causing the workers to terminate");
+            log.info("Shutting down the pool, and waiting for the workers to terminate");
             pool.shutdown();
-            while (!pool.isTerminated()) {
-                log.info("Waiting to terminate");
-                stated(pool);
-                pool.awaitTermination(pollTime, TimeUnit.MILLISECONDS);
-            }
 
+            //The wait loop for the running threads
+            long start = System.currentTimeMillis();
             boolean allDone = false;
             while (!allDone) {
+                log.info("Waiting to terminate");
                 allDone = true;
                 for (Future<?> future : futures) {
                     allDone = allDone && future.isDone();
                 }
-                stated(pool);
+                checkLockServerConnectionState(pool);
                 Thread.sleep(pollTime);
+                if (System.currentTimeMillis() - start > workerTimout){
+                    log.error("Worker timout exceeded, shutting down all threads. We still need to wait for them" +
+                              " to terminate, however.");
+                    pool.shutdownNow();
+                    for (Future<?> future : futures) {
+                        future.cancel(true);
+                    }
+                }
             }
             log.info("All is now done, all workers have completed");
             for (BatchWorker batchWorker : workers.keySet()) {
-                result.put(getBatchFormattetID(batchWorker.getBatch()), batchWorker.getResultCollector().isSuccess());
+                result.put(batchWorker.getBatch().getFullID(), batchWorker.getResultCollector().isSuccess());
             }
         } finally {
             for (InterProcessLock batchLock : workers.values()) {
                 releaseQuietly(batchLock);
             }
-            releaseQuietly(SBOI_lock);
+            releaseQuietly(SBOILock);
         }
         return result;
     }
 
-    private void stated()
+    /**
+     * Check the lock server connection state. If the connection is lost, all our locks are dirty, so the execution
+     * should stop. An CommunicationException is thrown in this case. If the connection is suspended, enter into an
+     * potentially infinite loop waiting for the connection to either be restored or lost.
+     *
+     * @throws CommunicationException if the connection was lost
+     */
+    private void checkLockServerConnectionState()
             throws
             CommunicationException {
-        stated(null);
+        checkLockServerConnectionState(null);
     }
 
     /**
-     * Checks the paused and stopped flags to pause or halt execution. It will stop the execution as best as it is able
+     * Check the lock server connection state. If the connection is lost, all our locks are dirty, so the execution
+     * should stop. An CommunicationException is thrown in this case. If the connection is suspended, enter into an
+     * potentially infinite loop waiting for the connection to either be restored or lost.
      *
-     * @throws CommunicationException If the component have been stopped
+     * @param pool this is the pool of executing threads. The threads will be stopped as best as the system is able, if
+     *             the connection is lost.
+     *
+     * @throws CommunicationException if the connection was lost
      */
-    private void stated(ExecutorService pool)
+    private void checkLockServerConnectionState(ExecutorService pool)
             throws
             CommunicationException {
-        stop(pool);
+        checkStopped(pool);
         while (paused && !stopped) {
             try {
                 Thread.sleep(pollTime);
@@ -261,10 +309,17 @@ public class AutonomousComponent
 
             }
         }
-        stop(pool);
+        checkStopped(pool);
     }
 
-    private void stop(ExecutorService pool)
+    /**
+     * Check if the stopped flag is set. If set, and pool is non-null, shut down the pool
+     *
+     * @param pool the pool of worker threads
+     *
+     * @throws CommunicationException if the stopped flag is set
+     */
+    private void checkStopped(ExecutorService pool)
             throws
             CommunicationException {
         if (stopped) {
@@ -275,10 +330,23 @@ public class AutonomousComponent
         }
     }
 
+    /**
+     * Mark the connection to the lock server as suspended or not
+     *
+     * @param paused true if the connection is suspended
+     */
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
 
+    /**
+     * Mark the connection to the lock server as lost
+     *
+     * @param stopped if true, the connection is lost
+     *
+     * @see #checkLockServerConnectionState()
+     * @see #checkStopped(java.util.concurrent.ExecutorService)
+     */
     public void setStopped(boolean stopped) {
         this.stopped = stopped;
     }

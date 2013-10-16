@@ -1,7 +1,7 @@
 package dk.statsbiblioteket.autonomous;
 
 
-/*
+/**
  The component could not get the lock, and could thus not do work.
  */
 public class CouldNotGetLockException extends Exception{

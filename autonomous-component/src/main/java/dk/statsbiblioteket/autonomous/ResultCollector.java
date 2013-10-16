@@ -28,7 +28,7 @@ public class ResultCollector {
     public ResultCollector(String tool,
                            String version) {
         resultStructure = new ObjectFactory().createResult();
-        setSuccess(false);
+        setSuccess(true);
         resultStructure.setFailures(new Failures());
         resultStructure.setTool(tool);
         resultStructure.setVersion(version);
@@ -49,7 +49,7 @@ public class ResultCollector {
      *
      * @param success the sucesss
      */
-    public void setSuccess(boolean success) {
+    private void setSuccess(boolean success) {
         resultStructure.setOutcome(success ? "Success" : "Failure");
     }
 
@@ -93,6 +93,7 @@ public class ResultCollector {
             xmlDetails.getContent().addAll(Arrays.asList(details));
         }
         list.add(failure);
+        setSuccess(false);
     }
 
     /**
@@ -130,7 +131,7 @@ public class ResultCollector {
 
     }
 
-    public XMLGregorianCalendar format(Date date) {
+    private XMLGregorianCalendar format(Date date) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
         XMLGregorianCalendar date2 = null;

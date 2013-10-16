@@ -8,14 +8,14 @@ import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
 public interface RunnableComponent {
 
     /**
-     * Get the name of the component. Used as part of the premis agent string for the event, and for locking batches
+     * Get the name of the component. Used as part of the event/failure message, and for locking batches
      * to components
      * @return the component name
      */
     public String getComponentName();
 
     /**
-     * Get the version of the component. Used as part of the premis agent string.
+     * Get the version of the component. Used as part of the event/failure message.
      * @return the component version
      */
     public String getComponentVersion();

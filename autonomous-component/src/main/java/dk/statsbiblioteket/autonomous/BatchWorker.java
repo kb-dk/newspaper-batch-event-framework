@@ -7,6 +7,11 @@ import dk.statsbiblioteket.util.Strings;
 
 import java.util.Date;
 
+/**
+ * The purpose of this class is the decorate a runnable component with additional behaivour.
+ * It ensures that the result of the execution is written back to DOMS as an event.
+ *
+ */
 public class BatchWorker
         implements Runnable {
 
@@ -28,7 +33,7 @@ public class BatchWorker
         this.batchEventClient = batchEventClient;
     }
 
-    private String getComponentFormattetName() {
+    private String getComponentFormattedName() {
         return component.getComponentName() + "-" + component.getComponentVersion();
     }
 
@@ -40,12 +45,11 @@ public class BatchWorker
             component.doWorkOnBatch(batch, resultCollector);
         } catch (Exception e) {
             //the work failed
-            resultCollector.setSuccess(false);
-            resultCollector.addFailure(AutonomousComponent.getBatchFormattetID(batch),
+            resultCollector.addFailure(batch.getFullID(),
                                        "Component Failure",
-                                       getComponentFormattetName(),
+                                       getComponentFormattedName(),
                                        "Component threw exception",
-                                       e.getMessage());
+                                       e.toString());
         }
         preserveResult(batch, resultCollector);
     }
@@ -67,7 +71,7 @@ public class BatchWorker
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    //just keep sleeping
                 }
             }
             if (stop){
@@ -75,13 +79,12 @@ public class BatchWorker
             }
             batchEventClient.addEventToBatch(batch.getBatchID(),
                                              batch.getRoundTripNumber(),
-                                             getComponentFormattetName(),
+                                             getComponentFormattedName(),
                                              result.getTimestamp(),
                                              result.toReport(),
                                              component.getEventID(),
                                              result.isSuccess());
         } catch (CommunicationException e) {
-            resultCollector.setSuccess(false);
             resultCollector.addFailure("Autonomous Component System",
                                        e.getClass().getName(),
                                        component.getComponentName(),

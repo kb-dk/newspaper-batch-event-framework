@@ -26,6 +26,5 @@ public class TestingComponent implements RunnableComponent {
     @Override
     public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
         System.out.println("working");
-        resultCollector.setSuccess(true);
     }
 }
