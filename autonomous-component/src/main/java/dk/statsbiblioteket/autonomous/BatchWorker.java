@@ -1,8 +1,8 @@
 package dk.statsbiblioteket.autonomous;
 
-import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClient;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
 import dk.statsbiblioteket.util.Strings;
 
 import java.util.Date;

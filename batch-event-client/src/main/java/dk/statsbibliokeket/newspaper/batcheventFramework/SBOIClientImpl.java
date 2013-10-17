@@ -2,11 +2,11 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
 import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
+import dk.statsbiblioteket.autonomous.batcheventFramework.PremisManipulatorFactory;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.NotFoundException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.SBOIInterface;
 import dk.statsbiblioteket.util.xml.DOM;
 import dk.statsbiblioteket.util.xml.XPathSelector;
 import net.sf.json.JSONObject;

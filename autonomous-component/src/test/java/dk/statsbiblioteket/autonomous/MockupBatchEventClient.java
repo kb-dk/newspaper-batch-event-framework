@@ -1,9 +1,9 @@
 package dk.statsbiblioteket.autonomous;
 
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Event;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Event;
 
 import java.util.Date;
 import java.util.Iterator;

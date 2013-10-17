@@ -6,11 +6,9 @@ import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
-import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
 
 import java.util.ArrayList;
 import java.util.Iterator;

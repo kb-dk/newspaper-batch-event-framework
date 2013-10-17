@@ -4,8 +4,8 @@ import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.recipes.locks.InterProcessLock;
 import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;

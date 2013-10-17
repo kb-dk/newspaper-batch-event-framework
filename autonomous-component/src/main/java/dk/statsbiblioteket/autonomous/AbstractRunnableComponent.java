@@ -2,7 +2,7 @@ package dk.statsbiblioteket.autonomous;
 
 import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 import dk.statsbiblioteket.autonomous.iterator.filesystem.transforming.TransformingIteratorForFileSystems;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
 
 import java.io.File;
 import java.util.Properties;

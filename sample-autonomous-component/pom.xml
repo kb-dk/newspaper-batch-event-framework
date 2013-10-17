@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>dk.statsbiblioteket.newspaper.autonomous.SampleComponent</mainClass>
+                            <mainClass>dk.statsbiblioteket.autonomous.autonomous.SampleComponent</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

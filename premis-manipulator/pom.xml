@@ -26,7 +26,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <generatePackage>dk.statsbiblioteket.newspaper.premis</generatePackage>
+                    <generatePackage>dk.statsbiblioteket.autonomous.premis</generatePackage>
                 </configuration>
             </plugin>
         </plugins>

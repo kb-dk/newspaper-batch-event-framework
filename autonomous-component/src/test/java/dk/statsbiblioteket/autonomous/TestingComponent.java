@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.autonomous;
 
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
 
 public class TestingComponent implements RunnableComponent {
 

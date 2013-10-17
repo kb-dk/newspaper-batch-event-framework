@@ -1,10 +1,10 @@
 package dk.statsbiblioteket.autonomous;
 
-import dk.statsbiblioteket.newspaper.autonomous.Details;
-import dk.statsbiblioteket.newspaper.autonomous.Failure;
-import dk.statsbiblioteket.newspaper.autonomous.Failures;
-import dk.statsbiblioteket.newspaper.autonomous.ObjectFactory;
-import dk.statsbiblioteket.newspaper.autonomous.Result;
+import dk.statsbiblioteket.autonomous.autonomous.Details;
+import dk.statsbiblioteket.autonomous.autonomous.Failure;
+import dk.statsbiblioteket.autonomous.autonomous.Failures;
+import dk.statsbiblioteket.autonomous.autonomous.ObjectFactory;
+import dk.statsbiblioteket.autonomous.autonomous.Result;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

@@ -1,14 +1,14 @@
 package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
-import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClient;
-import dk.statsbiblioteket.newspaper.batcheventFramework.DomsEventClientFactory;
-import dk.statsbiblioteket.newspaper.batcheventFramework.NewspaperIDFormatter;
-import dk.statsbiblioteket.newspaper.batcheventFramework.PremisManipulatorFactory;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.NotFoundException;
-import dk.statsbiblioteket.newspaper.processmonitor.datasources.SBOIInterface;
+import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClient;
+import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClientFactory;
+import dk.statsbiblioteket.autonomous.batcheventFramework.NewspaperIDFormatter;
+import dk.statsbiblioteket.autonomous.batcheventFramework.PremisManipulatorFactory;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.NotFoundException;
+import dk.statsbiblioteket.autonomous.processmonitor.datasources.SBOIInterface;
 import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBException;

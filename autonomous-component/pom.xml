@@ -27,7 +27,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <generatePackage>dk.statsbiblioteket.newspaper.autonomous</generatePackage>
+                    <generatePackage>dk.statsbiblioteket.autonomous.autonomous</generatePackage>
                 </configuration>
             </plugin>
         </plugins>
