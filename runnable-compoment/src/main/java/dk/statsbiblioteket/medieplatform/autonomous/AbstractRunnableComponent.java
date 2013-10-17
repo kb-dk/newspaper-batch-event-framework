@@ -21,7 +21,6 @@ public abstract class AbstractRunnableComponent
     }
 
     public Properties getProperties() {
-
         return properties;
     }
 

@@ -1,11 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.autonomous.autonomous.Details;
-import dk.statsbiblioteket.autonomous.autonomous.Failure;
-import dk.statsbiblioteket.autonomous.autonomous.Failures;
-import dk.statsbiblioteket.autonomous.autonomous.ObjectFactory;
-import dk.statsbiblioteket.autonomous.autonomous.Result;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

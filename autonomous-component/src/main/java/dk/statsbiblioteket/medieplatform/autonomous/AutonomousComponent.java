@@ -184,13 +184,13 @@ public class AutonomousComponent
      *                                  processed.
      * @throws LockingException         if the locking framework fails
      * @throws CommunicationException   if communication with SBOI fails
-     * @throws WorkException            if the runnable component threw an exception, it will be wrapped as a work
-     *                                  exception
      */
     @Override
     public Map<String, Boolean> call()
             throws
-            Exception {
+            LockingException,
+            CouldNotGetLockException,
+            CommunicationException {
 
         InterProcessLock SBOILock = null;
         Map<String, Boolean> result = new HashMap<>();
@@ -265,7 +265,11 @@ public class AutonomousComponent
                     allDone = allDone && future.isDone();
                 }
                 checkLockServerConnectionState(pool);
-                Thread.sleep(pollTime);
+                try {
+                    Thread.sleep(pollTime);
+                } catch (InterruptedException e) {
+                    //okay, continue
+                }
                 if (System.currentTimeMillis() - start > workerTimout) {
                     log.error("Worker timout exceeded, shutting down all threads. We still need to wait for them"
                               + " to terminate, however.");

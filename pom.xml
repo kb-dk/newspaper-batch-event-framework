@@ -24,6 +24,7 @@
         <module>sample-autonomous-component</module>
         <module>sboi-datasource</module>
         <module>batch-event-framework-common</module>
+        <module>runnable-compoment</module>
     </modules>
     <dependencyManagement>
         <dependencies>
