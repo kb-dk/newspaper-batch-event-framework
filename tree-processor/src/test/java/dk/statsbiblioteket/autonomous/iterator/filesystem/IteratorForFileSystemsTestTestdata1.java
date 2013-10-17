@@ -19,7 +19,7 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
             File testRoot = new File(rootTestdataDir, "small-test-batch_contents-included/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
-            iterator = new IteratorForFileSystems(testRoot);
+            iterator = new SimpleIteratorForFilesystems(testRoot);
         }
         return iterator;
     }

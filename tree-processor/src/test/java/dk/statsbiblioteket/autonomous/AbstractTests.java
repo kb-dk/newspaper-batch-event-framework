@@ -4,6 +4,7 @@ import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.TreeIterator;
 import org.apache.commons.io.IOUtils;
+import org.testng.Assert;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -82,6 +83,7 @@ public abstract class AbstractTests {
 
     private void printStructure(TreeIterator avisIterator) throws IOException {
         int indent = 0;
+        int files = 0;
         while (avisIterator.hasNext()) {
             ParsingEvent next = avisIterator.next();
             switch (next.getType()){
@@ -115,11 +117,15 @@ public abstract class AbstractTests {
                     //for (String s1 : content) {
                     //    System.out.println(s+s1);
                     // }
+                    files++;
                     break;
+
                 }
             }
 
         }
+        Assert.assertEquals(indent,0,"Indent is not reset after iteration");
+        Assert.assertTrue(files>10,"We have not encountered very much, is the test data broken?");
     }
 
 

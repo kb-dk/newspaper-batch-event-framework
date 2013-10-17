@@ -8,6 +8,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * This class represents an iterator over a virtual folder, ie. a folder representing a group of files with identical
+ * prefixes
+ */
 public class VirtualIteratorForFileSystems extends CommonTransformingIterator {
     protected String prefix;
     private List<File> group;

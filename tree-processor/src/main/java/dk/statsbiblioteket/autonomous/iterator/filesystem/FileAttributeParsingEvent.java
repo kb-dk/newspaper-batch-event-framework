@@ -5,6 +5,7 @@ import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,13 +48,15 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
     public String getChecksum()
             throws
             IOException {
-        if (checksumFile != null && checksumFile.canRead()){
+        if (checksumFile != null){
             try (BufferedReader reader =  new BufferedReader(new FileReader(checksumFile))){
                 String firstLine = reader.readLine();
                 if (firstLine == null){
-                    return null;
+                    return "";
                 }
                 return firstWord(firstLine).trim().toLowerCase();
+            } catch (FileNotFoundException e) {
+                return null;
             }
         }
         return null;
@@ -62,6 +65,9 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
     private String firstWord(String firstLine) {
         firstLine = firstLine.trim();
         String[] splits = firstLine.split("\\s",2);
+        if (splits.length == 0){
+            return "";
+        }
         return splits[0];
     }
 

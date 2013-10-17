@@ -23,7 +23,8 @@ import java.util.Map;
  *
  * 1. All data files (ie. the ones matched by the dataFilePattern) will be made into special folders. The contents
  * of the datafile will reside in a virtual file called contents in that folder
- * 2. Prefix grouping. If a folder contains a number of files with a common prefix, these will be grouped into a virtual
+ * 2. Prefix grouping. If a folder contains a number of files with a common prefix, these will be grouped into a
+ * virtual
  * folder, named as the prefix. This only happens if there are more than one common prefix.
  * 2b. If only one of the groups contain no datafiles, this group will be cancelled, and the files will reside in the
  * real folder.
@@ -41,10 +42,11 @@ public class TransformingIteratorForFileSystems
      * Create the transforming Iterator for file systems
      *
      * @param id              The root folder
-     * @param groupingPattern    the grouping regular expression, ie. the char used as separator between prefix and
+     * @param groupingPattern the grouping regular expression, ie. the char used as separator between prefix and
      *                        postfix.
      *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
+     * @param checksumPostfix this is the postfix for the checksum files. Note, THIS IS NOT A PATTERN
      */
     public TransformingIteratorForFileSystems(File id,
                                               String groupingPattern,
@@ -105,7 +107,8 @@ public class TransformingIteratorForFileSystems
             Collection<File> dataFiles = getDataFiles(attributes);
             for (File dataFile : dataFiles) {
                 attributes.remove(dataFile);
-                virtualChildren.add(new DatafileIterator(dataFile,getBatchFolder(), getChecksumPostfix(), getGroupingChar()));
+                virtualChildren
+                        .add(new DatafileIterator(dataFile, getBatchFolder(), getChecksumPostfix(), getGroupingChar()));
             }
 
 

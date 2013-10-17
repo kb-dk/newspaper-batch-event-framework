@@ -1,9 +1,5 @@
 package dk.statsbiblioteket.autonomous.iterator;
 
-import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.autonomous.iterator.common.NodeBeginsParsingEvent;
-import dk.statsbiblioteket.autonomous.iterator.common.NodeEndParsingEvent;
-import dk.statsbiblioteket.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.autonomous.iterator.common.NodeBeginsParsingEvent;
@@ -99,7 +95,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
             //Okay, so we have exhausted the children iterator also.
             if (done) {
                 //And we have given a "NodeEndEvent"
-                throw new NoSuchElementException("Iterator for id" + id + " exhausted");
+                throw new NoSuchElementException("Iterator for id " + id + " exhausted");
             } else {
                 //We have not given the "NodeEndEvent" so return this.
                 done = true;
