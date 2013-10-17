@@ -98,8 +98,9 @@ public class DomsEventClientCentral
                 return getRoundTripID(batchId, roundTripNumber);
             } catch (BackendInvalidResourceException e) {
                 //no roundTripObject, so sad
+                //but alas, we can continue
             }
-            //but alas, we can continue
+
             //find the batch object
             String batchObject;
 

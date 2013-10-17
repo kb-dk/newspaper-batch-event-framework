@@ -16,6 +16,7 @@ import dk.statsbiblioteket.autonomous.premis.Representation;
 import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
 import dk.statsbiblioteket.autonomous.processmonitor.datasources.Event;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -38,7 +39,7 @@ import java.util.List;
 public class PremisManipulator {
 
     //TODO logging in all the methods
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(PremisManipulator.class);
+    private static Logger log = LoggerFactory.getLogger(PremisManipulator.class);
 
 
     private final static QName _EventOutcome_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcome");
@@ -170,7 +171,7 @@ public class PremisManipulator {
         EventComplexType event = factory.createEventComplexType();
 
         event.setEventDateTime(dateFormat.format(timestamp));
-        event.setEventType(eventType.toString());
+        event.setEventType(eventType);
 
 
         EventIdentifierComplexType identifier = factory.createEventIdentifierComplexType();

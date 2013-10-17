@@ -51,7 +51,7 @@
                 conf
             </outputDirectory>
             <fileMode>
-                555
+                664
             </fileMode>
             <directoryMode>
                 775
