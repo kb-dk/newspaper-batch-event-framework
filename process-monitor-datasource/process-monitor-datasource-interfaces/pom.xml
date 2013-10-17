@@ -13,6 +13,14 @@
 
     <artifactId>process-monitor-datasource-interfaces</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>batch-event-framework-common</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
 
     
 </project>

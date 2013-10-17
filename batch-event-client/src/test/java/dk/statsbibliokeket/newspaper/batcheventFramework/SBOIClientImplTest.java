@@ -1,10 +1,10 @@
 package dk.statsbibliokeket.newspaper.batcheventFramework;
 
-import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClient;
-import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClientFactory;
-import dk.statsbiblioteket.autonomous.batcheventFramework.NewspaperIDFormatter;
-import dk.statsbiblioteket.autonomous.batcheventFramework.PremisManipulatorFactory;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
+import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

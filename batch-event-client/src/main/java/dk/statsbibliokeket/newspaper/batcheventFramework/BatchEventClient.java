@@ -1,7 +1,6 @@
 package dk.statsbibliokeket.newspaper.batcheventFramework;
 
-import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClient;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.SBOIInterface;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
 
 /**
  * The interface for the batch event client. It is just a combination of the DomsEventClient and the SBOIInterface

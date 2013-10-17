@@ -23,6 +23,7 @@
         <module>tree-processor</module>
         <module>sample-autonomous-component</module>
         <module>sboi-datasource</module>
+        <module>batch-event-framework-common</module>
     </modules>
     <dependencyManagement>
         <dependencies>

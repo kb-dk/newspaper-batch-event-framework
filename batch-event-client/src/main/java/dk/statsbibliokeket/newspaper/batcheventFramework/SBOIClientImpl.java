@@ -2,11 +2,10 @@ package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
 import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.autonomous.batcheventFramework.PremisManipulatorFactory;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.NotFoundException;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.SBOIInterface;
+import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
+import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.util.xml.DOM;
 import dk.statsbiblioteket.util.xml.XPathSelector;
 import net.sf.json.JSONObject;
@@ -65,7 +64,7 @@ public class SBOIClientImpl
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    private Iterator<Batch> search(Long batchID,
+    private Iterator<Batch> search(String batchID,
                                    Integer roundTripNumber,
                                    List<String> pastSuccessfulEvents,
                                    List<String> pastFailedEvents,
@@ -117,7 +116,7 @@ public class SBOIClientImpl
      * @throws NotFoundException if the described batch could not be found
      */
     @Override
-    public Batch getBatch(Long batchID,
+    public Batch getBatch(String batchID,
                           Integer roundTripNumber)
             throws
             CommunicationException,
@@ -146,7 +145,7 @@ public class SBOIClientImpl
      * @param futureEvents the events the batch must not have experienced
      * @return the query string
      */
-    private String toQueryString(Long batchID,
+    private String toQueryString(String batchID,
                                  Integer roundTripNumber,
                                  List<String> successfulPastEvents,
                                  List<String> failedPastEvents,

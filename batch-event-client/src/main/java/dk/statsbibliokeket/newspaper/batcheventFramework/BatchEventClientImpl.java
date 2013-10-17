@@ -1,14 +1,13 @@
 package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
-import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClient;
-import dk.statsbiblioteket.autonomous.batcheventFramework.DomsEventClientFactory;
-import dk.statsbiblioteket.autonomous.batcheventFramework.NewspaperIDFormatter;
-import dk.statsbiblioteket.autonomous.batcheventFramework.PremisManipulatorFactory;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.Batch;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.CommunicationException;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.NotFoundException;
-import dk.statsbiblioteket.autonomous.processmonitor.datasources.SBOIInterface;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
+import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
+import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -68,17 +67,17 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public void addEventToBatch(Long batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
+    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
         getDomsEventClient().addEventToBatch(batchId, roundTripNumber, agent, timestamp, details, eventType, outcome);
     }
 
     @Override
-    public String createBatchRoundTrip(Long batchId, int roundTripNumber) throws CommunicationException {
+    public String createBatchRoundTrip(String batchId, int roundTripNumber) throws CommunicationException {
         return getDomsEventClient().createBatchRoundTrip(batchId, roundTripNumber);
     }
 
     @Override
-    public Batch getBatch(Long batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
+    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         return getDomsEventClient().getBatch(batchId, roundTripNumber);
     }
 
