@@ -18,7 +18,7 @@ public abstract class ParsingEvent {
 
     /**
      * This represents the "name" of the the directory/file/object when the event was encountered.
-     * @return the local name
+     * @return the name
      */
     public String getName() {
         return name;

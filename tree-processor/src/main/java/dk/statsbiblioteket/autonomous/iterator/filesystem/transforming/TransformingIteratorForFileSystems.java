@@ -15,6 +15,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is the transforming iterator for filesystems. It allows one to iterate over a tree structure on the file system
+ * but having it transformed inline to a format that is suitable to ingest into doms.
+ *
+ * The transformations are
+ *
+ * 1. All data files (ie. the ones matched by the dataFilePattern) will be made into special folders. The contents
+ * of the datafile will reside in a virtual file called contents in that folder
+ * 2. Prefix grouping. If a folder contains a number of files with a common prefix, these will be grouped into a virtual
+ * folder, named as the prefix. This only happens if there are more than one common prefix.
+ * 2b. If only one of the groups contain no datafiles, this group will be cancelled, and the files will reside in the
+ * real folder.
+ *
+ * There will be no virtual folders inside virtual folders.
+ */
 public class TransformingIteratorForFileSystems
         extends CommonTransformingIterator {
 
@@ -26,16 +41,16 @@ public class TransformingIteratorForFileSystems
      * Create the transforming Iterator for file systems
      *
      * @param id              The root folder
-     * @param groupingChar    the grouping regular expression, ie. the char used as separator between prefix and
+     * @param groupingPattern    the grouping regular expression, ie. the char used as separator between prefix and
      *                        postfix.
      *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
      */
     public TransformingIteratorForFileSystems(File id,
-                                              String groupingChar,
+                                              String groupingPattern,
                                               String dataFilePattern,
                                               String checksumPostfix) {
-        this(id, id.getParentFile(), groupingChar, dataFilePattern, checksumPostfix);
+        this(id, id.getParentFile(), groupingPattern, dataFilePattern, checksumPostfix);
     }
 
     /**
