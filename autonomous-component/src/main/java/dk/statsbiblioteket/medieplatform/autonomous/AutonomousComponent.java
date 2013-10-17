@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,42 +41,58 @@ public class AutonomousComponent
     private boolean stopped = false;
 
 
+    public AutonomousComponent(RunnableComponent runnable,
+                               CuratorFramework lockClient,
+                               BatchEventClient batchEventClient,
+                               int simultaneousProcesses,
+                               List<String> pastSuccessfulEvents,
+                               List<String> pastFailedEvents,
+                               List<String> futureEvents,
+                               long timeoutSBOI,
+                               long timeoutBatch,
+                               long workerTimout) {
+        this.lockClient = lockClient;
+        this.batchEventClient = batchEventClient;
+        this.timeoutSBOI = timeoutSBOI;
+        this.timeoutBatch = timeoutBatch;
+        this.runnable = runnable;
+        this.workerTimout = workerTimout;
+        this.simultaneousProcesses = simultaneousProcesses;
+        this.pastSuccessfulEvents = pastSuccessfulEvents;
+        this.pastFailedEvents = pastFailedEvents;
+        this.futureEvents = futureEvents;
+        concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
+        this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
+
+    }
+
     /**
      * Create a new Autonomous Component
      *
      * @param runnable              the is the class that will be doing the actual work
-     * @param configuration         the Configuration as a set of properties
      * @param lockClient            Client to the netflix curator zookeeper lockserver
      * @param batchEventClient      the client for quering and adding events
      * @param simultaneousProcesses the number of batches that can be worked on simutaniously
      * @param pastSuccessfulEvents  events that a batch must have experienced successfully to be eligible
      * @param pastFailedEvents      events that a batch must have experienced and failed to be eligible
      * @param futureEvents          events that a batch must not have experienced to be eligible
-     *                              <p/>
-     *                              timeoutSBOI = Long.parseLong(configuration.getProperty("timeout_SBOI", "5000"));
-     *                              timeoutBatch = Long.parseLong(configuration.getProperty("timeout_Batch", "2000"));
      */
     public AutonomousComponent(RunnableComponent runnable,
-                               Properties configuration,
                                CuratorFramework lockClient,
                                BatchEventClient batchEventClient,
                                int simultaneousProcesses,
                                List<String> pastSuccessfulEvents,
                                List<String> pastFailedEvents,
                                List<String> futureEvents) {
-
-        this.runnable = runnable;
-        this.lockClient = lockClient;
-        this.batchEventClient = batchEventClient;
-        this.simultaneousProcesses = simultaneousProcesses;
-        this.pastSuccessfulEvents = pastSuccessfulEvents;
-        this.pastFailedEvents = pastFailedEvents;
-        this.futureEvents = futureEvents;
-        timeoutSBOI = parseLong(configuration.getProperty("timeout_SBOI"), 5000l);
-        timeoutBatch = parseLong(configuration.getProperty("timeout_Batch"), 2000l);
-        workerTimout = parseLong(configuration.getProperty("worker_timeout"),60*60*1000l);
-        concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
-        this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
+        this(runnable, lockClient,
+             batchEventClient,
+             simultaneousProcesses,
+             pastSuccessfulEvents,
+             pastFailedEvents,
+             futureEvents,
+             5000l,
+             2000l,
+             60 * 60 * 1000l);
     }
 
     /**
@@ -251,9 +266,9 @@ public class AutonomousComponent
                 }
                 checkLockServerConnectionState(pool);
                 Thread.sleep(pollTime);
-                if (System.currentTimeMillis() - start > workerTimout){
-                    log.error("Worker timout exceeded, shutting down all threads. We still need to wait for them" +
-                              " to terminate, however.");
+                if (System.currentTimeMillis() - start > workerTimout) {
+                    log.error("Worker timout exceeded, shutting down all threads. We still need to wait for them"
+                              + " to terminate, however.");
                     pool.shutdownNow();
                     for (Future<?> future : futures) {
                         future.cancel(true);

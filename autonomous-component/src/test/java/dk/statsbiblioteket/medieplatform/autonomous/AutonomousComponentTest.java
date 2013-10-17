@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 public class AutonomousComponentTest {
     private static final String BATCHID = "40005";
@@ -29,8 +28,7 @@ public class AutonomousComponentTest {
         TestingComponent component = new TestingComponent();
 
         eventClient = new MockupBatchEventClient();
-        Batch testBatch = new Batch();
-        testBatch.setBatchID(BATCHID);
+        Batch testBatch = new Batch(BATCHID);
         testBatch.setRoundTripNumber(ROUNDTRIPNUMBER);
         Event testEvent = new Event();
         testEvent.setEventID("Data_Received");
@@ -47,7 +45,7 @@ public class AutonomousComponentTest {
         lockClient.start();
 
 
-        autonoumous = new AutonomousComponent(component, new Properties(), lockClient, eventClient, 1,
+        autonoumous = new AutonomousComponent(component, lockClient, eventClient, 1,
                                               Arrays.asList("Data_Received"), null, null);
 
     }

@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transforming;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
@@ -113,6 +112,8 @@ public class TransformingIteratorForFileSystems
             }
 
 
+         } else if (largestGroup(groupedByPrefix).size() <= 1) {//all groups are of size one, no common prefix
+            //Make no virtual subfolders, just keep everything as it is
         } else {
             Pair<String, List<File>> noDataGroup = getUniqueNoDataFilesGroup(groupedByPrefix);
             if (noDataGroup != null) {
@@ -123,6 +124,7 @@ public class TransformingIteratorForFileSystems
                     continue;
                 }
                 List<File> group = groupedByPrefix.get(prefix);
+
                 virtualChildren.add(new VirtualIteratorForFileSystems(id,
                                                                       prefix,
                                                                       getBatchFolder(),
@@ -130,10 +132,21 @@ public class TransformingIteratorForFileSystems
                                                                       group,
                                                                       getGroupingChar(),
                                                                       getChecksumPostfix()));
+                attributes.removeAll(group);
             }
         }
 
         return attributes.iterator();
+    }
+
+    private List<File> largestGroup(Map<String, List<File>> groupedByPrefix) {
+        List<File> largest = null;
+        for (List<File> files : groupedByPrefix.values()) {
+            if (largest == null || files.size() > largest.size()){
+                largest = files;
+            }
+        }
+        return largest;
     }
 
     /**

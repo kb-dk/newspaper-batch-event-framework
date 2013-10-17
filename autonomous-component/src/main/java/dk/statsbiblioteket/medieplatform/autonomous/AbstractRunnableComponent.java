@@ -14,13 +14,14 @@ public abstract class AbstractRunnableComponent
         implements RunnableComponent {
 
 
-    private Properties properties;
+    private final Properties properties;
 
     protected AbstractRunnableComponent(Properties properties) {
         this.properties = properties;
     }
 
     public Properties getProperties() {
+
         return properties;
     }
 
@@ -47,6 +48,14 @@ public abstract class AbstractRunnableComponent
 
         }
         throw new UnsupportedOperationException("Presently only supported for filesystems, sorry");
+    }
+
+    /**
+     * Gets the full name including the version number of this component
+     * @return the fulle name
+     */
+    public String getFullName(){
+        return getComponentName()+"-"+getComponentVersion();
     }
 
 }
