@@ -77,10 +77,10 @@ public class PremisManipulator {
      * @return the blob as a Batch
      */
     public Batch toBatch() {
-        Batch result = new Batch();
+
         String fullID = getObjectID();
         IDFormatter.SplitID splits = idFormat.unformatFullID(fullID);
-        result.setBatchID(splits.getBatchID());
+        Batch result = new Batch(splits.getBatchID());
         result.setRoundTripNumber(splits.getRoundTripNumber());
         result.setEventList(getEvents());
         return result;

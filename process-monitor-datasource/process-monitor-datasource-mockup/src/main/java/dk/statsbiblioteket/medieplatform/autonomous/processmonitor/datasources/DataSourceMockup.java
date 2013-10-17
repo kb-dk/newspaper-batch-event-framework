@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.DataSource;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 
@@ -46,8 +45,7 @@ public class DataSourceMockup implements DataSource {
         b1Events.add(e2);
         b1Events.add(e3);
 
-        Batch b1 = new Batch();
-        b1.setBatchID("3001");
+        Batch b1 = new Batch("3001");
         b1.setEventList(b1Events);
 
         Event e4 = new Event();
@@ -67,8 +65,7 @@ public class DataSourceMockup implements DataSource {
         b2Events.add(e5);
         b2Events.add(e6);
 
-        Batch b2 = new Batch();
-        b2.setBatchID("3002");
+        Batch b2 = new Batch("3002");
         b2.setEventList(b2Events);
 
         dummyBatches = new ArrayList<>();
