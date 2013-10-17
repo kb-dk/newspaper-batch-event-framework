@@ -3,12 +3,10 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transfo
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.FileAttributeParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.FileAttributeParsingEvent;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -28,8 +26,7 @@ public class DatafileIterator extends CommonTransformingIterator {
     @Override
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         //returns empty iterator, datafiles will have no children
-        ArrayList<DelegatingTreeIterator> result = new ArrayList<>();
-        return result.iterator();
+        return Collections.emptyIterator();
     }
 
     @Override

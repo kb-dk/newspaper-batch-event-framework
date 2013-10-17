@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,9 +141,9 @@ public class TransformingIteratorForFileSystems
     }
 
     private List<File> largestGroup(Map<String, List<File>> groupedByPrefix) {
-        List<File> largest = null;
+        List<File> largest = Collections.emptyList();
         for (List<File> files : groupedByPrefix.values()) {
-            if (largest == null || files.size() > largest.size()){
+            if (files.size() > largest.size()){
                 largest = files;
             }
         }
