@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.newspaper.processmonitor.datasources;
+package dk.statsbiblioteket.autonomous.processmonitor.datasources;
 
 import java.util.Date;
 
