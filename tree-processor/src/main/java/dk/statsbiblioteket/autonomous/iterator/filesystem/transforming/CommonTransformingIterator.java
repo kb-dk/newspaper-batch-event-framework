@@ -10,21 +10,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-/**
- * Common super class for the transforming iterators.
- */
-public abstract class CommonTransformingIterator extends AbstractIterator<File> {
+/** Common super class for the transforming iterators. */
+public abstract class CommonTransformingIterator
+        extends AbstractIterator<File> {
+    private final String groupingChar;
+    private final File batchFolder;
     private String dataFilePattern;
     private String checksumPostfix;
-    private final String groupingChar;
 
 
     protected CommonTransformingIterator(File id,
+                                         File batchFolder,
                                          String dataFilePattern,
                                          String checksumPostfix,
                                          String groupingChar) {
         super(id);
+        this.batchFolder = batchFolder;
         this.dataFilePattern = dataFilePattern;
         this.checksumPostfix = checksumPostfix;
         this.groupingChar = groupingChar;
@@ -32,13 +35,15 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
 
     /**
      * Get the files that are identified as attributes in a collection of files
+     *
      * @param files the files to examine
+     *
      * @return the data files
      */
     protected Collection<File> getDataFiles(Collection<File> files) {
         Collection<File> datafiles = new ArrayList<>();
         for (File attribute : files) {
-            if (attribute.getName().matches(dataFilePattern)){
+            if (attribute.getName().matches(dataFilePattern)) {
                 datafiles.add(attribute);
             }
         }
@@ -47,7 +52,9 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
 
     /**
      * Utility method, does the collection contain data files?
+     *
      * @param files the files to examine
+     *
      * @return true if a data file is found
      */
     protected boolean containsDatafiles(Collection<File> files) {
@@ -56,15 +63,17 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
 
     /**
      * Get the only group that contain no datafiles from a list grouping. If there is no unique group, return null
+     *
      * @param groupedByPrefix the map of groups
+     *
      * @return the only group without datafiles or null
      */
     protected Pair<String, List<File>> getUniqueNoDataFilesGroup(Map<String, List<File>> groupedByPrefix) {
         Pair<String, List<File>> uniqueGroup = null;
         for (Map.Entry<String, List<File>> group : groupedByPrefix.entrySet()) {
-            if (!containsDatafiles(group.getValue())){
-                if (uniqueGroup == null){
-                    uniqueGroup = new Pair<>(group.getKey(),group.getValue());
+            if (!containsDatafiles(group.getValue())) {
+                if (uniqueGroup == null) {
+                    uniqueGroup = new Pair<>(group.getKey(), group.getValue());
                 } else {
                     return null;
                 }
@@ -73,18 +82,16 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
         return uniqueGroup;
     }
 
-
     @Override
-    protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent(attributeID.getName(), attributeID,checksumPostfix);
+    protected AttributeParsingEvent makeAttributeEvent(File nodeID,
+                                                       File attributeID) {
+        return new FileAttributeParsingEvent(toPathID(attributeID), attributeID, checksumPostfix);
     }
-
 
     @Override
     protected String getIdOfNode() {
-        return id.getName();
+        return toPathID(id);
     }
-
 
     public String getChecksumPostfix() {
         return checksumPostfix;
@@ -95,9 +102,11 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
     }
 
     /**
-     * Get the prefix of a file
+     * Get the batchFolder of a file
+     *
      * @param file the file
-     * @return the prefix
+     *
+     * @return the batchFolder
      * @see #groupingChar
      */
     protected String getPrefix(File file) {
@@ -106,5 +115,13 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
 
     public String getGroupingChar() {
         return groupingChar;
+    }
+
+    public File getBatchFolder() {
+        return batchFolder;
+    }
+
+    public String toPathID(File id) {
+        return id.getAbsolutePath().replaceFirst(Pattern.quote(getBatchFolder().getAbsolutePath()), "");
     }
 }

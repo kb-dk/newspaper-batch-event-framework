@@ -8,11 +8,11 @@ package dk.statsbiblioteket.autonomous.iterator.common;
 public abstract class ParsingEvent {
 
     protected final ParsingEventType type;
-    protected final String localname;
+    protected final String name;
 
-    public ParsingEvent(String localname,
+    public ParsingEvent(String name,
                         ParsingEventType type) {
-        this.localname = localname;
+        this.name = name;
         this.type = type;
     }
 
@@ -20,8 +20,8 @@ public abstract class ParsingEvent {
      * This represents the "name" of the the directory/file/object when the event was encountered.
      * @return the local name
      */
-    public String getLocalname() {
-        return localname;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -38,7 +38,7 @@ public abstract class ParsingEvent {
     public String toString() {
         return "ParsingEvent{" +
                "type=" + type +
-               ", localname='" + localname + '\'' +
+               ", name='" + name + '\'' +
                '}';
     }
 }

@@ -37,7 +37,7 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
 
 
     @Override
-    public InputStream getText()
+    public InputStream getData()
             throws
             IOException {
         return new FileInputStream(file);

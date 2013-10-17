@@ -7,8 +7,8 @@ package dk.statsbiblioteket.autonomous.iterator.common;
 public class NodeBeginsParsingEvent extends ParsingEvent {
 
 
-    public NodeBeginsParsingEvent(String localname) {
-        super(localname, ParsingEventType.NodeBegin);
+    public NodeBeginsParsingEvent(String name) {
+        super(name, ParsingEventType.NodeBegin);
     }
 
 

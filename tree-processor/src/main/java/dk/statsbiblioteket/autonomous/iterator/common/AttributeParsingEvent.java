@@ -19,7 +19,7 @@ public abstract class AttributeParsingEvent extends ParsingEvent {
      * @return the data
      * @throws java.io.IOException
      */
-    public abstract InputStream getText() throws IOException;
+    public abstract InputStream getData() throws IOException;
 
     /**
      * Returns the checksum of the content or null

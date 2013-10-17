@@ -1,7 +1,5 @@
 package dk.statsbiblioteket.autonomous.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.autonomous.iterator.filesystem.FileAttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.autonomous.iterator.filesystem.FileAttributeParsingEvent;
@@ -18,8 +16,11 @@ import java.util.Iterator;
 public class DatafileIterator extends CommonTransformingIterator {
 
 
-    public DatafileIterator(File dataFile, String checksumPostfix, String groupingChar) {
-        super(dataFile,null,checksumPostfix, groupingChar);
+    public DatafileIterator(File dataFile,
+                            File batchFolder,
+                            String checksumPostfix,
+                            String groupingChar) {
+        super(dataFile,batchFolder,null,checksumPostfix, groupingChar);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent("contents",attributeID,getChecksumPostfix());
+        return new FileAttributeParsingEvent(toPathID(new File(attributeID,"contents")),attributeID,getChecksumPostfix());
 
     }
 

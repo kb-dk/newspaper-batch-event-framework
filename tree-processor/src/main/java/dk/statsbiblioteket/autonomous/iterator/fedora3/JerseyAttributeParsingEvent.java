@@ -20,7 +20,7 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     }
 
     @Override
-    public InputStream getText() throws IOException {
+    public InputStream getData() throws IOException {
         ClientResponse response = resource.get(ClientResponse.class);
         if (response.getStatus() >= 200 && response.getStatus() < 300){
             return response.getEntityInputStream();

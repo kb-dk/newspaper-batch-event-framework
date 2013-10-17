@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.autonomous.iterator.filesystem.transforming;
 
 import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
@@ -16,7 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class TransformingIteratorForFileSystems extends CommonTransformingIterator {
+public class TransformingIteratorForFileSystems
+        extends CommonTransformingIterator {
 
 
     protected List<DelegatingTreeIterator> virtualChildren;
@@ -24,24 +24,48 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
 
     /**
      * Create the transforming Iterator for file systems
-     * @param id The root folder
-     * @param groupingChar the grouping regular expression, ie. the char used as separator between prefix and postfix.
-     *                     Should be "\\."
+     *
+     * @param id              The root folder
+     * @param groupingChar    the grouping regular expression, ie. the char used as separator between prefix and
+     *                        postfix.
+     *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
      */
-    public TransformingIteratorForFileSystems(File id, String groupingChar, String dataFilePattern, String checksumPostfix) {
-        super(id, dataFilePattern, checksumPostfix, groupingChar);
-        virtualChildren = new ArrayList<>();
+    public TransformingIteratorForFileSystems(File id,
+                                              String groupingChar,
+                                              String dataFilePattern,
+                                              String checksumPostfix) {
+        this(id, id.getParentFile(), groupingChar, dataFilePattern, checksumPostfix);
     }
 
-
+    /**
+     * Create the transforming Iterator for file systems
+     *
+     * @param id              The root folder
+     * @param groupingChar    the grouping regular expression, ie. the char used as separator between prefix and
+     *                        postfix.
+     *                        Should be "\\."
+     * @param dataFilePattern a regular expression that should match the names of all datafiles
+     */
+    protected TransformingIteratorForFileSystems(File id,
+                                                 File prefix,
+                                                 String groupingChar,
+                                                 String dataFilePattern,
+                                                 String checksumPostfix) {
+        super(id, prefix, dataFilePattern, checksumPostfix, groupingChar);
+        virtualChildren = new ArrayList<>();
+    }
 
     @Override
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         File[] children = id.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        ArrayList<DelegatingTreeIterator> result = new ArrayList<>(children.length+virtualChildren.size());
+        ArrayList<DelegatingTreeIterator> result = new ArrayList<>(children.length + virtualChildren.size());
         for (File child : children) {
-            result.add(new TransformingIteratorForFileSystems(child, getGroupingChar(), getDataFilePattern(),getChecksumPostfix()));
+            result.add(new TransformingIteratorForFileSystems(child,
+                                                              getBatchFolder(),
+                                                              getGroupingChar(),
+                                                              getDataFilePattern(),
+                                                              getChecksumPostfix()));
         }
         for (DelegatingTreeIterator virtualChild : virtualChildren) {
             result.add(virtualChild);
@@ -60,54 +84,60 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
 
 
         //these are the attributes.
-        Map<String,List<File>> groupedByPrefix = groupByPrefix(attributes);
+        Map<String, List<File>> groupedByPrefix = groupByPrefix(attributes);
 
-        if (groupedByPrefix.size() == 1){//only one group
+        if (groupedByPrefix.size() == 1) {//only one group
             Collection<File> dataFiles = getDataFiles(attributes);
             for (File dataFile : dataFiles) {
                 attributes.remove(dataFile);
-                virtualChildren.add(new DatafileIterator(dataFile,getChecksumPostfix(),getGroupingChar()));
+                virtualChildren.add(new DatafileIterator(dataFile,getBatchFolder(), getChecksumPostfix(), getGroupingChar()));
             }
 
 
         } else {
-            Pair<String,List<File>> noDataGroup = getUniqueNoDataFilesGroup(groupedByPrefix);
-            if (noDataGroup != null){
+            Pair<String, List<File>> noDataGroup = getUniqueNoDataFilesGroup(groupedByPrefix);
+            if (noDataGroup != null) {
                 attributes = noDataGroup.getRight();
             }
             for (String prefix : groupedByPrefix.keySet()) {
-                if (noDataGroup != null && prefix.equals(noDataGroup.getLeft())){
+                if (noDataGroup != null && prefix.equals(noDataGroup.getLeft())) {
                     continue;
                 }
                 List<File> group = groupedByPrefix.get(prefix);
-                virtualChildren.add(new VirtualIteratorForFileSystems(id,prefix,getDataFilePattern(),group,getGroupingChar(),getChecksumPostfix()));
+                virtualChildren.add(new VirtualIteratorForFileSystems(id,
+                                                                      prefix,
+                                                                      getBatchFolder(),
+                                                                      getDataFilePattern(),
+                                                                      group,
+                                                                      getGroupingChar(),
+                                                                      getChecksumPostfix()));
             }
         }
 
         return attributes.iterator();
     }
 
-
     /**
      * group a collection of files according to their prefix
+     *
      * @param files the files to group
+     *
      * @return a map of prefixes to lists of files
      * @see #getPrefix(java.io.File)
      */
-    private Map<String,List<File>> groupByPrefix(Collection<File> files) {
-        Map<String,List<File>> prefixToFile = new HashMap<>();
+    private Map<String, List<File>> groupByPrefix(Collection<File> files) {
+        Map<String, List<File>> prefixToFile = new HashMap<>();
         for (File file : files) {
             String prefix = getPrefix(file);
             List<File> fileList = prefixToFile.get(prefix);
-            if (fileList == null){
+            if (fileList == null) {
                 fileList = new ArrayList<>();
             }
             fileList.add(file);
-            prefixToFile.put(prefix,fileList);
+            prefixToFile.put(prefix, fileList);
         }
         return prefixToFile;
     }
-
 
 
 }

@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.autonomous.iterator.filesystem;
 
-import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.autonomous.iterator.common.DelegatingTreeIterator;
@@ -52,7 +51,7 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent(attributeID.getName(), attributeID);
+        return new FileAttributeParsingEvent(attributeID.getPath(), attributeID);
     }
 
     /**
@@ -61,7 +60,7 @@ public class IteratorForFileSystems extends AbstractIterator<File> {
      */
     @Override
     protected String getIdOfNode() {
-        return id.getName();
+        return id.getPath();
     }
 
 

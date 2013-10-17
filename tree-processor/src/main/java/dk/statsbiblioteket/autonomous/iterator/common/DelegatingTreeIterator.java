@@ -15,7 +15,7 @@ public interface DelegatingTreeIterator extends TreeIterator {
 
     /**
      * Return the TreeIterator (if any) of the child-element over which this element is currently iterating, or null if
-     * one if the delegate has not yet been initialised.
+     * the delegate has not yet been initialised.
      * @return
      */
     TreeIterator getDelegate();

@@ -28,11 +28,11 @@ public abstract class AbstractTests {
     private String printEvent(ParsingEvent next) {
         switch (next.getType()){
             case NodeBegin:
-                return "<"+next.getLocalname()+">";
+                return "<'"+next.getName()+"'>";
             case NodeEnd:
-                return "</"+next.getLocalname()+">";
+                return "</'"+next.getName()+"'>";
             case Attribute:
-                return "<"+next.getLocalname()+"/>";
+                return "<'"+next.getName()+"'/>";
             default:
                 return next.toString();
         }
@@ -104,7 +104,7 @@ public abstract class AbstractTests {
                 case Attribute: {
                     String s = getIndent(indent);
                     AttributeParsingEvent attributeEvent = (AttributeParsingEvent) next;
-                    List<String> content = IOUtils.readLines(attributeEvent.getText());
+                    List<String> content = IOUtils.readLines(attributeEvent.getData());
                     System.out.println(s+printEvent(next));
                     s = getIndent(indent+2);
                     System.out.println(s + "[" + content.size() +  " lines of content]");
