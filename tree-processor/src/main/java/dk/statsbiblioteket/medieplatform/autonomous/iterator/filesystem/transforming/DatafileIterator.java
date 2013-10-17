@@ -1,7 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transforming;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeEndsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.FileAttributeParsingEvent;
 
 import java.io.File;
@@ -40,5 +44,13 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     }
 
+    @Override
+    protected NodeEndParsingEvent createNodeEndsParsingEvent() {
+        return new DataFileNodeEndsParsingEvent(getIdOfNode());
+    }
 
+    @Override
+    protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
+        return new DataFileNodeBeginsParsingEvent(getIdOfNode());
+    }
 }

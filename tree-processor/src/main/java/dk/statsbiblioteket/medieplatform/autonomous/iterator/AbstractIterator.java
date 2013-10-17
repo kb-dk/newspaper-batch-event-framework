@@ -6,10 +6,6 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsPa
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -68,7 +64,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
         //We have not sent the "NodeBeginEvent" yet, so get that done before anything else
         if (!begun) {
             //!begun implied delegate==null
-            ParsingEvent parsingEvent = new NodeBeginsParsingEvent(getIdOfNode());
+            ParsingEvent parsingEvent = createNodeBeginsParsingEvent();
             begun = true;
             return parsingEvent;
         }
@@ -103,10 +99,28 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
             } else {
                 //We have not given the "NodeEndEvent" so return this.
                 done = true;
-                return new NodeEndParsingEvent(getIdOfNode());
+                return createNodeEndsParsingEvent();
             }
         }
 
+    }
+
+    /**
+     * Utility method to create teh nodeEnds event. A method so that subclasses can override it to return their
+     * own specialisations of this event
+     * @return a node ends event
+     */
+    protected NodeEndParsingEvent createNodeEndsParsingEvent() {
+        return new NodeEndParsingEvent(getIdOfNode());
+    }
+
+    /**
+     * Utility method to create the nodeBegins event. A methods so that subclasses can override it to return their own
+     * specialisations of this event
+     * @return a node begins event
+     */
+    protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
+        return new NodeBeginsParsingEvent(getIdOfNode());
     }
 
     /**
