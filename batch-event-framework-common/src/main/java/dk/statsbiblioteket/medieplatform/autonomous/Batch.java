@@ -18,6 +18,13 @@ public class Batch{
     }
 
     /**
+     * Constructor
+     */
+    public Batch(String batchID) {
+        setBatchID(batchID);
+    }
+
+    /**
      * The round trip number. This will never be less than 1. It counts the number of times a batch
      * have been redelivered
      */
