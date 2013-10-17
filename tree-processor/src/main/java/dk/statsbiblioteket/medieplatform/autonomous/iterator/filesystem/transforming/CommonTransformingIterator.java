@@ -3,8 +3,6 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transfo
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.FileAttributeParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.FileAttributeParsingEvent;
 import dk.statsbiblioteket.util.Pair;
 
 import java.io.File;
@@ -124,6 +122,6 @@ public abstract class CommonTransformingIterator
     }
 
     public String toPathID(File id) {
-        return id.getAbsolutePath().replaceFirst(Pattern.quote(getBatchFolder().getAbsolutePath()), "");
+        return id.getAbsolutePath().replaceFirst(Pattern.quote(getBatchFolder().getAbsolutePath()+"/"), "");
     }
 }
