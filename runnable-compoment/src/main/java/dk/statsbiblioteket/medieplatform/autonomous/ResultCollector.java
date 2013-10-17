@@ -7,14 +7,14 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-/**
- * This class collects the result of a run of a component.
- */
+/** This class collects the result of a run of a component. */
 public class ResultCollector {
 
     private Result resultStructure;
@@ -91,8 +91,38 @@ public class ResultCollector {
     }
 
     /**
-     * Return the report as xml
+     * Merge the failures from this ResultCollector into the given result collector
+     * @param that the result collector to merge into
+     * @return that
      */
+    public ResultCollector mergeInto(ResultCollector that) {
+        for (Failure failure : getFailures()) {
+            ArrayList<String> details = new ArrayList<>();
+            for (Object content : failure.getDetails().getContent()) {
+                details.add(content.toString());
+            }
+            that.addFailure(failure.getFilereference(),
+                            failure.getType(),
+                            failure.getComponent(),
+                            failure.getDescription(),
+                            details.toArray(new String[details.size()]));
+            if (that.getTimestamp().before(this.getTimestamp())){
+                that.setTimestamp(this.getTimestamp());
+            }
+        }
+        return that;
+    }
+
+    /**
+     * Get the list of failures. This method is only meant to be used for merging purposes
+     *
+     * @return the failures
+     */
+    private List<Failure> getFailures() {
+        return Collections.unmodifiableList(resultStructure.getFailures().getFailure());
+    }
+
+    /** Return the report as xml */
     public String toReport() {
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
