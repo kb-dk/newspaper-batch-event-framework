@@ -1,8 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
-import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
