@@ -28,7 +28,6 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
         super(properties);
     }
 
-
     @Override
     public String getComponentName() {
         //This should be the canonical name of your component. Please do not use whitespaces, there can be stuff
@@ -41,7 +40,7 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
     public String getComponentVersion() {
         //This is the version of the component. It is used in reporting errors, so that we easily can see the exact
         //version of the component. Make sure this field matches the actual version
-        return "0.1";
+        return  getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -50,7 +49,6 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
         //events a batch have experienced when the work is completed (along with information about success or failure)
         return "Batch_Sampled";
     }
-
 
     @Override
     public void doWorkOnBatch(Batch batch,

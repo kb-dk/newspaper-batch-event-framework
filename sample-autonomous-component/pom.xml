@@ -39,7 +39,6 @@
         </dependency>
 
 
-
     </dependencies>
 
     <build>
@@ -50,6 +49,8 @@
                     <archive>
                         <manifest>
                             <mainClass>dk.statsbiblioteket.medieplatform.autonomous.SampleComponent</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>
