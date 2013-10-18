@@ -85,6 +85,7 @@ public class ResultCollector {
         if (details != null) {
             Details xmlDetails = new Details();
             xmlDetails.getContent().addAll(Arrays.asList(details));
+            failure.setDetails(xmlDetails);
         }
         list.add(failure);
         setSuccess(false);
