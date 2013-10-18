@@ -82,7 +82,7 @@ public class ResultCollector {
         failure.setType(type);
         failure.setComponent(component);
         failure.setDescription(description);
-        if (details != null) {
+        if (details != null && details.length > 0) {
             Details xmlDetails = new Details();
             xmlDetails.getContent().addAll(Arrays.asList(details));
             failure.setDetails(xmlDetails);
