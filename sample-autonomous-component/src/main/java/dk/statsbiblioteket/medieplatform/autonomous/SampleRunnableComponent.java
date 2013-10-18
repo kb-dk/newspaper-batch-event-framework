@@ -14,8 +14,6 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
     private static Logger log = LoggerFactory.getLogger(SampleRunnableComponent.class);
 
 
-    //Stored here if we need it for anything else
-    private Properties properties;
 
 
     /**
@@ -24,10 +22,10 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
      *
      * You can use properties for your own stuff as well
      * @param properties properties
+     * @see #getProperties()
      */
     public SampleRunnableComponent(Properties properties) {
         super(properties);
-        this.properties = properties;
     }
 
 
