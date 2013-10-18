@@ -150,7 +150,7 @@ public class AutonomousComponentUtils {
      * @return as a properties
      * @throws java.io.IOException if the properties file could not be read
      */
-    static Properties parseArgs(String[] args)
+    public static Properties parseArgs(String[] args)
             throws
             IOException {
         Properties properties = new Properties(System.getProperties());
