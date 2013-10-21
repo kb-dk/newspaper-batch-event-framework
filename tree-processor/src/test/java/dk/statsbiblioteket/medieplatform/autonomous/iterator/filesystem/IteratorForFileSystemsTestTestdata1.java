@@ -2,7 +2,6 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem;
 
 import dk.statsbiblioteket.medieplatform.autonomous.AbstractTests;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.SimpleIteratorForFilesystems;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -18,7 +17,7 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
     public TreeIterator getIterator() throws URISyntaxException {
         if (iterator == null){
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
-            File testRoot = new File(rootTestdataDir, "small-test-batch_contents-included/B400022028241-RT1");
+            File testRoot = new File(rootTestdataDir, "small-test-batch/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
             iterator = new SimpleIteratorForFilesystems(testRoot);
         }
