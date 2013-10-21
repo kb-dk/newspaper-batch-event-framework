@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 /**
  * Test of the EventRunner class.
  */
-public class BatchStructureCheckerTest {
+public class EventRunnerTest {
 
     /**
      * Verifies that the BatchStructureChecker correctly passes the event for a simple batch with two leafs
