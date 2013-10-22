@@ -129,6 +129,7 @@ public class ResultCollector {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             StringWriter writer = new StringWriter();
             marshaller.marshal(resultStructure, writer);
             return writer.toString();
