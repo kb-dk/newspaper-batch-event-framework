@@ -82,6 +82,17 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
+    public Iterator<Batch> search(String batchID,
+                                  Integer roundTripNumber,
+                                  List<String> pastSuccessfulEvents,
+                                  List<String> pastFailedEvents,
+                                  List<String> futureEvents)
+            throws
+            CommunicationException {
+        return getSboiClient().search(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    }
+
+    @Override
     public Batch getBatch(String domsID) throws CommunicationException, NotFoundException {
         return getDomsEventClient().getBatch(domsID);
     }

@@ -54,17 +54,9 @@ public class SBOIClientImpl
         return search(null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 
-    /**
-     * Perform a search for batches matching the given criteria
-     * @param batchID the batch id. Can be null for all batches
-     * @param roundTripNumber the round trip number. Can be null. These two should both be set or both be null
-     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param pastFailedEvents Events that the batch must have experienced, but which failed
-     * @param futureEvents Events that the batch must not have experienced
-     * @return An iterator over the found batches
-     * @throws CommunicationException if the communication failed
-     */
-    private Iterator<Batch> search(String batchID,
+
+    @Override
+    public Iterator<Batch> search(String batchID,
                                    Integer roundTripNumber,
                                    List<String> pastSuccessfulEvents,
                                    List<String> pastFailedEvents,
@@ -153,7 +145,7 @@ public class SBOIClientImpl
 
         String base = spaced(RECORD_BASE);
         if (batchID != null) {
-            base = base + " " + BATCH_ID + ":B" + batchID.toString();
+            base = base + " " + BATCH_ID + ":B" + batchID;
         }
         if (roundTripNumber != null) {
             base = base + " " + ROUND_TRIP_NO + ":RT" + roundTripNumber.toString();

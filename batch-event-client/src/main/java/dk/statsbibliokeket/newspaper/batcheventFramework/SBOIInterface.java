@@ -36,4 +36,23 @@ public interface SBOIInterface {
      */
     public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException,
                                                                           NotFoundException;
+
+    /**
+       * Perform a search for batches matching the given criteria
+       * @param batchID the batch id. Can be null for all batches
+       * @param roundTripNumber the round trip number. Can be null to match all round trips
+       * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
+       * @param pastFailedEvents Events that the batch must have experienced, but which failed
+       * @param futureEvents Events that the batch must not have experienced
+       * @return An iterator over the found batches
+       * @throws CommunicationException if the communication failed
+       */
+      public Iterator<Batch> search(String batchID,
+                                     Integer roundTripNumber,
+                                     List<String> pastSuccessfulEvents,
+                                     List<String> pastFailedEvents,
+                                     List<String> futureEvents)
+              throws
+              CommunicationException;
+
 }
