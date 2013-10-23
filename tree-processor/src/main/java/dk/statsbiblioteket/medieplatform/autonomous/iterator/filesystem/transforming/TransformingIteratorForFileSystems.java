@@ -100,22 +100,9 @@ public class TransformingIteratorForFileSystems
             }
         }, null);
 
-
-        //these are the attributes.
-        Map<String, List<File>> groupedByPrefix = groupByPrefix(attributes);
-
-        if (groupedByPrefix.size() == 1) {//only one group
-            Collection<File> dataFiles = getDataFiles(attributes);
-            for (File dataFile : dataFiles) {
-                attributes.remove(dataFile);
-                virtualChildren
-                        .add(new DatafileIterator(dataFile, getBatchFolder(), getChecksumPostfix(), getGroupingChar()));
-            }
-
-
-         } else if (largestGroup(groupedByPrefix).size() <= 1) {//all groups are of size one, no common prefix
-            //Make no virtual subfolders, just keep everything as it is
-        } else {
+        //If there is any datafiles, we group by prefix. If there are no datafiles, we expect the structure to be flat
+        if (containsDatafiles(attributes)) {
+            Map<String, List<File>> groupedByPrefix = groupByPrefix(attributes);
             Pair<String, List<File>> noDataGroup = getUniqueNoDataFilesGroup(groupedByPrefix);
             if (noDataGroup != null) {
                 attributes = noDataGroup.getRight();
@@ -137,13 +124,14 @@ public class TransformingIteratorForFileSystems
             }
         }
 
+
         return attributes.iterator();
     }
 
     private List<File> largestGroup(Map<String, List<File>> groupedByPrefix) {
         List<File> largest = Collections.emptyList();
         for (List<File> files : groupedByPrefix.values()) {
-            if (files.size() > largest.size()){
+            if (files.size() > largest.size()) {
                 largest = files;
             }
         }
