@@ -99,8 +99,10 @@ public class ResultCollector {
     public ResultCollector mergeInto(ResultCollector that) {
         for (Failure failure : getFailures()) {
             ArrayList<String> details = new ArrayList<>();
-            for (Object content : failure.getDetails().getContent()) {
-                details.add(content.toString());
+            if (failure.getDetails() != null){
+                for (Object content : failure.getDetails().getContent()) {
+                    details.add(content.toString());
+                }
             }
             that.addFailure(failure.getFilereference(),
                             failure.getType(),
@@ -110,6 +112,7 @@ public class ResultCollector {
             if (that.getTimestamp().before(this.getTimestamp())){
                 that.setTimestamp(this.getTimestamp());
             }
+
         }
         return that;
     }
