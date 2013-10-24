@@ -13,9 +13,9 @@ import java.io.InputStream;
 public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     private WebResource resource;
 
-    public JerseyAttributeParsingEvent(String localname,
+    public JerseyAttributeParsingEvent(String name,
                                        WebResource resource) {
-        super(localname);
+        super(name);
         this.resource = resource;
     }
 

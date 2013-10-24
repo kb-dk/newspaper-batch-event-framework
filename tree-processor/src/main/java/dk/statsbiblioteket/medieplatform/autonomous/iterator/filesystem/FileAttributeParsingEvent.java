@@ -20,18 +20,18 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
     private File file;
     private File checksumFile;
 
-    public FileAttributeParsingEvent(String localname,
+    public FileAttributeParsingEvent(String name,
                                      File file
                                      ) {
-        super(localname);
+        super(name);
         this.file = file;
         this.checksumFile = null;
     }
 
-    public FileAttributeParsingEvent(String localname,
+    public FileAttributeParsingEvent(String name,
                                      File file,
                                      String checksumPostfix) {
-        super(localname);
+        super(name);
         this.file = file;
         this.checksumFile = new File(file.getAbsolutePath()+checksumPostfix);
     }
