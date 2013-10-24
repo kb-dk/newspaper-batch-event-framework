@@ -1,5 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import dk.statsbiblioteket.util.Strings;
+import org.slf4j.Logger;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -17,6 +20,7 @@ import java.util.List;
 /** This class collects the result of a run of a component. */
 public class ResultCollector {
 
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(ResultCollector.class);
     private Result resultStructure;
 
     public ResultCollector(String tool,
@@ -76,6 +80,12 @@ public class ResultCollector {
                            String component,
                            String description,
                            String... details) {
+        log.info("Adding failure for " +
+                 "resource '{}' " +
+                 "of type '{}' " +
+                 "from component '{}' " +
+                 "with description '{}' " +
+                 "and details '{}'", reference, type, component, description, Strings.join(details,"\n"));
         List<Failure> list = resultStructure.getFailures().getFailure();
         Failure failure = new Failure();
         failure.setFilereference(reference);
@@ -93,13 +103,15 @@ public class ResultCollector {
 
     /**
      * Merge the failures from this ResultCollector into the given result collector
+     *
      * @param that the result collector to merge into
+     *
      * @return that
      */
     public ResultCollector mergeInto(ResultCollector that) {
         for (Failure failure : getFailures()) {
             ArrayList<String> details = new ArrayList<>();
-            if (failure.getDetails() != null){
+            if (failure.getDetails() != null) {
                 for (Object content : failure.getDetails().getContent()) {
                     details.add(content.toString());
                 }
@@ -109,7 +121,7 @@ public class ResultCollector {
                             failure.getComponent(),
                             failure.getDescription(),
                             details.toArray(new String[details.size()]));
-            if (that.getTimestamp().before(this.getTimestamp())){
+            if (that.getTimestamp().before(this.getTimestamp())) {
                 that.setTimestamp(this.getTimestamp());
             }
 
