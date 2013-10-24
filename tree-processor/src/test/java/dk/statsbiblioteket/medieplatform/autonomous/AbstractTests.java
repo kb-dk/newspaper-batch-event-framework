@@ -14,109 +14,142 @@ import java.util.List;
 public abstract class AbstractTests {
 
 
-    public abstract TreeIterator getIterator() throws URISyntaxException, IOException;
+    private static final String indentString = "                                                   ";
 
-
-    private static final String indentString = "..................................................";
-
-
-    public void testIterator() throws Exception {
-
-
-        printStructure(getIterator());
+    private static String getIndent(int indent) {
+        String s;
+        if (indent > 0) {
+            s = indentString.substring(0, indent);
+        } else {
+            s = "";
+        }
+        return s;
     }
 
-    private String printEvent(ParsingEvent next) {
-        switch (next.getType()){
+    public abstract TreeIterator getIterator()
+            throws
+            URISyntaxException,
+            IOException;
+
+    public void testIterator(final boolean print)
+            throws
+            Exception {
+
+
+        printStructure(getIterator(), print);
+    }
+
+    private String printEvent(ParsingEvent next)
+            throws
+            IOException {
+        switch (next.getType()) {
             case NodeBegin:
-                return "<'"+next.getName()+"'>";
+                return "<node name=\"" + next.getName() + "\">";
             case NodeEnd:
-                return "</'"+next.getName()+"'>";
+                return "</node>";
             case Attribute:
-                return "<'"+next.getName()+"'/>";
+                if (next instanceof AttributeParsingEvent) {
+                    AttributeParsingEvent attributeParsingEvent = (AttributeParsingEvent) next;
+                    return "<attribute name=\"" + next.getName() + "\" checksum=\"" + attributeParsingEvent
+                            .getChecksum() + "\" />";
+                }
+
             default:
                 return next.toString();
         }
     }
 
-    public void testIteratorWithSkipping() throws Exception {
+    public void testIteratorWithSkipping(final boolean print)
+            throws
+            Exception {
 
-        List<TreeIterator> avisIterators = new ArrayList<TreeIterator>();
+        List<TreeIterator> avisIterators = new ArrayList<>();
 
 
         System.out.println("Print the batch and film, and store the iterators for the aviser");
         int indent = 0;
-        while (getIterator().hasNext()){
+        while (getIterator().hasNext()) {
             ParsingEvent next = getIterator().next();
 
             String s;
-            switch (next.getType()){
+            switch (next.getType()) {
                 case NodeBegin:
                     s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
-                    indent+=2;
-                    if (indent > 4){
+                    if (print) {
+                        System.out.println(s + printEvent(next));
+                    }
+                    indent += 2;
+                    if (indent > 4) {
                         TreeIterator avis = getIterator().skipToNextSibling();
                         avisIterators.add(avis);
-                        indent-=2;
+                        indent -= 2;
                     }
                     break;
                 case NodeEnd:
-                    indent-=2;
+                    indent -= 2;
                     s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
+                    if (print) {
+                        System.out.println(s + printEvent(next));
+                    }
                     break;
                 case Attribute:
                     s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
+                    if (print) {
+                        System.out.println(s + printEvent(next));
+                    }
                     break;
             }
         }
-
-        System.out.println("Print each of the newspapers in order");
+        if (print) {
+            System.out.println("Print each of the newspapers in order");
+        }
         for (TreeIterator avisIterator : avisIterators) {
-            System.out.println("We found this newspaper");
-            printStructure(avisIterator);
+            if (print) {
+                System.out.println("We found this newspaper");
+            }
+            printStructure(avisIterator, print);
         }
 
     }
 
-    private void printStructure(TreeIterator avisIterator) throws IOException {
+    private void printStructure(TreeIterator avisIterator,
+                                final boolean print)
+            throws
+            IOException {
         int indent = 0;
         int files = 0;
         while (avisIterator.hasNext()) {
             ParsingEvent next = avisIterator.next();
-            switch (next.getType()){
-                case NodeBegin:
-                {
+            switch (next.getType()) {
+                case NodeBegin: {
                     String s;
                     s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
-                    indent+=2;
+                    if (print) {
+                        System.out.println(s + printEvent(next));
+                    }
+                    indent += 2;
                     break;
                 }
-                case NodeEnd:
-                {
+                case NodeEnd: {
                     String s;
-                    indent-=2;
+                    indent -= 2;
                     s = getIndent(indent);
-                    System.out.println(s+printEvent(next));
+                    if (print) {
+                        System.out.println(s + printEvent(next));
+                    }
                     break;
                 }
                 case Attribute: {
                     String s = getIndent(indent);
                     AttributeParsingEvent attributeEvent = (AttributeParsingEvent) next;
                     List<String> content = IOUtils.readLines(attributeEvent.getData());
-                    System.out.println(s+printEvent(next));
-                    s = getIndent(indent+2);
-                    System.out.println(s + "[" + content.size() +  " lines of content]");
-                    String checksum = attributeEvent.getChecksum();
-                    if (checksum != null){
-                        System.out.println(s + "md5: " + checksum +  "");
+                    if (print) {
+                        System.out.println(s + printEvent(next));
                     }
-                    //for (String s1 : content) {
-                    //    System.out.println(s+s1);
-                    // }
+                    s = getIndent(indent + 2);
+                    if (print) {
+                        System.out.println(s + "[" + content.size() + " lines of content]");
+                    }
                     files++;
                     break;
 
@@ -124,18 +157,7 @@ public abstract class AbstractTests {
             }
 
         }
-        Assert.assertEquals(indent,0,"Indent is not reset after iteration");
-        Assert.assertTrue(files>5,"We have not encountered very much, is the test data broken?");
-    }
-
-
-    private static String getIndent(int indent) {
-        String s;
-        if (indent > 0){
-            s = indentString.substring(0,indent);
-        } else {
-            s = "";
-        }
-        return s;
+        Assert.assertEquals(indent, 0, "Indent is not reset after iteration");
+        Assert.assertTrue(files > 5, "We have not encountered very much, is the test data broken?");
     }
 }

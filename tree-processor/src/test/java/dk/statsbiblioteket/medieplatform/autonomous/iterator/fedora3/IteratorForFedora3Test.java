@@ -4,8 +4,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import dk.statsbiblioteket.medieplatform.autonomous.AbstractTests;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.ContentModelFilter;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.IteratorForFedora3;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -59,15 +57,13 @@ public class IteratorForFedora3Test extends AbstractTests {
         }
     }
 
-    @Override
     @Test(groups = "integrationTest", enabled = false)
     public void testIterator() throws Exception {
-        super.testIterator();
+        super.testIterator(true);
     }
 
-    @Override
     @Test(groups = "integrationTest", enabled = false)
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();
+        super.testIteratorWithSkipping(false);
     }
 }

@@ -2,7 +2,6 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem;
 
 import dk.statsbiblioteket.medieplatform.autonomous.AbstractTests;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.SimpleIteratorForFilesystems;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -27,15 +26,13 @@ public class SimpleIteratorForFilesystemsTest
 
 
 
-    @Override
     @Test
     public void testIterator() throws Exception {
-        super.testIterator();
+        super.testIterator(false);
     }
 
-    @Override
     @Test
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();
+        super.testIteratorWithSkipping(false);
     }
 }

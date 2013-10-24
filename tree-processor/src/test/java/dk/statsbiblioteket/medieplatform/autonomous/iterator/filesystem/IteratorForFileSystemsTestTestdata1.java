@@ -26,15 +26,13 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
 
 
 
-    @Override
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator();
+        super.testIterator(false);
     }
 
-    @Override
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping();
+        super.testIteratorWithSkipping(false);
     }
 }
