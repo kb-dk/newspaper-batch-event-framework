@@ -94,7 +94,7 @@ public class ResultCollector {
         failure.setDescription(description);
         if (details != null && details.length > 0) {
             Details xmlDetails = new Details();
-            xmlDetails.getContent().addAll(Arrays.asList(details));
+            xmlDetails.getContent().add(Strings.join(Arrays.asList(details),"\n"));
             failure.setDetails(xmlDetails);
         }
         list.add(failure);
