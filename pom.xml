@@ -172,6 +172,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <scm>
+        <connection>scm:git:https://github.com/statsbiblioteket/newspaper-batch-event-framework</connection>
+        <developerConnection>scm:git:git@github.com:statsbiblioteket/newspaper-batch-event-framework</developerConnection>
+        <url>https://github.com/statsbiblioteket/newspaper-batch-event-framework</url>
+    </scm>
 </project>
 
 
