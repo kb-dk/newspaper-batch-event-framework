@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>0.0.28-SNAPSHOT</version>
+                <version>0.0.28</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
