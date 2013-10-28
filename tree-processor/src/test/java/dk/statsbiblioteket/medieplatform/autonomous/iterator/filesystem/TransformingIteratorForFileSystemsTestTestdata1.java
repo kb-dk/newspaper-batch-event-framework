@@ -30,11 +30,11 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
 
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator(true);
+        super.testIterator(true,false);
     }
 
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false);
+        super.testIteratorWithSkipping(false,false);
     }
 }

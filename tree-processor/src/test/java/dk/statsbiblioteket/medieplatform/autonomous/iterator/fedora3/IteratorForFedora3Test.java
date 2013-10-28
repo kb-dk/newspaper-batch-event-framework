@@ -59,11 +59,11 @@ public class IteratorForFedora3Test extends AbstractTests {
 
     @Test(groups = "integrationTest", enabled = false)
     public void testIterator() throws Exception {
-        super.testIterator(true);
+        super.testIterator(true,false);
     }
 
     @Test(groups = "integrationTest", enabled = false)
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false);
+        super.testIteratorWithSkipping(false,false);
     }
 }

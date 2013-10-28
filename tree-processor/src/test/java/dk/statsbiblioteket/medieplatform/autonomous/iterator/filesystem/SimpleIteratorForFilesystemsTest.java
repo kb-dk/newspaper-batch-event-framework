@@ -28,11 +28,11 @@ public class SimpleIteratorForFilesystemsTest
 
     @Test
     public void testIterator() throws Exception {
-        super.testIterator(false);
+        super.testIterator(false,false);
     }
 
     @Test
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false);
+        super.testIteratorWithSkipping(false,false);
     }
 }

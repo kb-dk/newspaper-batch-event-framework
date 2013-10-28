@@ -31,12 +31,12 @@ public abstract class AbstractTests {
             URISyntaxException,
             IOException;
 
-    public void testIterator(final boolean print)
+    public void testIterator(final boolean print, final boolean printContent)
             throws
             Exception {
 
 
-        printStructure(getIterator(), print);
+        printStructure(getIterator(), print,printContent);
     }
 
     private String printEvent(ParsingEvent next)
@@ -59,7 +59,7 @@ public abstract class AbstractTests {
         }
     }
 
-    public void testIteratorWithSkipping(final boolean print)
+    public void testIteratorWithSkipping(final boolean print,final boolean printContent)
             throws
             Exception {
 
@@ -107,13 +107,13 @@ public abstract class AbstractTests {
             if (print) {
                 System.out.println("We found this newspaper");
             }
-            printStructure(avisIterator, print);
+            printStructure(avisIterator, print, printContent);
         }
 
     }
 
     private void printStructure(TreeIterator avisIterator,
-                                final boolean print)
+                                final boolean print, final boolean printContent)
             throws
             IOException {
         int indent = 0;
@@ -147,7 +147,7 @@ public abstract class AbstractTests {
                         System.out.println(s + printEvent(next));
                     }
                     s = getIndent(indent + 2);
-                    if (print) {
+                    if (print && printContent) {
                         System.out.println(s + "[" + content.size() + " lines of content]");
                     }
                     files++;
