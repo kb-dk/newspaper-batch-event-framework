@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>newspaper-batch-event-framework</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -46,7 +45,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>0.0.28-SNAPSHOT</version>
+                <version>0.0.28</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -69,7 +68,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>summaSearch-interface</artifactId>
-                <version>0.0.28-SNAPSHOT</version>
+                <version>0.0.28</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -172,6 +171,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <scm>
+        <connection>scm:git:https://github.com/statsbiblioteket/newspaper-batch-event-framework</connection>
+        <developerConnection>scm:git:git@github.com:statsbiblioteket/newspaper-batch-event-framework</developerConnection>
+        <url>https://github.com/statsbiblioteket/newspaper-batch-event-framework</url>
+      <tag>HEAD</tag>
+  </scm>
 </project>
 
 
