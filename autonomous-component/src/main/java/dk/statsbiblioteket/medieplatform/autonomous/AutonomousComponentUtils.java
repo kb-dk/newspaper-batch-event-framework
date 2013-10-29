@@ -61,7 +61,7 @@ public class AutonomousComponentUtils {
 
 
         //This is the number of batches that will be worked on in parallel per invocation
-        int simultaneousProcesses = Integer.parseInt(properties.getProperty("maxThreads"), 1);
+        int simultaneousProcesses = Integer.parseInt(properties.getProperty("maxThreads","1"));
         //This is the timeout when attempting to lock SBOI
         long timeoutWaitingToLockSBOI = 5000l;
         //This is the timeout when attempting to lock a batch before working on it
