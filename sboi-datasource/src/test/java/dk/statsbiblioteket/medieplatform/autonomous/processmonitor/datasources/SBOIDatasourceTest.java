@@ -3,11 +3,7 @@ package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.SBOIDatasource;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.SBOIDatasourceConfiguration;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.DataSource;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.TCKTestSuite;
 import dk.statsbiblioteket.util.Pair;
 
 import java.io.IOException;
@@ -67,7 +63,7 @@ public class SBOIDatasourceTest
 
     @Override
     public Pair<String, Integer> getValidBatchID() {
-        return new Pair<>("400022028247", 1);
+        return new Pair<>("400022028246", 1);
     }
 
     @Override
