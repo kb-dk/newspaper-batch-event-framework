@@ -26,6 +26,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
             = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
     private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
             "<datastream") + "\\s+dsid=\"([^\"]*)\"");
+    private static final Pattern DC_IDENTIFIER_PATH_PATTERN = Pattern.compile(
+            Pattern.quote("<dc:identifier>path:[^<]*</dc:identifier>"));
 
 
     private final List<String> types;
@@ -45,19 +47,11 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
-        types = getTypes(id, client);
-    }
 
-    /**
-     * Get the list of content models of an object
-     * @param id the pid of the object
-     * @param client the jersey client
-     * @return the list of pids of content models
-     */
-    private List<String> getTypes(String id, Client client) {
+        //Get the list of content models of an object
         WebResource resource = client.resource(restUrl);
         String profileXML = resource.path(id).queryParam("format", "xml").get(String.class);
-        return parseModelsFromProfile(profileXML);
+        types = parseModelsFromProfile(profileXML);
 
     }
 
@@ -164,7 +158,14 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      */
     @Override
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
-        return new JerseyAttributeParsingEvent(attributeID,
+        WebResource resource = client.resource(restUrl);
+        String DCcontent = resource.path(nodeID).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
+        Matcher matcher = DC_IDENTIFIER_PATH_PATTERN.matcher(DCcontent);
+        String name = attributeID; //TODO: Use DC identifier starting with path:
+        if (matcher.find()) {
+            name = matcher.group();
+        }
+        return new JerseyAttributeParsingEvent(name,
                 client.resource(restUrl).path(nodeID).path("/datastreams/")
                         .path(attributeID).path("/content"));
     }

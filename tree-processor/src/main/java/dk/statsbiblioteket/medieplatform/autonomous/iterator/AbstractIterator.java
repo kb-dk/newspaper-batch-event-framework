@@ -145,7 +145,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
 
     /**
-     * Get the iterator over attributes of the current element, initializing it needed.
+     * Get the iterator over attributes of the current element, initializing if needed.
      * @return the attribute iterator
      */
     protected synchronized Iterator<T> getAttributeIterator(){

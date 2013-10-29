@@ -30,8 +30,8 @@ public class IteratorForFedora3Test extends AbstractTests {
             client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
                     properties.getProperty("fedora.admin.password")));
 
-            // The uuid below is for a test object ingested by CSR that he never deletes as part of clean-up
-            iterator = new IteratorForFedora3("uuid:37d1cf35-099a-45f1-8647-d4dbbf7e68cc", client,
+            // The uuid below is for a test object ingested by someone and may never be deleted?!
+            iterator = new IteratorForFedora3("uuid:0567a139-d493-4924-b1a9-271a2ea9c044", client,
                     properties.getProperty("fedora.server"), new TestFilter());
         }
         return iterator;
