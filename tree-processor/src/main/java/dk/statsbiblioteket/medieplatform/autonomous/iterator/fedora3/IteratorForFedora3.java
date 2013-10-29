@@ -4,11 +4,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
-import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
-import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,24 +27,11 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
             "<datastream") + "\\s+dsid=\"([^\"]*)\"");
 
-    //Default values
-    public static final String USERNAME = "fedoraAdmin";
-    public static final String PASSWORD = "fedoraAdminPass";
-    public static final String FEDORA_LOCATION = "http://localhost:8080/fedora";
-    public static final String PIDGENERATOR_LOCATION
-            = "http://localhost:8080/pidgenerator-service";
-
-    //The initial values of the properties
-    private String username = USERNAME;
-    private String password = PASSWORD;
-    private String fedoraLocation = FEDORA_LOCATION;
-    private String pidGeneratorLocation = PIDGENERATOR_LOCATION;
 
     private final List<String> types;
     private final Client client;
     private final String restUrl;
     private ContentModelFilter filter;
-    private EnhancedFedora fedora;
 
     /**
      * Constructor.
@@ -57,22 +40,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @param restUrl the url to Fedora
      * @param filter the content model filter to know which relations and datastreams to use
      */
-    protected IteratorForFedora3(String id, Client client, String restUrl, ContentModelFilter filter)
-            throws CommunicationException {
+    protected IteratorForFedora3(String id, Client client, String restUrl, ContentModelFilter filter) {
         super(id);
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
         types = getTypes(id, client);
-        Credentials creds = new Credentials(username, password);
-        try {
-            fedora =  new EnhancedFedoraImpl(creds,
-                    fedoraLocation.replaceFirst("/(objects)?/?$", ""),
-                    pidGeneratorLocation,
-                    null);
-        } catch (Exception e) {
-            throw new CommunicationException(e);
-        }
     }
 
     /**
@@ -169,8 +142,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @param childID the id of the child
      * @return the iterator for the child
      */
-    private DelegatingTreeIterator makeDelegate(String id, String childID)
-            throws CommunicationException {
+    private DelegatingTreeIterator makeDelegate(String id, String childID) {
         return new IteratorForFedora3(childID, client, restUrl, filter);
     }
 

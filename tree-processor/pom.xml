@@ -61,10 +61,6 @@
             <artifactId>jersey-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>dk.statsbiblioteket.doms.central</groupId>
-            <artifactId>centralWebservice-lib</artifactId>
-        </dependency>
-        <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
             <version>0.2-SNAPSHOT</version>
