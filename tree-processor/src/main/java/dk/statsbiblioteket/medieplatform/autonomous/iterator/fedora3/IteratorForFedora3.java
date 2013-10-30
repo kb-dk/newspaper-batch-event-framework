@@ -27,23 +27,26 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
             "<datastream") + "\\s+dsid=\"([^\"]*)\"");
     private static final Pattern DC_IDENTIFIER_PATH_PATTERN = Pattern.compile(
-            Pattern.quote("<dc:identifier>path:[^<]*</dc:identifier>"));
+            ("<dc:identifier>path:([^<]*)</dc:identifier>"));
 
 
     private final List<String> types;
     private final Client client;
     private final String restUrl;
     private ContentModelFilter filter;
+    private String name;
 
     /**
      * Constructor.
      * @param id the fedora pid of the root object
+     * @param name Name of object
      * @param client the jersey client to use
      * @param restUrl the url to Fedora
      * @param filter the content model filter to know which relations and datastreams to use
      */
-    protected IteratorForFedora3(String id, Client client, String restUrl, ContentModelFilter filter) {
+    protected IteratorForFedora3(String id, String name, Client client, String restUrl, ContentModelFilter filter) {
         super(id);
+        this.name = name;
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
@@ -101,7 +104,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
             try {
-                DelegatingTreeIterator delegate = makeDelegate(id,child);
+                String DCcontent = resource.path(child).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
+                Matcher matcher = DC_IDENTIFIER_PATH_PATTERN.matcher(DCcontent);
+                if (matcher.find()) {
+                    name = matcher.group(1);
+                }
+                DelegatingTreeIterator delegate = makeDelegate(id, child, name);
                 result.add(delegate);
             } catch (Exception e) {
                 // Couldn't make delegate, ignore it
@@ -134,10 +142,11 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * Make a delegate iterator for the child
      * @param id the id of this node
      * @param childID the id of the child
+     * @param childName the name of the child
      * @return the iterator for the child
      */
-    private DelegatingTreeIterator makeDelegate(String id, String childID) {
-        return new IteratorForFedora3(childID, client, restUrl, filter);
+    private DelegatingTreeIterator makeDelegate(String id, String childID, String childName) {
+        return new IteratorForFedora3(childID, childName, client, restUrl, filter);
     }
 
     @Override
@@ -158,15 +167,13 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      */
     @Override
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
-        WebResource resource = client.resource(restUrl);
-        String DCcontent = resource.path(nodeID).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
-        Matcher matcher = DC_IDENTIFIER_PATH_PATTERN.matcher(DCcontent);
-        String name = attributeID; //TODO: Use DC identifier starting with path:
-        if (matcher.find()) {
-            name = matcher.group();
-        }
-        return new JerseyAttributeParsingEvent(name,
+        return new JerseyAttributeParsingEvent(name+"." + attributeID.toLowerCase() + ".xml",
                 client.resource(restUrl).path(nodeID).path("/datastreams/")
                         .path(attributeID).path("/content"));
+    }
+
+    @Override
+    protected String getIdOfNode() {
+        return name;
     }
 }
