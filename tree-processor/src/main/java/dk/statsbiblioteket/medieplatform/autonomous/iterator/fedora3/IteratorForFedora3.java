@@ -2,6 +2,9 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
@@ -27,8 +30,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
 
     private final Client client;
     private final String restUrl;
-    private FedoraTreeFilter filter;
-    private String name;
+    private final FedoraTreeFilter filter;
+    private final String name;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * Constructor.
@@ -96,7 +100,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 DelegatingTreeIterator delegate = new IteratorForFedora3(child, client, restUrl, filter);
                 result.add(delegate);
             } catch (Exception e) {
-                // Couldn't make delegate, ignore it
+                log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);
             }
         }
         return result.iterator();
