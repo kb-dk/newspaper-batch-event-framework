@@ -2,30 +2,34 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Iterator that iterates objects in a Fedora 3.x repository. It works directly on the
- * REST api, and parses xml with regular expressions. Not production ready.
+ * REST api.
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
-    private static final Pattern RELATIONS_PATTERN
-            = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
-    private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
-            "<datastream") + "\\s+dsid=\"([^\"]*)\"");
-    private static final Pattern DC_IDENTIFIER_PATH_PATTERN = Pattern.compile(
-            ("<dc:identifier>path:([^<]*)</dc:identifier>"));
+    private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
+    private final XPathExpression datastreamsXpath;
+    private final XPathExpression dcIdentifierXpath;
 
 
     private final Client client;
@@ -46,6 +50,16 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
+        try {
+            XPath xPath = XPATH_FACTORY.newXPath();
+            NamespaceContextImpl context = new NamespaceContextImpl();
+            context.startPrefixMapping("dc", "http://purl.org/dc/elements/1.1/");
+            xPath.setNamespaceContext(context);
+            datastreamsXpath = xPath.compile("//@dsid");
+            dcIdentifierXpath = xPath.compile("//dc:identifier");
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Illegal XPath. This is a programming error.", e);
+        }
         this.name = getNameFromId(id);
     }
 
@@ -58,12 +72,19 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private String getNameFromId(String id) {
         WebResource resource = client.resource(restUrl);
         String dcContent = resource.path(id).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
-        Matcher matcher = DC_IDENTIFIER_PATH_PATTERN.matcher(dcContent);
-        if (matcher.find()) {
-            return matcher.group(1);
-        } else {
-            return id;
+        NodeList nodeList;
+        try {
+            nodeList = (NodeList) dcIdentifierXpath
+                    .evaluate(new InputSource(new ByteArrayInputStream(dcContent.getBytes())), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            String textContent = nodeList.item(i).getTextContent();
+            if (textContent.startsWith("path:"))
+            return textContent.substring("path:".length());
+        }
+        return id;
     }
 
     /**
@@ -74,10 +95,17 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @return the list of datastreams
      */
     private List<String> parseDatastreamsFromXml(String datastreamXml) {
-        Matcher matcher = DATASTREAMS_PATTERN.matcher(datastreamXml);
+        NodeList nodeList;
+        try {
+            nodeList = (NodeList) datastreamsXpath
+                    .evaluate(new InputSource(new ByteArrayInputStream(datastreamXml.getBytes())),
+                              XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Invalid XPath. This is a programming error.", e);
+        }
         ArrayList<String> result = new ArrayList<>();
-        while (matcher.find()) {
-            String dsid = matcher.group(1);
+        for (int i=0; i < nodeList.getLength(); i++) {
+            String dsid = nodeList.item(i).getTextContent();
             if (filter.isAttributeDatastream(dsid)) {
                 result.add(dsid);
             }
@@ -91,8 +119,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
         String relationsShips
-                = resource.path(id).path("relationships").queryParam("format",
-                "ntriples").get(String.class);
+                = resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
@@ -114,13 +141,17 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @return the list of pids of the child objects.
      */
     private List<String> parseRelationsToList(String relationsShips) {
-        Matcher matcher = RELATIONS_PATTERN.matcher(relationsShips);
         ArrayList<String> result = new ArrayList<>();
-        while (matcher.find()) {
-            String predicate = matcher.group(1);
-            String child = matcher.group(2);
-            if (filter.isChildRel(predicate)) {
-                result.add(child);
+        for (String line : relationsShips.split("\n")) {
+            String[] tuple = line.split(" ");
+            if (tuple.length >= 3 && tuple[2].startsWith("<info:fedora/")) {
+                String predicate = tuple[1].substring(1, tuple[1].length() - 1);
+                String child = tuple[2].substring("<info:fedora/".length(), tuple[2].length() - 1);
+                if (filter.isChildRel(predicate)) {
+                    result.add(child);
+                }
+            } else {
+                log.debug("Ignoring line {}, while parsing predicates", line);
             }
         }
         return result;
