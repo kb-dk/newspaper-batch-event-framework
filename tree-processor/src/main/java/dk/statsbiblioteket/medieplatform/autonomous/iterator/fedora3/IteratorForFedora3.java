@@ -169,7 +169,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
         return new JerseyAttributeParsingEvent(name+"." + attributeID.toLowerCase() + ".xml",
                 client.resource(restUrl).path(nodeID).path("/datastreams/")
-                        .path(attributeID).path("/content"));
+                        .path(attributeID));
     }
 
     @Override

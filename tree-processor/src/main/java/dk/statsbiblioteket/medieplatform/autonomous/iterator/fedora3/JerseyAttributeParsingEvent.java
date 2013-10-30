@@ -6,11 +6,15 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributePar
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An fedora attribute event, implemented from the jersey rest client
  */
 public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
+    private static final Pattern CHECKSUM_PATTERN = Pattern.compile("<dsChecksum>([^>]*)</dsChecksum>");
+
     private WebResource resource;
 
     public JerseyAttributeParsingEvent(String name,
@@ -21,7 +25,7 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
 
     @Override
     public InputStream getData() throws IOException {
-        ClientResponse response = resource.get(ClientResponse.class);
+        ClientResponse response = resource.path("/content").get(ClientResponse.class);
         if (response.getStatus() >= 200 && response.getStatus() < 300){
             return response.getEntityInputStream();
         }
@@ -29,10 +33,13 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     }
 
     @Override
-    public String getChecksum()
-            throws
-            IOException {
-        //TODO
-        return null;
+    public String getChecksum() throws IOException {
+        String response = resource.queryParam("format", "XML").get(String.class);
+        Matcher matcher = CHECKSUM_PATTERN.matcher(response);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
     }
 }
