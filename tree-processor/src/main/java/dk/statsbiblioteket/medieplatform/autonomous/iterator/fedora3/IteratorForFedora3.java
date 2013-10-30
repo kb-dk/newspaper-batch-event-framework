@@ -17,11 +17,6 @@ import java.util.regex.Pattern;
  * REST api, and parses xml with regular expressions. Not production ready.
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
-    // Regexp patterns to parse xml
-    private static final Pattern MODEL_PATTERN = Pattern.compile(
-            Pattern.quote("<model>")
-                    + "\\s*info:fedora/([^<]*)"
-                    + Pattern.quote("</model>"));
     private static final Pattern RELATIONS_PATTERN
             = Pattern.compile("<[^<>]*>\\s+<([^<>]*)>\\s+<info:fedora/([^<>]*)>\\s+\\.");
     private static final Pattern DATASTREAMS_PATTERN = Pattern.compile(Pattern.quote(
@@ -30,10 +25,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
             ("<dc:identifier>path:([^<]*)</dc:identifier>"));
 
 
-    private final List<String> types;
     private final Client client;
     private final String restUrl;
-    private ContentModelFilter filter;
+    private FedoraTreeFilter filter;
     private String name;
 
     /**
@@ -42,50 +36,29 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @param name Name of object
      * @param client the jersey client to use
      * @param restUrl the url to Fedora
-     * @param filter the content model filter to know which relations and datastreams to use
+     * @param filter the fedora tree filter to know which relations and datastreams to use
      */
-    public IteratorForFedora3(String id, String name, Client client, String restUrl, ContentModelFilter filter) {
+    public IteratorForFedora3(String id, String name, Client client, String restUrl, FedoraTreeFilter filter) {
         super(id);
         this.name = name;
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
-
-        //Get the list of content models of an object
-        WebResource resource = client.resource(restUrl);
-        String profileXML = resource.path(id).queryParam("format", "xml").get(String.class);
-        types = parseModelsFromProfile(profileXML);
-
     }
 
     /**
-     * Parse the content models from the object profile
-     * @param profileXML the object profile in xml
-     * @return the list of pids of content models
-     */
-    private List<String> parseModelsFromProfile(String profileXML) {
-        Matcher matcher = MODEL_PATTERN.matcher(profileXML);
-        ArrayList<String> result = new ArrayList<String>();
-        while (matcher.find()) {
-            String model = matcher.group(1);
-            result.add(model);
-        }
-        return result;
-    }
-
-    /**
-     * Parse the list of datastreams from the datastream xml list. Removes the one that should
-     * not be used, based on the content model filter
+     * Parse the list of datastreams from the datastream xml list. Removes the ones that should
+     * not be used, based on the fedora tree filter
+     *
      * @param datastreamXml the datastream xml list
-     * @param types the content models of the object
      * @return the list of datastreams
      */
-    private List<String> parseDatastreamsFromXml(String datastreamXml, List<String> types) {
+    private List<String> parseDatastreamsFromXml(String datastreamXml) {
         Matcher matcher = DATASTREAMS_PATTERN.matcher(datastreamXml);
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         while (matcher.find()) {
             String dsid = matcher.group(1);
-            if (filter.isAttributeDatastream(dsid, types)) {
+            if (filter.isAttributeDatastream(dsid)) {
                 result.add(dsid);
             }
 
@@ -100,7 +73,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         String relationsShips
                 = resource.path(id).path("relationships").queryParam("format",
                 "ntriples").get(String.class);
-        List<String> children = parseRelationsToList(relationsShips, types);
+        List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
             try {
@@ -120,18 +93,18 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
 
     /**
      * Parse the relationships of the object into a list of fedora pids. Filters out the ones that
-     * should be ignored as detailed in the content model filter
+     * should be ignored as detailed in the fedora tree filter
+     *
      * @param relationsShips the relationships
-     * @param types the types of the current object
      * @return the list of pids of the child objects.
      */
-    private List<String> parseRelationsToList(String relationsShips, List<String> types) {
+    private List<String> parseRelationsToList(String relationsShips) {
         Matcher matcher = RELATIONS_PATTERN.matcher(relationsShips);
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         while (matcher.find()) {
             String predicate = matcher.group(1);
             String child = matcher.group(2);
-            if (filter.isChildRel(predicate, types)) {
+            if (filter.isChildRel(predicate)) {
                 result.add(child);
             }
         }
@@ -155,7 +128,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         String datastreamXml
                 = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
 
-        return parseDatastreamsFromXml(datastreamXml, types).iterator();
+        return parseDatastreamsFromXml(datastreamXml).iterator();
     }
 
     /**

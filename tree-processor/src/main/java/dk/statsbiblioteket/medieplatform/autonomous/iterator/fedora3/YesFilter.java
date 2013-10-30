@@ -1,16 +1,14 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
-import java.util.List;
-
 /**
- * Stupid implementation of the ContentModelFilter that returns true for all calls.
+ * Stupid implementation of the FedoraTreeFilter that returns true for all calls.
  */
-public class YesFilter implements ContentModelFilter {
-    public boolean isAttributeDatastream(String dsid, List<String> types) {
+public class YesFilter implements FedoraTreeFilter {
+    public boolean isAttributeDatastream(String dsid) {
         return true;
     }
 
-    public boolean isChildRel(String predicate, List<String> types) {
+    public boolean isChildRel(String predicate) {
         return true;
     }
 }

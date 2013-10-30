@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Filter that filters on configurable list of values.
  */
-public class ConfigurableFilter implements ContentModelFilter {
+public class ConfigurableFilter implements FedoraTreeFilter {
     private final List<String> predicateNames;
     private final List<String> names;
 
@@ -20,14 +20,14 @@ public class ConfigurableFilter implements ContentModelFilter {
     }
 
     @Override
-    public boolean isAttributeDatastream(String dsid, List<String> types) {
+    public boolean isAttributeDatastream(String dsid) {
         return names.contains(dsid);
     }
 
     @Override
-    public boolean isChildRel(String predicate, List<String> types) {
+    public boolean isChildRel(String predicate) {
         for (String predicateName : predicateNames) {
-            if (predicate.contains(predicateName)) {
+            if (predicate.equals(predicateName)) {
                 return true;
             }
         }
