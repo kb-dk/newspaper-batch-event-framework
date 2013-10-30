@@ -84,8 +84,7 @@ public abstract class AbstractRunnableComponent
                 throw new InitialisationException("Unable to initialise iterator", e);
             }
 
-            return new IteratorForFedora3(pid, batch.getFullID(),
-                                              client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+            return new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
                     Arrays.asList(properties.getProperty("fedora.iterator.attributenames").split(",")),
                     Arrays.asList(properties.getProperty("fedora.iterator.predicatenames").split(","))));
         }

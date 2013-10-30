@@ -17,7 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -50,7 +49,7 @@ public class IteratorForFedora3Test extends AbstractTests {
                 throw new RuntimeException(e);
             }
 
-            iterator = new IteratorForFedora3(pid, "B400022028246-RT1", client, properties.getProperty("fedora.server"),
+            iterator = new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"),
                                               new ConfigurableFilter(
                                                       Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
                                                       Arrays.asList(
