@@ -44,7 +44,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @param restUrl the url to Fedora
      * @param filter the content model filter to know which relations and datastreams to use
      */
-    protected IteratorForFedora3(String id, String name, Client client, String restUrl, ContentModelFilter filter) {
+    public IteratorForFedora3(String id, String name, Client client, String restUrl, ContentModelFilter filter) {
         super(id);
         this.name = name;
         this.client = client;
