@@ -2,6 +2,8 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
@@ -28,6 +30,7 @@ public abstract class AbstractRunnableComponent
 
 
     private final Properties properties;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     protected AbstractRunnableComponent(Properties properties) {
         this.properties = properties;
@@ -75,17 +78,16 @@ public abstract class AbstractRunnableComponent
                                                                              .replaceFirst("/(objects)?/?$", ""),
                                                                    null,
                                                                    null);
-                pid = fedora.findObjectFromDCIdentifier("path:B400022028246-RT1").get(0);
+                pid = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID()).get(0);
             } catch (MalformedURLException | PIDGeneratorException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
-                throw new RuntimeException(e);
+                log.error("Unable to initialise iterator", e);
+                throw new InitialisationException("Unable to initialise iterator", e);
             }
 
-            // The uuid below is for a test object ingested by someone and may never be deleted?!
-
-            return new IteratorForFedora3(pid, "B400022028246-RT1",
+            return new IteratorForFedora3(pid, batch.getFullID(),
                                               client, properties.getProperty("fedora.server"), new ConfigurableFilter(
                     Arrays.asList(properties.getProperty("fedora.iterator.attributenames").split(",")),
-                    Arrays.asList(properties.getProperty("fedora.iterator.predicatenames"))));
+                    Arrays.asList(properties.getProperty("fedora.iterator.predicatenames").split(","))));
         }
     }
 
