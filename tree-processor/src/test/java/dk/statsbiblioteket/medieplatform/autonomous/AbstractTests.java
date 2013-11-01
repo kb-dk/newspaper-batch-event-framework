@@ -158,6 +158,6 @@ public abstract class AbstractTests {
 
         }
         Assert.assertEquals(indent, 0, "Indent is not reset after iteration");
-        Assert.assertTrue(files > 5, "We have not encountered very much, is the test data broken?");
+        Assert.assertTrue(files > 1, "We have not encountered very much, is the test data broken?");
     }
 }
