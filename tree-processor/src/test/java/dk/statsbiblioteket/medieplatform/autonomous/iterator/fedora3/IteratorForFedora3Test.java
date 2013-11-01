@@ -17,7 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -50,26 +49,13 @@ public class IteratorForFedora3Test extends AbstractTests {
                 throw new RuntimeException(e);
             }
 
-            // The uuid below is for a test object ingested by someone and may never be deleted?!
-
-            iterator = new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"), new TestFilter());
+            iterator = new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"),
+                                              new ConfigurableFilter(
+                                                      Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
+                                                      Arrays.asList(
+                                                              "info:fedora/fedora-system:def/relations-external#hasPart")));
         }
         return iterator;
-    }
-
-    static class TestFilter implements ContentModelFilter {
-
-        public boolean isAttributeDatastream(String dsid, List<String> types) {
-            List<String> names = Arrays.asList("DC", "MODS", "FILM", "EDITION", "ALTO", "MIX");
-            return names.contains(dsid);
-        }
-
-        public boolean isChildRel(String predicate, List<String> types) {
-            if (predicate.contains("#hasPart")){
-                return true;
-            }
-            return false;
-        }
     }
 
     @Test(groups = "integrationTest", enabled = true)

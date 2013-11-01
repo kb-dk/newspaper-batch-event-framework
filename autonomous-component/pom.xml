@@ -36,7 +36,6 @@
             <artifactId>runnable-compoment</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
 
 </project>
