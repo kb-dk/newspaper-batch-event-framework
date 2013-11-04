@@ -7,7 +7,9 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * For an iterator, triggers all event handlers on a given event.
@@ -33,8 +35,16 @@ public class EventRunner {
      */
     public void runEvents(List<TreeEventHandler> eventHandlers)
             throws IOException {
+
+        List<InjectingTreeEventHandler> injectingTreeEventHandlers = getInjectingTreeEventHandlers(eventHandlers);
+
         while (iterator.hasNext()) {
-            ParsingEvent current = iterator.next();
+            ParsingEvent current;
+
+            current = getInjectedParsingEvent(injectingTreeEventHandlers);
+            if (current == null){
+                current = iterator.next();
+            }
 
             switch (current.getType()){
                 case NodeBegin: {
@@ -61,5 +71,40 @@ public class EventRunner {
         for (TreeEventHandler handler : eventHandlers) {
             handler.handleFinish();
         }
+    }
+
+    /**
+     * Iterate through the given injectingTreeEventHandlers. If any of them have an injected event, pop it and return.
+     * @param injectingTreeEventHandlers the injecting event handlers
+     * @return an event or null
+     */
+    private ParsingEvent getInjectedParsingEvent(List<InjectingTreeEventHandler> injectingTreeEventHandlers) {
+        ParsingEvent current;
+        for (InjectingTreeEventHandler injectingTreeEventHandler : injectingTreeEventHandlers) {
+            try {
+                current = injectingTreeEventHandler.popInjectedEvent();
+                if (current != null){
+                    return current;
+                }
+            } catch (NoSuchElementException e){
+                continue;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Filter out the injecting event handlers from the list of event handlers
+     * @param eventHandlers all the event handlers
+     * @return the injecting event handlers
+     */
+    private List<InjectingTreeEventHandler> getInjectingTreeEventHandlers(List<TreeEventHandler> eventHandlers) {
+        List<InjectingTreeEventHandler> injectingTreeEventHandlers = new ArrayList<>(); for (TreeEventHandler eventHandler : eventHandlers) {
+            if (eventHandler instanceof InjectingTreeEventHandler) {
+                InjectingTreeEventHandler injectingTreeEventHandler = (InjectingTreeEventHandler) eventHandler;
+                injectingTreeEventHandlers.add(injectingTreeEventHandler);
+            }
+        }
+        return injectingTreeEventHandlers;
     }
 }
