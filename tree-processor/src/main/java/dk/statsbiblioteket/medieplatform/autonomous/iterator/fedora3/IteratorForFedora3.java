@@ -19,6 +19,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,6 +132,14 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);
             }
         }
+        Collections.sort(result,new Comparator<DelegatingTreeIterator>() {
+            @Override
+            public int compare(DelegatingTreeIterator o1,
+                               DelegatingTreeIterator o2) {
+
+                return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
         return result.iterator();
     }
 
