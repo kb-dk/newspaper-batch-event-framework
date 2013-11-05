@@ -2,10 +2,9 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import org.apache.ws.commons.util.NamespaceContextImpl;
-import org.xml.sax.InputSource;
-
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.util.xml.DOM;
+import org.apache.ws.commons.util.NamespaceContextImpl;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -47,7 +46,8 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
                 NamespaceContextImpl context = new NamespaceContextImpl();
                 context.startPrefixMapping("dp", "http://www.fedora.info/definitions/1/0/management/");
                 xPath.setNamespaceContext(context);
-                checksum = xPath.evaluate("//dp:dsChecksum", new InputSource(new ByteArrayInputStream(response.getBytes())));
+                checksum = xPath.evaluate("//dp:dsChecksum",
+                                          DOM.streamToDOM(new ByteArrayInputStream(response.getBytes()),true));
             } catch (XPathExpressionException e) {
                 throw new RuntimeException("Invalid XPath. This is a programming error.", e);
             }

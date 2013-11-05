@@ -2,15 +2,14 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.util.xml.DOM;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -77,7 +76,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         NodeList nodeList;
         try {
             nodeList = (NodeList) dcIdentifierXpath
-                    .evaluate(new InputSource(new ByteArrayInputStream(dcContent.getBytes())), XPathConstants.NODESET);
+                    .evaluate(DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes()),true), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
@@ -100,7 +99,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         NodeList nodeList;
         try {
             nodeList = (NodeList) datastreamsXpath
-                    .evaluate(new InputSource(new ByteArrayInputStream(datastreamXml.getBytes())),
+                    .evaluate(DOM.streamToDOM(new ByteArrayInputStream(datastreamXml.getBytes()),true),
                               XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
