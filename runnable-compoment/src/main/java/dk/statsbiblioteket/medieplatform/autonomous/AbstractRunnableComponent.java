@@ -1,10 +1,14 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.regex.Pattern;
+import javax.xml.bind.JAXBException;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
@@ -14,13 +18,8 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.ConfigurableFilter;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.IteratorForFedora3;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transforming.TransformingIteratorForFileSystems;
-
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is an implementation that adds the code for constructing a tree iterator
@@ -98,4 +97,13 @@ public abstract class AbstractRunnableComponent
         return getComponentName()+"-"+getComponentVersion();
     }
 
+    @Override
+    public String getComponentName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getComponentVersion() {
+        return getClass().getPackage().getImplementationVersion();
+    }
 }
