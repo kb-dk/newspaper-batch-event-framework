@@ -7,6 +7,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsi
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -150,7 +151,11 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
      */
     protected synchronized Iterator<T> getAttributeIterator(){
         if (attributeIterator == null){
-            attributeIterator = initilizeAttributeIterator();
+            try {
+                attributeIterator = initilizeAttributeIterator();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return attributeIterator;
     }
@@ -161,7 +166,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
      * in a directory.
      * @return
      */
-    protected abstract Iterator<T> initilizeAttributeIterator();
+    protected abstract Iterator<T> initilizeAttributeIterator() throws IOException;
 
     /**
      * Returns an instance of a concrete subclass of AttributeEvent appropriate for this attribute. There could be

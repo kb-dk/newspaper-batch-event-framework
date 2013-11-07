@@ -8,6 +8,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,7 +93,10 @@ public class TransformingIteratorForFileSystems
     }
 
     @Override
-    protected Iterator<File> initilizeAttributeIterator() {
+    protected Iterator<File> initilizeAttributeIterator() throws IOException {
+        if (!(id.isDirectory() && id.canRead())){
+            throw new IOException("Failed to read directory '"+id.getAbsolutePath()+"'");
+        }
         Collection<File> attributes = FileUtils.listFiles(id, new AbstractFileFilter() {
             @Override
             public boolean accept(File file) {
