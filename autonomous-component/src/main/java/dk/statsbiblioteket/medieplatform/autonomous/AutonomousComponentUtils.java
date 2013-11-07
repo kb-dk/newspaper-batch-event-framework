@@ -1,13 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
@@ -15,6 +7,14 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class AutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
@@ -102,6 +102,8 @@ public class AutonomousComponentUtils {
             System.err.println("Failed to communicate with the backend systems. The work done is lost.");
             log.error("Commmunication exception when invoking backend services", e);
             return Collections.emptyMap();
+        } finally {
+            lockClient.close();
         }
     }
 
