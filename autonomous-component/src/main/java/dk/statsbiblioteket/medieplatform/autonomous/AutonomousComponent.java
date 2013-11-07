@@ -30,7 +30,7 @@ public class AutonomousComponent
     private final long timeoutSBOI;
     private final long timeoutBatch;
     private final RunnableComponent runnable;
-    private final long pollTime = 100;
+    private final long pollTime = 1000;
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private final long workerTimout;
     private int simultaneousProcesses;
@@ -259,7 +259,7 @@ public class AutonomousComponent
             long start = System.currentTimeMillis();
             boolean allDone = false;
             while (!allDone) {
-                log.info("Waiting to terminate");
+                log.trace("Waiting to terminate");
                 allDone = true;
                 for (Future<?> future : futures) {
                     allDone = allDone && future.isDone();
