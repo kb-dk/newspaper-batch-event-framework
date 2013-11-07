@@ -1,13 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.CuratorFrameworkFactory;
-import com.netflix.curator.retry.ExponentialBackoffRetry;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,9 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.netflix.curator.framework.CuratorFramework;
+import com.netflix.curator.framework.CuratorFrameworkFactory;
+import com.netflix.curator.retry.ExponentialBackoffRetry;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AutonomousComponentUtils {
-
-
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
 
     /**
@@ -135,7 +133,9 @@ public class AutonomousComponentUtils {
         String[] eventSplits = events.split(",");
         List<String> result = new ArrayList<>();
         for (String eventSplit : eventSplits) {
-            result.add(eventSplit.trim());
+            if (!eventSplit.trim().isEmpty()) {
+                result.add(eventSplit.trim());
+            }
         }
         return result;
     }
