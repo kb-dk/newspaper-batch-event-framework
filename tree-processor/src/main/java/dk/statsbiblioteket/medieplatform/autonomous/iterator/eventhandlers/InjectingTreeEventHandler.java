@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  */
 public abstract class InjectingTreeEventHandler implements TreeEventHandler{
 
-    LinkedList<ParsingEvent> parsingEventLinkedList = new LinkedList<>();
+    private LinkedList<ParsingEvent> parsingEventLinkedList = new LinkedList<>();
 
     /**
      * Get the top element from the stack
@@ -21,7 +21,7 @@ public abstract class InjectingTreeEventHandler implements TreeEventHandler{
      */
     public ParsingEvent popInjectedEvent() throws
                                                         NoSuchElementException{
-        return parsingEventLinkedList.pop();
+        return getParsingEventLinkedList().pop();
     }
 
     /**
@@ -29,8 +29,13 @@ public abstract class InjectingTreeEventHandler implements TreeEventHandler{
      * @param parsingEvent the event to push
      */
     public void pushInjectedEvent(ParsingEvent parsingEvent){
-        parsingEventLinkedList.push(parsingEvent);
+        getParsingEventLinkedList().push(parsingEvent);
     }
 
-
+    private synchronized LinkedList<ParsingEvent> getParsingEventLinkedList() {
+        if (parsingEventLinkedList == null){
+            parsingEventLinkedList = new LinkedList<>();
+        }
+        return parsingEventLinkedList;
+    }
 }
