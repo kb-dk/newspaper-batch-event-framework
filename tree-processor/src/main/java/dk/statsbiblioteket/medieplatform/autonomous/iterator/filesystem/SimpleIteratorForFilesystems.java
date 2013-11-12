@@ -28,7 +28,7 @@ public class SimpleIteratorForFilesystems
      * @param dir the directory at which to root the iterator.
      */
     public SimpleIteratorForFilesystems(File dir) {
-        super(dir);
+        super(dir,"");
     }
 
     @Override

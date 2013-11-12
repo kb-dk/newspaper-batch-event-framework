@@ -1,6 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeEndsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 import org.apache.commons.io.IOUtils;
@@ -74,6 +76,10 @@ public abstract class AbstractTests {
             String s;
             switch (next.getType()) {
                 case NodeBegin:
+                    if (next.getName().endsWith(".jp2")){
+                        Assert.assertTrue(next instanceof DataFileNodeBeginsParsingEvent);
+                    }
+
                     s = getIndent(indent);
                     if (print) {
                         System.out.println(s + printEvent(next));
@@ -86,6 +92,10 @@ public abstract class AbstractTests {
                     }
                     break;
                 case NodeEnd:
+                    if (next.getName().endsWith(".jp2")){
+                        Assert.assertTrue(next instanceof DataFileNodeEndsParsingEvent);
+                    }
+
                     indent -= 2;
                     s = getIndent(indent);
                     if (print) {

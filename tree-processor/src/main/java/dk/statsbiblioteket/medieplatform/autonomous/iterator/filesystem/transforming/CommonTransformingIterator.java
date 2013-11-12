@@ -17,7 +17,6 @@ public abstract class CommonTransformingIterator
         extends AbstractIterator<File> {
     private final String groupingChar;
     private final File batchFolder;
-    private String dataFilePattern;
     private String checksumPostfix;
 
 
@@ -26,9 +25,8 @@ public abstract class CommonTransformingIterator
                                          String dataFilePattern,
                                          String checksumPostfix,
                                          String groupingChar) {
-        super(id);
+        super(id,dataFilePattern);
         this.batchFolder = batchFolder;
-        this.dataFilePattern = dataFilePattern;
         this.checksumPostfix = checksumPostfix;
         this.groupingChar = groupingChar;
     }
@@ -43,7 +41,7 @@ public abstract class CommonTransformingIterator
     protected Collection<File> getDataFiles(Collection<File> files) {
         Collection<File> datafiles = new ArrayList<>();
         for (File attribute : files) {
-            if (attribute.getName().matches(dataFilePattern)) {
+            if (attribute.getName().matches(getDataFilePattern())) {
                 datafiles.add(attribute);
             }
         }
@@ -97,9 +95,6 @@ public abstract class CommonTransformingIterator
         return checksumPostfix;
     }
 
-    public String getDataFilePattern() {
-        return dataFilePattern;
-    }
 
     /**
      * Get the batchFolder of a file

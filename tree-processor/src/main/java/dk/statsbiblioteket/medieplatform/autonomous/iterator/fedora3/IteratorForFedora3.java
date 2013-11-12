@@ -48,8 +48,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     public IteratorForFedora3(String id,
                               Client client,
                               String restUrl,
-                              FedoraTreeFilter filter) {
-        super(id);
+                              FedoraTreeFilter filter,
+                              String dataFilePattern) {
+        super(id,dataFilePattern);
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
@@ -134,7 +135,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
             try {
-                DelegatingTreeIterator delegate = new IteratorForFedora3(child, client, restUrl, filter);
+                DelegatingTreeIterator delegate = new IteratorForFedora3(child, client, restUrl, filter,getDataFilePattern());
                 result.add(delegate);
             } catch (Exception e) {
                 log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);

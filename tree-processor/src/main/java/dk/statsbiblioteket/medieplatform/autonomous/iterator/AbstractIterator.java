@@ -1,6 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeEndsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
@@ -10,6 +12,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 /**
  * The abstract iterator, meant as a common superclass for implementations for different backends.
@@ -29,13 +32,15 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
     private Iterator<DelegatingTreeIterator> childrenIterator;
     private Iterator<T> attributeIterator;
     protected final T id;
+    private String dataFilePattern;
 
     private DelegatingTreeIterator delegate = null;
     private boolean done = false;
     private boolean begun = false;
 
-    protected AbstractIterator(T id) {
+    protected AbstractIterator(T id, String dataFilePattern) {
         this.id = id;
+        this.dataFilePattern = dataFilePattern;
     }
 
     @Override
@@ -112,7 +117,14 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
      * @return a node ends event
      */
     protected NodeEndParsingEvent createNodeEndsParsingEvent() {
+        if (isDataFile(getIdOfNode())){
+            return new DataFileNodeEndsParsingEvent(getIdOfNode());
+        }
         return new NodeEndParsingEvent(getIdOfNode());
+    }
+
+    private boolean isDataFile(String idOfNode) {
+        return Pattern.matches(dataFilePattern,idOfNode);
     }
 
     /**
@@ -121,6 +133,9 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
      * @return a node begins event
      */
     protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
+        if (isDataFile(getIdOfNode())){
+            return new DataFileNodeBeginsParsingEvent(getIdOfNode());
+        }
         return new NodeBeginsParsingEvent(getIdOfNode());
     }
 
@@ -242,5 +257,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
         return delegate;
     }
 
-
+    public String getDataFilePattern() {
+        return dataFilePattern;
+    }
 }
