@@ -31,8 +31,6 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
     private final XPathExpression datastreamsXpath;
     private final XPathExpression dcIdentifierXpath;
-
-
     private final Client client;
     private final String restUrl;
     private final FedoraTreeFilter filter;
@@ -41,12 +39,16 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
 
     /**
      * Constructor.
-     * @param id the fedora pid of the root object
-     * @param client the jersey client to use
+     *
+     * @param id      the fedora pid of the root object
+     * @param client  the jersey client to use
      * @param restUrl the url to Fedora
-     * @param filter the fedora tree filter to know which relations and datastreams to use
+     * @param filter  the fedora tree filter to know which relations and datastreams to use
      */
-    public IteratorForFedora3(String id, Client client, String restUrl, FedoraTreeFilter filter) {
+    public IteratorForFedora3(String id,
+                              Client client,
+                              String restUrl,
+                              FedoraTreeFilter filter) {
         super(id);
         this.client = client;
         this.restUrl = restUrl;
@@ -68,22 +70,27 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * Given an object id, get the name from dc:identifier
      *
      * @param id fedora ID of object
+     *
      * @return The name found, or the id if none could be found.
      */
     private String getNameFromId(String id) {
         WebResource resource = client.resource(restUrl);
-        String dcContent = resource.path(id).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
+        String dcContent =
+                resource.path(id).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
         NodeList nodeList;
         try {
-            nodeList = (NodeList) dcIdentifierXpath
-                    .evaluate(DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes()),true), XPathConstants.NODESET);
+            nodeList =
+                    (NodeList) dcIdentifierXpath.evaluate(DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes
+                            ()),
+                                                                          true), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
         for (int i = 0; i < nodeList.getLength(); i++) {
             String textContent = nodeList.item(i).getTextContent();
-            if (textContent.startsWith("path:"))
-            return textContent.substring("path:".length());
+            if (textContent.startsWith("path:")) {
+                return textContent.substring("path:".length());
+            }
         }
         return id;
     }
@@ -93,19 +100,21 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * not be used, based on the fedora tree filter
      *
      * @param datastreamXml the datastream xml list
+     *
      * @return the list of datastreams
      */
     private List<String> parseDatastreamsFromXml(String datastreamXml) {
         NodeList nodeList;
         try {
-            nodeList = (NodeList) datastreamsXpath
-                    .evaluate(DOM.streamToDOM(new ByteArrayInputStream(datastreamXml.getBytes()),true),
-                              XPathConstants.NODESET);
+            nodeList =
+                    (NodeList) datastreamsXpath.evaluate(DOM.streamToDOM(new ByteArrayInputStream(datastreamXml
+                                                                                                          .getBytes()),
+                                                                         true), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
         ArrayList<String> result = new ArrayList<>();
-        for (int i=0; i < nodeList.getLength(); i++) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
             String dsid = nodeList.item(i).getTextContent();
             if (filter.isAttributeDatastream(dsid)) {
                 result.add(dsid);
@@ -119,8 +128,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
-        String relationsShips
-                = resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
+        String relationsShips =
+                resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
@@ -131,7 +140,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);
             }
         }
-        Collections.sort(result,new Comparator<DelegatingTreeIterator>() {
+        Collections.sort(result, new Comparator<DelegatingTreeIterator>() {
             @Override
             public int compare(DelegatingTreeIterator o1,
                                DelegatingTreeIterator o2) {
@@ -147,6 +156,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * should be ignored as detailed in the fedora tree filter
      *
      * @param relationsShips the relationships
+     *
      * @return the list of pids of the child objects.
      */
     private List<String> parseRelationsToList(String relationsShips) {
@@ -169,8 +179,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     @Override
     protected Iterator<String> initilizeAttributeIterator() {
         WebResource resource = client.resource(restUrl);
-        String datastreamXml
-                = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
+        String datastreamXml = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml).iterator();
     }
@@ -178,15 +187,24 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     /**
      * construct a Attribute parsing event for a node and attributeID. Uses jersey
      * to return an inputstream to the content
-     * @param nodeID the identifier of the node that the attribute resides in
+     *
+     * @param nodeID      the identifier of the node that the attribute resides in
      * @param attributeID the identifier of the attribute.
+     *
      * @return the attribute parsing event
      */
     @Override
-    protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
-        return new JerseyAttributeParsingEvent(name + "." + attributeID.toLowerCase() + ".xml",
-                client.resource(restUrl).path(nodeID).path("/datastreams/")
-                        .path(attributeID));
+    protected AttributeParsingEvent makeAttributeEvent(String nodeID,
+                                                       String attributeID) {
+        if (attributeID.equals(JerseyContentsAttributeParsingEvent.CONTENTS)) {
+            return new JerseyContentsAttributeParsingEvent(name + "." + attributeID.toLowerCase(),
+                                                           client.resource(restUrl).path(nodeID),
+                                                           nodeID);
+        } else {
+            return new JerseyAttributeParsingEvent(name + "." + attributeID.toLowerCase() + ".xml",
+                                                   client.resource(restUrl).path(nodeID).path("/datastreams/").path(
+                                                           attributeID));
+        }
     }
 
     @Override

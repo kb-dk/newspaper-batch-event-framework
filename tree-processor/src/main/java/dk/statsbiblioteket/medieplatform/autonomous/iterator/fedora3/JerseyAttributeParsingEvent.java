@@ -19,7 +19,7 @@ import java.io.InputStream;
 public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
     /** The webresource that represents this datastream */
-    private final WebResource resource;
+    protected final WebResource resource;
     /** Contains the checksum. Retrieved and stored on first request */
     private String checksum;
 
