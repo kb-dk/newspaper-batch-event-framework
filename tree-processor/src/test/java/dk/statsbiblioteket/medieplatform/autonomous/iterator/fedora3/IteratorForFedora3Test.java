@@ -44,7 +44,7 @@ public class IteratorForFedora3Test extends AbstractTests {
                                                                              .replaceFirst("/(objects)?/?$", ""),
                                                                    null,
                                                                    null);
-                pid = fedora.findObjectFromDCIdentifier("path:B400022028246-RT1").get(0);
+                pid = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1").get(0);
             } catch (PIDGeneratorException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
                 throw new RuntimeException(e);
             }

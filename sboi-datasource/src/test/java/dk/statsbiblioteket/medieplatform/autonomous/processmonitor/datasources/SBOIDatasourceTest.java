@@ -63,7 +63,7 @@ public class SBOIDatasourceTest
 
     @Override
     public Pair<String, Integer> getValidBatchID() {
-        return new Pair<>("400022028246", 1);
+        return new Pair<>("400022028241", 1);
     }
 
     @Override
