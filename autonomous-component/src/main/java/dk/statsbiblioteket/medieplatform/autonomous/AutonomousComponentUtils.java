@@ -96,7 +96,7 @@ public class AutonomousComponentUtils {
             System.err.println(
                     "Failed to communicate with the locking server. Check that the locking server is running and "
                     + "network connectivity");
-            log.error("Failed to communicate with zookeepr", e);
+            log.error("Failed to communicate with zookeeper", e);
             return Collections.emptyMap();
         } catch (CommunicationException e) {
             System.err.println("Failed to communicate with the backend systems. The work done is lost.");
