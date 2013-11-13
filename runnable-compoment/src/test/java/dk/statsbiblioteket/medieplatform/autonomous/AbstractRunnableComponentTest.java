@@ -61,11 +61,14 @@ public class AbstractRunnableComponentTest {
 
     @Test(groups = "integrationTest")
     public void testBatchStructureFromDoms() throws Exception {
-        System.out.println("Testing batch structure storing vs. DOMS");
+        System.out
+              .println("Testing batch structure storing vs. DOMS");
         Properties properties = new Properties(System.getProperties());
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
 
-        properties.setProperty("batchStructure.useFileSystem", Boolean.FALSE.toString());
+        properties.setProperty("batchStructure.useFileSystem",
+                Boolean.FALSE
+                       .toString());
         TestingRunnableComponent component = new TestingRunnableComponent(properties);
 
 
@@ -94,62 +97,41 @@ public class AbstractRunnableComponentTest {
                                                                     MalformedURLException,
                                                                     PIDGeneratorException,
                                                                     JAXBException {
-        return new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                      properties.getProperty("fedora.admin.password")),
-                                      properties.getProperty("fedora.server").replaceFirst("/(objects)?/?$", ""),
-                                      properties.getProperty("pidgenerator.location"),
-                                      null);
+        return new EnhancedFedoraImpl(
+                new Credentials(
+                        properties.getProperty("fedora.admin.username"),
+                        properties.getProperty("fedora.admin.password")),
+                properties.getProperty("fedora.server")
+                          .replaceFirst("/(objects)?/?$", ""),
+                properties.getProperty("pidgenerator.location"),
+                null);
     }
 
-    public String createBatchRoundTrip(Batch batch,
-                                       EnhancedFedora fedora) throws CommunicationException {
+    public String createBatchRoundTrip(Batch batch, EnhancedFedora fedora) throws CommunicationException {
         try {
             try {
                 //find the roundTrip Object
-                return getRoundTripID(batch, fedora);
+
+                try {
+                    //find the Round Trip object
+                    List<String> founds = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID());
+                    if (founds.size() > 0) {
+                        return founds.get(0);
+                    }
+                    throw new BackendInvalidResourceException("Round Trip object not found");
+                } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
+                    throw new CommunicationException(e);
+                }
             } catch (BackendInvalidResourceException e) {
                 //no roundTripObject, so sad
                 //but alas, we can continue
             }
 
-            //find the batch object
-            String batchObject;
-
-
-            List<String> founds = fedora.listObjectsWithThisLabel(batch.getFullID());
             String createBatchRoundTripComment = "";
-            if (founds.size() > 0) {
-                batchObject = founds.get(0);
-            } else {
-                //no batch object either, more sad
-                //create it, then
-                batchObject = fedora.cloneTemplate(BATCH_TEMPLATE,
-                                                   Arrays.asList("path:"+batch.getFullID()),
-                                                   createBatchRoundTripComment);
-                fedora.modifyObjectLabel(batchObject, batch.getFullID(), createBatchRoundTripComment);
-            }
             String roundTripObject;
 
-            roundTripObject = fedora.cloneTemplate(ROUND_TRIP_TEMPLATE,
-                                                   Arrays.asList("path:"+batch.getFullID()),
-                                                   createBatchRoundTripComment);
-
-
-            //set label
-            fedora.modifyObjectLabel(roundTripObject, batch.getFullID(), createBatchRoundTripComment);
-
-
-            //connect batch object to round trip object
-            fedora.addRelation(batchObject,
-                               toFedoraID(batchObject),
-                               HAS_PART,
-                               toFedoraID(roundTripObject),
-                               false,
-                               createBatchRoundTripComment);
-
-            //create the initial EVENTS datastream
-
-
+            roundTripObject = fedora.cloneTemplate(
+                    ROUND_TRIP_TEMPLATE, Arrays.asList("path:" + batch.getFullID()), createBatchRoundTripComment);
             return roundTripObject;
         } catch (BackendMethodFailedException | BackendInvalidCredsException | PIDGeneratorException |
                 BackendInvalidResourceException | ObjectIsWrongTypeException e) {
@@ -159,43 +141,4 @@ public class AbstractRunnableComponentTest {
 
     }
 
-    /**
-     * Retrieve the corresponding doms pid of the round trip object
-     *
-     * @param fedora@return the doms round trip pid
-     *
-     * @throws CommunicationException failed to communicate
-     * @throws BackendInvalidResourceException
-     *                                object not found
-     */
-    private String getRoundTripID(Batch batch,
-                                  EnhancedFedora fedora) throws
-                                                         CommunicationException,
-                                                         BackendInvalidResourceException {
-
-        try {
-            //find the Round Trip object
-            List<String> founds = fedora.findObjectFromDCIdentifier("path:"+batch.getFullID());
-            if (founds.size() > 0) {
-                return founds.get(0);
-            }
-            throw new BackendInvalidResourceException("Round Trip object not found");
-        } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
-            throw new CommunicationException(e);
-        }
-    }
-
-    /**
-     * Append "info:fedora/" to the fedora pid if needed
-     *
-     * @param fedoraPid the fedora pid
-     *
-     * @return duh
-     */
-    private String toFedoraID(String fedoraPid) {
-        if (!fedoraPid.startsWith("info:fedora/")) {
-            return "info:fedora/" + fedoraPid;
-        }
-        return fedoraPid;
-    }
 }

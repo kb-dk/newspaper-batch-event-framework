@@ -35,9 +35,10 @@ import java.util.regex.Pattern;
 public abstract class AbstractRunnableComponent implements RunnableComponent {
 
 
-    private static final String BATCH_STRUCTURE = "MANIFEST";
+    private static final String BATCH_STRUCTURE = "BATCHSTRUCTURE";
     private final Properties properties;
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private EnhancedFedora fedora;
 
     protected AbstractRunnableComponent(Properties properties) {
         this.properties = properties;
@@ -127,7 +128,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             try {
                 EnhancedFedora fedora = getEnhancedFedora();
                 pid = getRoundTripObject(batch, fedora);
-                String batchStructure = fedora.getXMLDatastreamContents(pid, BATCH_STRUCTURE, null);
+                String batchStructure = fedora.getXMLDatastreamContents(pid, BATCH_STRUCTURE);
                 return new ByteArrayInputStream(batchStructure.getBytes("UTF-8"));
 
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
@@ -148,7 +149,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      */
     private File getBatchStructureFile(Batch batch) {
         File scratchDir = new File(properties.getProperty("batchStructure.storageDir"));
-        return new File(scratchDir, batch.getFullID() + ".manifest.xml");
+        return new File(scratchDir, batch.getFullID() + ".batchStructure.xml");
     }
 
     /**
@@ -178,7 +179,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
                     BackendMethodFailedException | JAXBException |
                     BackendInvalidCredsException e) {
-                log.error("Unable to retrieve batch structure", e);
+                log.error("Unable to store batch structure", e);
                 throw new InitialisationException("Unable to retrieve batch structure", e);
             }
         }
@@ -219,15 +220,21 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws PIDGeneratorException if the pid generator webservice choked again. Should not be possible
      * @throws JAXBException         if jaxb fails to understand the wsdl
      */
-    private EnhancedFedora getEnhancedFedora() throws MalformedURLException, PIDGeneratorException, JAXBException {
-        return new EnhancedFedoraImpl(
-                new Credentials(
-                        properties.getProperty("fedora.admin.username"),
-                        properties.getProperty("fedora.admin.password")),
-                properties.getProperty("fedora.server")
-                          .replaceFirst("/(objects)?/?$", ""),
-                null,
-                null);
+    private synchronized EnhancedFedora getEnhancedFedora() throws
+                                                            MalformedURLException,
+                                                            PIDGeneratorException,
+                                                            JAXBException {
+        if (fedora == null) {
+            fedora = new EnhancedFedoraImpl(
+                    new Credentials(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")),
+                    properties.getProperty("fedora.server")
+                              .replaceFirst("/(objects)?/?$", ""),
+                    null,
+                    null);
+        }
+        return fedora;
     }
 
     /**
