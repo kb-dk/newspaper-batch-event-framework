@@ -3,7 +3,9 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
+import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
@@ -11,13 +13,21 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.ConfigurableFilter;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3.IteratorForFedora3;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transforming.TransformingIteratorForFileSystems;
+import dk.statsbiblioteket.util.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -25,6 +35,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractRunnableComponent implements RunnableComponent {
 
 
+    private static final String BATCH_STRUCTURE = "MANIFEST";
     private final Properties properties;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -73,14 +84,8 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
             String pid;
             try {
-                EnhancedFedoraImpl fedora =
-                        new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                               properties.getProperty("fedora.admin.password")),
-                                               properties.getProperty("fedora.server").replaceFirst("/(objects)?/?$",
-                                                                                                    ""),
-                                               null,
-                                               null);
-                pid = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID()).get(0);
+                EnhancedFedora fedora = getEnhancedFedora();
+                pid = getRoundTripObject(batch, fedora);
             } catch (MalformedURLException | PIDGeneratorException | BackendMethodFailedException | JAXBException |
                     BackendInvalidCredsException e) {
                 log.error("Unable to initialise iterator", e);
@@ -96,6 +101,141 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
                                                                          "fedora.iterator.predicatenames").split(","))),
                                           dataFilePattern);
         }
+    }
+
+    /**
+     * Retrieve the batch structure from DOMS or from the file system.
+     * If the property "batchStructure.useFileSystem" is true (default), retrieve the structure from the
+     * "batchStructure.storageDir"
+     * otherwise retrieve it from the datastream named MANIFEST on the round trip object
+     *
+     * @param batch the batch in question
+     *
+     * @return the input stream to the batch structure
+     * @throws IOException if an inputstream could not be opened
+     */
+    public InputStream retrieveBatchStructure(Batch batch) throws IOException {
+        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
+        if (useFileSystem) {
+            File batchStructureFile = getBatchStructureFile(batch);
+            return new FileInputStream(batchStructureFile);
+        } else {
+            String pid;
+            try {
+                EnhancedFedora fedora = getEnhancedFedora();
+                pid = getRoundTripObject(batch, fedora);
+                String batchStructure = fedora.getXMLDatastreamContents(pid, BATCH_STRUCTURE, null);
+                return new ByteArrayInputStream(batchStructure.getBytes("UTF-8"));
+
+            } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
+                    BackendMethodFailedException | JAXBException |
+                    BackendInvalidCredsException e) {
+                log.error("Unable to retrieve batch structure", e);
+                throw new InitialisationException("Unable to retrieve batch structure", e);
+            }
+        }
+    }
+
+    /**
+     * Utility method to get the batch structure file.
+     *
+     * @param batch the batch in question
+     *
+     * @return a file object denoting the path to the structure file (which might not exist)
+     */
+    private File getBatchStructureFile(Batch batch) {
+        File scratchDir = new File(properties.getProperty("batchStructure.storageDir"));
+        return new File(scratchDir, batch.getFullID() + ".manifest.xml");
+    }
+
+    /**
+     * Store the batch structure, either in DOMS or on the filesystem.
+     * If the property "batchStructure.useFileSystem" is true (default), store the structure in the "batchStructure.storageDir"
+     * otherwise store it in the datastream named MANIFEST on the round trip object
+     *
+     * @param batch the batch in question
+     * @param batchStructure the batch structure as an UTF-8 inputstream
+     * @throws IOException if the storing failed
+     */
+    public void storeBatchStructure(Batch batch,
+                                    InputStream batchStructure) throws IOException {
+        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
+        if (useFileSystem) {
+            File batchStructureFile = getBatchStructureFile(batch);
+            FileOutputStream output = new FileOutputStream(batchStructureFile);
+            Streams.pipe(batchStructure, output);
+        } else {
+            String pid;
+            try {
+                EnhancedFedora fedora = getEnhancedFedora();
+                pid = getRoundTripObject(batch, fedora);
+                fedora.modifyDatastreamByValue(pid,
+                                               BATCH_STRUCTURE,
+                                               toString(batchStructure),
+                                               null,
+                                               "Updating batch structure");
+            } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
+                    BackendMethodFailedException | JAXBException |
+                    BackendInvalidCredsException e) {
+                log.error("Unable to retrieve batch structure", e);
+                throw new InitialisationException("Unable to retrieve batch structure", e);
+            }
+        }
+
+    }
+
+    /**
+     * Utility method to get the round trip object for a given batch
+     *
+     * @param batch  the batch in question
+     * @param fedora the enhanced fedora interface
+     *
+     * @return the found pid or null
+     * @throws BackendInvalidCredsException if the credentials are insufficient
+     * @throws BackendMethodFailedException if something failed in the backend
+     */
+    private String getRoundTripObject(Batch batch,
+                                      EnhancedFedora fedora) throws
+                                                             BackendInvalidCredsException,
+                                                             BackendMethodFailedException {
+
+        List<String> pids = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID());
+        if (pids.isEmpty()) {
+            return null;
+        } else {
+            return pids.get(0);
+        }
+
+    }
+
+    /**
+     * Utility method to initialise an enhanced fedora object
+     *
+     * @return the enhanced fedora object
+     * @throws MalformedURLException if the URL in "fedora.server" is invalid
+     * @throws PIDGeneratorException if the pid generator webservice choked again. Should not be possible
+     * @throws JAXBException         if jaxb fails to understand the wsdl
+     */
+    private EnhancedFedora getEnhancedFedora() throws MalformedURLException, PIDGeneratorException, JAXBException {
+        return new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
+                                                      properties.getProperty("fedora.admin.password")),
+                                      properties.getProperty("fedora.server").replaceFirst("/(objects)?/?$", ""),
+                                      null,
+                                      null);
+    }
+
+    /**
+     * Utility method to read an inputstream to a string. Why is this not in SBUtils already?
+     *
+     * @param stream the stream to read
+     *
+     * @return the stream as a string
+     * @throws IOException if the stream could not be read
+     */
+    private String toString(InputStream stream) throws IOException {
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        Streams.pipe(stream, temp);
+        return new String(temp.toByteArray(), "UTF-8");
     }
 
     /**
