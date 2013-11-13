@@ -13,18 +13,17 @@ public class FedoraMockupBatchNoRoundTripObject extends FedoraMockupEmpty {
         super(log);
     }
 
-
     @Override
-    public List<String> listObjectsWithThisLabel(String label) throws BackendInvalidCredsException, BackendMethodFailedException {
-        addToLog("Listing objects with label "+label);
+    public List<String> findObjectFromDCIdentifier(String identifier) throws
+                                                                      BackendInvalidCredsException,
+                                                                      BackendMethodFailedException {
+        addToLog("Listing objects with label " + identifier);
         ArrayList<String> result = new ArrayList<String>();
-        if (label.contains("-")){
-            result.add("uuid:"+label);
+        if (identifier.contains("-")) {
+            result.add("uuid:" + identifier.replaceFirst("^path:", ""));
         }
         return result;
     }
-
-
 
 
 }

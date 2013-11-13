@@ -28,16 +28,6 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
         return id;
     }
 
-
-    @Override
-    public void modifyObjectLabel(String pid, String name, String comment) throws
-                                                                           BackendInvalidCredsException,
-                                                                           BackendMethodFailedException,
-                                                                           BackendInvalidResourceException {
-        addToLog("Changed the label of object " + pid + " to " + name);
-    }
-
-
     @Override
     public void modifyDatastreamByValue(String pid, String datastream, String contents, List<String> alternatives,
                                         String comment) throws
@@ -47,12 +37,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
         addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
     }
 
-
     @Override
-    public List<String> listObjectsWithThisLabel(String label) throws
-                                                               BackendInvalidCredsException,
-                                                               BackendMethodFailedException {
-        addToLog("Listing objects with label " + label);
+    public List<String> findObjectFromDCIdentifier(String string) throws
+                                                                  BackendInvalidCredsException,
+                                                                  BackendMethodFailedException {
+        addToLog("Listing objects with label " + string);
         ArrayList<String> result = new ArrayList<String>();
         return result;
     }

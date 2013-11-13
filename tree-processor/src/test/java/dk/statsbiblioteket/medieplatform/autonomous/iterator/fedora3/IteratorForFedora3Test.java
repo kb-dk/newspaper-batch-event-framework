@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -49,8 +50,8 @@ public class IteratorForFedora3Test extends AbstractTests {
                                   .replaceFirst("/(objects)?/?$", ""),
                         null,
                         null);
-                pid = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1")
-                            .get(0);
+                pid = getPid(fedora);
+
             } catch (PIDGeneratorException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
                 throw new RuntimeException(e);
             }
@@ -61,6 +62,13 @@ public class IteratorForFedora3Test extends AbstractTests {
                     Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")), ".*\\.jp2$");
         }
         return iterator;
+    }
+
+    private String getPid(EnhancedFedoraImpl fedora) throws BackendInvalidCredsException, BackendMethodFailedException {
+        String pid;
+        List<String> pids = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1");
+        pid = pids.get(0);
+        return pid;
     }
 
     @Test(groups = "integrationTest", enabled = true)

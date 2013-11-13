@@ -2,27 +2,28 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import java.util.List;
 
-/**
- * This class represents a batch, a specific thing on which work will be done
- */
-public class Batch{
+/** This class represents a batch, a specific thing on which work will be done */
+public class Batch {
 
     private String batchID;
     private Integer roundTripNumber = 1;
     private List<Event> eventList;
 
-    /**
-     * Constructor
-     */
+    /** Constructor */
     public Batch() {
     }
 
-    /**
-     * Constructor
-     */
+    /** Constructor */
     public Batch(String batchID) {
         setBatchID(batchID);
     }
+
+    /** Constructor */
+    public Batch(String batchID, int roundTripNumber) {
+        setBatchID(batchID);
+        setRoundTripNumber(roundTripNumber);
+    }
+
 
     /**
      * The round trip number. This will never be less than 1. It counts the number of times a batch
@@ -32,9 +33,7 @@ public class Batch{
         return roundTripNumber;
     }
 
-    /**
-     * Set the round trip number
-     */
+    /** Set the round trip number */
     public void setRoundTripNumber(Integer roundTripNumber) {
         this.roundTripNumber = roundTripNumber;
     }
@@ -77,9 +76,10 @@ public class Batch{
 
     /**
      * Get the full ID in the form B<batchID>-RT<roundTripNumber>
+     *
      * @return the full ID
      */
-    public String getFullID(){
-        return "B"+batchID+"-RT"+roundTripNumber;
+    public String getFullID() {
+        return "B" + batchID + "-RT" + roundTripNumber;
     }
 }
