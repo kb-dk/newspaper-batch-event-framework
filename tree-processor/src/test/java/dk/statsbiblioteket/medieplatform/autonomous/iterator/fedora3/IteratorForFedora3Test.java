@@ -31,41 +31,45 @@ public class IteratorForFedora3Test extends AbstractTests {
 
             Properties properties = new Properties();
             properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
-            System.out.println(properties.getProperty("fedora.admin.username"));
+            System.out
+                  .println(properties.getProperty("fedora.admin.username"));
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"), properties
-                    .getProperty("fedora.admin.password")));
+            client.addFilter(
+                    new HTTPBasicAuthFilter(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")));
 
             String pid;
             try {
-                EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                                                   properties.getProperty("fedora.admin.password")),
-                                                                   properties.getProperty("fedora.server")
-                                                                             .replaceFirst("/(objects)?/?$", ""),
-                                                                   null,
-                                                                   null);
-                pid = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1").get(0);
+                EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
+                        new Credentials(
+                                properties.getProperty(
+                                        "fedora.admin.username"), properties.getProperty("fedora.admin.password")),
+                        properties.getProperty("fedora.server")
+                                  .replaceFirst("/(objects)?/?$", ""),
+                        null,
+                        null);
+                pid = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1")
+                            .get(0);
             } catch (PIDGeneratorException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
                 throw new RuntimeException(e);
             }
 
-            iterator = new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"),
-                                              new ConfigurableFilter(
-                                                      Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
-                                                      Arrays.asList(
-                                                              "info:fedora/fedora-system:def/relations-external#hasPart")),
-                                              ".*\\.jp2$");
+            iterator = new IteratorForFedora3(
+                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+                    Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
+                    Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")), ".*\\.jp2$");
         }
         return iterator;
     }
 
     @Test(groups = "integrationTest", enabled = true)
     public void testIterator() throws Exception {
-        super.testIterator(true,false);
+        super.testIterator(true, false);
     }
 
     @Test(groups = "integrationTest", enabled = true)
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }

@@ -79,8 +79,10 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
         } else {
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
-                                                     properties.getProperty("fedora.admin.password")));
+            client.addFilter(
+                    new HTTPBasicAuthFilter(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")));
 
             String pid;
             try {
@@ -92,14 +94,15 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
                 throw new InitialisationException("Unable to initialise iterator", e);
             }
 
-            return new IteratorForFedora3(pid,
-                                          client,
-                                          properties.getProperty("fedora.server"),
-                                          new ConfigurableFilter(Arrays.asList(properties.getProperty(
-                                                  "fedora.iterator.attributenames").split(",")),
-                                                                 Arrays.asList(properties.getProperty(
-                                                                         "fedora.iterator.predicatenames").split(","))),
-                                          dataFilePattern);
+            return new IteratorForFedora3(
+                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+                    Arrays.asList(
+                            properties.getProperty(
+                                    "fedora.iterator.attributenames")
+                                      .split(",")), Arrays.asList(
+                    properties.getProperty(
+                            "fedora.iterator.predicatenames")
+                              .split(","))), dataFilePattern);
         }
     }
 
@@ -150,15 +153,16 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
     /**
      * Store the batch structure, either in DOMS or on the filesystem.
-     * If the property "batchStructure.useFileSystem" is true (default), store the structure in the "batchStructure.storageDir"
+     * If the property "batchStructure.useFileSystem" is true (default), store the structure in the
+     * "batchStructure.storageDir"
      * otherwise store it in the datastream named MANIFEST on the round trip object
      *
-     * @param batch the batch in question
+     * @param batch          the batch in question
      * @param batchStructure the batch structure as an UTF-8 inputstream
+     *
      * @throws IOException if the storing failed
      */
-    public void storeBatchStructure(Batch batch,
-                                    InputStream batchStructure) throws IOException {
+    public void storeBatchStructure(Batch batch, InputStream batchStructure) throws IOException {
         boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
@@ -169,11 +173,8 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             try {
                 EnhancedFedora fedora = getEnhancedFedora();
                 pid = getRoundTripObject(batch, fedora);
-                fedora.modifyDatastreamByValue(pid,
-                                               BATCH_STRUCTURE,
-                                               toString(batchStructure),
-                                               null,
-                                               "Updating batch structure");
+                fedora.modifyDatastreamByValue(
+                        pid, BATCH_STRUCTURE, toString(batchStructure), null, "Updating batch structure");
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
                     BackendMethodFailedException | JAXBException |
                     BackendInvalidCredsException e) {
@@ -194,15 +195,17 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws BackendInvalidCredsException if the credentials are insufficient
      * @throws BackendMethodFailedException if something failed in the backend
      */
-    private String getRoundTripObject(Batch batch,
-                                      EnhancedFedora fedora) throws
-                                                             BackendInvalidCredsException,
-                                                             BackendMethodFailedException {
+    private String getRoundTripObject(Batch batch, EnhancedFedora fedora) throws
+                                                                          BackendInvalidCredsException,
+                                                                          BackendMethodFailedException {
 
         List<String> pids = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID());
         if (pids.isEmpty()) {
             return null;
         } else {
+            if (pids.size() > 1) {
+                log.warn("Apparently found more than one round trip for this round trip '{}'", batch.getFullID());
+            }
             return pids.get(0);
         }
 
@@ -217,11 +220,14 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws JAXBException         if jaxb fails to understand the wsdl
      */
     private EnhancedFedora getEnhancedFedora() throws MalformedURLException, PIDGeneratorException, JAXBException {
-        return new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                      properties.getProperty("fedora.admin.password")),
-                                      properties.getProperty("fedora.server").replaceFirst("/(objects)?/?$", ""),
-                                      null,
-                                      null);
+        return new EnhancedFedoraImpl(
+                new Credentials(
+                        properties.getProperty("fedora.admin.username"),
+                        properties.getProperty("fedora.admin.password")),
+                properties.getProperty("fedora.server")
+                          .replaceFirst("/(objects)?/?$", ""),
+                null,
+                null);
     }
 
     /**
@@ -254,6 +260,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
     @Override
     public String getComponentVersion() {
-        return getClass().getPackage().getImplementationVersion();
+        return getClass().getPackage()
+                .getImplementationVersion();
     }
 }
