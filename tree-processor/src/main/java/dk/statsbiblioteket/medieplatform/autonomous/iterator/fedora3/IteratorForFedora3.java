@@ -45,12 +45,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @param restUrl the url to Fedora
      * @param filter  the fedora tree filter to know which relations and datastreams to use
      */
-    public IteratorForFedora3(String id,
-                              Client client,
-                              String restUrl,
-                              FedoraTreeFilter filter,
+    public IteratorForFedora3(String id, Client client, String restUrl, FedoraTreeFilter filter,
                               String dataFilePattern) {
-        super(id,dataFilePattern);
+        super(id, dataFilePattern);
         this.client = client;
         this.restUrl = restUrl;
         this.filter = filter;
@@ -76,19 +73,20 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      */
     private String getNameFromId(String id) {
         WebResource resource = client.resource(restUrl);
-        String dcContent =
-                resource.path(id).path("/datastreams/DC/content").queryParam("format", "xml").get(String.class);
+        String dcContent = resource.path(id)
+                                   .path("/datastreams/DC/content")
+                                   .queryParam("format", "xml")
+                                   .get(String.class);
         NodeList nodeList;
         try {
-            nodeList =
-                    (NodeList) dcIdentifierXpath.evaluate(DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes
-                            ()),
-                                                                          true), XPathConstants.NODESET);
+            nodeList = (NodeList) dcIdentifierXpath.evaluate(
+                    DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes()), true), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
         for (int i = 0; i < nodeList.getLength(); i++) {
-            String textContent = nodeList.item(i).getTextContent();
+            String textContent = nodeList.item(i)
+                                         .getTextContent();
             if (textContent.startsWith("path:")) {
                 return textContent.substring("path:".length());
             }
@@ -107,16 +105,15 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private List<String> parseDatastreamsFromXml(String datastreamXml) {
         NodeList nodeList;
         try {
-            nodeList =
-                    (NodeList) datastreamsXpath.evaluate(DOM.streamToDOM(new ByteArrayInputStream(datastreamXml
-                                                                                                          .getBytes()),
-                                                                         true), XPathConstants.NODESET);
+            nodeList = (NodeList) datastreamsXpath.evaluate(
+                    DOM.streamToDOM(new ByteArrayInputStream(datastreamXml.getBytes()), true), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
         ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
-            String dsid = nodeList.item(i).getTextContent();
+            String dsid = nodeList.item(i)
+                                  .getTextContent();
             if (filter.isAttributeDatastream(dsid)) {
                 result.add(dsid);
             }
@@ -129,22 +126,29 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
-        String relationsShips =
-                resource.path(id).path("relationships").queryParam("format", "ntriples").get(String.class);
+        String relationsShips = resource.path(id)
+                                        .path("relationships")
+                                        .queryParam("format", "ntriples")
+                                        .get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
             try {
-                DelegatingTreeIterator delegate = new IteratorForFedora3(child, client, restUrl, filter,getDataFilePattern());
+                DelegatingTreeIterator delegate = new IteratorForFedora3(
+                        child,
+                        client,
+                        restUrl,
+                        filter,
+                        getDataFilePattern());
                 result.add(delegate);
             } catch (Exception e) {
                 log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);
             }
         }
-        Collections.sort(result, new Comparator<DelegatingTreeIterator>() {
+        Collections.sort(
+                result, new Comparator<DelegatingTreeIterator>() {
             @Override
-            public int compare(DelegatingTreeIterator o1,
-                               DelegatingTreeIterator o2) {
+            public int compare(DelegatingTreeIterator o1, DelegatingTreeIterator o2) {
 
                 return 0;  //To change body of implemented methods use File | Settings | File Templates.
             }
@@ -180,7 +184,10 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     @Override
     protected Iterator<String> initilizeAttributeIterator() {
         WebResource resource = client.resource(restUrl);
-        String datastreamXml = resource.path(id).path("datastreams").queryParam("format", "xml").get(String.class);
+        String datastreamXml = resource.path(id)
+                                       .path("datastreams")
+                                       .queryParam("format", "xml")
+                                       .get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml).iterator();
     }
@@ -195,16 +202,20 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      * @return the attribute parsing event
      */
     @Override
-    protected AttributeParsingEvent makeAttributeEvent(String nodeID,
-                                                       String attributeID) {
+    protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
         if (attributeID.equals(JerseyContentsAttributeParsingEvent.CONTENTS)) {
-            return new JerseyContentsAttributeParsingEvent(name + "." + attributeID.toLowerCase(),
-                                                           client.resource(restUrl).path(nodeID),
-                                                           nodeID);
+            return new JerseyContentsAttributeParsingEvent(
+                    name + "." + attributeID.toLowerCase(),
+                    client.resource(restUrl)
+                          .path(nodeID),
+                    nodeID);
         } else {
-            return new JerseyAttributeParsingEvent(name + "." + attributeID.toLowerCase() + ".xml",
-                                                   client.resource(restUrl).path(nodeID).path("/datastreams/").path(
-                                                           attributeID));
+            return new JerseyAttributeParsingEvent(
+                    name + "." + attributeID.toLowerCase() + ".xml",
+                    client.resource(restUrl)
+                          .path(nodeID)
+                          .path("/datastreams/")
+                          .path(attributeID));
         }
     }
 

@@ -16,44 +16,48 @@ public class DomsEventClientCentralTest {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),
-                                                                 PremisManipulatorFactory.TYPE,
-                                                                 DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(
+                fedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
+                DomsEventClientFactory.BATCH_TEMPLATE,
+                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventClientFactory.HAS_PART,
+                DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER +1,
-                "agent",
-                new Date(0),
-                "Details here",
-                "Data_Received",
-                true);
+        doms.addEventToBatch(
+                BATCH_ID, ROUND_TRIP_NUMBER + 1, "agent", new Date(0), "Details here", "Data_Received", true);
 
-        Assert.assertEquals(10, log.size());
+        Assert.assertEquals(8, log.size());
         for (String s : log) {
-            Assert.assertNotSame(s,AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out.println(s);
+            Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
+            System.out
+                  .println(s);
         }
 
     }
-
 
     @Test
     public void testAddEventToBatch1() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(
+                fedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
+                DomsEventClientFactory.BATCH_TEMPLATE,
+                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventClientFactory.HAS_PART,
+                DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER,
-                "agent",
-                new Date(0),
-                "Details here",
-                "Data_Received",
-                true);
+        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
 
-        Assert.assertEquals(10, log.size());
+        Assert.assertEquals(8, log.size());
         for (String s : log) {
-            Assert.assertNotSame(s,AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out.println(s);
+            Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
+            System.out
+                  .println(s);
         }
 
     }
@@ -62,34 +66,44 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupBatchNoRoundTripObject(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(
+                fedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
+                DomsEventClientFactory.BATCH_TEMPLATE,
+                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventClientFactory.HAS_PART,
+                DomsEventClientFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER,
-                "agent",
-                new Date(0),
-                "Details here",
-                "Data_Received",
-                true);
+        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
 
-        Assert.assertEquals(3,log.size());
+        Assert.assertEquals(log.size(), 3);
         for (String s : log) {
-            Assert.assertNotSame(s,AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out.println(s);
+            Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
+            System.out
+                  .println(s);
         }
 
     }
-
 
     @Test
     public void testCreateBatchRoundTrip() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(fedora, new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE,DomsEventClientFactory.BATCH_TEMPLATE,DomsEventClientFactory.ROUND_TRIP_TEMPLATE,DomsEventClientFactory.HAS_PART,DomsEventClientFactory.EVENTS);
+        DomsEventClientCentral doms = new DomsEventClientCentral(
+                fedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
+                DomsEventClientFactory.BATCH_TEMPLATE,
+                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventClientFactory.HAS_PART,
+                DomsEventClientFactory.EVENTS);
         doms.createBatchRoundTrip(BATCH_ID, ROUND_TRIP_NUMBER);
-        Assert.assertEquals(8,log.size());
+        Assert.assertEquals(log.size(), 6);
         for (String s : log) {
-            Assert.assertNotSame(s,AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out.println(s);
+            Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
+            System.out
+                  .println(s);
         }
 
     }

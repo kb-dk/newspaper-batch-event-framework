@@ -35,9 +35,10 @@ import java.util.regex.Pattern;
 public abstract class AbstractRunnableComponent implements RunnableComponent {
 
 
-    private static final String BATCH_STRUCTURE = "MANIFEST";
+    private static final String BATCH_STRUCTURE = "BATCHSTRUCTURE";
     private final Properties properties;
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private EnhancedFedora fedora;
 
     protected AbstractRunnableComponent(Properties properties) {
         this.properties = properties;
@@ -79,8 +80,10 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
         } else {
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
-                                                     properties.getProperty("fedora.admin.password")));
+            client.addFilter(
+                    new HTTPBasicAuthFilter(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")));
 
             String pid;
             try {
@@ -92,14 +95,15 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
                 throw new InitialisationException("Unable to initialise iterator", e);
             }
 
-            return new IteratorForFedora3(pid,
-                                          client,
-                                          properties.getProperty("fedora.server"),
-                                          new ConfigurableFilter(Arrays.asList(properties.getProperty(
-                                                  "fedora.iterator.attributenames").split(",")),
-                                                                 Arrays.asList(properties.getProperty(
-                                                                         "fedora.iterator.predicatenames").split(","))),
-                                          dataFilePattern);
+            return new IteratorForFedora3(
+                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+                    Arrays.asList(
+                            properties.getProperty(
+                                    "fedora.iterator.attributenames")
+                                      .split(",")), Arrays.asList(
+                    properties.getProperty(
+                            "fedora.iterator.predicatenames")
+                              .split(","))), dataFilePattern);
         }
     }
 
@@ -124,7 +128,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             try {
                 EnhancedFedora fedora = getEnhancedFedora();
                 pid = getRoundTripObject(batch, fedora);
-                String batchStructure = fedora.getXMLDatastreamContents(pid, BATCH_STRUCTURE, null);
+                String batchStructure = fedora.getXMLDatastreamContents(pid, BATCH_STRUCTURE);
                 return new ByteArrayInputStream(batchStructure.getBytes("UTF-8"));
 
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
@@ -145,20 +149,21 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      */
     private File getBatchStructureFile(Batch batch) {
         File scratchDir = new File(properties.getProperty("batchStructure.storageDir"));
-        return new File(scratchDir, batch.getFullID() + ".manifest.xml");
+        return new File(scratchDir, batch.getFullID() + ".batchStructure.xml");
     }
 
     /**
      * Store the batch structure, either in DOMS or on the filesystem.
-     * If the property "batchStructure.useFileSystem" is true (default), store the structure in the "batchStructure.storageDir"
+     * If the property "batchStructure.useFileSystem" is true (default), store the structure in the
+     * "batchStructure.storageDir"
      * otherwise store it in the datastream named MANIFEST on the round trip object
      *
-     * @param batch the batch in question
+     * @param batch          the batch in question
      * @param batchStructure the batch structure as an UTF-8 inputstream
+     *
      * @throws IOException if the storing failed
      */
-    public void storeBatchStructure(Batch batch,
-                                    InputStream batchStructure) throws IOException {
+    public void storeBatchStructure(Batch batch, InputStream batchStructure) throws IOException {
         boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
@@ -169,15 +174,12 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             try {
                 EnhancedFedora fedora = getEnhancedFedora();
                 pid = getRoundTripObject(batch, fedora);
-                fedora.modifyDatastreamByValue(pid,
-                                               BATCH_STRUCTURE,
-                                               toString(batchStructure),
-                                               null,
-                                               "Updating batch structure");
+                fedora.modifyDatastreamByValue(
+                        pid, BATCH_STRUCTURE, toString(batchStructure), null, "Updating batch structure");
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
                     BackendMethodFailedException | JAXBException |
                     BackendInvalidCredsException e) {
-                log.error("Unable to retrieve batch structure", e);
+                log.error("Unable to store batch structure", e);
                 throw new InitialisationException("Unable to retrieve batch structure", e);
             }
         }
@@ -194,15 +196,17 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws BackendInvalidCredsException if the credentials are insufficient
      * @throws BackendMethodFailedException if something failed in the backend
      */
-    private String getRoundTripObject(Batch batch,
-                                      EnhancedFedora fedora) throws
-                                                             BackendInvalidCredsException,
-                                                             BackendMethodFailedException {
+    private String getRoundTripObject(Batch batch, EnhancedFedora fedora) throws
+                                                                          BackendInvalidCredsException,
+                                                                          BackendMethodFailedException {
 
         List<String> pids = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID());
         if (pids.isEmpty()) {
             return null;
         } else {
+            if (pids.size() > 1) {
+                log.warn("Apparently found more than one round trip for this round trip '{}'", batch.getFullID());
+            }
             return pids.get(0);
         }
 
@@ -216,12 +220,21 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws PIDGeneratorException if the pid generator webservice choked again. Should not be possible
      * @throws JAXBException         if jaxb fails to understand the wsdl
      */
-    private EnhancedFedora getEnhancedFedora() throws MalformedURLException, PIDGeneratorException, JAXBException {
-        return new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                      properties.getProperty("fedora.admin.password")),
-                                      properties.getProperty("fedora.server").replaceFirst("/(objects)?/?$", ""),
-                                      null,
-                                      null);
+    private synchronized EnhancedFedora getEnhancedFedora() throws
+                                                            MalformedURLException,
+                                                            PIDGeneratorException,
+                                                            JAXBException {
+        if (fedora == null) {
+            fedora = new EnhancedFedoraImpl(
+                    new Credentials(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")),
+                    properties.getProperty("fedora.server")
+                              .replaceFirst("/(objects)?/?$", ""),
+                    null,
+                    null);
+        }
+        return fedora;
     }
 
     /**

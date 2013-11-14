@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -31,41 +32,52 @@ public class IteratorForFedora3Test extends AbstractTests {
 
             Properties properties = new Properties();
             properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
-            System.out.println(properties.getProperty("fedora.admin.username"));
+            System.out
+                  .println(properties.getProperty("fedora.admin.username"));
             Client client = Client.create();
-            client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"), properties
-                    .getProperty("fedora.admin.password")));
+            client.addFilter(
+                    new HTTPBasicAuthFilter(
+                            properties.getProperty("fedora.admin.username"),
+                            properties.getProperty("fedora.admin.password")));
 
             String pid;
             try {
-                EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(new Credentials(properties.getProperty("fedora.admin.username"),
-                                                                                   properties.getProperty("fedora.admin.password")),
-                                                                   properties.getProperty("fedora.server")
-                                                                             .replaceFirst("/(objects)?/?$", ""),
-                                                                   null,
-                                                                   null);
-                pid = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1").get(0);
+                EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
+                        new Credentials(
+                                properties.getProperty(
+                                        "fedora.admin.username"), properties.getProperty("fedora.admin.password")),
+                        properties.getProperty("fedora.server")
+                                  .replaceFirst("/(objects)?/?$", ""),
+                        null,
+                        null);
+                pid = getPid(fedora);
+
             } catch (PIDGeneratorException | BackendMethodFailedException | JAXBException | BackendInvalidCredsException e) {
                 throw new RuntimeException(e);
             }
 
-            iterator = new IteratorForFedora3(pid, client, properties.getProperty("fedora.server"),
-                                              new ConfigurableFilter(
-                                                      Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
-                                                      Arrays.asList(
-                                                              "info:fedora/fedora-system:def/relations-external#hasPart")),
-                                              ".*\\.jp2$");
+            iterator = new IteratorForFedora3(
+                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+                    Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
+                    Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")), ".*\\.jp2$");
         }
         return iterator;
     }
 
+    private String getPid(EnhancedFedoraImpl fedora) throws BackendInvalidCredsException, BackendMethodFailedException {
+        String pid;
+        List<String> pids = fedora.findObjectFromDCIdentifier("path:B400022028241-RT1");
+        pid = pids.get(0);
+        return pid;
+    }
+
     @Test(groups = "integrationTest", enabled = true)
     public void testIterator() throws Exception {
-        super.testIterator(true,false);
+        super.testIterator(true, false);
     }
 
     @Test(groups = "integrationTest", enabled = true)
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }
