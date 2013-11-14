@@ -29,21 +29,6 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
     }
 
     @Override
-    public String getComponentName() {
-        //This should be the canonical name of your component. Please do not use whitespaces, there can be stuff
-        //somewhere in the stack that cares. This name is used for reporting of errors and for locking a batch
-        return "Sample_component";
-
-    }
-
-    @Override
-    public String getComponentVersion() {
-        //This is the version of the component. It is used in reporting errors, so that we easily can see the exact
-        //version of the component. Make sure this field matches the actual version
-        return  getClass().getPackage().getImplementationVersion();
-    }
-
-    @Override
     public String getEventID() {
         //This is the event ID that correspond to the work done by this component. It will be added to the list of
         //events a batch have experienced when the work is completed (along with information about success or failure)

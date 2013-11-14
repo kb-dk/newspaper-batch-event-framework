@@ -243,17 +243,17 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      *
      * @return the fulle name
      */
-    public String getFullName() {
+    public final String getFullName() {
         return getComponentName() + "-" + getComponentVersion();
     }
 
     @Override
-    public String getComponentName() {
+    public final String getComponentName() {
         return getClass().getSimpleName();
     }
 
     @Override
-    public String getComponentVersion() {
+    public final String getComponentVersion() {
         return getClass().getPackage().getImplementationVersion();
     }
 }
