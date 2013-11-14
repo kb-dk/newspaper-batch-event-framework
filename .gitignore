@@ -6,3 +6,9 @@ target/
 **/*.iml
 **/*~
 *~
+*/.classpath
+*/.project
+*/.settings/*
+*/*/.classpath
+*/*/.project
+*/*/.settings/*
