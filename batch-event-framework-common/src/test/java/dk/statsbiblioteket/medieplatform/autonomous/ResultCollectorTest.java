@@ -7,9 +7,7 @@ import java.util.Date;
 
 public class ResultCollectorTest {
 
-    /**
-     * Test the merging of resultCollectors
-     */
+    /** Test the merging of resultCollectors */
     @Test
     public void testMerger() {
         ResultCollector resultCollector = new ResultCollector("check1", "0.1");
@@ -51,7 +49,6 @@ public class ResultCollectorTest {
         String thirdMerger = result.toReport();
 
         Assert.assertNotEquals(secondMerger, thirdMerger, "merging twice is not idempotent");
-
 
 
     }

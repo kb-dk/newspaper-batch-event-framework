@@ -53,7 +53,7 @@
             <xs:attribute name="version" use="required" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        This contains the version number of the  tool used for generating the report.
+                        This contains the version number of the tool used for generating the report.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>

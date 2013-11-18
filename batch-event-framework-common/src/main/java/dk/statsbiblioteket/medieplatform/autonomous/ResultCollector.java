@@ -20,11 +20,12 @@ import java.util.List;
 /** This class collects the result of a run of a component. */
 public class ResultCollector {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(ResultCollector.class);
+    private static Logger log = org.slf4j
+            .LoggerFactory
+            .getLogger(ResultCollector.class);
     private Result resultStructure;
 
-    public ResultCollector(String tool,
-                           String version) {
+    public ResultCollector(String tool, String version) {
         resultStructure = new ObjectFactory().createResult();
         setSuccess(true);
         resultStructure.setFailures(new Failures());
@@ -59,10 +60,7 @@ public class ResultCollector {
      * @param component   the component that failed
      * @param description Description of the failure.
      */
-    public void addFailure(String reference,
-                           String type,
-                           String component,
-                           String description) {
+    public void addFailure(String reference, String type, String component, String description) {
         addFailure(reference, type, component, description, new String[]{});
     }
 
@@ -75,18 +73,16 @@ public class ResultCollector {
      * @param description Description of the failure.
      * @param details     additional details, can be null
      */
-    public void addFailure(String reference,
-                           String type,
-                           String component,
-                           String description,
-                           String... details) {
-        log.info("Adding failure for " +
-                 "resource '{}' " +
-                 "of type '{}' " +
-                 "from component '{}' " +
-                 "with description '{}' " +
-                 "and details '{}'", reference, type, component, description, Strings.join(details,"\n"));
-        List<Failure> list = resultStructure.getFailures().getFailure();
+    public void addFailure(String reference, String type, String component, String description, String... details) {
+        log.info(
+                "Adding failure for " +
+                "resource '{}' " +
+                "of type '{}' " +
+                "from component '{}' " +
+                "with description '{}' " +
+                "and details '{}'", reference, type, component, description, Strings.join(details, "\n"));
+        List<Failure> list = resultStructure.getFailures()
+                                            .getFailure();
         Failure failure = new Failure();
         failure.setFilereference(reference);
         failure.setType(type);
@@ -94,7 +90,8 @@ public class ResultCollector {
         failure.setDescription(description);
         if (details != null && details.length > 0) {
             Details xmlDetails = new Details();
-            xmlDetails.getContent().add(Strings.join(Arrays.asList(details),"\n"));
+            xmlDetails.getContent()
+                      .add(Strings.join(Arrays.asList(details), "\n"));
             failure.setDetails(xmlDetails);
         }
         list.add(failure);
@@ -112,16 +109,19 @@ public class ResultCollector {
         for (Failure failure : getFailures()) {
             ArrayList<String> details = new ArrayList<>();
             if (failure.getDetails() != null) {
-                for (Object content : failure.getDetails().getContent()) {
+                for (Object content : failure.getDetails()
+                                             .getContent()) {
                     details.add(content.toString());
                 }
             }
-            that.addFailure(failure.getFilereference(),
-                            failure.getType(),
-                            failure.getComponent(),
-                            failure.getDescription(),
-                            details.toArray(new String[details.size()]));
-            if (that.getTimestamp().before(this.getTimestamp())) {
+            that.addFailure(
+                    failure.getFilereference(),
+                    failure.getType(),
+                    failure.getComponent(),
+                    failure.getDescription(),
+                    details.toArray(new String[details.size()]));
+            if (that.getTimestamp()
+                    .before(this.getTimestamp())) {
                 that.setTimestamp(this.getTimestamp());
             }
 
@@ -135,7 +135,9 @@ public class ResultCollector {
      * @return the failures
      */
     private List<Failure> getFailures() {
-        return Collections.unmodifiableList(resultStructure.getFailures().getFailure());
+        return Collections.unmodifiableList(
+                resultStructure.getFailures()
+                               .getFailure());
     }
 
     /** Return the report as xml */
@@ -159,7 +161,9 @@ public class ResultCollector {
      * @return
      */
     public Date getTimestamp() {
-        return resultStructure.getDate().toGregorianCalendar().getTime();
+        return resultStructure.getDate()
+                              .toGregorianCalendar()
+                              .getTime();
     }
 
     /**
@@ -177,7 +181,8 @@ public class ResultCollector {
         c.setTime(date);
         XMLGregorianCalendar date2 = null;
         try {
-            date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+            date2 = DatatypeFactory.newInstance()
+                                   .newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
             throw new Error(e);
         }
