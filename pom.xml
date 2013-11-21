@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
-        <artifactId>newspaper-parent</artifactId>
+        <artifactId>newspaper-bundle</artifactId>
         <version>0.3</version>
     </parent>
 
