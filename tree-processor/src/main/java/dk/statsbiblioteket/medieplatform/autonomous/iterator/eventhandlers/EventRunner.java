@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers;
 
+import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
@@ -33,13 +34,13 @@ public class EventRunner {
      * @param eventHandlers List of event handlers to trigger.
      * @throws IOException
      */
-    public void runEvents(List<TreeEventHandler> eventHandlers)
+    public void runEvents(List<TreeEventHandler> eventHandlers, ResultCollector resultCollector)
             throws IOException {
 
         List<InjectingTreeEventHandler> injectingTreeEventHandlers = getInjectingTreeEventHandlers(eventHandlers);
 
+        ParsingEvent current = null;
         while (iterator.hasNext()) {
-            ParsingEvent current;
 
             current = getInjectedParsingEvent(injectingTreeEventHandlers);
             if (current == null){
@@ -49,19 +50,37 @@ public class EventRunner {
             switch (current.getType()){
                 case NodeBegin: {
                     for (TreeEventHandler handler : eventHandlers) {
-                        handler.handleNodeBegin((NodeBeginsParsingEvent)current);
+                        try {
+                            handler.handleNodeBegin((NodeBeginsParsingEvent)current);
+                        } catch (Exception e) {
+                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                                                       "Unexpected error: " + e.toString(),
+                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                        }
                     }
                     break;
                 }
                 case NodeEnd: {
                     for (TreeEventHandler handler : eventHandlers) {
-                        handler.handleNodeEnd((NodeEndParsingEvent) current);
+                        try {
+                            handler.handleNodeEnd((NodeEndParsingEvent) current);
+                        } catch (Exception e) {
+                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                                                       "Unexpected error: " + e.toString(),
+                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                        }
                     }
                     break;
                 }
                 case Attribute: {
                     for (TreeEventHandler handler : eventHandlers) {
-                        handler.handleAttribute((AttributeParsingEvent) current);
+                        try {
+                            handler.handleAttribute((AttributeParsingEvent) current);
+                        } catch (Exception e) {
+                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                                                       "Unexpected error: " + e.toString(),
+                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                        }
                     }
                     break;
                 }
@@ -69,7 +88,13 @@ public class EventRunner {
         }
 
         for (TreeEventHandler handler : eventHandlers) {
-            handler.handleFinish();
+            try {
+                handler.handleFinish();
+            } catch (Exception e) {
+                resultCollector.addFailure(current == null ? "UNKNOWN" : current.getName(), "exception", handler.getClass().getName(),
+                                           "Unexpected error: " + e.toString(),
+                                           dk.statsbiblioteket.util.Strings.getStackTrace(e));
+            }
         }
     }
 
