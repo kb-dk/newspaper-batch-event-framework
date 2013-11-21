@@ -76,7 +76,9 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
                     String checksum = attributeEvent.getChecksum();
                     if (checksum == null){
                         //If there is no checksum, report a failure.
-                        resultCollector.addFailure(attributeEvent.getName(),"fileStructure",getFullName(),"Missing checksum");
+                        resultCollector
+                                .addFailure(attributeEvent.getName(), "filestructure", getClass().getSimpleName(),
+                                            "Missing checksum");
                     }
                     break;
                 }
@@ -84,7 +86,8 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
 
         }
         if (numberOfFiles < 5){
-            resultCollector.addFailure(batch.getFullID(),"fileStructure",getFullName(),"There are to few files in the batch");
+            resultCollector.addFailure(batch.getFullID(), "filestructure", getClass().getSimpleName(),
+                                       "There are to few files in the batch");
         }
         //And finally set the timestamp of the execution.
         resultCollector.setTimestamp(new Date());

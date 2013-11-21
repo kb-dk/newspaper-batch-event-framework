@@ -6,6 +6,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsPa
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
+import dk.statsbiblioteket.util.Strings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,9 +54,10 @@ public class EventRunner {
                         try {
                             handler.handleNodeBegin((NodeBeginsParsingEvent)current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                            resultCollector.addFailure(current.getName(), "exception",
+                                                       handler.getClass().getSimpleName(),
                                                        "Unexpected error: " + e.toString(),
-                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                                                       Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -65,9 +67,10 @@ public class EventRunner {
                         try {
                             handler.handleNodeEnd((NodeEndParsingEvent) current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                            resultCollector.addFailure(current.getName(), "exception",
+                                                       handler.getClass().getSimpleName(),
                                                        "Unexpected error: " + e.toString(),
-                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                                                       Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -77,9 +80,10 @@ public class EventRunner {
                         try {
                             handler.handleAttribute((AttributeParsingEvent) current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception", handler.getClass().getName(),
+                            resultCollector.addFailure(current.getName(), "exception",
+                                                       handler.getClass().getSimpleName(),
                                                        "Unexpected error: " + e.toString(),
-                                                       dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                                                       Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -91,9 +95,10 @@ public class EventRunner {
             try {
                 handler.handleFinish();
             } catch (Exception e) {
-                resultCollector.addFailure(current == null ? "UNKNOWN" : current.getName(), "exception", handler.getClass().getName(),
+                resultCollector.addFailure(current == null ? "UNKNOWN" : current.getName(), "exception",
+                                           handler.getClass().getSimpleName(),
                                            "Unexpected error: " + e.toString(),
-                                           dk.statsbiblioteket.util.Strings.getStackTrace(e));
+                                           Strings.getStackTrace(e));
             }
         }
     }
