@@ -43,10 +43,10 @@ public class BatchWorker
         } catch (Exception e) {
             //the work failed
             resultCollector.addFailure(batch.getFullID(),
-                                       "Component Failure",
-                                       getComponentFormattedName(),
-                                       "Component threw exception",
-                                       e.toString());
+                                       "exception",
+                                       component.getClass().getSimpleName(),
+                                       "Component threw exception: " + e.toString(),
+                                       Strings.getStackTrace(e));
         }
         preserveResult(batch, resultCollector);
     }
@@ -82,10 +82,10 @@ public class BatchWorker
                                              component.getEventID(),
                                              result.isSuccess());
         } catch (CommunicationException e) {
-            resultCollector.addFailure("Autonomous Component System",
-                                       e.getClass().getName(),
-                                       component.getComponentName(),
-                                       e.getMessage(),
+            resultCollector.addFailure(batch.getFullID(),
+                                       "exception",
+                                       component.getClass().getSimpleName(),
+                                       "Autonomous component system threw exception: " + e.toString(),
                                        Strings.getStackTrace(e));
         }
     }
