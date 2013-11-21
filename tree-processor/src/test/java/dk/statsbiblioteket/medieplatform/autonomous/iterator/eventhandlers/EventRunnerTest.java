@@ -15,6 +15,7 @@ import java.util.List;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -59,7 +60,7 @@ public class EventRunnerTest {
         //Perform test
         EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock);
         List<TreeEventHandler> eventHandlers = Arrays.asList(new TreeEventHandler[]{treeEventHandlerMock});
-        batchStructureCheckerUT.runEvents(eventHandlers);
+        batchStructureCheckerUT.runEvents(eventHandlers, null);
 
         //Verify
         verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin);
@@ -126,7 +127,7 @@ public class EventRunnerTest {
         //Perform test
         EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock);
         List<TreeEventHandler> eventHandlers = Arrays.asList(new TreeEventHandler[]{treeEventHandlerMock});
-        batchStructureCheckerUT.runEvents(eventHandlers);
+        batchStructureCheckerUT.runEvents(eventHandlers, null);
 
         //Verify
         verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin);
