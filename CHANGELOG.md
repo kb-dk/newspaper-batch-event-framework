@@ -24,3 +24,17 @@ Fixed issues:
         Read object name in constructor, rather than take it as input
         The filters are no longer content model filters
         Use <dc:identfier>path: as node name instead of uuid
+
+
+
+1.0
+Updated to released doms 1.0 versions
+Consistent error messages for batch event framework
+Consistent error messages for batch framework
+Fault barrier in event runner
+Moved resultCollector to batch event framework common
+childs of AbstractRunnableComponent from overriding version and component name
+Made the batch framework use the DC identifier, not the object label
+Batch Structure storage
+Checksum storing for content datastreams
+Event Runner uses a result collector to handle exceptions
