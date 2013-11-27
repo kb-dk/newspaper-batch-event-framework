@@ -28,19 +28,14 @@ public class SBOIDatasourceTest extends TCKTestSuite {
                 throw new RuntimeException(e);
             }
             SBOIDatasourceConfiguration conf = new SBOIDatasourceConfiguration();
-
-            conf.setDomsUrl(props.getProperty(ConfigConstants.DOMS_URL));
-            conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
-            conf.setDomsPass(props.getProperty(ConfigConstants.DOMS_PASSWORD));
-            conf.setUrlToPidGen(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
             conf.setSummaLocation(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL));
             dataSource = new SBOIDatasource(conf);
             BatchEventClientImpl batchClient = new BatchEventClientImpl(
                     conf.getSummaLocation(),
-                    conf.getDomsUrl(),
-                    conf.getDomsUser(),
-                    conf.getDomsPass(),
-                    conf.getUrlToPidGen());
+                    props.getProperty(ConfigConstants.DOMS_URL),
+                    props.getProperty(ConfigConstants.DOMS_USERNAME),
+                    props.getProperty(ConfigConstants.DOMS_PASSWORD),
+                    props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
             try {
                 try {
                     Batch testBatch = batchClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
