@@ -3,9 +3,12 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Container for the result information for a result of invoking the call method on a autonomous components.
+ */
 public class CallResult {
-    private final Map<String,ResultCollector> results = new HashMap<>();
-    private String errorMessage = null;
+    private final Map<Batch,ResultCollector> results = new HashMap<>();
+    private final String errorMessage;
 
     /**
      * Create a result for a fatal error.
@@ -16,16 +19,18 @@ public class CallResult {
     }
 
 
-    public CallResult() {}
+    public CallResult() {
+        errorMessage = null;
+    }
 
-    public void addResult(String batchID, ResultCollector resultCollector) {
-        results.put(batchID, resultCollector);
+    public void addResult(Batch batch, ResultCollector resultCollector) {
+        results.put(batch, resultCollector);
     }
 
     @Override
     public String toString() {
         StringBuilder resultString = new StringBuilder();
-        for (Map.Entry<String, ResultCollector> result : results.entrySet()) {
+        for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
             if (result.getValue().isSuccess()) {
                 resultString.append("Worked on " + result.getKey() + " successfully\n");
             } else {
@@ -39,11 +44,12 @@ public class CallResult {
     /**
      * Will return 0 if the supplied map doesn't contains any failures. The following int values indicates failures:<br>
      *     1: A batch check found a failure.
-     *     2: A batch check had to exit because of a unrecoverable problem (Not implemented).
+     *     2: A call invocation had to exit because of an unrecoverable problem (Not implemented).
      * </br>
      */
     public int containsFailures() {
-        for (Map.Entry<String, ResultCollector> result : results.entrySet()) {
+        if (fatalErrorEncountered()) return 2;
+        for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
             if (!result.getValue().isSuccess()) {
                 return 1;
             }
@@ -52,9 +58,16 @@ public class CallResult {
     }
 
     /**
-     * If the Call generated a fatal error, a message describing the error will be returned.
+     * If the call invocation generated a fatal error, a message describing the error will be returned.
      */
-    public String getError() {
+    public String getErrorMessage() {
         return errorMessage;
+    }
+
+    /**
+     * Returns <code>true</code> if a fatal error was encountered preventing the call() method from completing.
+     */
+    public boolean fatalErrorEncountered() {
+        return errorMessage == null;
     }
 }

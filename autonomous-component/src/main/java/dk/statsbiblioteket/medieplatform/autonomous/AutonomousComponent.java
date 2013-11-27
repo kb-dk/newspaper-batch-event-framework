@@ -1,5 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import com.netflix.curator.framework.CuratorFramework;
+import com.netflix.curator.framework.recipes.locks.InterProcessLock;
+import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,12 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.recipes.locks.InterProcessLock;
-import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import org.slf4j.Logger;
 
 /**
  * This is the Autonomous Component main class. It should contain all the harnessing stuff that allows a system to work
@@ -281,7 +281,7 @@ public class AutonomousComponent
             }
             log.info("All is now done, all workers have completed");
             for (BatchWorker batchWorker : workers.keySet()) {
-                result.addResult(batchWorker.getBatch().getFullID(), batchWorker.getResultCollector());
+                result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
             }
         } finally {
             for (InterProcessLock batchLock : workers.values()) {

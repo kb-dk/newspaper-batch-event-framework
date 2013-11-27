@@ -11,9 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 public class AutonomousComponentUtils {
@@ -104,23 +102,6 @@ public class AutonomousComponentUtils {
             return new CallResult("Commmunication exception when invoking backend services");
         } finally {
             lockClient.close();
-        }
-    }
-
-    /**
-     * Print the results of the work done by the autonomous component.
-     *
-     * @param result the result map from the invocation
-     */
-    public static void printResults(Map<String, Boolean> result) {
-        //Print the result. This is not nessessary, it is to help the user see whats going on
-        for (Map.Entry<String, Boolean> stringBooleanEntry : result.entrySet()) {
-            if (stringBooleanEntry.getValue()) {
-                System.out.println("Worked on " + stringBooleanEntry.getKey() + " successfully");
-            } else {
-                System.out.println("Failed to process " + stringBooleanEntry.getKey());
-            }
-
         }
     }
 
