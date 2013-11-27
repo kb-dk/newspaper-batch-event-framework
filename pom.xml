@@ -1,9 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-parent</artifactId>
-        <version>0.3</version>
+        <version>1.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -45,7 +47,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>1.0</version>
+                <version>1.0.1</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -68,7 +70,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>summaSearch-interface</artifactId>
-                <version>1.0</version>
+                <version>1.0.1</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>

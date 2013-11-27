@@ -11,7 +11,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +32,7 @@ import java.util.Map;
  *
  * There will be no virtual folders inside virtual folders.
  */
-public class TransformingIteratorForFileSystems
-        extends CommonTransformingIterator {
+public class TransformingIteratorForFileSystems extends CommonTransformingIterator {
 
 
     protected List<DelegatingTreeIterator> virtualChildren;
@@ -50,9 +48,7 @@ public class TransformingIteratorForFileSystems
      * @param dataFilePattern a regular expression that should match the names of all datafiles
      * @param checksumPostfix this is the postfix for the checksum files. Note, THIS IS NOT A PATTERN
      */
-    public TransformingIteratorForFileSystems(File id,
-                                              String groupingPattern,
-                                              String dataFilePattern,
+    public TransformingIteratorForFileSystems(File id, String groupingPattern, String dataFilePattern,
                                               String checksumPostfix) {
         this(id, id.getParentFile(), groupingPattern, dataFilePattern, checksumPostfix);
     }
@@ -66,10 +62,7 @@ public class TransformingIteratorForFileSystems
      *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
      */
-    protected TransformingIteratorForFileSystems(File id,
-                                                 File prefix,
-                                                 String groupingChar,
-                                                 String dataFilePattern,
+    protected TransformingIteratorForFileSystems(File id, File prefix, String groupingChar, String dataFilePattern,
                                                  String checksumPostfix) {
         super(id, prefix, dataFilePattern, checksumPostfix, groupingChar);
         virtualChildren = new ArrayList<>();
@@ -80,11 +73,9 @@ public class TransformingIteratorForFileSystems
         File[] children = id.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
         ArrayList<DelegatingTreeIterator> result = new ArrayList<>(children.length + virtualChildren.size());
         for (File child : children) {
-            result.add(new TransformingIteratorForFileSystems(child,
-                                                              getBatchFolder(),
-                                                              getGroupingChar(),
-                                                              getDataFilePattern(),
-                                                              getChecksumPostfix()));
+            result.add(
+                    new TransformingIteratorForFileSystems(
+                            child, getBatchFolder(), getGroupingChar(), getDataFilePattern(), getChecksumPostfix()));
         }
         for (DelegatingTreeIterator virtualChild : virtualChildren) {
             result.add(virtualChild);
@@ -94,13 +85,21 @@ public class TransformingIteratorForFileSystems
 
     @Override
     protected Iterator<File> initilizeAttributeIterator() throws IOException {
-        if (!(id.isDirectory() && id.canRead())){
-            throw new IOException("Failed to read directory '"+id.getAbsolutePath()+"'");
+        if (!(id.isDirectory() && id.canRead())) {
+            throw new IOException("Failed to read directory '" + id.getAbsolutePath() + "'");
         }
-        Collection<File> attributes = FileUtils.listFiles(id, new AbstractFileFilter() {
+        Collection<File> attributes = FileUtils.listFiles(
+                id, new AbstractFileFilter() {
             @Override
             public boolean accept(File file) {
-                return file.isFile() && !file.getName().endsWith(getChecksumPostfix());
+                boolean isFile = file.isFile();
+                boolean isNotChecksum = !file.getName()
+                                             .endsWith(getChecksumPostfix());
+                boolean isNotTransferComplete = !file.getName()
+                                                     .equals("transfer_complete");
+                boolean isNotTransfer_acknowledged = !file.getName()
+                                                          .equals("transfer_acknowledged");
+                return isFile && isNotChecksum && isNotTransferComplete && isNotTransfer_acknowledged;
             }
         }, null);
 
@@ -117,29 +116,21 @@ public class TransformingIteratorForFileSystems
                 }
                 List<File> group = groupedByPrefix.get(prefix);
 
-                virtualChildren.add(new VirtualIteratorForFileSystems(id,
-                                                                      prefix,
-                                                                      getBatchFolder(),
-                                                                      getDataFilePattern(),
-                                                                      group,
-                                                                      getGroupingChar(),
-                                                                      getChecksumPostfix()));
+                virtualChildren.add(
+                        new VirtualIteratorForFileSystems(
+                                id,
+                                prefix,
+                                getBatchFolder(),
+                                getDataFilePattern(),
+                                group,
+                                getGroupingChar(),
+                                getChecksumPostfix()));
                 attributes.removeAll(group);
             }
         }
 
 
         return attributes.iterator();
-    }
-
-    private List<File> largestGroup(Map<String, List<File>> groupedByPrefix) {
-        List<File> largest = Collections.emptyList();
-        for (List<File> files : groupedByPrefix.values()) {
-            if (files.size() > largest.size()) {
-                largest = files;
-            }
-        }
-        return largest;
     }
 
     /**
