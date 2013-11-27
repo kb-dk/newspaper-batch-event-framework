@@ -17,7 +17,7 @@ public class ConfigConstants {
     //Batch iterator
     public static final String ITERATOR_USE_FILESYSTEM = "iterator.useFileSystem";
     public static final String ITERATOR_FILESYSTEM_BATCHES_FOLDER = "iterator.filesystem.batches.folder";
-    public static final String ITERATOR_FILESYSTEM_DATAFILEPATTERN = "iterator.filesystem.datafilePattern";
+    public static final String ITERATOR_DATAFILEPATTERN = "iterator.datafilePattern";
     public static final String ITERATOR_FILESYSTEM_GROUPINGCHAR = "iterator.filesystem.groupingChar";
     public static final String ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX = "iterator.filesystem.checksumPostfix";
     public static final String ITERATOR_DOMS_ATTRIBUTENAMES = "iterator.doms.attributenames";

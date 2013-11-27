@@ -68,24 +68,20 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      */
     protected TreeIterator createIterator(Batch batch) {
         String dataFilePattern = properties.getProperty(
-                ConfigConstants.ITERATOR_FILESYSTEM_DATAFILEPATTERN,
-                ".*\\.jp2$");
+                ConfigConstants.ITERATOR_DATAFILEPATTERN, ".*\\.jp2$");
         boolean useFileSystem = Boolean.parseBoolean(
                 properties.getProperty(
-                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
-                        "true"));
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM, "true"));
 
         if (useFileSystem) {
             File scratchDir = new File(properties.getProperty(ConfigConstants.ITERATOR_FILESYSTEM_BATCHES_FOLDER));
             File batchDir = new File(scratchDir, batch.getFullID());
             String groupingChar = Pattern.quote(
                     properties.getProperty(
-                            ConfigConstants.ITERATOR_FILESYSTEM_GROUPINGCHAR,
-                            "."));
+                            ConfigConstants.ITERATOR_FILESYSTEM_GROUPINGCHAR, "."));
 
             String checksumPostFix = properties.getProperty(
-                    ConfigConstants.ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX,
-                    ".md5");
+                    ConfigConstants.ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX, ".md5");
             return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix);
 
         } else {
@@ -131,8 +127,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
     public InputStream retrieveBatchStructure(Batch batch) throws IOException {
         boolean useFileSystem = Boolean.parseBoolean(
                 properties.getProperty(
-                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
-                        "true"));
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM, "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
             return new FileInputStream(batchStructureFile);
@@ -179,8 +174,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
     public void storeBatchStructure(Batch batch, InputStream batchStructure) throws IOException {
         boolean useFileSystem = Boolean.parseBoolean(
                 properties.getProperty(
-                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
-                        "true"));
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM, "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
             FileOutputStream output = new FileOutputStream(batchStructureFile);

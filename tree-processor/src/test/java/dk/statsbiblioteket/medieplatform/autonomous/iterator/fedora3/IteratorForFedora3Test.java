@@ -64,7 +64,7 @@ public class IteratorForFedora3Test extends AbstractTests {
                     new ConfigurableFilter(
                             Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
                             Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")),
-                    ConfigConstants.ITERATOR_FILESYSTEM_DATAFILEPATTERN);
+                    ConfigConstants.ITERATOR_DATAFILEPATTERN);
         }
         return iterator;
     }
