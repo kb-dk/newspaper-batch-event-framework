@@ -9,6 +9,7 @@
 #
 
 donedir='batches-done'
+trigger_file='transfer_acknowledged'
 
 config_filename="$1"
 if [[ -z "$config_filename" ]]; then
@@ -35,6 +36,13 @@ for batch_dirname in *; do
 		# Dirname not recognized as a batch, skip it
 		continue
 	fi
+
+    # Check for trigger-file
+    if [[ ! -f "$batch_dirname/$trigger_file" ]]; then
+        # Trigger-file does not exist, so batch is not ready for us, skip it
+        continue
+    fi
+
     # TODO: the above way of recognizing a new batch should be replaced with a
     # check for a specifically named file...
 
