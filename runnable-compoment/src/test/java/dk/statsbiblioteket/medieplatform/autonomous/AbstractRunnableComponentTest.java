@@ -34,7 +34,7 @@ public class AbstractRunnableComponentTest {
         Properties properties = new Properties(System.getProperties());
 
         File temp = createTempDir();
-        properties.setProperty("batchStructure.storageDir", temp.getAbsolutePath());
+        properties.setProperty(ConfigConstants.AUTONOMOUS_BATCH_STRUCTURE_STORAGE_DIR, temp.getAbsolutePath());
         TestingRunnableComponent component = new TestingRunnableComponent(properties);
 
         String testData = "<test>hej, this is test data</test>";
@@ -66,7 +66,8 @@ public class AbstractRunnableComponentTest {
         Properties properties = new Properties(System.getProperties());
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
 
-        properties.setProperty("batchStructure.useFileSystem",
+        properties.setProperty(
+                ConfigConstants.ITERATOR_USE_FILESYSTEM,
                 Boolean.FALSE
                        .toString());
         TestingRunnableComponent component = new TestingRunnableComponent(properties);
@@ -99,11 +100,10 @@ public class AbstractRunnableComponentTest {
                                                                     JAXBException {
         return new EnhancedFedoraImpl(
                 new Credentials(
-                        properties.getProperty("fedora.admin.username"),
-                        properties.getProperty("fedora.admin.password")),
-                properties.getProperty("fedora.server")
-                          .replaceFirst("/(objects)?/?$", ""),
-                properties.getProperty("pidgenerator.location"),
+                        properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                        properties.getProperty(ConfigConstants.DOMS_PASSWORD)),
+                properties.getProperty(ConfigConstants.DOMS_URL),
+                properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL),
                 null);
     }
 

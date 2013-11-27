@@ -67,23 +67,33 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @return a tree iterator
      */
     protected TreeIterator createIterator(Batch batch) {
-        String dataFilePattern = properties.getProperty("dataFilePattern", ".*\\.jp2$");
-        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("useFileSystem", "true"));
+        String dataFilePattern = properties.getProperty(
+                ConfigConstants.ITERATOR_FILESYSTEM_DATAFILEPATTERN,
+                ".*\\.jp2$");
+        boolean useFileSystem = Boolean.parseBoolean(
+                properties.getProperty(
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
+                        "true"));
 
         if (useFileSystem) {
-            File scratchDir = new File(properties.getProperty("scratch"));
+            File scratchDir = new File(properties.getProperty(ConfigConstants.ITERATOR_FILESYSTEM_BATCHES_FOLDER));
             File batchDir = new File(scratchDir, batch.getFullID());
-            String groupingChar = Pattern.quote(properties.getProperty("groupingChar", "."));
+            String groupingChar = Pattern.quote(
+                    properties.getProperty(
+                            ConfigConstants.ITERATOR_FILESYSTEM_GROUPINGCHAR,
+                            "."));
 
-            String checksumPostFix = properties.getProperty("checksumPostfix", ".md5");
+            String checksumPostFix = properties.getProperty(
+                    ConfigConstants.ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX,
+                    ".md5");
             return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix);
 
         } else {
             Client client = Client.create();
             client.addFilter(
                     new HTTPBasicAuthFilter(
-                            properties.getProperty("fedora.admin.username"),
-                            properties.getProperty("fedora.admin.password")));
+                            properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                            properties.getProperty(ConfigConstants.DOMS_PASSWORD)));
 
             String pid;
             try {
@@ -96,13 +106,13 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
             }
 
             return new IteratorForFedora3(
-                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
+                    pid, client, properties.getProperty(ConfigConstants.DOMS_URL), new ConfigurableFilter(
                     Arrays.asList(
                             properties.getProperty(
-                                    "fedora.iterator.attributenames")
+                                    ConfigConstants.ITERATOR_DOMS_ATTRIBUTENAMES)
                                       .split(",")), Arrays.asList(
                     properties.getProperty(
-                            "fedora.iterator.predicatenames")
+                            ConfigConstants.ITERATOR_DOMS_PREDICATENAMES)
                               .split(","))), dataFilePattern);
         }
     }
@@ -119,7 +129,10 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws IOException if an inputstream could not be opened
      */
     public InputStream retrieveBatchStructure(Batch batch) throws IOException {
-        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
+        boolean useFileSystem = Boolean.parseBoolean(
+                properties.getProperty(
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
+                        "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
             return new FileInputStream(batchStructureFile);
@@ -148,7 +161,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @return a file object denoting the path to the structure file (which might not exist)
      */
     private File getBatchStructureFile(Batch batch) {
-        File scratchDir = new File(properties.getProperty("batchStructure.storageDir"));
+        File scratchDir = new File(properties.getProperty(ConfigConstants.AUTONOMOUS_BATCH_STRUCTURE_STORAGE_DIR));
         return new File(scratchDir, batch.getFullID() + ".batchStructure.xml");
     }
 
@@ -164,7 +177,10 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
      * @throws IOException if the storing failed
      */
     public void storeBatchStructure(Batch batch, InputStream batchStructure) throws IOException {
-        boolean useFileSystem = Boolean.parseBoolean(properties.getProperty("batchStructure.useFileSystem", "true"));
+        boolean useFileSystem = Boolean.parseBoolean(
+                properties.getProperty(
+                        ConfigConstants.ITERATOR_USE_FILESYSTEM,
+                        "true"));
         if (useFileSystem) {
             File batchStructureFile = getBatchStructureFile(batch);
             FileOutputStream output = new FileOutputStream(batchStructureFile);
@@ -227,10 +243,9 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
         if (fedora == null) {
             fedora = new EnhancedFedoraImpl(
                     new Credentials(
-                            properties.getProperty("fedora.admin.username"),
-                            properties.getProperty("fedora.admin.password")),
-                    properties.getProperty("fedora.server")
-                              .replaceFirst("/(objects)?/?$", ""),
+                            properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                            properties.getProperty(ConfigConstants.DOMS_PASSWORD)),
+                    properties.getProperty(ConfigConstants.DOMS_URL),
                     null,
                     null);
         }
@@ -267,6 +282,7 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
     @Override
     public final String getComponentVersion() {
-        return getClass().getPackage().getImplementationVersion();
+        return getClass().getPackage()
+                .getImplementationVersion();
     }
 }

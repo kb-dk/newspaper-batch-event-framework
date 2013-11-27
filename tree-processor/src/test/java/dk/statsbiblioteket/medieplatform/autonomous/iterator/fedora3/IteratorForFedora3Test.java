@@ -8,6 +8,7 @@ import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.medieplatform.autonomous.AbstractTests;
+import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 import org.testng.annotations.Test;
 
@@ -33,21 +34,21 @@ public class IteratorForFedora3Test extends AbstractTests {
             Properties properties = new Properties();
             properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
             System.out
-                  .println(properties.getProperty("fedora.admin.username"));
+                  .println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
             Client client = Client.create();
             client.addFilter(
                     new HTTPBasicAuthFilter(
-                            properties.getProperty("fedora.admin.username"),
-                            properties.getProperty("fedora.admin.password")));
+                            properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                            properties.getProperty(ConfigConstants.DOMS_PASSWORD)));
 
             String pid;
             try {
                 EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                         new Credentials(
                                 properties.getProperty(
-                                        "fedora.admin.username"), properties.getProperty("fedora.admin.password")),
-                        properties.getProperty("fedora.server")
-                                  .replaceFirst("/(objects)?/?$", ""),
+                                        ConfigConstants.DOMS_USERNAME),
+                                properties.getProperty(ConfigConstants.DOMS_PASSWORD)),
+                        properties.getProperty(ConfigConstants.DOMS_URL),
                         null,
                         null);
                 pid = getPid(fedora);
@@ -57,9 +58,13 @@ public class IteratorForFedora3Test extends AbstractTests {
             }
 
             iterator = new IteratorForFedora3(
-                    pid, client, properties.getProperty("fedora.server"), new ConfigurableFilter(
-                    Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
-                    Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")), ".*\\.jp2$");
+                    pid,
+                    client,
+                    properties.getProperty(ConfigConstants.DOMS_URL),
+                    new ConfigurableFilter(
+                            Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
+                            Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")),
+                    ConfigConstants.ITERATOR_FILESYSTEM_DATAFILEPATTERN);
         }
         return iterator;
     }

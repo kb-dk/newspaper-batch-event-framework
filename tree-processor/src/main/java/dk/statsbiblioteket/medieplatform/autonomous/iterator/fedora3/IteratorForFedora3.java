@@ -49,6 +49,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                               String dataFilePattern) {
         super(id, dataFilePattern);
         this.client = client;
+        if (!restUrl.endsWith("/objects/")) {
+            restUrl = restUrl + "/objects/";
+        }
         this.restUrl = restUrl;
         this.filter = filter;
         try {
@@ -135,11 +138,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         for (String child : children) {
             try {
                 DelegatingTreeIterator delegate = new IteratorForFedora3(
-                        child,
-                        client,
-                        restUrl,
-                        filter,
-                        getDataFilePattern());
+                        child, client, restUrl, filter, getDataFilePattern());
                 result.add(delegate);
             } catch (Exception e) {
                 log.warn("Unable to load child {}, ignoring as if it didn't exist", child, e);
