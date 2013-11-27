@@ -1,5 +1,12 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
@@ -7,14 +14,6 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 public class AutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
@@ -43,7 +42,7 @@ public class AutonomousComponentUtils {
      *
      *
      */
-    public static Map<String, Boolean> startAutonomousComponent(Properties properties,
+    public static CallResult startAutonomousComponent(Properties properties,
                                                                 RunnableComponent component) {
         //Make a client for the lock framework, and start it
         CuratorFramework lockClient = CuratorFrameworkFactory
@@ -91,17 +90,17 @@ public class AutonomousComponentUtils {
             System.err.println(
                     "Could not lock SBOI. Is this component running already? SBOI is locked to this component's name");
             log.error("Could not get lock on SBOI", e);
-            return Collections.emptyMap();
+            return new CallResult("Could not get lock on SBOI");
         } catch (LockingException e) {
             System.err.println(
                     "Failed to communicate with the locking server. Check that the locking server is running and "
                     + "network connectivity");
             log.error("Failed to communicate with zookeeper", e);
-            return Collections.emptyMap();
+            return new CallResult("Failed to communicate with zookeeper");
         } catch (CommunicationException e) {
             System.err.println("Failed to communicate with the backend systems. The work done is lost.");
             log.error("Commmunication exception when invoking backend services", e);
-            return Collections.emptyMap();
+            return new CallResult("Commmunication exception when invoking backend services");
         } finally {
             lockClient.close();
         }
@@ -122,6 +121,23 @@ public class AutonomousComponentUtils {
             }
 
         }
+    }
+
+    /**
+     * Will return 0 if the supplied map doesn't contains any failures. The following int values indicates failures:<br>
+     *     1: A batch check found a failure.
+     *     2: A batch check had to exit because of a unrecoverable problem (Not implemented).
+     * </br>
+     */
+    public static int containsFailures(Map<String, Boolean> result) {
+        int containsFailures = 0;
+        for (Map.Entry<String, Boolean> stringBooleanEntry : result.entrySet()) {
+            if (!stringBooleanEntry.getValue()) {
+                containsFailures = 1;
+                break;
+            }
+        }
+        return containsFailures;
     }
 
     /**

@@ -1,11 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.recipes.locks.InterProcessLock;
-import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import org.slf4j.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,12 +11,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.netflix.curator.framework.CuratorFramework;
+import com.netflix.curator.framework.recipes.locks.InterProcessLock;
+import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
+import org.slf4j.Logger;
+
 /**
  * This is the Autonomous Component main class. It should contain all the harnessing stuff that allows a system to work
  * in the autonomous mindset
  */
 public class AutonomousComponent
-        implements Callable<Map<String, Boolean>> {
+        implements Callable<CallResult> {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
@@ -186,14 +186,14 @@ public class AutonomousComponent
      * @throws CommunicationException   if communication with SBOI fails
      */
     @Override
-    public Map<String, Boolean> call()
+    public CallResult call()
             throws
             LockingException,
             CouldNotGetLockException,
             CommunicationException {
 
         InterProcessLock SBOILock = null;
-        Map<String, Boolean> result = new HashMap<>();
+        CallResult result = new CallResult();
         Map<BatchWorker, InterProcessLock> workers = new HashMap<>();
         try {
             //lock SBOI for this component name
@@ -281,7 +281,7 @@ public class AutonomousComponent
             }
             log.info("All is now done, all workers have completed");
             for (BatchWorker batchWorker : workers.keySet()) {
-                result.put(batchWorker.getBatch().getFullID(), batchWorker.getResultCollector().isSuccess());
+                result.addResult(batchWorker.getBatch().getFullID(), batchWorker.getResultCollector());
             }
         } finally {
             for (InterProcessLock batchLock : workers.values()) {

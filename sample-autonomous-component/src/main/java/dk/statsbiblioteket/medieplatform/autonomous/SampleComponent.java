@@ -1,14 +1,12 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Properties;
-
 /** This is a sample component to serve as a guide to developers */
 public class SampleComponent {
-
 
     private static Logger log = LoggerFactory.getLogger(SampleComponent.class);
 
@@ -31,12 +29,7 @@ public class SampleComponent {
         //make a new runnable component from the properties
         RunnableComponent component = new SampleRunnableComponent(properties);
 
-        Map<String, Boolean> result = AutonomousComponentUtils.startAutonomousComponent(properties, component);
-
-        AutonomousComponentUtils.printResults(result);
-
-
+        CallResult result = AutonomousComponentUtils.startAutonomousComponent(properties, component);
+        System.out.print(result);
     }
-
-
 }
