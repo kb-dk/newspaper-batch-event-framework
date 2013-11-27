@@ -35,6 +35,8 @@ for batch_dirname in *; do
 		# Dirname not recognized as a batch, skip it
 		continue
 	fi
+    # TODO: the above way of recognizing a new batch should be replaced with a
+    # check for a specifically named file...
 
 	# Skip batches that are already done
 	if [[ -f "$my_path/$donedir/$batch_dirname" ]]; then
