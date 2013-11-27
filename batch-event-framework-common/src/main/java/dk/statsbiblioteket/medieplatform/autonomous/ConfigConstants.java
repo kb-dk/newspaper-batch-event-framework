@@ -17,6 +17,9 @@ public class ConfigConstants {
     //Batch iterator
     public static final String ITERATOR_USE_FILESYSTEM = "iterator.useFileSystem";
     public static final String ITERATOR_FILESYSTEM_BATCHES_FOLDER = "iterator.filesystem.batches.folder";
+    public static final String ITERATOR_DATAFILEPATTERN = "iterator.datafilePattern";
+    public static final String ITERATOR_FILESYSTEM_GROUPINGCHAR = "iterator.filesystem.groupingChar";
+    public static final String ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX = "iterator.filesystem.checksumPostfix";
     public static final String ITERATOR_DOMS_ATTRIBUTENAMES = "iterator.doms.attributenames";
     public static final String ITERATOR_DOMS_PREDICATENAMES = "iterator.doms.predicatenames";
 
@@ -28,6 +31,7 @@ public class ConfigConstants {
     public static final String AUTONOMOUS_FUTURE_EVENTS = "autonomous.futureEvents";
     public static final String AUTONOMOUS_MAXTHREADS = "autonomous.maxThreads";
     public static final String AUTONOMOUS_MAX_RUNTIME = "autonomous.maxRuntimeForWorkers";
+    public static final String AUTONOMOUS_BATCH_STRUCTURE_STORAGE_DIR = "autonomous.batch.structure.folder";
 
 
 }

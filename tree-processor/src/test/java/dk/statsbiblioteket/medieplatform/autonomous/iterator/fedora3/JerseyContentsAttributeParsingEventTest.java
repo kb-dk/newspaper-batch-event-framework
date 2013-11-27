@@ -3,6 +3,7 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -24,27 +25,34 @@ public class JerseyContentsAttributeParsingEventTest {
     public void setUp() throws Exception {
         Properties properties = new Properties();
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
-        System.out.println(properties.getProperty("fedora.admin.username"));
+        System.out
+              .println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
         Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(properties.getProperty("fedora.admin.username"),
-                                                 properties.getProperty("fedora.admin.password")));
+        client.addFilter(
+                new HTTPBasicAuthFilter(
+                        properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                        properties.getProperty(ConfigConstants.DOMS_PASSWORD)));
 
-        WebResource resource = client.resource(properties.getProperty("fedora.server"));
-        objectResource = resource.path(PID);
+        WebResource resource = client.resource(properties.getProperty(ConfigConstants.DOMS_URL));
+        objectResource = resource.path("/objects/")
+                                 .path(PID);
         try {
             objectResource.delete();
 
         } catch (Exception e) {
             try {
-                objectResource.queryParam("state", "I").put();
+                objectResource.queryParam("state", "I")
+                              .put();
                 objectResource.delete();
             } catch (Exception e2) {
                 //ignore
             }
         }
 
-        objectResource.queryParam("state", "I").post();
-        objectResource.queryParam("state", "I").put();
+        objectResource.queryParam("state", "I")
+                      .post();
+        objectResource.queryParam("state", "I")
+                      .put();
 
 
     }
@@ -57,20 +65,29 @@ public class JerseyContentsAttributeParsingEventTest {
 
     @Test(groups = "integrationTest")
     public void testGetChecksum() throws Exception {
-        objectResource.path("/datastreams/").path(JerseyContentsAttributeParsingEvent.CONTENTS).queryParam("dsLocation",
-                                                                                                           "http://statsbiblioteket.dk").queryParam(
-                "controlGroup",
-                "R").post();
-        objectResource.path("/relationships/new").queryParam("subject","info:fedora/"+"contentTest:1"+"/"+JerseyContentsAttributeParsingEvent.CONTENTS)
-                .queryParam("predicate", URLEncoder.encode(JerseyContentsAttributeParsingEvent.HAS_CHECKSUM,"UTF-8"))
-                .queryParam("object","checksum")
-                .queryParam("isLiteral","true").post();
+        objectResource.path("/datastreams/")
+                      .path(JerseyContentsAttributeParsingEvent.CONTENTS)
+                      .queryParam("dsLocation", "http://statsbiblioteket.dk")
+                      .queryParam(
+                              "controlGroup", "R")
+                      .post();
+        objectResource.path("/relationships/new")
+                      .queryParam(
+                              "subject",
+                              "info:fedora/" + "contentTest:1" + "/" + JerseyContentsAttributeParsingEvent.CONTENTS)
+                      .queryParam(
+                              "predicate",
+                              URLEncoder.encode(JerseyContentsAttributeParsingEvent.HAS_CHECKSUM, "UTF-8"))
+                      .queryParam("object", "checksum")
+                      .queryParam("isLiteral", "true")
+                      .post();
 
-        AttributeParsingEvent attribute =
-                new JerseyContentsAttributeParsingEvent("testContentName", objectResource, PID);
+        AttributeParsingEvent attribute = new JerseyContentsAttributeParsingEvent(
+                "testContentName",
+                objectResource,
+                PID);
 
-        assertEquals(attribute.getChecksum(),"checksum");
-
+        assertEquals(attribute.getChecksum(), "checksum");
 
 
     }

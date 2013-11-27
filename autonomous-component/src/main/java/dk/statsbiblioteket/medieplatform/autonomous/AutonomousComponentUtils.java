@@ -1,12 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
@@ -14,6 +7,14 @@ import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class AutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
@@ -121,23 +122,6 @@ public class AutonomousComponentUtils {
             }
 
         }
-    }
-
-    /**
-     * Will return 0 if the supplied map doesn't contains any failures. The following int values indicates failures:<br>
-     *     1: A batch check found a failure.
-     *     2: A batch check had to exit because of a unrecoverable problem (Not implemented).
-     * </br>
-     */
-    public static int containsFailures(Map<String, Boolean> result) {
-        int containsFailures = 0;
-        for (Map.Entry<String, Boolean> stringBooleanEntry : result.entrySet()) {
-            if (!stringBooleanEntry.getValue()) {
-                containsFailures = 1;
-                break;
-            }
-        }
-        return containsFailures;
     }
 
     /**

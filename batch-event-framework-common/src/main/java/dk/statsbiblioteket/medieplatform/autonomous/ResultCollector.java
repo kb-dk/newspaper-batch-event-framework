@@ -145,7 +145,7 @@ public class ResultCollector {
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
             Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             StringWriter writer = new StringWriter();
             marshaller.marshal(resultStructure, writer);
