@@ -30,6 +30,7 @@ public class CallResult {
     @Override
     public String toString() {
         StringBuilder resultString = new StringBuilder();
+        resultString.append(getErrorMessage() + "\n");
         for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
             if (result.getValue().isSuccess()) {
                 resultString.append("Worked on " + result.getKey() + " successfully\n");
