@@ -38,3 +38,9 @@ Made the batch framework use the DC identifier, not the object label
 Batch Structure storage
 Checksum storing for content datastreams
 Event Runner uses a result collector to handle exceptions
+
+
+1.1
+Unify property names
+Update doms dependencies
+
