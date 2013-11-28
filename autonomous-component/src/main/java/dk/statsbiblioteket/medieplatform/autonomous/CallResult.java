@@ -69,6 +69,6 @@ public class CallResult {
      * Returns <code>true</code> if a fatal error was encountered preventing the call() method from completing.
      */
     public boolean fatalErrorEncountered() {
-        return errorMessage == null;
+        return errorMessage != null;
     }
 }
