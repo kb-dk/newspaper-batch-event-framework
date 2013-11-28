@@ -1,18 +1,20 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.CuratorFrameworkFactory;
-import com.netflix.curator.retry.ExponentialBackoffRetry;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.curator.framework.CuratorFramework;
+import com.netflix.curator.framework.CuratorFrameworkFactory;
+import com.netflix.curator.retry.ExponentialBackoffRetry;
+
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 
 public class AutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
@@ -44,42 +46,44 @@ public class AutonomousComponentUtils {
     public static CallResult startAutonomousComponent(Properties properties,
                                                                 RunnableComponent component) {
         //Make a client for the lock framework, and start it
-        CuratorFramework lockClient = CuratorFrameworkFactory
-                .newClient(properties.getProperty("lockserver"), new ExponentialBackoffRetry(1000, 3));
+        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
+                properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL),
+                new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
         //Make a batch event client to query and store events
-        BatchEventClient eventClient = new BatchEventClientImpl(properties.getProperty("summa"),
-                                                                properties.getProperty("domsUrl"),
-                                                                properties.getProperty("domsUser"),
-                                                                properties.getProperty("domsPass"),
-                                                                properties.getProperty("pidGenerator"));
+        BatchEventClient eventClient = new BatchEventClientImpl(
+                properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
+                properties.getProperty(ConfigConstants.DOMS_URL),
+                properties.getProperty(ConfigConstants.DOMS_USERNAME),
+                properties.getProperty(ConfigConstants.DOMS_PASSWORD),
+                properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
 
         //This is the number of batches that will be worked on in parallel per invocation
-        int simultaneousProcesses = Integer.parseInt(properties.getProperty("maxThreads","1"));
+        int simultaneousProcesses = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_MAXTHREADS, "1"));
         //This is the timeout when attempting to lock SBOI
         long timeoutWaitingToLockSBOI = 5000l;
         //This is the timeout when attempting to lock a batch before working on it
         long timeoutWaitingToLockBatch = 2000l;
         //After this time, the worker thread will be terminated, even if not complete
-        long maxRunTimeForWorker = Long.parseLong(properties.getProperty("maxRuntimeForWorkers",60 * 60 * 1000l+""));
+        long maxRunTimeForWorker = Long.parseLong(properties.getProperty(
+                ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l+""));
 
 
 
         //Use all the above to make the autonomous component
-        AutonomousComponent autonoumous = new AutonomousComponent(component,
-                                                                  lockClient,
-                                                                  eventClient,
-                                                                  simultaneousProcesses,
-                                                                  toEvents(properties
-                                                                                   .getProperty
-                                                                                           ("pastSuccessfulEvents")),
-                                                                  toEvents(properties.getProperty("pastFailedEvents")),
-                                                                  toEvents(properties.getProperty("futureEvents")),
-                                                                  timeoutWaitingToLockSBOI,
-                                                                  timeoutWaitingToLockBatch,
-                                                                  maxRunTimeForWorker);
+        AutonomousComponent autonoumous = new AutonomousComponent(
+                component,
+                lockClient,
+                eventClient,
+                simultaneousProcesses,
+                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
+                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
+                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
+                timeoutWaitingToLockSBOI,
+                timeoutWaitingToLockBatch,
+                maxRunTimeForWorker);
 
 
         try {//Start the component
