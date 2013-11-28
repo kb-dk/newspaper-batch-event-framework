@@ -45,7 +45,7 @@ public class CallResult {
     /**
      * Will return 0 if the supplied map doesn't contains any failures. The following int values indicates failures:<br>
      *     1: A batch check found a failure.
-     *     2: A call invocation had to exit because of an unrecoverable problem (Not implemented).
+     *     2: A call invocation had to exit because of an unrecoverable problem.
      * </br>
      */
     public int containsFailures() {
