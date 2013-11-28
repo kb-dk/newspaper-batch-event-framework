@@ -5,7 +5,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.1</version>
+        <version>1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>batch-trigger</artifactId>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>doms-event-client</artifactId>
-            <version>1.1</version>
+            <version>1.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
