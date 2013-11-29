@@ -212,7 +212,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
         if (attributeID.equals(JerseyContentsAttributeParsingEvent.CONTENTS)) {
             return new JerseyContentsAttributeParsingEvent(
-                    name + "." + attributeID.toLowerCase(),
+                    name + "/" + attributeID.toLowerCase(),
                     client.resource(restUrl)
                           .path(nodeID),
                     nodeID);
