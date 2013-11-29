@@ -1,9 +1,9 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 /** This is a sample component to serve as a guide to developers */
 public class SampleComponent {
@@ -18,9 +18,7 @@ public class SampleComponent {
      * @throws Exception
      * @see AutonomousComponentUtils#parseArgs(String[])
      */
-    public static void main(String[] args)
-            throws
-            Exception {
+    public static void main(String[] args) throws Exception {
         log.info("Starting with args {}", args);
 
         //Parse the args to a properties construct
@@ -30,6 +28,8 @@ public class SampleComponent {
         RunnableComponent component = new SampleRunnableComponent(properties);
 
         CallResult result = AutonomousComponentUtils.startAutonomousComponent(properties, component);
-        System.out.print(result);
+        System.out
+              .print(result);
+        System.exit(result.containsFailures());
     }
 }
