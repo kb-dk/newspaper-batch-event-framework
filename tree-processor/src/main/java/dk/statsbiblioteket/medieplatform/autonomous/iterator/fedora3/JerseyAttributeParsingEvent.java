@@ -3,13 +3,8 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.util.xml.DOM;
-import org.apache.ws.commons.util.NamespaceContextImpl;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,8 +16,9 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     /** Contains the checksum. Retrieved and stored on first request */
     private String checksum;
 
-    public JerseyAttributeParsingEvent(String name, WebResource resource) {
+    public JerseyAttributeParsingEvent(String name, String checksum, WebResource resource) {
         super(name);
+        this.checksum = checksum;
         this.resource = resource;
     }
 
@@ -38,20 +34,10 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
 
     @Override
     public synchronized String getChecksum() throws IOException {
-        if (checksum == null) {
-            String response = resource.queryParam("format", "XML")
-                                      .get(String.class);
-            try {
-                XPath xPath = XPATH_FACTORY.newXPath();
-                NamespaceContextImpl context = new NamespaceContextImpl();
-                context.startPrefixMapping("dp", "http://www.fedora.info/definitions/1/0/management/");
-                xPath.setNamespaceContext(context);
-                checksum = xPath.evaluate(
-                        "//dp:dsChecksum", DOM.streamToDOM(new ByteArrayInputStream(response.getBytes()), true));
-            } catch (XPathExpressionException e) {
-                throw new RuntimeException("Invalid XPath. This is a programming error.", e);
-            }
-        }
         return checksum;
+    }
+
+    protected void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 }

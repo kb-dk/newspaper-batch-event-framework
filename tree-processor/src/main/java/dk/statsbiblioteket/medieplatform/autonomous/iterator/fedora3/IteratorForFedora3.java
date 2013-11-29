@@ -9,6 +9,7 @@ import dk.statsbiblioteket.util.xml.DOM;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
@@ -31,11 +32,14 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
     private final XPathExpression datastreamsXpath;
     private final XPathExpression dcIdentifierXpath;
+    private final XPathExpression datastreamChecksumXpath;
+    private final XPathExpression datastreamNameXpath;
     private final Client client;
     private final String restUrl;
     private final FedoraTreeFilter filter;
     private final String name;
     private final Logger log = LoggerFactory.getLogger(getClass());
+
 
     /**
      * Constructor.
@@ -58,9 +62,13 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
             XPath xPath = XPATH_FACTORY.newXPath();
             NamespaceContextImpl context = new NamespaceContextImpl();
             context.startPrefixMapping("dc", "http://purl.org/dc/elements/1.1/");
+            context.startPrefixMapping("dp", "http://www.fedora.info/definitions/1/0/management/");
             xPath.setNamespaceContext(context);
             datastreamsXpath = xPath.compile("//@dsid");
             dcIdentifierXpath = xPath.compile("//dc:identifier");
+            datastreamChecksumXpath = xPath.compile("//dp:dsChecksum");
+            datastreamNameXpath = xPath.compile("/dp:datastreamProfile/dp:dsAltID");
+
         } catch (XPathExpressionException e) {
             throw new RuntimeException("Illegal XPath. This is a programming error.", e);
         }
@@ -209,14 +217,33 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                           .path(nodeID),
                     nodeID);
         } else {
+            String response = client.resource(restUrl)
+                                    .path(nodeID)
+                                    .path("/datastreams/")
+                                    .path(attributeID)
+                                    .queryParam("format", "xml")
+                                    .get(String.class);
+            Document datastreamProfile = DOM.streamToDOM(new ByteArrayInputStream(response.getBytes()), true);
+
+
+            String name = null;
+            String checksum = null;
+            try {
+                name = datastreamNameXpath.evaluate(datastreamProfile);
+                checksum = datastreamChecksumXpath.evaluate(datastreamProfile);
+            } catch (XPathExpressionException e) {
+                throw new RuntimeException("Invalid XPath. This is a programming error.", e);
+            }
             return new JerseyAttributeParsingEvent(
-                    name + "." + attributeID.toLowerCase() + ".xml",
+                    name,
+                    checksum,
                     client.resource(restUrl)
                           .path(nodeID)
                           .path("/datastreams/")
                           .path(attributeID));
         }
     }
+
 
     @Override
     protected String getIdOfNode() {
