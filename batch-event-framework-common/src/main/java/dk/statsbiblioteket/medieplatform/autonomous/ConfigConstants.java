@@ -13,6 +13,9 @@ public class ConfigConstants {
     public static final String MFPAK_USER = "mfpak.postgres.user";
     public static final String MFPAK_PASSWORD = "mfpak.postgres.password";
 
+    public static final String AT_NINESTARS = "ninestars";
+    public static final String JPYLYZER_PATH = "ninestars.jpylyzer.executable";
+
 
     //Batch iterator
     public static final String ITERATOR_USE_FILESYSTEM = "iterator.useFileSystem";
