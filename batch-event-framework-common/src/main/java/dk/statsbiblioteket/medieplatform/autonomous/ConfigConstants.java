@@ -16,6 +16,8 @@ public class ConfigConstants {
     public static final String AT_NINESTARS = "ninestars";
     public static final String JPYLYZER_PATH = "ninestars.jpylyzer.executable";
 
+    public static final String SCAPE_CONTROL_POLICIES_PATH = "scape.control.policies.path";
+
 
     //Batch iterator
     public static final String ITERATOR_USE_FILESYSTEM = "iterator.useFileSystem";
