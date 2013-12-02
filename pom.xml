@@ -29,6 +29,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>1.4</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>dk.statsbiblioteket.sbutil</groupId>
                 <artifactId>sbutil-common</artifactId>
                 <version>0.5.13</version>
