@@ -34,9 +34,16 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final String INFO_FEDORA = "<info:fedora/";
     private static final String FORMAT = "format";
     private static final String XML = "xml";
+    private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
+    private static final String DATASTREAM_PROFILE_NAMESPACE = "http://www.fedora.info/definitions/1/0/management/";
+    private static final String NTRIPLES = "ntriples";
+    /** xpath used to pick out the datastream nodes from the list of datastreams */
     private final XPathExpression datastreamsXpath;
+    /** Xpath used to select the dc identifier from the contents of a DC datastream */
     private final XPathExpression dcIdentifierXpath;
+    /** Xpath used to pick out the checksum from a datastream profile */
     private final XPathExpression datastreamChecksumXpath;
+    /** Xpath used to pick out the datastream name from a datastream profile */
     private final XPathExpression datastreamNameXpath;
     private final Client client;
     private final String restUrl;
@@ -65,8 +72,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         try {
             XPath xPath = XPATH_FACTORY.newXPath();
             NamespaceContextImpl context = new NamespaceContextImpl();
-            context.startPrefixMapping("dc", "http://purl.org/dc/elements/1.1/");
-            context.startPrefixMapping("dp", "http://www.fedora.info/definitions/1/0/management/");
+            context.startPrefixMapping("dc", DC_NAMESPACE);
+            context.startPrefixMapping("dp", DATASTREAM_PROFILE_NAMESPACE);
             xPath.setNamespaceContext(context);
             datastreamsXpath = xPath.compile("//@dsid");
             dcIdentifierXpath = xPath.compile("//dc:identifier");
@@ -143,7 +150,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         //remember to not urlEncode the id here... Stupid fedora
         String relationsShips = resource.path(id)
                                         .path("relationships")
-                                        .queryParam(FORMAT, "ntriples")
+                                        .queryParam(FORMAT, NTRIPLES)
                                         .get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
