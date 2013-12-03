@@ -30,6 +30,10 @@ import java.util.List;
  */
 public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
+    private static final String OBJECTS = "/objects/";
+    private static final String INFO_FEDORA = "<info:fedora/";
+    private static final String FORMAT = "format";
+    private static final String XML = "xml";
     private final XPathExpression datastreamsXpath;
     private final XPathExpression dcIdentifierXpath;
     private final XPathExpression datastreamChecksumXpath;
@@ -53,8 +57,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                               String dataFilePattern) {
         super(id, dataFilePattern);
         this.client = client;
-        if (!restUrl.endsWith("/objects/")) {
-            restUrl = restUrl + "/objects/";
+        if (!restUrl.endsWith(OBJECTS)) {
+            restUrl = restUrl + OBJECTS;
         }
         this.restUrl = restUrl;
         this.filter = filter;
@@ -86,7 +90,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         WebResource resource = client.resource(restUrl);
         String dcContent = resource.path(id)
                                    .path("/datastreams/DC/content")
-                                   .queryParam("format", "xml")
+                                   .queryParam(FORMAT, XML)
                                    .get(String.class);
         NodeList nodeList;
         try {
@@ -139,7 +143,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         //remember to not urlEncode the id here... Stupid fedora
         String relationsShips = resource.path(id)
                                         .path("relationships")
-                                        .queryParam("format", "ntriples")
+                                        .queryParam(FORMAT, "ntriples")
                                         .get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
@@ -175,9 +179,9 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         ArrayList<String> result = new ArrayList<>();
         for (String line : relationsShips.split("\n")) {
             String[] tuple = line.split(" ");
-            if (tuple.length >= 3 && tuple[2].startsWith("<info:fedora/")) {
+            if (tuple.length >= 3 && tuple[2].startsWith(INFO_FEDORA)) {
                 String predicate = tuple[1].substring(1, tuple[1].length() - 1);
-                String child = tuple[2].substring("<info:fedora/".length(), tuple[2].length() - 1);
+                String child = tuple[2].substring(INFO_FEDORA.length(), tuple[2].length() - 1);
                 if (filter.isChildRel(predicate)) {
                     result.add(child);
                 }
@@ -193,7 +197,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         WebResource resource = client.resource(restUrl);
         String datastreamXml = resource.path(id)
                                        .path("datastreams")
-                                       .queryParam("format", "xml")
+                                       .queryParam(FORMAT, XML)
                                        .get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml).iterator();
@@ -221,7 +225,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                                     .path(nodeID)
                                     .path("/datastreams/")
                                     .path(attributeID)
-                                    .queryParam("format", "xml")
+                                    .queryParam(FORMAT, XML)
                                     .get(String.class);
             Document datastreamProfile = DOM.streamToDOM(new ByteArrayInputStream(response.getBytes()), true);
 

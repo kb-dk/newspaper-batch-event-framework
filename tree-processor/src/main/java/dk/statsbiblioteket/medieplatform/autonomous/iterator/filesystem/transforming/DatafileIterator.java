@@ -20,11 +20,10 @@ import java.util.Iterator;
 public class DatafileIterator extends CommonTransformingIterator {
 
 
-    public DatafileIterator(File dataFile,
-                            File batchFolder,
-                            String checksumPostfix,
-                            String groupingChar) {
-        super(dataFile,batchFolder,null,checksumPostfix, groupingChar);
+    private static final String CONTENTS = "contents";
+
+    public DatafileIterator(File dataFile, File batchFolder, String checksumPostfix, String groupingChar) {
+        super(dataFile, batchFolder, null, checksumPostfix, groupingChar);
     }
 
     @Override
@@ -35,12 +34,16 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     @Override
     protected Iterator<File> initilizeAttributeIterator() {
-        return Arrays.asList(id).iterator();
+        return Arrays.asList(id)
+                     .iterator();
     }
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
-        return new FileAttributeParsingEvent(toPathID(new File(attributeID,"contents")),attributeID,getChecksumPostfix());
+        return new FileAttributeParsingEvent(
+                toPathID(new File(attributeID, CONTENTS)),
+                attributeID,
+                getChecksumPostfix());
 
     }
 

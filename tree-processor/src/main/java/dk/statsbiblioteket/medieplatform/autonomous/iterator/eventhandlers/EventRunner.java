@@ -19,6 +19,8 @@ import java.util.NoSuchElementException;
  * @author jrg
  */
 public class EventRunner {
+    private static final String EXCEPTION = "exception";
+    private static final String UNEXPECTED_ERROR = "Unexpected error: ";
     private TreeIterator iterator;
 
     /**
@@ -32,11 +34,12 @@ public class EventRunner {
 
     /**
      * Trigger all the given event handlers on all events of the iterator.
+     *
      * @param eventHandlers List of event handlers to trigger.
+     *
      * @throws IOException
      */
-    public void runEvents(List<TreeEventHandler> eventHandlers, ResultCollector resultCollector)
-            throws IOException {
+    public void runEvents(List<TreeEventHandler> eventHandlers, ResultCollector resultCollector) throws IOException {
 
         List<InjectingTreeEventHandler> injectingTreeEventHandlers = getInjectingTreeEventHandlers(eventHandlers);
 
@@ -44,20 +47,23 @@ public class EventRunner {
         while (iterator.hasNext()) {
 
             current = getInjectedParsingEvent(injectingTreeEventHandlers);
-            if (current == null){
+            if (current == null) {
                 current = iterator.next();
             }
 
-            switch (current.getType()){
+            switch (current.getType()) {
                 case NodeBegin: {
                     for (TreeEventHandler handler : eventHandlers) {
                         try {
-                            handler.handleNodeBegin((NodeBeginsParsingEvent)current);
+                            handler.handleNodeBegin((NodeBeginsParsingEvent) current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception",
-                                                       handler.getClass().getSimpleName(),
-                                                       "Unexpected error: " + e.toString(),
-                                                       Strings.getStackTrace(e));
+                            resultCollector.addFailure(
+                                    current.getName(),
+                                    EXCEPTION,
+                                    handler.getClass()
+                                           .getSimpleName(),
+                                    UNEXPECTED_ERROR + e.toString(),
+                                    Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -67,10 +73,13 @@ public class EventRunner {
                         try {
                             handler.handleNodeEnd((NodeEndParsingEvent) current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception",
-                                                       handler.getClass().getSimpleName(),
-                                                       "Unexpected error: " + e.toString(),
-                                                       Strings.getStackTrace(e));
+                            resultCollector.addFailure(
+                                    current.getName(),
+                                    EXCEPTION,
+                                    handler.getClass()
+                                           .getSimpleName(),
+                                    UNEXPECTED_ERROR + e.toString(),
+                                    Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -80,10 +89,13 @@ public class EventRunner {
                         try {
                             handler.handleAttribute((AttributeParsingEvent) current);
                         } catch (Exception e) {
-                            resultCollector.addFailure(current.getName(), "exception",
-                                                       handler.getClass().getSimpleName(),
-                                                       "Unexpected error: " + e.toString(),
-                                                       Strings.getStackTrace(e));
+                            resultCollector.addFailure(
+                                    current.getName(),
+                                    EXCEPTION,
+                                    handler.getClass()
+                                           .getSimpleName(),
+                                    UNEXPECTED_ERROR + e.toString(),
+                                    Strings.getStackTrace(e));
                         }
                     }
                     break;
@@ -95,17 +107,22 @@ public class EventRunner {
             try {
                 handler.handleFinish();
             } catch (Exception e) {
-                resultCollector.addFailure(current == null ? "UNKNOWN" : current.getName(), "exception",
-                                           handler.getClass().getSimpleName(),
-                                           "Unexpected error: " + e.toString(),
-                                           Strings.getStackTrace(e));
+                resultCollector.addFailure(
+                        current == null ? "UNKNOWN" : current.getName(),
+                        EXCEPTION,
+                        handler.getClass()
+                               .getSimpleName(),
+                        UNEXPECTED_ERROR + e.toString(),
+                        Strings.getStackTrace(e));
             }
         }
     }
 
     /**
      * Iterate through the given injectingTreeEventHandlers. If any of them have an injected event, pop it and return.
+     *
      * @param injectingTreeEventHandlers the injecting event handlers
+     *
      * @return an event or null
      */
     private ParsingEvent getInjectedParsingEvent(List<InjectingTreeEventHandler> injectingTreeEventHandlers) {
@@ -113,10 +130,10 @@ public class EventRunner {
         for (InjectingTreeEventHandler injectingTreeEventHandler : injectingTreeEventHandlers) {
             try {
                 current = injectingTreeEventHandler.popInjectedEvent();
-                if (current != null){
+                if (current != null) {
                     return current;
                 }
-            } catch (NoSuchElementException e){
+            } catch (NoSuchElementException e) {
                 continue;
             }
         }
@@ -125,11 +142,14 @@ public class EventRunner {
 
     /**
      * Filter out the injecting event handlers from the list of event handlers
+     *
      * @param eventHandlers all the event handlers
+     *
      * @return the injecting event handlers
      */
     private List<InjectingTreeEventHandler> getInjectingTreeEventHandlers(List<TreeEventHandler> eventHandlers) {
-        List<InjectingTreeEventHandler> injectingTreeEventHandlers = new ArrayList<>(); for (TreeEventHandler eventHandler : eventHandlers) {
+        List<InjectingTreeEventHandler> injectingTreeEventHandlers = new ArrayList<>();
+        for (TreeEventHandler eventHandler : eventHandlers) {
             if (eventHandler instanceof InjectingTreeEventHandler) {
                 InjectingTreeEventHandler injectingTreeEventHandler = (InjectingTreeEventHandler) eventHandler;
                 injectingTreeEventHandlers.add(injectingTreeEventHandler);

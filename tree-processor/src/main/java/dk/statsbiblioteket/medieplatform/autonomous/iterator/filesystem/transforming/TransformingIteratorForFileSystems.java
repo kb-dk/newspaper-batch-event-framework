@@ -35,6 +35,8 @@ import java.util.Map;
 public class TransformingIteratorForFileSystems extends CommonTransformingIterator {
 
 
+    private static final String TRANSFER_COMPLETE = "transfer_complete";
+    private static final String TRANSFER_ACKNOWLEDGED = "transfer_acknowledged";
     protected List<DelegatingTreeIterator> virtualChildren;
 
 
@@ -96,9 +98,9 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
                 boolean isNotChecksum = !file.getName()
                                              .endsWith(getChecksumPostfix());
                 boolean isNotTransferComplete = !file.getName()
-                                                     .equals("transfer_complete");
+                                                     .equals(TRANSFER_COMPLETE);
                 boolean isNotTransfer_acknowledged = !file.getName()
-                                                          .equals("transfer_acknowledged");
+                                                          .equals(TRANSFER_ACKNOWLEDGED);
                 return isFile && isNotChecksum && isNotTransferComplete && isNotTransfer_acknowledged;
             }
         }, null);
