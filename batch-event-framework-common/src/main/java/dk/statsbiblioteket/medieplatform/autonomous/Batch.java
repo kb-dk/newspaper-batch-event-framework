@@ -82,4 +82,13 @@ public class Batch {
     public String getFullID() {
         return "B" + batchID + "-RT" + roundTripNumber;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Batch: " + getFullID());
+        if (eventList != null && !eventList.isEmpty()) {
+             sb.append(", eventList=" + eventList);
+        }
+        return sb.toString();
+    }
 }

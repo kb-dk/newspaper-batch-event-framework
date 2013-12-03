@@ -25,7 +25,7 @@ public class DomsEventClientIntegrationTest {
         DomsEventClient doms = factory.createDomsEventClient();
 
 
-        String batchId = "400022028242";
+        String batchId = "400022025243";
         Integer roundTripNumber = 1;
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
