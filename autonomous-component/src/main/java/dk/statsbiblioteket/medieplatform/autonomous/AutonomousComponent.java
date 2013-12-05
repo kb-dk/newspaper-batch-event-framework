@@ -242,7 +242,7 @@ public class AutonomousComponent
                     //okay, continue
                 }
                 if (System.currentTimeMillis() - start > workerTimout) {
-                    log.error("Worker timout exceeded (" + workerTimout+ "ms), shutting down all threads. We still need to wait for them"
+                    log.error("Worker timeout exceeded (" + workerTimout+ "ms), shutting down all threads. We still need to wait for them"
                               + " to terminate, however.");
                     pool.shutdownNow();
                     for (Future<?> future : futures) {

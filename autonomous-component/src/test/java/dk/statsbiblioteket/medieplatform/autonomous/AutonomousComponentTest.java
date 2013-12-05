@@ -15,6 +15,7 @@ import java.util.List;
 
 public class AutonomousComponentTest {
     private static final String BATCHID = "40005";
+    private static final long DEFAULT_TIMEOUT=3600000;
     private static final int ROUNDTRIPNUMBER = 1;
     TestingServer testingServer;
     AutonomousComponent autonoumous;
@@ -44,9 +45,9 @@ public class AutonomousComponentTest {
                                                                         new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-
         autonoumous = new AutonomousComponent(component, lockClient, eventClient, 1,
-                                              Arrays.asList("Data_Received"), null, null);
+                                              Arrays.asList("Data_Received"), null, null,
+                                              DEFAULT_TIMEOUT, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
 
     }
 
