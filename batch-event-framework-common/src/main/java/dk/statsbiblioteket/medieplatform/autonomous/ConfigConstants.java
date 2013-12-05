@@ -17,10 +17,8 @@ public class ConfigConstants {
     public static final String MFPAK_URL = "mfpak.postgres.url";
     /** The mfpak postgres username */
     public static final String MFPAK_USER = "mfpak.postgres.user";
-
     /** The mfpak postgres passworkd */
     public static final String MFPAK_PASSWORD = "mfpak.postgres.password";
-
     /**
      * A boolean value representing if we are at ninestars (and thus do not have access to hadoop or doms or anything)
      * or we are inhouse
@@ -28,7 +26,6 @@ public class ConfigConstants {
     public static final String AT_NINESTARS = "ninestars";
     /** The path to the jpylyzer executable */
     public static final String JPYLYZER_PATH = "ninestars.jpylyzer.executable";
-
     /** The path to the scape control policies RDF document */
     public static final String SCAPE_CONTROL_POLICIES_PATH = "scape.control.policies.path";
 
@@ -45,13 +42,10 @@ public class ConfigConstants {
     public static final String ITERATOR_DATAFILEPATTERN = "iterator.datafilePattern";
     /** The character that separates the prefix and the postfix in a filename. Normally '.' */
     public static final String ITERATOR_FILESYSTEM_GROUPINGCHAR = "iterator.filesystem.groupingChar";
-
     /** The postfix to add to a file to get the checksum file */
     public static final String ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX = "iterator.filesystem.checksumPostfix";
-
     /** The names of datastreams that should be made into attributes in the iterator */
     public static final String ITERATOR_DOMS_ATTRIBUTENAMES = "iterator.doms.attributenames";
-
     /** The names of relations that denote a children in the iterator */
     public static final String ITERATOR_DOMS_PREDICATENAMES = "iterator.doms.predicatenames";
 
@@ -62,7 +56,7 @@ public class ConfigConstants {
     public static final String AUTONOMOUS_SBOI_URL = "autonomous.sboi.url";
     /** Events that a batch must have experienced successfully to qualify for this component to work on it */
     public static final String AUTONOMOUS_PAST_SUCCESSFUL_EVENTS = "autonomous.pastSuccessfulEvents";
-    /** * Events that a batch must have experienced unsuccessfully to qualify for this component to work on it */
+    /** Events that a batch must have experienced unsuccessfully to qualify for this component to work on it */
     public static final String AUTONOMOUS_PAST_FAILED_EVENTS = "autonomous.pastFailedEvents";
     /**
      * * Events that a batch must NOT have experienced successfully or otherwise, to qualify for this component to work
@@ -73,12 +67,36 @@ public class ConfigConstants {
     public static final String AUTONOMOUS_MAXTHREADS = "autonomous.maxThreads";
     /** The max time a component can work on a batch before being forcibly stopped */
     public static final String AUTONOMOUS_MAX_RUNTIME = "autonomous.maxRuntimeForWorkers";
-
     /**
      * The folder where the batch structure is stored, when the system does not have access to DOMS (because we are at
      * ninestars)
      */
     public static final String AUTONOMOUS_BATCH_STRUCTURE_STORAGE_DIR = "autonomous.batch.structure.folder";
 
+
+    //-----------HADOOP OPTIONS ------------//
+    /** Used to set the batch ID to the hadoop job. Never to be used in a normal config file */
+    public static final String BATCH_ID = "batchID";
+    /**
+     * The folder (in hdfs) where the hadoop job can put its input and output files. It will create batch specific
+     * folder names below this path
+     */
+    public static final String JOB_FOLDER = "job.folder";
+
+    /**
+     * Path to the (nfs) folder where the data files can be read. Must end with /. Used as a prefix before all the
+     * filenames
+     */
+    public static final String PREFIX = "file.storage.path";
+
+    /** The username to use when communicating with the hadoop instance */
+    public static final String HADOOP_USER = "hadoop.user";
+
+    /**
+     * The number of data files to handle in each map task. You will want map tasks whose execution time is measured
+     * in minutes, not seconds, otherwise the ratio of overhead to work will be to great. Tweak this value to achieve
+     * this.
+     */
+    public static final String FILES_PER_MAP_TASK = "hadoop.files.per.map.tasks";
 
 }
