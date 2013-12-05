@@ -67,35 +67,6 @@ public class AutonomousComponent
     }
 
     /**
-     * Create a new Autonomous Component
-     *
-     * @param runnable              the is the class that will be doing the actual work
-     * @param lockClient            Client to the netflix curator zookeeper lockserver
-     * @param batchEventClient      the client for quering and adding events
-     * @param simultaneousProcesses the number of batches that can be worked on simutaniously
-     * @param pastSuccessfulEvents  events that a batch must have experienced successfully to be eligible
-     * @param pastFailedEvents      events that a batch must have experienced and failed to be eligible
-     * @param futureEvents          events that a batch must not have experienced to be eligible
-     */
-    public AutonomousComponent(RunnableComponent runnable,
-                               CuratorFramework lockClient,
-                               BatchEventClient batchEventClient,
-                               int simultaneousProcesses,
-                               List<String> pastSuccessfulEvents,
-                               List<String> pastFailedEvents,
-                               List<String> futureEvents) {
-        this(runnable, lockClient,
-             batchEventClient,
-             simultaneousProcesses,
-             pastSuccessfulEvents,
-             pastFailedEvents,
-             futureEvents,
-             5000l,
-             2000l,
-             60 * 60 * 1000l);
-    }
-
-    /**
      * Utility method to release locks, ignoring any errors being thrown. Will continue to release the lock until
      * errors
      * are being thrown.
@@ -271,7 +242,7 @@ public class AutonomousComponent
                     //okay, continue
                 }
                 if (System.currentTimeMillis() - start > workerTimout) {
-                    log.error("Worker timout exceeded, shutting down all threads. We still need to wait for them"
+                    log.error("Worker timout exceeded (" + workerTimout+ "ms), shutting down all threads. We still need to wait for them"
                               + " to terminate, however.");
                     pool.shutdownNow();
                     for (Future<?> future : futures) {
