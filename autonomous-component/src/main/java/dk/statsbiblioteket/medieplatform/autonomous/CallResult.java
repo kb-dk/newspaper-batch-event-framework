@@ -29,8 +29,10 @@ public class CallResult {
     @Override
     public String toString() {
         StringBuilder resultString = new StringBuilder();
-        resultString.append(getErrorMessage())
-                    .append("\n");
+        if (getErrorMessage() != null) {
+            resultString.append(getErrorMessage())
+                        .append("\n");
+        }
         for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
             if (result.getValue()
                       .isSuccess()) {
