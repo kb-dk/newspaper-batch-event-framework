@@ -11,6 +11,8 @@ public class ConfigConstants {
     public static final String DOMS_URL = "doms.url";
     /** The url to the pidgenerator webservice. Only needed for components that creates new doms objects */
     public static final String DOMS_PIDGENERATOR_URL = "doms.pidgenerator.url";
+    /** The Doms collection object which all new objects will belong to */
+    public static final String DOMS_COLLECTION = "doms.collection.pid";
 
     //MFPak
     /** The mfpak postgres connect url, not including username and password */
