@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
@@ -10,7 +8,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>newspaper-batch-event-framework</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>pom</packaging>
 
 
@@ -190,7 +188,7 @@
         <developerConnection>scm:git:git@github.com:statsbiblioteket/newspaper-batch-event-framework
         </developerConnection>
         <url>https://github.com/statsbiblioteket/newspaper-batch-event-framework</url>
-        <tag>HEAD</tag>
+        <tag>newspaper-batch-event-framework-1.2</tag>
     </scm>
 </project>
 
