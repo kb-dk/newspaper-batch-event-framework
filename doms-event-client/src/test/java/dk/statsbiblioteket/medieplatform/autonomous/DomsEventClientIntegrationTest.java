@@ -1,11 +1,16 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
+import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class DomsEventClientIntegrationTest {
 
@@ -69,8 +74,49 @@ public class DomsEventClientIntegrationTest {
             }
         }
         Assert.assertTrue(found);
-
-
     }
+
+    /**
+     * Create a round-trip object with an EVENTS datastream. Create a backup of the datastream and check
+     * that it is actually identical to the original.
+     * @throws Exception
+     */
+    @Test(groups = "integrationTest")
+     public void testBackupEventsForBatch() throws Exception {
+         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
+         Properties props = new Properties();
+         props.load(new FileInputStream(pathToProperties));
+
+         DomsEventClientFactory factory = new DomsEventClientFactory();
+         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
+         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
+         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
+         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+
+         DomsEventClient doms = factory.createDomsEventClient();
+
+         String batchId = "400022025243";
+         Integer roundTripNumber = 1;
+         Date timestamp = new Date(0);
+         String eventID = "Data_Received";
+         String details = "Details here";
+         doms.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
+
+         String backupEvents = doms.backupEventsForBatch(batchId, roundTripNumber);
+         assertTrue(backupEvents.matches("EVENTS_[0-9]{1,}"), "Failed to create backup events datastream. Unexpected name '" + backupEvents + "'");
+         Credentials creds = new Credentials(props.getProperty(ConfigConstants.DOMS_USERNAME), props.getProperty(ConfigConstants.DOMS_PASSWORD));
+         EnhancedFedoraImpl
+                 fedora =
+                 new EnhancedFedoraImpl(creds,
+                         props.getProperty(ConfigConstants.DOMS_URL).replaceFirst("/(objects)?/?$", ""),
+                         props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL),
+                         null);
+         NewspaperIDFormatter formatter = new NewspaperIDFormatter();
+         String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+         String originalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS");
+         String newEvents = fedora.getXMLDatastreamContents(pid, backupEvents);
+         assertEquals(newEvents, originalEvents);
+     }
+
 
 }

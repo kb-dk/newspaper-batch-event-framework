@@ -52,4 +52,14 @@ public interface DomsEventClient {
      * @throws NotFoundException if the batch is not found
      * @throws CommunicationException if communication with doms failed     */
     Batch getBatch(String domsID) throws NotFoundException, CommunicationException;
+
+    /**
+     * Creates a backup of the events datastream for a given batch and round trip.
+     * @param batchId the batch id.
+     * @param roundTripNumber the round trip number.
+     * @return The name of the new datastream containing the backup, or null if there was no event datastream to back up.
+     * @throws CommunicationException if communication with doms failed.
+     */
+    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException;
+
 }

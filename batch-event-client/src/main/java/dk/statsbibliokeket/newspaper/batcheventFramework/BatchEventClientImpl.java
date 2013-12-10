@@ -98,6 +98,11 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
+    public String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
+        return getDomsEventClient().backupEventsForBatch(batchId, roundTripNumber);
+    }
+
+    @Override
     public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
                                           List<String> pastFailedEvents,
                                           List<String> futureEvents) throws CommunicationException {

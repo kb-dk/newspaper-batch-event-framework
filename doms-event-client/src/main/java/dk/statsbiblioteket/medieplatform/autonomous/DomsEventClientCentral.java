@@ -148,6 +148,28 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     }
 
+    @Override
+    public String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
+        String roundTripObjectPid = null;
+        try {
+            roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
+        } catch (BackendInvalidResourceException e) {
+            return null;
+        }
+        try {
+            try {
+                String eventXml = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
+                String backupDatastream = eventsDatastream + "_" + new Date().getTime();
+                fedora.modifyDatastreamByValue(roundTripObjectPid, backupDatastream, eventXml, null, "Premis backup");
+                return backupDatastream;
+            } catch (BackendInvalidResourceException e) {
+                return null;
+            }
+        } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
+            throw new CommunicationException(e);
+        }
+    }
+
     /**
      * Retrieve the corresponding doms pid of the round trip object
      *
