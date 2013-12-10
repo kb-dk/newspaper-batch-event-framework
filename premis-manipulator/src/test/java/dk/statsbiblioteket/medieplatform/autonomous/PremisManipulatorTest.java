@@ -5,12 +5,17 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.xml.bind.JAXBException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
+
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 public class PremisManipulatorTest {
 
@@ -75,5 +80,36 @@ public class PremisManipulatorTest {
             Assert.assertEquals(event.getEventID(),"Data_Received");
         }
 
+    }
+
+    /**
+     * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
+     * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
+     * @throws JAXBException
+     */
+    @Test
+    public void testRemoveEventsAfterFailure() throws JAXBException {
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
+        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
+        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e5", true);
+        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e6", false);
+        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
+        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
+        assertTrue(manipulator.toXML().contains("e7"));
+        manipulator.removeEventsFromFailure();
+        String newXml = manipulator.toXML();
+        assertTrue(newXml.contains("e1"));
+        assertTrue(newXml.contains("e2"));
+        assertFalse(newXml.contains("e3"));
+        assertFalse(newXml.contains("e4"));
+        assertFalse(newXml.contains("e5"));
+        assertFalse(newXml.contains("e6"));
+        assertFalse(newXml.contains("e7"));
+        assertFalse(newXml.contains("e8"));
+        factory.createFromBlob(new ByteArrayInputStream(newXml.getBytes()));
     }
 }

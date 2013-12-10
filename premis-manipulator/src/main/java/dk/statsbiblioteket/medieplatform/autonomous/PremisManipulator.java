@@ -107,7 +107,6 @@ public class PremisManipulator {
             result.add(convert(premisEvent));
         }
         return result;
-
     }
 
     /**
@@ -211,6 +210,33 @@ public class PremisManipulator {
         return this;
 
     }
+
+    /**
+     * Remove all events from the PREMIS blob with date time later-than-or-equal to the earliest failure.
+     */
+    public void removeEventsFromFailure() {
+        List<EventComplexType> premisEvents = premis.getEvent();
+        Date earliestFailure = null;
+        for (EventComplexType premisEvent: premisEvents) {
+            Event event = convert(premisEvent);
+            if (!event.isSuccess()) {
+                if (earliestFailure == null || event.getDate().before(earliestFailure)) {
+                    earliestFailure = event.getDate();
+                }
+            }
+        }
+        List<EventComplexType> eventsToRemove = new ArrayList<EventComplexType>();
+        if (earliestFailure != null) {
+            for (EventComplexType premisEvent: premisEvents) {
+                Event event = convert(premisEvent);
+                if (event.getDate().compareTo(earliestFailure) >= 0) {
+                    eventsToRemove.add(premisEvent);
+                }
+            }
+            premisEvents.removeAll(eventsToRemove);
+        }
+    }
+
 
     /**
      * Returns true, if an event with the same identifier in the same type exists
