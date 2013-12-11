@@ -6,16 +6,20 @@ import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 
 /** Implementation of the DomsEventClient, using the Central Webservice library to communicate with DOMS */
 public class DomsEventClientCentral implements DomsEventClient {
 
+    private static Logger log = LoggerFactory.getLogger(DomsEventClientCentral.class);
 
     private final EnhancedFedora fedora;
     private final IDFormatter idFormatter;
@@ -148,8 +152,14 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     }
 
-    @Override
-    public String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
+    /**
+     * This method creates a timestamped backup of the EVENTS datastream for this round-trip.
+     * @param batchId  the batchId.
+     * @param roundTripNumber  the round-trip number.
+     * @return the name of the new datastream.
+     * @throws CommunicationException if there was a problem communicating with DOMS.
+     */
+    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
         String roundTripObjectPid = null;
         try {
             roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
@@ -158,8 +168,8 @@ public class DomsEventClientCentral implements DomsEventClient {
         }
         try {
             try {
-                String eventXml = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
                 String backupDatastream = eventsDatastream + "_" + new Date().getTime();
+                String eventXml = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
                 fedora.modifyDatastreamByValue(roundTripObjectPid, backupDatastream, eventXml, null, "Premis backup");
                 return backupDatastream;
             } catch (BackendInvalidResourceException e) {
@@ -168,6 +178,58 @@ public class DomsEventClientCentral implements DomsEventClient {
         } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
             throw new CommunicationException(e);
         }
+    }
+
+    @Override
+    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime) throws CommunicationException {
+        int attempts = 0;
+        while (!attemptWorkflowRestart(batchId, roundTripNumber)) {
+            attempts++;
+            if (attempts == maxAttempts) {
+                log.error("Failed to trigger restart of batch round-trip B" + batchId + "-RT" + roundTripNumber +
+                        " after " + maxAttempts + " attempts. Giving up.");
+                return;
+            }
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e) {
+                //no problem
+            }
+        }
+    }
+
+    /**
+     * This method carries out a single attempt to restart the workflow from where it first failed.
+     * @param batchId the batchId.
+     * @param roundTripNumber the round-trip number.
+     * @return true iff the attempt succeeded.
+     * @throws CommunicationException if there was a problem communicating with DOMS.
+     */
+    private boolean attemptWorkflowRestart(String batchId, int roundTripNumber) throws CommunicationException {
+        String roundTripObjectPid = null;
+        try {
+            roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
+        } catch (BackendInvalidResourceException e) {
+            return false;
+        }
+        backupEventsForBatch(batchId, roundTripNumber);
+        PremisManipulator premisObject;
+        try {
+            Date lastModifiedDate = fedora.getObjectProfile(roundTripObjectPid, null).getObjectLastModifiedDate();
+            String premisPreBlob = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
+            premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            premisObject.removeEventsFromFailure();
+            try {
+                fedora.modifyDatastreamByValue(roundTripObjectPid, eventsDatastream, null, null, premisObject.toXML().getBytes(), null,
+                        "Event list trimmed of all events after earliest failure", lastModifiedDate.getTime());
+            } catch (ConcurrentModificationException e) {
+                log.warn("Failed to trigger restart of batch round trip for B" + batchId + "-RT" + roundTripNumber  + " on this attempt.");
+                return false;
+            }
+        } catch (BackendInvalidResourceException|JAXBException |BackendInvalidCredsException |BackendMethodFailedException e) {
+            throw new CommunicationException(e);
+        }
+        return true;
     }
 
     /**

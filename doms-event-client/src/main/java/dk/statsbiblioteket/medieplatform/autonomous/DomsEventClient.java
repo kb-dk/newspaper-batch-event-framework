@@ -54,12 +54,22 @@ public interface DomsEventClient {
     Batch getBatch(String domsID) throws NotFoundException, CommunicationException;
 
     /**
-     * Creates a backup of the events datastream for a given batch and round trip.
-     * @param batchId the batch id.
-     * @param roundTripNumber the round trip number.
-     * @return The name of the new datastream containing the backup, or null if there was no event datastream to back up.
-     * @throws CommunicationException if communication with doms failed.
+     * This method
+     * i) makes a backup of the EVENTS datastream for this batch round trip
+     * ii) reads the EVENTS datastream
+     * iii) removes from the EVENTS datastream all events starting with the earliest failure and
+     * iv) writes the modfied EVENTS datastream back
+     *
+     * It is the job of implementers of this method to ensure that it correctly handles the possibility og concurrent
+     * modification ie. that the datastream may have changed again between being read and being written. (In which case
+     * one should return to step i).
+     *
+     * @param batchId
+     * @param roundTripNumber
+     * @param maxTries the maximum number of attempts.
+     * @param waitTime the time in milliseconds to wait between attempts.
+     * @throws CommunicationException
      */
-    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException;
+    void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException;
 
 }

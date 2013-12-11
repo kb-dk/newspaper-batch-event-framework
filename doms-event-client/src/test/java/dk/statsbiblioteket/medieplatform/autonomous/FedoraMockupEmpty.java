@@ -3,10 +3,12 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
+import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class FedoraMockupEmpty extends AbstractFedoraMockup {
@@ -38,6 +40,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
     }
 
     @Override
+    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum, byte[] contents, List<String> alternativeIdentifiers, String comment, Long lastModifiedDate) throws BackendMethodFailedException, BackendInvalidCredsException, BackendInvalidResourceException, ConcurrentModificationException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public List<String> findObjectFromDCIdentifier(String string) throws
                                                                   BackendInvalidCredsException,
                                                                   BackendMethodFailedException {
@@ -53,6 +60,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                             BackendMethodFailedException,
                                             BackendInvalidResourceException {
         addToLog("Relation " + predicate + " from " + subject + " to " + object + " added");
+    }
+
+    @Override
+    public void addRelations(String pid, String subject, String predicate, List<String> objects, boolean literal, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
