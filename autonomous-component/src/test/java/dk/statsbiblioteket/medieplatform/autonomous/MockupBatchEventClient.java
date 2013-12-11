@@ -36,7 +36,7 @@ public class MockupBatchEventClient implements BatchEventClient {
 
     @Override
     public String createBatchRoundTrip(String batchId, int roundTripNumber) throws CommunicationException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
@@ -66,9 +66,10 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
+
 
     @Override
     public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
