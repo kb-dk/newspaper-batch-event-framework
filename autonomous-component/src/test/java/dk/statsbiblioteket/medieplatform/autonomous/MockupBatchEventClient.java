@@ -2,6 +2,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.List;
 public class MockupBatchEventClient implements BatchEventClient {
 
     List<Batch> batches;
-
 
 
     public List<Batch> getBatches() {
@@ -21,9 +21,10 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
+    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
+                                String eventType, boolean outcome) throws CommunicationException {
         for (Batch batch : batches) {
-            if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber){
+            if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber) {
                 Event event = new Event();
                 event.setDate(timestamp);
                 event.setEventID(eventType);
@@ -42,7 +43,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     @Override
     public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException {
         for (Batch batch : batches) {
-            if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber){
+            if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber) {
                 return batch;
             }
         }
@@ -50,13 +51,9 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> search(String batchID,
-                                  Integer roundTripNumber,
-                                  List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents,
-                                  List<String> futureEvents)
-            throws
-            CommunicationException {
+    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
+                                  List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                            CommunicationException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -66,13 +63,37 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException {
+    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
+                                                       long waitTime) throws CommunicationException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude, List<String> futureEvents) throws CommunicationException {
-        return batches.iterator();
+    public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude,
+                                      List<String> futureEvents) throws CommunicationException {
+        List<Batch> result = new ArrayList<>();
+        for (Batch batch : batches) {
+            boolean included = true;
+            for (Event event : batch.getEventList()) {
+                if (pastEvents != null && !pastEvents.contains(event.getEventID())) {
+                    included = false;
+                }
+            }
+            for (Event event : batch.getEventList()) {
+                if (pastEventsExclude != null && pastEventsExclude.contains(event.getEventID())) {
+                    included = false;
+                }
+            }
+            for (Event event : batch.getEventList()) {
+                if (futureEvents != null && futureEvents.contains(event.getEventID())) {
+                    included = false;
+                }
+            }
+            if (included) {
+                result.add(batch);
+            }
+        }
+        return result.iterator();
     }
 }

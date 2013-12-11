@@ -8,9 +8,11 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,8 +23,7 @@ import java.util.concurrent.TimeUnit;
  * This is the Autonomous Component main class. It should contain all the harnessing stuff that allows a system to work
  * in the autonomous mindset
  */
-public class AutonomousComponent
-        implements Callable<CallResult> {
+public class AutonomousComponent implements Callable<CallResult> {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
@@ -41,16 +42,10 @@ public class AutonomousComponent
     private boolean stopped = false;
 
 
-    public AutonomousComponent(RunnableComponent runnable,
-                               CuratorFramework lockClient,
-                               BatchEventClient batchEventClient,
-                               int simultaneousProcesses,
-                               List<String> pastSuccessfulEvents,
-                               List<String> pastFailedEvents,
-                               List<String> futureEvents,
-                               long timeoutSBOI,
-                               long timeoutBatch,
-                               long workerTimout) {
+    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient,
+                               BatchEventClient batchEventClient, int simultaneousProcesses,
+                               List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                               List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout) {
         this.lockClient = lockClient;
         this.batchEventClient = batchEventClient;
         this.timeoutSBOI = timeoutSBOI;
@@ -87,10 +82,7 @@ public class AutonomousComponent
         }
     }
 
-    protected static boolean acquireQuietly(InterProcessLock lock,
-                                            long timeout)
-            throws
-            LockingException {
+    protected static boolean acquireQuietly(InterProcessLock lock, long timeout) throws LockingException {
         try {
             return lock.acquire(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
@@ -114,8 +106,7 @@ public class AutonomousComponent
      *
      * @return the zookeepr lock path
      */
-    private static String getBatchLockPath(RunnableComponent runnable,
-                                           Batch batch) {
+    private static String getBatchLockPath(RunnableComponent runnable, Batch batch) {
         return "/" + runnable.getComponentName() + "/" + batch.getFullID();
     }
 
@@ -127,8 +118,7 @@ public class AutonomousComponent
      *
      * @return the long value
      */
-    private long parseLong(String propertyValue,
-                           long defaultValue) {
+    private long parseLong(String propertyValue, long defaultValue) {
         try {
             return Long.parseLong(propertyValue);
         } catch (Exception e) {
@@ -157,11 +147,7 @@ public class AutonomousComponent
      * @throws CommunicationException   if communication with SBOI fails
      */
     @Override
-    public CallResult call()
-            throws
-            LockingException,
-            CouldNotGetLockException,
-            CommunicationException {
+    public CallResult call() throws LockingException, CouldNotGetLockException, CommunicationException {
 
         InterProcessLock SBOILock = null;
         CallResult result = new CallResult();
@@ -178,24 +164,24 @@ public class AutonomousComponent
                 log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches =
-                        batchEventClient.getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                Iterator<Batch> batches = batchEventClient.getBatches(
+                        pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
 
                     log.info("Found batch {}", batch.getFullID());
                     //attempt to lock
-                    InterProcessLock batchlock =
-                            new InterProcessSemaphoreMutex(lockClient, getBatchLockPath(runnable, batch));
+                    InterProcessLock batchlock = new InterProcessSemaphoreMutex(
+                            lockClient, getBatchLockPath(runnable, batch));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
                         log.info("Batch {} locked, creating a worker", batch.getFullID());
-                        BatchWorker worker = new BatchWorker(runnable,
-                                                             new ResultCollector(runnable.getComponentName(),
-                                                                                 runnable.getComponentVersion()),
-                                                             batch,
-                                                             batchEventClient);
+                        BatchWorker worker = new BatchWorker(
+                                runnable,
+                                new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion()),
+                                batch,
+                                batchEventClient);
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
                             log.info("We now have sufficient workers, look for no more batches");
@@ -208,11 +194,7 @@ public class AutonomousComponent
                     releaseQuietly(interProcessLock);
                 }
                 throw runtimeException;
-            } finally {
-                log.info("Releasing SBOI lock");
-                releaseQuietly(SBOILock);
             }
-
 
             checkLockServerConnectionState();
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
@@ -242,8 +224,7 @@ public class AutonomousComponent
                     //okay, continue
                 }
                 if (System.currentTimeMillis() - start > workerTimout) {
-                    log.error("Worker timeout exceeded (" + workerTimout+ "ms), shutting down all threads. We still need to wait for them"
-                              + " to terminate, however.");
+                    log.error("Worker timeout exceeded (" + workerTimout + "ms), shutting down all threads. We still need to wait for them" + " to terminate, however.");
                     pool.shutdownNow();
                     for (Future<?> future : futures) {
                         future.cancel(true);
@@ -255,10 +236,46 @@ public class AutonomousComponent
                 result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
             }
         } finally {
-            for (InterProcessLock batchLock : workers.values()) {
-                releaseQuietly(batchLock);
+            try {
+                waitUntilSBOIUpdated(workers);
+            } finally {
+                releaseQuietly(SBOILock);
             }
-            releaseQuietly(SBOILock);
+
+        }
+        return result;
+    }
+
+    private void waitUntilSBOIUpdated(Map<BatchWorker, InterProcessLock> workers) throws CommunicationException {
+        while (true) {
+            Set<Batch> batches = asSet(
+                    batchEventClient.getBatches(
+                            pastSuccessfulEvents, pastFailedEvents, futureEvents));
+            boolean allBatchesAreDone = true;
+            for (Map.Entry<BatchWorker, InterProcessLock> batchWorkerInterProcessLockEntry : workers.entrySet()) {
+                if (!batches.contains(batchWorkerInterProcessLockEntry.getKey().getBatch())) {
+                    releaseQuietly(batchWorkerInterProcessLockEntry.getValue());
+                } else {
+                    allBatchesAreDone = false;
+                }
+            }
+            if (allBatchesAreDone) {
+                break;
+            } else {
+                try {
+                    Thread.sleep(pollTime);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+            }
+        }
+    }
+
+    private Set<Batch> asSet(Iterator<Batch> batches) {
+        HashSet<Batch> result = new HashSet<Batch>();
+        while (batches.hasNext()) {
+            Batch next = batches.next();
+            result.add(next);
         }
         return result;
     }
@@ -270,9 +287,7 @@ public class AutonomousComponent
      *
      * @throws CommunicationException if the connection was lost
      */
-    private void checkLockServerConnectionState()
-            throws
-            CommunicationException {
+    private void checkLockServerConnectionState() throws CommunicationException {
         checkLockServerConnectionState(null);
     }
 
@@ -286,9 +301,7 @@ public class AutonomousComponent
      *
      * @throws CommunicationException if the connection was lost
      */
-    private void checkLockServerConnectionState(ExecutorService pool)
-            throws
-            CommunicationException {
+    private void checkLockServerConnectionState(ExecutorService pool) throws CommunicationException {
         checkStopped(pool);
         while (paused && !stopped) {
             try {
@@ -307,9 +320,7 @@ public class AutonomousComponent
      *
      * @throws CommunicationException if the stopped flag is set
      */
-    private void checkStopped(ExecutorService pool)
-            throws
-            CommunicationException {
+    private void checkStopped(ExecutorService pool) throws CommunicationException {
         if (stopped) {
             if (pool != null) {
                 pool.shutdownNow();
