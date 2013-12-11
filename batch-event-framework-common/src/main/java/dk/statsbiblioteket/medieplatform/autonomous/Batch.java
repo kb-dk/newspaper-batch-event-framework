@@ -87,8 +87,36 @@ public class Batch {
     public String toString() {
         StringBuilder sb = new StringBuilder("Batch: " + getFullID());
         if (eventList != null && !eventList.isEmpty()) {
-             sb.append(", eventList=" + eventList);
+            sb.append(", eventList=" + eventList);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Batch)) {
+            return false;
+        }
+
+        Batch batch = (Batch) o;
+
+        if (!batchID.equals(batch.batchID)) {
+            return false;
+        }
+        if (!roundTripNumber.equals(batch.roundTripNumber)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = batchID.hashCode();
+        result = 31 * result + roundTripNumber.hashCode();
+        return result;
     }
 }
