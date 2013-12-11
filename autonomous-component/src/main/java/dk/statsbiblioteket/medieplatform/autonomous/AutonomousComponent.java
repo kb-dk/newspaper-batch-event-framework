@@ -253,16 +253,27 @@ public class AutonomousComponent implements Callable<CallResult> {
                             pastSuccessfulEvents, pastFailedEvents, futureEvents));
             boolean allBatchesAreDone = true;
             for (Map.Entry<BatchWorker, InterProcessLock> batchWorkerInterProcessLockEntry : workers.entrySet()) {
-                if (!batches.contains(batchWorkerInterProcessLockEntry.getKey().getBatch())) {
-                    releaseQuietly(batchWorkerInterProcessLockEntry.getValue());
+                Batch batch = batchWorkerInterProcessLockEntry.getKey().getBatch();
+                InterProcessLock lock = batchWorkerInterProcessLockEntry.getValue();
+                if (!batches.contains(batch)) {
+                    log.info(
+                            "Batch {} not is no longer available for us, so the SBOI index have updated",
+                            batch.getFullID());
+                    releaseQuietly(lock);
                 } else {
+                    log.info(
+                            "Batch {} is still available for us, so the SBOI index have not yet updated",
+                            batch.getFullID());
                     allBatchesAreDone = false;
+                    break;
                 }
             }
             if (allBatchesAreDone) {
+                log.info("All our batches is no longer available from the SBOI, we can now shut down.");
                 break;
             } else {
                 try {
+                    log.info("Some of our batches have yet to be updated in SBOI, time to sleep.");
                     Thread.sleep(pollTime);
                 } catch (InterruptedException e) {
                     //ignore
@@ -272,7 +283,7 @@ public class AutonomousComponent implements Callable<CallResult> {
     }
 
     private Set<Batch> asSet(Iterator<Batch> batches) {
-        HashSet<Batch> result = new HashSet<Batch>();
+        HashSet<Batch> result = new HashSet<>();
         while (batches.hasNext()) {
             Batch next = batches.next();
             result.add(next);
