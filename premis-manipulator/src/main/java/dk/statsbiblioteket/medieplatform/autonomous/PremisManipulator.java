@@ -212,7 +212,9 @@ public class PremisManipulator {
     }
 
     /**
-     * Remove all events from the PREMIS blob with date time later-than-or-equal to the earliest failure.
+     * Remove all events from the PREMIS blob with date time later-than-or-equal to the earliest failure. This method
+     * does not remove the corresponding agent (if any) from the PREMIS blob so there could be agents left which have
+     * no referrent. There is no reason to believe that this is a problem.
      */
     public void removeEventsFromFailure() {
         List<EventComplexType> premisEvents = premis.getEvent();

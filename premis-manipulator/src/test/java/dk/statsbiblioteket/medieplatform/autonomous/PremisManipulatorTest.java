@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -85,6 +86,7 @@ public class PremisManipulatorTest {
     /**
      * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
      * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
+     * Finally there is an idempotence test that a further call to remove failures has no effect.
      * @throws JAXBException
      */
     @Test
@@ -111,5 +113,8 @@ public class PremisManipulatorTest {
         assertFalse(newXml.contains("e7"));
         assertFalse(newXml.contains("e8"));
         factory.createFromBlob(new ByteArrayInputStream(newXml.getBytes()));
+        manipulator.removeEventsFromFailure();
+        String evenNewerXml = manipulator.toXML();
+        assertEquals(newXml, evenNewerXml);
     }
 }
