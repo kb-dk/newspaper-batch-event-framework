@@ -239,6 +239,9 @@ public class AutonomousComponent implements Callable<CallResult> {
             try {
                 waitUntilSBOIUpdated(workers);
             } finally {
+                for (InterProcessLock interProcessLock : workers.values()) {
+                    releaseQuietly(interProcessLock);
+                }
                 releaseQuietly(SBOILock);
             }
 
@@ -246,6 +249,19 @@ public class AutonomousComponent implements Callable<CallResult> {
         return result;
     }
 
+
+    /**
+     * This method blocks until:
+     * A query to the batchEventClient (SBOI) returns no batches that the supplied workers have worked on.
+     * If this method was not called, any further invocation of the component would start to work on the same
+     * batches as this invocation. This method in effect blocks until the SBOI have been reindexed.
+     * This method uses busy waiting, until we can devise a better waiting scheme. It sleeps for pollTime milliseconds
+     *
+     * @param workers the workers that have worked
+     *
+     * @throws CommunicationException if communication with SBOI failed
+     * @see #pollTime
+     */
     private void waitUntilSBOIUpdated(Map<BatchWorker, InterProcessLock> workers) throws CommunicationException {
         while (true) {
             Set<Batch> batches = asSet(
@@ -256,12 +272,11 @@ public class AutonomousComponent implements Callable<CallResult> {
                 Batch batch = batchWorkerInterProcessLockEntry.getKey().getBatch();
                 InterProcessLock lock = batchWorkerInterProcessLockEntry.getValue();
                 if (!batches.contains(batch)) {
-                    log.info(
+                    log.debug(
                             "Batch {} not is no longer available for us, so the SBOI index have updated",
                             batch.getFullID());
-                    releaseQuietly(lock);
                 } else {
-                    log.info(
+                    log.debug(
                             "Batch {} is still available for us, so the SBOI index have not yet updated",
                             batch.getFullID());
                     allBatchesAreDone = false;
@@ -273,7 +288,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                 break;
             } else {
                 try {
-                    log.info("Some of our batches have yet to be updated in SBOI, time to sleep.");
+                    log.debug("Some of our batches have yet to be updated in SBOI, time to sleep.");
                     Thread.sleep(pollTime);
                 } catch (InterruptedException e) {
                     //ignore
