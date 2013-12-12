@@ -63,9 +63,9 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
-                                                       long waitTime) throws CommunicationException {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
+                                                      long waitTime, String eventId) throws CommunicationException {
+         return 0;
     }
 
 

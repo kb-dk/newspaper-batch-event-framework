@@ -55,21 +55,27 @@ public interface DomsEventClient {
 
     /**
      * This method
-     * i) makes a backup of the EVENTS datastream for this batch round trip
-     * ii) reads the EVENTS datastream
-     * iii) removes from the EVENTS datastream all events starting with the earliest failure and
-     * iv) writes the modfied EVENTS datastream back
+     * i) reads the EVENTS datastream
+     * ii) Calculates the number of events to be removed from the EVENTS datastream all events starting with the
+     * earliest failure or the given eventId
+     * iii) if there are no events to be removed it just returns zero, otherwise it
+     * iv) makes a backup of the EVENTS datastream for this batch round trip
+     * v) writes the modfied EVENTS datastream back to DOMS
      *
-     * It is the job of implementers of this method to ensure that it correctly handles the possibility og concurrent
+     * It is the job of implementers of this method to ensure that it correctly handles the possibility of concurrent
      * modification ie. that the datastream may have changed again between being read and being written. (In which case
      * one should return to step i).
+     *
      *
      * @param batchId
      * @param roundTripNumber
      * @param maxTries the maximum number of attempts.
      * @param waitTime the time in milliseconds to wait between attempts.
+     * @param eventId The eventId of the of the earliest event to be removed, or null if all events after the first
+     *                failure are to be removed.
+     * @return the number of events removed.
      * @throws CommunicationException
      */
-    void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException;
+    int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime, String eventId) throws CommunicationException;
 
 }

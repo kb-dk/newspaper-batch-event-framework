@@ -102,7 +102,7 @@ public class PremisManipulatorTest {
         manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
         manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
         assertTrue(manipulator.toXML().contains("e7"));
-        manipulator.removeEventsFromFailure();
+        manipulator.removeEventsFromFailureOrEvent(null);
         String newXml = manipulator.toXML();
         assertTrue(newXml.contains("e1"));
         assertTrue(newXml.contains("e2"));
@@ -113,8 +113,47 @@ public class PremisManipulatorTest {
         assertFalse(newXml.contains("e7"));
         assertFalse(newXml.contains("e8"));
         factory.createFromBlob(new ByteArrayInputStream(newXml.getBytes()));
-        manipulator.removeEventsFromFailure();
+        manipulator.removeEventsFromFailureOrEvent(null);
         String evenNewerXml = manipulator.toXML();
         assertEquals(newXml, evenNewerXml);
     }
+
+    /**
+     * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
+     * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
+     * Finally there is an idempotence test that a further call to remove failures has no effect.
+     * @throws JAXBException
+     */
+    @Test
+    public void testRemoveEventsAfterNamedEvent() throws JAXBException {
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
+        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
+        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e5", true);
+        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e6", false);
+        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
+        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
+        assertTrue(manipulator.toXML().contains("e7"));
+        int eventsRemoved = manipulator.removeEventsFromFailureOrEvent("e5");
+        assertEquals(eventsRemoved, 4);
+        String newXml = manipulator.toXML();
+        assertTrue(newXml.contains("e1"));
+        assertTrue(newXml.contains("e2"));
+        assertTrue(newXml.contains("e3"));
+        assertTrue(newXml.contains("e4"));
+        assertFalse(newXml.contains("e5"));
+        assertFalse(newXml.contains("e6"));
+        assertFalse(newXml.contains("e7"));
+        assertFalse(newXml.contains("e8"));
+        factory.createFromBlob(new ByteArrayInputStream(newXml.getBytes()));
+        eventsRemoved = manipulator.removeEventsFromFailureOrEvent("e5");
+        assertEquals(eventsRemoved, 0);
+        String evenNewerXml = manipulator.toXML();
+        assertEquals(newXml, evenNewerXml);
+    }
+
+
 }

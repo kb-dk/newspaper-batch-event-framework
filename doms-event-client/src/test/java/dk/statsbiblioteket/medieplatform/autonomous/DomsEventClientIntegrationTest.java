@@ -150,7 +150,7 @@ public class DomsEventClientIntegrationTest {
         doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(600), details, "e6", false);
         doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(700), details, "e7", true);
 
-        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L, null);
 
         Credentials creds = new Credentials(props.getProperty(ConfigConstants.DOMS_USERNAME), props.getProperty(ConfigConstants.DOMS_PASSWORD));
         EnhancedFedoraImpl
@@ -197,7 +197,7 @@ public class DomsEventClientIntegrationTest {
 
         doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(-1000L), details, "e1", false);
 
-        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L, null);
 
         Credentials creds = new Credentials(props.getProperty(ConfigConstants.DOMS_USERNAME), props.getProperty(ConfigConstants.DOMS_PASSWORD));
         EnhancedFedoraImpl
@@ -210,7 +210,7 @@ public class DomsEventClientIntegrationTest {
         String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
         String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
         assertFalse(events.contains("event"), events);
-        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+        doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L, null);
     }
 
 

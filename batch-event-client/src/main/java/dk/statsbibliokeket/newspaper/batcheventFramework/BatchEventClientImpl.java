@@ -98,8 +98,8 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public void triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime) throws CommunicationException {
-        getDomsEventClient().triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxAttempts, waitTime);
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime, String eventId) throws CommunicationException {
+        return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxAttempts, waitTime, null);
     }
 
     @Override

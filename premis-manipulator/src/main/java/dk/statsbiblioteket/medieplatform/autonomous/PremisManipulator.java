@@ -211,13 +211,47 @@ public class PremisManipulator {
 
     }
 
+
     /**
      * Remove all events from the PREMIS blob with date time later-than-or-equal to the earliest failure. This method
      * does not remove the corresponding agent (if any) from the PREMIS blob so there could be agents left which have
      * no referrent. There is no reason to believe that this is a problem.
+     * @param eventId the earliest event to remove. If null, find the earliest failure instead.
+     * @return the number of events removed, or the number which would have been removed if doit=false
      */
-    public void removeEventsFromFailure() {
+    public int removeEventsFromFailureOrEvent(String eventId) {
         List<EventComplexType> premisEvents = premis.getEvent();
+        List<EventComplexType> eventsToRemove = findEventsToRemove(premisEvents, eventId);
+        premisEvents.removeAll(eventsToRemove);
+        return eventsToRemove.size();
+    }
+
+    /**
+     * Find events to remove.
+     * @param premisEvents the complete events list.
+     * @param eventId the earliest event to remove. If null, find the earliest failure instead.
+     * @return the list of events to remove.
+     */
+    private List<EventComplexType> findEventsToRemove(List<EventComplexType> premisEvents, String eventId) {
+        Date earliestEventToRemove = null;
+        if (eventId == null) {
+           earliestEventToRemove = findDateOfEarliestFailure(premisEvents);
+        } else {
+            earliestEventToRemove = findDateOfGivenEvent(premisEvents, eventId);
+        }
+        List<EventComplexType> eventsToRemove = new ArrayList<EventComplexType>();
+        if (earliestEventToRemove != null) {
+            for (EventComplexType premisEvent: premisEvents) {
+                Event event = convert(premisEvent);
+                if (event.getDate().compareTo(earliestEventToRemove) >= 0) {
+                    eventsToRemove.add(premisEvent);
+                }
+            }
+        }
+        return eventsToRemove;
+    }
+
+    private Date findDateOfEarliestFailure(List<EventComplexType> premisEvents) {
         Date earliestFailure = null;
         for (EventComplexType premisEvent: premisEvents) {
             Event event = convert(premisEvent);
@@ -227,16 +261,17 @@ public class PremisManipulator {
                 }
             }
         }
-        List<EventComplexType> eventsToRemove = new ArrayList<EventComplexType>();
-        if (earliestFailure != null) {
-            for (EventComplexType premisEvent: premisEvents) {
-                Event event = convert(premisEvent);
-                if (event.getDate().compareTo(earliestFailure) >= 0) {
-                    eventsToRemove.add(premisEvent);
-                }
+        return earliestFailure;
+    }
+
+    private Date findDateOfGivenEvent(List<EventComplexType> premisEvents, String eventId) {
+        for (EventComplexType premisEvent: premisEvents) {
+            Event event = convert(premisEvent);
+            if (event.getEventID().equals(eventId)) {
+                return event.getDate();
             }
-            premisEvents.removeAll(eventsToRemove);
         }
+        return null;
     }
 
 
