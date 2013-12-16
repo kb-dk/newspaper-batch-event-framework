@@ -17,9 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -158,7 +156,7 @@ public class DomsEventClientCentralTest {
                 DomsEventClientFactory.HAS_PART,
                 DomsEventClientFactory.EVENTS);
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L, null);
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L);
         assertEquals(eventsRemoved, 6);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
@@ -264,8 +262,12 @@ public class DomsEventClientCentralTest {
                 DomsEventClientFactory.HAS_PART,
                 DomsEventClientFactory.EVENTS);
         final int MAX_ATTEMPTS = 10;
-        int eventsRemoved =  doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L, null);
-        assertEquals(eventsRemoved, 0);
+        try {
+            int eventsRemoved =  doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L);
+            fail("Should have thrown a " + CommunicationException.class.getSimpleName());
+        } catch (CommunicationException e) {
+            //expected
+        }
         verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
         verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), any(byte[].class), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
     }

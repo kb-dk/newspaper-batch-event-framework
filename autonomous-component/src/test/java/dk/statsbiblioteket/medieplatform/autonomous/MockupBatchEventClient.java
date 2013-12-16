@@ -54,18 +54,23 @@ public class MockupBatchEventClient implements BatchEventClient {
     public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
                                   List<String> pastFailedEvents, List<String> futureEvents) throws
                                                                                             CommunicationException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Batch getBatch(String domsID) throws CommunicationException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
                                                       long waitTime, String eventId) throws CommunicationException {
          return 0;
+    }
+
+    @Override
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException, NotFoundException {
+        return 0;
     }
 
 

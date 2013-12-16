@@ -160,12 +160,12 @@ public class DomsEventClientCentral implements DomsEventClient {
      * @return the name of the new datastream.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException {
+    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException, NotFoundException {
         String roundTripObjectPid = null;
         try {
             roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
         } catch (BackendInvalidResourceException e) {
-            throw new CommunicationException("Could not get pid for " + getFullBatchId(batchId, roundTripNumber), e);
+            throw new NotFoundException("Did not find " + getFullBatchId(batchId, roundTripNumber), e);
         }
         try {
             try {
@@ -182,15 +182,16 @@ public class DomsEventClientCentral implements DomsEventClient {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime, String eventId) throws CommunicationException {
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime, String eventId) throws CommunicationException, NotFoundException {
         int attempts = 0;
         int eventsRemoved = -1;
         while ((eventsRemoved = attemptWorkflowRestart(batchId, roundTripNumber, eventId)) < 0) {
             attempts++;
             if (attempts == maxAttempts) {
-                log.error("Failed to trigger restart of batch round-trip " + getFullBatchId(batchId, roundTripNumber) +
-                        " after " + maxAttempts + " attempts. Giving up.");
-                return 0;
+                String msg = "Failed to trigger restart of batch round-trip " + getFullBatchId(batchId, roundTripNumber) +
+                        " after " + maxAttempts + " attempts. Giving up.";
+                log.error(msg);
+                throw new CommunicationException(msg);
             }
             try {
                 Thread.sleep(waitTime);
@@ -201,6 +202,11 @@ public class DomsEventClientCentral implements DomsEventClient {
         return eventsRemoved;
     }
 
+    @Override
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException, NotFoundException {
+        return triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxTries, waitTime, null);
+    }
+
     /**
      * This method carries out a single attempt to restart the workflow from where it first failed.
      * @param batchId the batchId.
@@ -209,12 +215,12 @@ public class DomsEventClientCentral implements DomsEventClient {
      * @return the number of events removed or -1 of there was a ConcurrentModificationException thrown.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    private int attemptWorkflowRestart(String batchId, int roundTripNumber, String eventId) throws CommunicationException {
+    private int attemptWorkflowRestart(String batchId, int roundTripNumber, String eventId) throws CommunicationException, NotFoundException {
         String roundTripObjectPid = null;
         try {
             roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
         } catch (BackendInvalidResourceException e) {
-            throw new CommunicationException("Could not find DOMS object for " + getFullBatchId(batchId, roundTripNumber), e);
+            throw new NotFoundException("Could not find DOMS object for " + getFullBatchId(batchId, roundTripNumber), e);
         }
         try {
             Date lastModifiedDate = fedora.getObjectProfile(roundTripObjectPid, null).getObjectLastModifiedDate();
@@ -227,10 +233,11 @@ public class DomsEventClientCentral implements DomsEventClient {
                     fedora.modifyDatastreamByValue(roundTripObjectPid, eventsDatastream, null, null, premisObject.toXML().getBytes("UTF-8"), null,
                             "Event list trimmed of all events after earliest failure", lastModifiedDate.getTime());
                 } catch (ConcurrentModificationException e) {
-                    log.warn("Failed to trigger restart of batch round trip for " + getFullBatchId(batchId, roundTripNumber) + " on this attempt.");
+                    log.warn("Failed to trigger restart of batch round trip for " +
+                            getFullBatchId(batchId, roundTripNumber) + " on this attempt. Another process modified the object concurrently.");
                     return -1;
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException("UTF-8 not supported.", e);
+                    throw new Error("UTF-8 not supported.", e);
                 }
             }
             return eventsRemoved;
