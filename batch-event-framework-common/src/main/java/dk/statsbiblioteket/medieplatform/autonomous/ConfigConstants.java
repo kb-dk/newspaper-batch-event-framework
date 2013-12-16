@@ -101,4 +101,11 @@ public class ConfigConstants {
      */
     public static final String FILES_PER_MAP_TASK = "hadoop.files.per.map.tasks";
 
+
+    /** This property specifies where the dissemination files should be written to. */
+    public static final String DISSEMINATION_FOLDER = "dissemination.files.folder";
+
+    /** This is the path to the kakado executable */
+    public static final String KAKADU_PATH = "kakadu.executable";
+
 }
