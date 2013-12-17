@@ -65,7 +65,7 @@ public class SBOIClientImpl implements SBOIInterface {
             jsonQuery.put("search.document.maxrecords", 10);
 
             String searchResultString;
-            synchronized (summaSearch) {
+            synchronized (summaSearch) {//TODO is this nessesary?
                 searchResultString = summaSearch.directJSON(jsonQuery.toString());
             }
 
@@ -74,7 +74,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
 
             NodeList nodeList = xPath.selectNodeList(
-                    searchResultDOM, "//responsecollection/response/documentresult/record");
+                    searchResultDOM, "/responsecollection/response/documentresult/record");
 
             List<Batch> results = new ArrayList<>(nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); ++i) {
