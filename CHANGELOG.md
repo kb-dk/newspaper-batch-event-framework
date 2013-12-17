@@ -1,4 +1,7 @@
 1.3
+* Autonomous components now will not stop until the SBOI instance have been reindexed and the batches they worked on are no longer eligible.
+* updated to version 1.0.2 of doms client
+* Added a few new config constants that the other components need
 * Added functionality to premis-manipulator and doms-event-client to enable restart of workflow by manipulating the event list for a batch.
 
 1.2
