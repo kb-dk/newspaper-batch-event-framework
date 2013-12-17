@@ -16,10 +16,10 @@ import dk.statsbiblioteket.autonomous.premis.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -43,27 +43,28 @@ public class PremisManipulator {
     //TODO logging in all the methods
     private static Logger log = LoggerFactory.getLogger(PremisManipulator.class);
     private final PremisComplexType premis;
-    private final JAXBContext context;
+    private Marshaller marshaller;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
     private final String type;
     private final IDFormatter idFormat;
 
-    PremisManipulator(String batchID, int roundTripNumber, IDFormatter idFormat, String type) throws JAXBException {
-        premis = new ObjectFactory().createPremisComplexType();
-        premis.setVersion("2.2");
-        this.idFormat = idFormat;
+
+    public PremisManipulator(InputStream premis, IDFormatter format, String type, Marshaller marshaller,
+                             Unmarshaller unmarshaller) throws JAXBException {
+        this.idFormat = format;
         this.type = type;
-        context = JAXBContext.newInstance(ObjectFactory.class);
-        addObjectIfNessesary(premis.getObject(), new Batch(batchID, roundTripNumber).getFullID());
+        this.marshaller = marshaller;
+        this.premis = ((JAXBElement<PremisComplexType>) unmarshaller.unmarshal(premis)).getValue();
     }
 
-
-    PremisManipulator(InputStream premis, IDFormatter idFormat, String type) throws JAXBException {
-        this.idFormat = idFormat;
+    public PremisManipulator(String batchID, int roundTripNumber, IDFormatter format, String type,
+                             Marshaller marshaller) {
+        this.marshaller = marshaller;
+        premis = new ObjectFactory().createPremisComplexType();
+        premis.setVersion("2.2");
+        this.idFormat = format;
         this.type = type;
-        context = JAXBContext.newInstance(ObjectFactory.class);
-        this.premis = ((JAXBElement<PremisComplexType>) context.createUnmarshaller()
-                                                               .unmarshal(premis)).getValue();
+        addObjectIfNessesary(premis.getObject(), new Batch(batchID, roundTripNumber).getFullID());
     }
 
     /**
@@ -88,11 +89,8 @@ public class PremisManipulator {
      * @return the object
      */
     private String getObjectID() {
-        Representation object = (Representation) premis.getObject()
-                                                       .get(0);
-        return object.getObjectIdentifier()
-                     .get(0)
-                     .getObjectIdentifierValue();
+        Representation object = (Representation) premis.getObject().get(0);
+        return object.getObjectIdentifier().get(0).getObjectIdentifierValue();
     }
 
     /**
@@ -126,19 +124,15 @@ public class PremisManipulator {
             //no date is set, then
             log.warn("Premis event {} have no date set", result.getEventID());
         }
-        EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation()
-                                                                                .get(0);
+        EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation().get(0);
         for (JAXBElement<?> jaxbElement : eventOutcomeInformation.getContent()) {
-            if (jaxbElement.getName()
-                           .equals(_EventOutcome_QNAME)) {
-                String value = jaxbElement.getValue()
-                                          .toString();
+            if (jaxbElement.getName().equals(_EventOutcome_QNAME)) {
+                String value = jaxbElement.getValue().toString();
                 if (value.equals("success")) {
                     result.setSuccess(true);
                 }
             }
-            if (jaxbElement.getName()
-                           .equals(_EventOutcomeDetail_QNAME)) {
+            if (jaxbElement.getName().equals(_EventOutcomeDetail_QNAME)) {
                 EventOutcomeDetailComplexType detailBlobs = (EventOutcomeDetailComplexType) jaxbElement.getValue();
                 String details = detailBlobs.getEventOutcomeDetailNote();
                 if (details != null) {
@@ -183,30 +177,24 @@ public class PremisManipulator {
 
         EventOutcomeInformationComplexType outcomeObject = factory.createEventOutcomeInformationComplexType();
         String outcomeString = (outcome ? "success" : "failure");
-        outcomeObject.getContent()
-                     .add(factory.createEventOutcome(outcomeString));
+        outcomeObject.getContent().add(factory.createEventOutcome(outcomeString));
         EventOutcomeDetailComplexType eventOutcomeDetail = factory.createEventOutcomeDetailComplexType();
         eventOutcomeDetail.setEventOutcomeDetailNote(details);
-        outcomeObject.getContent()
-                     .add(factory.createEventOutcomeDetail(eventOutcomeDetail));
+        outcomeObject.getContent().add(factory.createEventOutcomeDetail(eventOutcomeDetail));
 
-        event.getEventOutcomeInformation()
-             .add(outcomeObject);
+        event.getEventOutcomeInformation().add(outcomeObject);
 
         LinkingAgentIdentifierComplexType linkingAgentObject = factory.createLinkingAgentIdentifierComplexType();
         linkingAgentObject.setLinkingAgentIdentifierType(type);
         linkingAgentObject.setLinkingAgentIdentifierValue(agent);
-        event.getLinkingAgentIdentifier()
-             .add(linkingAgentObject);
+        event.getLinkingAgentIdentifier().add(linkingAgentObject);
 
         LinkingObjectIdentifierComplexType linkingObjectObject = factory.createLinkingObjectIdentifierComplexType();
         linkingObjectObject.setLinkingObjectIdentifierType(type);
         linkingObjectObject.setLinkingObjectIdentifierValue(getObjectID());
-        event.getLinkingObjectIdentifier()
-             .add(linkingObjectObject);
+        event.getLinkingObjectIdentifier().add(linkingObjectObject);
 
-        premis.getEvent()
-              .add(event);
+        premis.getEvent().add(event);
         return this;
 
     }
@@ -216,7 +204,9 @@ public class PremisManipulator {
      * Remove all events from the PREMIS blob with date time later-than-or-equal to the earliest failure. This method
      * does not remove the corresponding agent (if any) from the PREMIS blob so there could be agents left which have
      * no referrent. There is no reason to believe that this is a problem.
+     *
      * @param eventId the earliest event to remove. If null, find the earliest failure instead.
+     *
      * @return the number of events removed, or the number which would have been removed if doit=false
      */
     public int removeEventsFromFailureOrEvent(String eventId) {
@@ -228,20 +218,22 @@ public class PremisManipulator {
 
     /**
      * Find events to remove.
+     *
      * @param premisEvents the complete events list.
-     * @param eventId the earliest event to remove. If null, find the earliest failure instead.
+     * @param eventId      the earliest event to remove. If null, find the earliest failure instead.
+     *
      * @return the list of events to remove.
      */
     private List<EventComplexType> findEventsToRemove(List<EventComplexType> premisEvents, String eventId) {
         Date earliestEventToRemove = null;
         if (eventId == null) {
-           earliestEventToRemove = findDateOfEarliestFailure(premisEvents);
+            earliestEventToRemove = findDateOfEarliestFailure(premisEvents);
         } else {
             earliestEventToRemove = findDateOfGivenEvent(premisEvents, eventId);
         }
         List<EventComplexType> eventsToRemove = new ArrayList<EventComplexType>();
         if (earliestEventToRemove != null) {
-            for (EventComplexType premisEvent: premisEvents) {
+            for (EventComplexType premisEvent : premisEvents) {
                 Event event = convert(premisEvent);
                 if (event.getDate().compareTo(earliestEventToRemove) >= 0) {
                     eventsToRemove.add(premisEvent);
@@ -253,7 +245,7 @@ public class PremisManipulator {
 
     private Date findDateOfEarliestFailure(List<EventComplexType> premisEvents) {
         Date earliestFailure = null;
-        for (EventComplexType premisEvent: premisEvents) {
+        for (EventComplexType premisEvent : premisEvents) {
             Event event = convert(premisEvent);
             if (!event.isSuccess()) {
                 if (earliestFailure == null || event.getDate().before(earliestFailure)) {
@@ -265,7 +257,7 @@ public class PremisManipulator {
     }
 
     private Date findDateOfGivenEvent(List<EventComplexType> premisEvents, String eventId) {
-        for (EventComplexType premisEvent: premisEvents) {
+        for (EventComplexType premisEvent : premisEvents) {
             Event event = convert(premisEvent);
             if (event.getEventID().equals(eventId)) {
                 return event.getDate();
@@ -284,11 +276,9 @@ public class PremisManipulator {
      */
     private boolean eventExists(String eventID) {
         for (EventComplexType event : premis.getEvent()) {
-            if (event.getEventIdentifier()
-                     .getEventIdentifierType()
-                     .equals(type) && event.getEventIdentifier()
-                                           .getEventIdentifierValue()
-                                           .equals(eventID)) {
+            if (event.getEventIdentifier().getEventIdentifierType().equals(type) && event.getEventIdentifier()
+                                                                                         .getEventIdentifierValue()
+                                                                                         .equals(eventID)) {
                 return true;
             }
         }
@@ -306,9 +296,6 @@ public class PremisManipulator {
      */
     public String toXML() {
         try {
-            JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             StringWriter writer = new StringWriter();
             marshaller.marshal(new ObjectFactory().createPremis(premis), writer);
             return writer.toString();
@@ -330,8 +317,7 @@ public class PremisManipulator {
             ObjectIdentifierComplexType objectIdentifier = factory.createObjectIdentifierComplexType();
             objectIdentifier.setObjectIdentifierType(type);
             objectIdentifier.setObjectIdentifierValue(fullID);
-            representation.getObjectIdentifier()
-                          .add(objectIdentifier);
+            representation.getObjectIdentifier().add(objectIdentifier);
             objectList.add(representation);
         }
     }
@@ -346,8 +332,7 @@ public class PremisManipulator {
         ObjectFactory factory = new ObjectFactory();
         for (AgentComplexType agentComplexType : agentList) {
             for (AgentIdentifierComplexType agentIdentifierComplexType : agentComplexType.getAgentIdentifier()) {
-                if (agentIdentifierComplexType.getAgentIdentifierValue()
-                                              .equals(agent1)) {
+                if (agentIdentifierComplexType.getAgentIdentifierValue().equals(agent1)) {
                     return;
                 }
             }
@@ -358,8 +343,7 @@ public class PremisManipulator {
         identifier.setAgentIdentifierType(type);
 
         AgentComplexType agentCreated = factory.createAgentComplexType();
-        agentCreated.getAgentIdentifier()
-                    .add(identifier);
+        agentCreated.getAgentIdentifier().add(identifier);
         agentList.add(agentCreated);
     }
 }

@@ -1,13 +1,13 @@
 package dk.statsbibliokeket.newspaper.batcheventFramework;
 
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
+import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
-import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
-import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
+import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * Delegating BatchEventClientImpl
+ *
  * @see SBOIClientImpl
  * @see DomsEventClientFactory
  */
@@ -34,7 +35,8 @@ public class BatchEventClientImpl implements BatchEventClient {
     private SBOIInterface sboiClient;
     private DomsEventClient domsEventClient;
 
-    public BatchEventClientImpl(String summaLocation, String domsUrl, String domsUser, String domsPass, String urlToPidGen) {
+    public BatchEventClientImpl(String summaLocation, String domsUrl, String domsUser, String domsPass,
+                                String urlToPidGen) {
         this.summaLocation = summaLocation;
         this.domsUrl = domsUrl;
         this.domsUser = domsUser;
@@ -43,15 +45,20 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     private SBOIInterface getSboiClient() {
-        if (sboiClient == null){
-            sboiClient = new SBOIClientImpl(summaLocation, new PremisManipulatorFactory(new NewspaperIDFormatter(),
-                                                                         PremisManipulatorFactory.TYPE));
+        try {
+            if (sboiClient == null) {
+                sboiClient = new SBOIClientImpl(
+                        summaLocation,
+                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE));
+            }
+            return sboiClient;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return sboiClient;
     }
 
-    private DomsEventClient getDomsEventClient()  {
-        if (domsEventClient == null){
+    private DomsEventClient getDomsEventClient() {
+        if (domsEventClient == null) {
             DomsEventClientFactory factory = new DomsEventClientFactory();
             factory.setPidGeneratorLocation(urlToPidGen);
             factory.setPassword(domsPass);
@@ -67,7 +74,8 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details, String eventType, boolean outcome) throws CommunicationException {
+    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
+                                String eventType, boolean outcome) throws CommunicationException {
         getDomsEventClient().addEventToBatch(batchId, roundTripNumber, agent, timestamp, details, eventType, outcome);
     }
 
@@ -82,13 +90,9 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> search(String batchID,
-                                  Integer roundTripNumber,
-                                  List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents,
-                                  List<String> futureEvents)
-            throws
-            CommunicationException {
+    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
+                                  List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                            CommunicationException {
         return getSboiClient().search(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 
@@ -98,19 +102,31 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts, long waitTime, String eventId) throws CommunicationException, NotFoundException {
-        return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxAttempts, waitTime, eventId);
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts,
+                                                      long waitTime, String eventId) throws
+                                                                                     CommunicationException,
+                                                                                     NotFoundException {
+        return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(
+                batchId,
+                roundTripNumber,
+                maxAttempts,
+                waitTime,
+                eventId);
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException, NotFoundException {
-        return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxTries, waitTime);
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
+                                                      long waitTime) throws CommunicationException, NotFoundException {
+        return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(
+                batchId,
+                roundTripNumber,
+                maxTries,
+                waitTime);
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
-                                          List<String> pastFailedEvents,
-                                          List<String> futureEvents) throws CommunicationException {
+    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                      List<String> futureEvents) throws CommunicationException {
         return getSboiClient().getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
 
     }
