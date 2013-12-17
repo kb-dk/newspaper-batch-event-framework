@@ -5,11 +5,11 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4-SNAPSHOT</version>
+        <version>1.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>sboi-datasource</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
 
     <build>
         <resources>
@@ -56,18 +56,18 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>process-monitor-datasource-interfaces</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>process-monitor-datasource-tck</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.3-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-client</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
