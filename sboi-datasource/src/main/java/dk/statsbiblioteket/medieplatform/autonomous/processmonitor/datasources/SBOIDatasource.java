@@ -47,11 +47,10 @@ public class SBOIDatasource implements DataSource {
             List<Batch> results = new ArrayList<>();
             while (batches.hasNext()) {
                 Batch next = batches.next();
-                Batch better = getClient().getBatch(next.getBatchID(), next.getRoundTripNumber());
-                results.add(better);
+                results.add(next);
             }
             return stripDetails(results.iterator(), includeDetails);
-        } catch (CommunicationException | NotFoundException e) {
+        } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
         }
 
