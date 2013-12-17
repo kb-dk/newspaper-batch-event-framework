@@ -32,7 +32,7 @@ public class SBOIClientImpl implements SBOIInterface {
     private static final String PREMIS = "premis";
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
     private final PremisManipulatorFactory premisManipulatorFactory;
-    private SearchWS summaSearch;
+    private final SearchWS summaSearch;
 
     public SBOIClientImpl(String summaLocation, PremisManipulatorFactory premisManipulatorFactory) throws
                                                                                                    MalformedURLException {
@@ -64,7 +64,10 @@ public class SBOIClientImpl implements SBOIInterface {
             jsonQuery.put("search.document.startindex", 0);
             jsonQuery.put("search.document.maxrecords", 10);
 
-            String searchResultString = summaSearch.directJSON(jsonQuery.toString());
+            String searchResultString;
+            synchronized (summaSearch) {
+                searchResultString = summaSearch.directJSON(jsonQuery.toString());
+            }
 
             Document searchResultDOM = DOM.stringToDOM(searchResultString);
             XPathSelector xPath = DOM.createXPathSelector();
@@ -101,7 +104,7 @@ public class SBOIClientImpl implements SBOIInterface {
     @Override
     public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         Iterator<Batch> result = search(batchID, roundTripNumber, null, null, null);
-        while (result.hasNext()) {
+        if (result.hasNext()) {
             return result.next();
         }
         throw new NotFoundException("batchid " + batchID + " not found");
