@@ -108,4 +108,6 @@ public class ConfigConstants {
     /** This is the path to the kakado executable */
     public static final String KAKADU_PATH = "kakadu.executable";
 
+    public static final String THREADS_PER_BATCH = "autonomous.component.threadsPerBatch";
+
 }
