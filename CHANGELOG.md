@@ -1,3 +1,6 @@
+1.3
+* Added functionality to premis-manipulator and doms-event-client to enable restart of workflow by manipulating the event list for a batch.
+
 1.2
 * Make iterator correctly traverse the DOMS hierarchy structure
 * Remove hardcoded timeout
