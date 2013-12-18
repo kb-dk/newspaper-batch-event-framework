@@ -110,4 +110,5 @@ public class ConfigConstants {
 
     public static final String THREADS_PER_BATCH = "autonomous.component.threadsPerBatch";
 
+    public static final String HADOOP_SAVER_DATASTREAM = "hadoop.saver.doms.datastream";
 }
