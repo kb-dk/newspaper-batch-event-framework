@@ -45,7 +45,7 @@ public class DomsSaverReducerTest {
                 });
         String batchID = "B400022028241-RT1";
         reduceDriver.getConfiguration().setIfUnset(ConfigConstants.BATCH_ID, batchID);
-        reduceDriver.getConfiguration().setIfUnset(ConfigConstants.HADOOP_SAVER_DATASTREAM, jpylyzer);
+        reduceDriver.getConfiguration().setIfUnset(DomsSaverReducer.HADOOP_SAVER_DATASTREAM, jpylyzer);
         Text key = new Text(batchID + "/testFile");
         reduceDriver.withInput(key, Arrays.asList(new Text("<jpylyzer/>")));
         reduceDriver.withOutput(key, new Text(testPid));

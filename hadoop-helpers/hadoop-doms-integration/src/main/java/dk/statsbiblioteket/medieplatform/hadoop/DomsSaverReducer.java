@@ -25,6 +25,7 @@ import java.util.List;
  */
 public class DomsSaverReducer extends Reducer<Text, Text, Text, Text> {
 
+    public static final String HADOOP_SAVER_DATASTREAM = "hadoop.saver.doms.datastream";
 
     private static Logger log = Logger.getLogger(DomsSaverReducer.class);
     private EnhancedFedora fedora;
@@ -36,7 +37,7 @@ public class DomsSaverReducer extends Reducer<Text, Text, Text, Text> {
         super.setup(context);
         fedora = createFedoraClient(context);
         batchID = context.getConfiguration().get(ConfigConstants.BATCH_ID);
-        datastreamName = context.getConfiguration().get(ConfigConstants.HADOOP_SAVER_DATASTREAM);
+        datastreamName = context.getConfiguration().get(HADOOP_SAVER_DATASTREAM);
     }
 
     /**
