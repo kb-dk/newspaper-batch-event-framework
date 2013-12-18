@@ -20,10 +20,10 @@ import java.util.List;
 /** This class collects the result of a run of a component. */
 public class ResultCollector {
 
-    private static Logger log = org.slf4j
-            .LoggerFactory
-            .getLogger(ResultCollector.class);
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(ResultCollector.class);
     private Result resultStructure;
+
+    private boolean preservable = true;
 
     public ResultCollector(String tool, String version) {
         resultStructure = new ObjectFactory().createResult();
@@ -32,6 +32,14 @@ public class ResultCollector {
         resultStructure.setTool(tool);
         resultStructure.setVersion(version);
         setTimestamp(new Date());
+    }
+
+    public boolean isPreservable() {
+        return preservable;
+    }
+
+    public void setPreservable(boolean preservable) {
+        this.preservable = preservable;
     }
 
     /**
@@ -81,8 +89,7 @@ public class ResultCollector {
                 "from component '{}' " +
                 "with description '{}' " +
                 "and details '{}'", reference, type, component, description, Strings.join(details, "\n"));
-        List<Failure> list = resultStructure.getFailures()
-                                            .getFailure();
+        List<Failure> list = resultStructure.getFailures().getFailure();
         Failure failure = new Failure();
         failure.setFilereference(reference);
         failure.setType(type);
@@ -90,8 +97,7 @@ public class ResultCollector {
         failure.setDescription(description);
         if (details != null && details.length > 0) {
             Details xmlDetails = new Details();
-            xmlDetails.getContent()
-                      .add(Strings.join(Arrays.asList(details), "\n"));
+            xmlDetails.getContent().add(Strings.join(Arrays.asList(details), "\n"));
             failure.setDetails(xmlDetails);
         }
         list.add(failure);
@@ -109,8 +115,7 @@ public class ResultCollector {
         for (Failure failure : getFailures()) {
             ArrayList<String> details = new ArrayList<>();
             if (failure.getDetails() != null) {
-                for (Object content : failure.getDetails()
-                                             .getContent()) {
+                for (Object content : failure.getDetails().getContent()) {
                     details.add(content.toString());
                 }
             }
@@ -120,8 +125,7 @@ public class ResultCollector {
                     failure.getComponent(),
                     failure.getDescription(),
                     details.toArray(new String[details.size()]));
-            if (that.getTimestamp()
-                    .before(this.getTimestamp())) {
+            if (that.getTimestamp().before(this.getTimestamp())) {
                 that.setTimestamp(this.getTimestamp());
             }
 
@@ -136,8 +140,7 @@ public class ResultCollector {
      */
     private List<Failure> getFailures() {
         return Collections.unmodifiableList(
-                resultStructure.getFailures()
-                               .getFailure());
+                resultStructure.getFailures().getFailure());
     }
 
     /** Return the report as xml */
@@ -161,9 +164,7 @@ public class ResultCollector {
      * @return
      */
     public Date getTimestamp() {
-        return resultStructure.getDate()
-                              .toGregorianCalendar()
-                              .getTime();
+        return resultStructure.getDate().toGregorianCalendar().getTime();
     }
 
     /**
@@ -181,8 +182,7 @@ public class ResultCollector {
         c.setTime(date);
         XMLGregorianCalendar date2 = null;
         try {
-            date2 = DatatypeFactory.newInstance()
-                                   .newXMLGregorianCalendar(c);
+            date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
             throw new Error(e);
         }
