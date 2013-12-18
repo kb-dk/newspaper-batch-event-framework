@@ -89,7 +89,7 @@ public abstract class AbstractHadoopRunnableComponent extends AbstractRunnableCo
         fs.mkdirs(inputFile.getParent());
         FSDataOutputStream fileoutStream = fs.create(
                 inputFile);
-        getFileList(batch, fileoutStream);
+        buildFileList(batch, fileoutStream);
         fileoutStream.close();
         return inputFile;
     }
@@ -133,7 +133,7 @@ public abstract class AbstractHadoopRunnableComponent extends AbstractRunnableCo
 
     }
 
-    private void getFileList(Batch batch, OutputStream outputStream) throws IOException, TransformerException {
+    private void buildFileList(Batch batch, OutputStream outputStream) throws IOException, TransformerException {
         InputStream structure;
         try {
             structure = retrieveBatchStructure(batch);
