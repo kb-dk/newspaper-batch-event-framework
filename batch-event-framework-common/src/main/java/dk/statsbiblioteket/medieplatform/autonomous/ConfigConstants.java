@@ -85,6 +85,7 @@ public class ConfigConstants {
      */
     public static final String JOB_FOLDER = "job.folder";
 
+
     /**
      * Path to the (nfs) folder where the data files can be read. Must end with /. Used as a prefix before all the
      * filenames
@@ -105,10 +106,8 @@ public class ConfigConstants {
     /** This property specifies where the dissemination files should be written to. */
     public static final String DISSEMINATION_FOLDER = "dissemination.files.folder";
 
-    /** This is the path to the kakado executable */
-    public static final String KAKADU_PATH = "kakadu.executable";
 
     public static final String THREADS_PER_BATCH = "autonomous.component.threadsPerBatch";
 
-    public static final String HADOOP_SAVER_DATASTREAM = "hadoop.saver.doms.datastream";
+
 }

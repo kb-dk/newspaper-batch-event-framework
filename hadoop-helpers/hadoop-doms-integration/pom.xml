@@ -6,26 +6,13 @@
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
-        <artifactId>newspaper-batch-event-framework</artifactId>
+        <artifactId>hadoop-helpers</artifactId>
         <version>1.4-SNAPSHOT</version>
     </parent>
 
-
-    <artifactId>hadoop-utils</artifactId>
+    <artifactId>hadoop-doms-integration</artifactId>
     <version>1.4-SNAPSHOT</version>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -47,21 +34,11 @@
             <version>1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.mrunit</groupId>
-            <artifactId>mrunit</artifactId>
-            <classifier>hadoop2</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
     </dependencies>
+
 
 </project>

@@ -26,7 +26,7 @@
         <module>batch-event-framework-common</module>
         <module>runnable-compoment</module>
         <module>hadoop-component</module>
-        <module>hadoop-utils</module>
+        <module>hadoop-helpers</module>
     </modules>
     <dependencyManagement>
         <dependencies>
