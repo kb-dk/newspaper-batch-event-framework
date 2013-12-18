@@ -30,7 +30,8 @@ public class SBOIDatasource implements DataSource {
             if (client == null) {
                 client = new SBOIClientImpl(
                         configuration.getSummaLocation(),
-                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE));
+                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE),
+                        null);
             }
             return client;
         } catch (Exception e) {

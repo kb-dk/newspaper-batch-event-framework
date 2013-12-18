@@ -63,13 +63,14 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
-                                                      long waitTime, String eventId) throws CommunicationException {
-         return 0;
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime,
+                                                      String eventId) throws CommunicationException {
+        return 0;
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws CommunicationException, NotFoundException {
+    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
+                                                      long waitTime) throws CommunicationException, NotFoundException {
         return 0;
     }
 
@@ -100,5 +101,11 @@ public class MockupBatchEventClient implements BatchEventClient {
             }
         }
         return result.iterator();
+    }
+
+    @Override
+    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                             List<String> futureEvents) throws CommunicationException {
+        return getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 }

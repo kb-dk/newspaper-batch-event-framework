@@ -164,7 +164,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                 log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = batchEventClient.getBatches(
+                Iterator<Batch> batches = batchEventClient.getTrustedBatches(
                         pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
@@ -236,19 +236,13 @@ public class AutonomousComponent implements Callable<CallResult> {
                 result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
             }
         } finally {
-            try {
-                waitUntilSBOIUpdated(workers);
-            } finally {
-                for (InterProcessLock interProcessLock : workers.values()) {
-                    releaseQuietly(interProcessLock);
-                }
-                releaseQuietly(SBOILock);
+            for (InterProcessLock interProcessLock : workers.values()) {
+                releaseQuietly(interProcessLock);
             }
-
+            releaseQuietly(SBOILock);
         }
         return result;
     }
-
 
     /**
      * This method blocks until:

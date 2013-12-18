@@ -4,6 +4,8 @@ import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
 import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
+import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import dk.statsbiblioteket.util.xml.DOM;
@@ -18,8 +20,10 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /** Implementation of the SBOI interface. Uses soap, json and xml to query the summa instance for batches */
 public class SBOIClientImpl implements SBOIInterface {
@@ -32,11 +36,13 @@ public class SBOIClientImpl implements SBOIInterface {
     private static final String PREMIS = "premis";
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
     private final PremisManipulatorFactory premisManipulatorFactory;
+    private DomsEventClient domsEventClient;
     private final SearchWS summaSearch;
 
-    public SBOIClientImpl(String summaLocation, PremisManipulatorFactory premisManipulatorFactory) throws
-                                                                                                   MalformedURLException {
+    public SBOIClientImpl(String summaLocation, PremisManipulatorFactory premisManipulatorFactory,
+                          DomsEventClient domsEventClient) throws MalformedURLException {
         this.premisManipulatorFactory = premisManipulatorFactory;
+        this.domsEventClient = domsEventClient;
         summaSearch = new SearchWSService(
                 new java.net.URL(summaLocation),
                 new QName("http://statsbiblioteket.dk/summa/search", "SearchWSService")).getSearchWS();
@@ -48,6 +54,48 @@ public class SBOIClientImpl implements SBOIInterface {
                                       List<String> futureEvents) throws CommunicationException {
 
         return search(null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    }
+
+    @Override
+    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                             List<String> futureEvents) throws CommunicationException {
+        Iterator<Batch> sboiBatches = getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        ArrayList<Batch> result = new ArrayList<>();
+        while (sboiBatches.hasNext()) {
+            Batch next = sboiBatches.next();
+            try {
+                Batch instead = domsEventClient.getBatch(next.getBatchID(), next.getRoundTripNumber());
+                if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
+                    result.add(next);
+                }
+            } catch (NotFoundException e) {
+                throw new CommunicationException(e);
+            }
+        }
+        return result.iterator();
+
+    }
+
+    private boolean match(Batch instead, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                          List<String> futureEvents) {
+        Set<String> successEvents = new HashSet<>();
+        Set<String> failEvents = new HashSet<>();
+        for (Event event : instead.getEventList()) {
+            if (event.isSuccess()) {
+                successEvents.add(event.getEventID());
+            } else {
+                failEvents.add(event.getEventID());
+            }
+        }
+        if (successEvents.containsAll(pastSuccessfulEvents) && failEvents.containsAll(pastFailedEvents)) {
+            for (String futureEvent : futureEvents) {
+                if (successEvents.contains(futureEvent) || failEvents.contains(futureEvent)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

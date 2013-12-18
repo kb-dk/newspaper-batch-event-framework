@@ -22,7 +22,7 @@ public class SBOIClientImplTest {
 
         SBOIClientImpl summa = new SBOIClientImpl(
                 props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE));
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), null);
         Iterator<Batch> batches = summa.getBatches(
                 Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
         int count = 0;

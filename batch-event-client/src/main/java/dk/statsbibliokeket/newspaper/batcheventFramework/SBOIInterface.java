@@ -7,52 +7,66 @@ import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * The interface to the Summa Batch Object Index
- */
+/** The interface to the Summa Batch Object Index */
 public interface SBOIInterface {
 
 
     /**
      * Perform a search for batches matching the given criteria
+     *
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param pastFailedEvents Events that the batch must have experienced, but which failed
-     * @param futureEvents Events that the batch must not have experienced
+     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
+     * @param futureEvents         Events that the batch must not have experienced
+     *
      * @return An iterator over the found batches
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException
+     *          if the communication failed
      */
-    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents,
-                                      List<String> pastFailedEvents,
-                                      List<String> futureEvents) throws
-                                                                 CommunicationException;
+    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                      List<String> futureEvents) throws CommunicationException;
+
+    /**
+     * Perform a search for batches matching the given criteria
+     *
+     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
+     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
+     * @param futureEvents         Events that the batch must not have experienced
+     *
+     * @return An iterator over the found batches
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException
+     *          if the communication failed
+     */
+    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                             List<String> futureEvents) throws CommunicationException;
+
 
     /**
      * Retrieve a batch from the summa index
-     * @param batchID the batch id
+     *
+     * @param batchID         the batch id
      * @param roundTripNumber the round trip number
+     *
      * @return the batch if found
      * @throws CommunicationException if the communication failed
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.NotFoundException if the described batch could not be found
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.NotFoundException
+     *                                if the described batch could not be found
      */
-    public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException,
-                                                                          NotFoundException;
+    public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException;
 
     /**
-       * Perform a search for batches matching the given criteria
-       * @param batchID the batch id. Can be null for all batches
-       * @param roundTripNumber the round trip number. Can be null to match all round trips
-       * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-       * @param pastFailedEvents Events that the batch must have experienced, but which failed
-       * @param futureEvents Events that the batch must not have experienced
-       * @return An iterator over the found batches
-       * @throws CommunicationException if the communication failed
-       */
-      public Iterator<Batch> search(String batchID,
-                                     Integer roundTripNumber,
-                                     List<String> pastSuccessfulEvents,
-                                     List<String> pastFailedEvents,
-                                     List<String> futureEvents)
-              throws
-              CommunicationException;
+     * Perform a search for batches matching the given criteria
+     *
+     * @param batchID              the batch id. Can be null for all batches
+     * @param roundTripNumber      the round trip number. Can be null to match all round trips
+     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
+     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
+     * @param futureEvents         Events that the batch must not have experienced
+     *
+     * @return An iterator over the found batches
+     * @throws CommunicationException if the communication failed
+     */
+    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
+                                  List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                            CommunicationException;
 
 }

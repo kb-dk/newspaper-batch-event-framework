@@ -49,7 +49,8 @@ public class BatchEventClientImpl implements BatchEventClient {
             if (sboiClient == null) {
                 sboiClient = new SBOIClientImpl(
                         summaLocation,
-                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE));
+                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE),
+                        getDomsEventClient());
             }
             return sboiClient;
         } catch (Exception e) {
@@ -107,21 +108,14 @@ public class BatchEventClientImpl implements BatchEventClient {
                                                                                      CommunicationException,
                                                                                      NotFoundException {
         return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(
-                batchId,
-                roundTripNumber,
-                maxAttempts,
-                waitTime,
-                eventId);
+                batchId, roundTripNumber, maxAttempts, waitTime, eventId);
     }
 
     @Override
     public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
                                                       long waitTime) throws CommunicationException, NotFoundException {
         return getDomsEventClient().triggerWorkflowRestartFromFirstFailure(
-                batchId,
-                roundTripNumber,
-                maxTries,
-                waitTime);
+                batchId, roundTripNumber, maxTries, waitTime);
     }
 
     @Override
@@ -129,5 +123,11 @@ public class BatchEventClientImpl implements BatchEventClient {
                                       List<String> futureEvents) throws CommunicationException {
         return getSboiClient().getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
 
+    }
+
+    @Override
+    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                             List<String> futureEvents) throws CommunicationException {
+        return getSboiClient().getTrustedBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 }
