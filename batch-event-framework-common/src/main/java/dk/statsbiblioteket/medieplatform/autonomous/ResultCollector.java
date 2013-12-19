@@ -34,10 +34,20 @@ public class ResultCollector {
         setTimestamp(new Date());
     }
 
+    /**
+     * This flag controls whether or not the result collecter contains results that should be preserved. Default
+     * true. If set to false, the result will not be preserved and thus the event will never have happened in
+     * the event framework
+     */
     public boolean isPreservable() {
         return preservable;
     }
 
+    /**
+     * This flag controls whether or not the result collecter contains results that should be preserved. Default
+     * true. If set to false, the result will not be preserved and thus the event will never have happened in
+     * the event framework
+     */
     public void setPreservable(boolean preservable) {
         this.preservable = preservable;
     }

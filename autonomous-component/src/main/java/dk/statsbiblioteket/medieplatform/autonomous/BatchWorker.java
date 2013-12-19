@@ -6,7 +6,8 @@ import java.util.Date;
 
 /**
  * The purpose of this class is the decorate a runnable component with additional behaivour.
- * It ensures that the result of the execution is written back to DOMS as an event.
+ * Unless the component specifically requests it (by settting presevable=false on the result collector) the
+ * result will be written back to DOMS
  */
 public class BatchWorker implements Runnable {
 
