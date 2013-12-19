@@ -131,7 +131,7 @@ public class DomsSaverReducer extends Reducer<Text, Text, Text, Text> {
             throw new RuntimeException("Failed to look up doms object for DC identifier '" + path + "'");
         } else {
             if (hits.size() > 1) {
-                log.warn("Found multipe pids for dc identifier '" + path + "'");
+                log.warn("Found multipe pids for dc identifier '" + path + "', using the first one '" + hits.get(0) + "'");
             }
             return hits.get(0);
         }

@@ -60,9 +60,7 @@ public class ConvertMapper extends Mapper<Text, Text, Text, Text> {
      * @param dataPath the path to the jp2 file
      *
      * @return the path to the converted file
-     * @throws java.io.IOException if the execution of jpylyzer failed in some fashion (not invalid file, if the
-     *                             program
-     *                             returned non-zero returncode)
+     * @throws java.io.IOException if the execution of the tool failed in some fashion
      */
     protected File convert(String dataPath) throws IOException {
 
