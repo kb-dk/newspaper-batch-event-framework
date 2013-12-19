@@ -164,7 +164,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                 log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = batchEventClient.getTrustedBatches(
+                Iterator<Batch> batches = batchEventClient.getCheckedBatches(
                         pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {

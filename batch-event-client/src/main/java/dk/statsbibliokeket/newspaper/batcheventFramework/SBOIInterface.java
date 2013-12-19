@@ -26,7 +26,8 @@ public interface SBOIInterface {
                                       List<String> futureEvents) throws CommunicationException;
 
     /**
-     * Perform a search for batches matching the given criteria
+     * Perform a search for batches matching the given criteria. All results are checked against DOMS
+     * as we do not trust that the SBOI have the most current edition.
      *
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
      * @param pastFailedEvents     Events that the batch must have experienced, but which failed
@@ -36,7 +37,7 @@ public interface SBOIInterface {
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException
      *          if the communication failed
      */
-    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                              List<String> futureEvents) throws CommunicationException;
 
 

@@ -104,7 +104,7 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                              List<String> futureEvents) throws CommunicationException {
         return getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }

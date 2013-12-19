@@ -126,8 +126,8 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                              List<String> futureEvents) throws CommunicationException {
-        return getSboiClient().getTrustedBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        return getSboiClient().getCheckedBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 }

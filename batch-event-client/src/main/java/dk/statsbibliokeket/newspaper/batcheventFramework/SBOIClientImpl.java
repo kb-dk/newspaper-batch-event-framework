@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +58,7 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     @Override
-    public Iterator<Batch> getTrustedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                              List<String> futureEvents) throws CommunicationException {
         Iterator<Batch> sboiBatches = getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
         ArrayList<Batch> result = new ArrayList<>();
@@ -66,7 +67,7 @@ public class SBOIClientImpl implements SBOIInterface {
             try {
                 Batch instead = domsEventClient.getBatch(next.getBatchID(), next.getRoundTripNumber());
                 if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
-                    result.add(next);
+                    result.add(instead);
                 }
             } catch (NotFoundException e) {
                 throw new CommunicationException(e);
@@ -76,26 +77,29 @@ public class SBOIClientImpl implements SBOIInterface {
 
     }
 
-    private boolean match(Batch instead, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    /**
+     * Check that the batch matches the requirements expressed in the three lists
+     *
+     * @param batch                the batch to check
+     * @param pastSuccessfulEvents events that must be success
+     * @param pastFailedEvents     events that must be failed
+     * @param futureEvents         events that must not be there
+     *
+     * @return true if the batch match all requirements
+     */
+    private boolean match(Batch batch, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                           List<String> futureEvents) {
         Set<String> successEvents = new HashSet<>();
         Set<String> failEvents = new HashSet<>();
-        for (Event event : instead.getEventList()) {
+        for (Event event : batch.getEventList()) {
             if (event.isSuccess()) {
                 successEvents.add(event.getEventID());
             } else {
                 failEvents.add(event.getEventID());
             }
         }
-        if (successEvents.containsAll(pastSuccessfulEvents) && failEvents.containsAll(pastFailedEvents)) {
-            for (String futureEvent : futureEvents) {
-                if (successEvents.contains(futureEvent) || failEvents.contains(futureEvent)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return successEvents.containsAll(pastSuccessfulEvents) && failEvents.containsAll(pastFailedEvents) && Collections
+                .disjoint(futureEvents, successEvents) && Collections.disjoint(futureEvents, failEvents);
     }
 
     @Override
