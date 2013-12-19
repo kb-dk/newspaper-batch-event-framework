@@ -9,6 +9,8 @@ public class Batch {
     private Integer roundTripNumber = 1;
     private List<Event> eventList;
 
+    private String domsID;
+
     /** Constructor */
     public Batch() {
     }
@@ -81,6 +83,14 @@ public class Batch {
      */
     public String getFullID() {
         return "B" + batchID + "-RT" + roundTripNumber;
+    }
+
+    public String getDomsID() {
+        return domsID;
+    }
+
+    public void setDomsID(String domsID) {
+        this.domsID = domsID;
     }
 
     @Override

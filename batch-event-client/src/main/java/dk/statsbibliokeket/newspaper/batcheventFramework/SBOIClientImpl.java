@@ -35,6 +35,8 @@ public class SBOIClientImpl implements SBOIInterface {
     private static final String ROUND_TRIP_NO = "round_trip_no";
     private static final String BATCH_ID = "batch_id";
     private static final String PREMIS = "premis";
+    private static final String UUID = "round_trip_uuid";
+
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
     private final PremisManipulatorFactory premisManipulatorFactory;
     private DomsEventClient domsEventClient;
@@ -65,7 +67,7 @@ public class SBOIClientImpl implements SBOIInterface {
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();
             try {
-                Batch instead = domsEventClient.getBatch(next.getBatchID(), next.getRoundTripNumber());
+                Batch instead = domsEventClient.getBatch(next.getDomsID());
                 if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                     result.add(instead);
                 }
@@ -109,7 +111,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
         try {
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", PREMIS);
+            jsonQuery.put("search.document.resultfields", PREMIS + "," + UUID);
             jsonQuery.put(
                     "search.document.query",
                     toQueryString(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents));
@@ -134,7 +136,11 @@ public class SBOIClientImpl implements SBOIInterface {
                 Batch batch = premisManipulatorFactory.createFromBlob(
                         new ByteArrayInputStream(
                                 DOM.selectString(node, "field[@name='" + PREMIS + "']").getBytes())).toBatch();
+
+                String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
+                batch.setDomsID(uuid);
                 results.add(batch);
+
             }
             return results.iterator();
         } catch (Exception e) {

@@ -144,7 +144,9 @@ public class DomsEventClientCentral implements DomsEventClient {
             String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
             PremisManipulator premisObject
                     = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
-            return premisObject.toBatch();
+            Batch batch = premisObject.toBatch();
+            batch.setDomsID(domsId);
+            return batch;
         } catch (BackendInvalidResourceException | BackendMethodFailedException | JAXBException |
                 BackendInvalidCredsException e) {
             throw new CommunicationException(e);
