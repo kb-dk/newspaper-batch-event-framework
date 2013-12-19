@@ -14,8 +14,7 @@ public class TestingRunnableComponent extends AbstractRunnableComponent {
     }
 
     @Override
-    public void doWorkOnBatch(Batch batch,
-                              ResultCollector resultCollector) throws Exception {
+    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

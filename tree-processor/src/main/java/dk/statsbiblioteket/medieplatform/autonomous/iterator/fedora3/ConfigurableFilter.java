@@ -2,15 +2,14 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.fedora3;
 
 import java.util.List;
 
-/**
- * Filter that filters on configurable list of values.
- */
+/** Filter that filters on configurable list of values. */
 public class ConfigurableFilter implements FedoraTreeFilter {
     private final List<String> predicateNames;
     private final List<String> names;
 
     /**
      * Initialise filter with given values
+     *
      * @param attributeNames Names of attributes to include
      * @param predicateNames Names of predicates to include. Not that a unique substring is enough.
      */

@@ -16,7 +16,8 @@ public class NotWorkingProperlyException extends Exception {
         super(cause);
     }
 
-    public NotWorkingProperlyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public NotWorkingProperlyException(String message, Throwable cause, boolean enableSuppression,
+                                       boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

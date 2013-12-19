@@ -8,14 +8,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 
-public class SimpleIteratorForFilesystemsTest
-        extends AbstractTests {
+public class SimpleIteratorForFilesystemsTest extends AbstractTests {
 
     private TreeIterator iterator;
 
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
-        if (iterator == null){
+        if (iterator == null) {
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
             iterator = new SimpleIteratorForFilesystems(file);
@@ -25,14 +24,13 @@ public class SimpleIteratorForFilesystemsTest
     }
 
 
-
     @Test
     public void testIterator() throws Exception {
-        super.testIterator(false,false);
+        super.testIterator(false, false);
     }
 
     @Test
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }

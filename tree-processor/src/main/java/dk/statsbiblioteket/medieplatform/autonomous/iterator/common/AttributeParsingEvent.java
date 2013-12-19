@@ -16,6 +16,7 @@ public abstract class AttributeParsingEvent extends ParsingEvent {
 
     /**
      * Get the corresponding data
+     *
      * @return the data
      * @throws java.io.IOException
      */
@@ -23,6 +24,7 @@ public abstract class AttributeParsingEvent extends ParsingEvent {
 
     /**
      * Returns the checksum of the content or null
+     *
      * @return the checksum
      * @throws IOException if there was a problem retrieving the data
      */

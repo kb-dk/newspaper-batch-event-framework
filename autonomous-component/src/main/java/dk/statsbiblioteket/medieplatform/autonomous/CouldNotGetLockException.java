@@ -1,10 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 
-/**
- The component could not get the lock, and could thus not do work.
- */
-public class CouldNotGetLockException extends Exception{
+/** The component could not get the lock, and could thus not do work. */
+public class CouldNotGetLockException extends Exception {
     public CouldNotGetLockException() {
     }
 
@@ -12,8 +10,7 @@ public class CouldNotGetLockException extends Exception{
         super(message);
     }
 
-    public CouldNotGetLockException(String message,
-                                    Throwable cause) {
+    public CouldNotGetLockException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -21,9 +18,7 @@ public class CouldNotGetLockException extends Exception{
         super(cause);
     }
 
-    public CouldNotGetLockException(String message,
-                                    Throwable cause,
-                                    boolean enableSuppression,
+    public CouldNotGetLockException(String message, Throwable cause, boolean enableSuppression,
                                     boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

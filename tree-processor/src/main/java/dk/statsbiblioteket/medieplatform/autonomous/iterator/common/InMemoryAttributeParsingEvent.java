@@ -16,8 +16,9 @@ public class InMemoryAttributeParsingEvent extends AttributeParsingEvent {
 
     /**
      * Constructur
-     * @param name the event name
-     * @param data the data as a byte array
+     *
+     * @param name     the event name
+     * @param data     the data as a byte array
      * @param checksum the checksum for the data
      */
     public InMemoryAttributeParsingEvent(String name, byte[] data, String checksum) {
@@ -27,16 +28,12 @@ public class InMemoryAttributeParsingEvent extends AttributeParsingEvent {
     }
 
     @Override
-    public InputStream getData()
-            throws
-            IOException {
+    public InputStream getData() throws IOException {
         return new ByteArrayInputStream(data);
     }
 
     @Override
-    public String getChecksum()
-            throws
-            IOException {
+    public String getChecksum() throws IOException {
         return checksum;
     }
 }

@@ -40,7 +40,13 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
     }
 
     @Override
-    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum, byte[] contents, List<String> alternativeIdentifiers, String comment, Long lastModifiedDate) throws BackendMethodFailedException, BackendInvalidCredsException, BackendInvalidResourceException, ConcurrentModificationException {
+    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
+                                        byte[] contents, List<String> alternativeIdentifiers, String comment,
+                                        Long lastModifiedDate) throws
+                                                               BackendMethodFailedException,
+                                                               BackendInvalidCredsException,
+                                                               BackendInvalidResourceException,
+                                                               ConcurrentModificationException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -63,7 +69,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
     }
 
     @Override
-    public void addRelations(String pid, String subject, String predicate, List<String> objects, boolean literal, String comment) throws BackendInvalidCredsException, BackendMethodFailedException, BackendInvalidResourceException {
+    public void addRelations(String pid, String subject, String predicate, List<String> objects, boolean literal,
+                             String comment) throws
+                                             BackendInvalidCredsException,
+                                             BackendMethodFailedException,
+                                             BackendInvalidResourceException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

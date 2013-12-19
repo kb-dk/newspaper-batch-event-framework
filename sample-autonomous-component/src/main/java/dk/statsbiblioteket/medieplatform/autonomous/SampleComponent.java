@@ -28,8 +28,7 @@ public class SampleComponent {
         RunnableComponent component = new SampleRunnableComponent(properties);
 
         CallResult result = AutonomousComponentUtils.startAutonomousComponent(properties, component);
-        System.out
-              .print(result);
+        System.out.print(result);
         System.exit(result.containsFailures());
     }
 }

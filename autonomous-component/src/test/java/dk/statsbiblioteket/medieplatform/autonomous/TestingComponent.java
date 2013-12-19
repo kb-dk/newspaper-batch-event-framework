@@ -3,8 +3,6 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 public class TestingComponent implements RunnableComponent {
 
 
-
-
     @Override
     public String getComponentName() {
         return "TestingComponent";

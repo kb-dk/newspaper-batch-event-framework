@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-public class MockupIteratorSuper extends SampleRunnableComponent{
+public class MockupIteratorSuper extends SampleRunnableComponent {
     /**
      * Constructor matching super. Super requires a properties to be able to initialise the tree iterator, if needed.
      * If you do not need the tree iterator, ignore properties.
@@ -23,7 +23,9 @@ public class MockupIteratorSuper extends SampleRunnableComponent{
 
     /**
      * We override this method to be able to inject our own tree iterator
+     *
      * @param batch the batch to iterate on
+     *
      * @return a tree iterator
      */
     @Override
@@ -31,13 +33,16 @@ public class MockupIteratorSuper extends SampleRunnableComponent{
         File dataDir;
         try {
 
-            dataDir = new File(Thread.currentThread().getContextClassLoader().getResource("badTree/file1.txt").toURI())
-                    .getParentFile();
+            dataDir = new File(
+                    Thread.currentThread()
+                          .getContextClassLoader()
+                          .getResource("badTree/file1.txt")
+                          .toURI()).getParentFile();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Failed to find datafiles",e);
+            throw new RuntimeException("Failed to find datafiles", e);
         }
 
-        return new TransformingIteratorForFileSystems(dataDir, Pattern.quote("-"),".*\\.jp2$",".md5");
+        return new TransformingIteratorForFileSystems(dataDir, Pattern.quote("-"), ".*\\.jp2$", ".md5");
 
     }
 }

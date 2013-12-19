@@ -1,25 +1,23 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers;
 
-import org.apache.commons.io.IOUtils;
-
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Prints the tree to the console. Used for testing purposes.
- */
+/** Prints the tree to the console. Used for testing purposes. */
 public class ConsoleLogger extends DefaultTreeEventHandler {
     private static final String indentString = "..................................................";
     int indentLevel = 0;
 
     /**
      * Prints a begin node and indents a step
-     * @param event    The event to handle
+     *
+     * @param event The event to handle
      */
     @Override
     public void handleNodeBegin(NodeBeginsParsingEvent event) {
@@ -29,7 +27,8 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
 
     /**
      * Prints an end node and unindents a step
-     * @param event    The event to handle
+     *
+     * @param event The event to handle
      */
     @Override
     public void handleNodeEnd(NodeEndParsingEvent event) {
@@ -40,7 +39,8 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
 
     /**
      * Prints an attribute event and its attributes, properly indented
-     * @param event    The event to handle
+     *
+     * @param event The event to handle
      */
     @Override
     public void handleAttribute(AttributeParsingEvent event) {
@@ -58,7 +58,8 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
 
     /**
      * Prints an indented node
-     * @param event    The event to handle
+     *
+     * @param event The event to handle
      */
     private void printIndentNode(ParsingEvent event) {
         System.out.println(getIndentString() + printEvent(event));
@@ -66,7 +67,8 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
 
     /**
      * Prints an indented attribute event
-     * @param attributeString    The event to handle
+     *
+     * @param attributeString The event to handle
      */
     private void printIndentAttribute(String attributeString) {
         System.out.println(getIndentString() + ".." + attributeString);
@@ -79,7 +81,7 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
      */
     private String getIndentString() {
         String s;
-        if (indentLevel > 0){
+        if (indentLevel > 0) {
             s = indentString.substring(0, indentLevel);
         } else {
             s = "";
@@ -89,17 +91,19 @@ public class ConsoleLogger extends DefaultTreeEventHandler {
 
     /**
      * Print the name of an event to a string
-     * @param event    The event to handle
+     *
+     * @param event The event to handle
+     *
      * @return The name of the event as a string
      */
     private String printEvent(ParsingEvent event) {
-        switch (event.getType()){
+        switch (event.getType()) {
             case NodeBegin:
-                return "<"+event.getName()+">";
+                return "<" + event.getName() + ">";
             case NodeEnd:
-                return "</"+event.getName()+">";
+                return "</" + event.getName() + ">";
             case Attribute:
-                return "<"+event.getName()+"/>";
+                return "<" + event.getName() + "/>";
             default:
                 return event.toString();
         }

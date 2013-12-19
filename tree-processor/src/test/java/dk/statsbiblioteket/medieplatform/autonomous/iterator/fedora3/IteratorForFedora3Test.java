@@ -33,8 +33,7 @@ public class IteratorForFedora3Test extends AbstractTests {
 
             Properties properties = new Properties();
             properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
-            System.out
-                  .println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
+            System.out.println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
             Client client = Client.create();
             client.addFilter(
                     new HTTPBasicAuthFilter(

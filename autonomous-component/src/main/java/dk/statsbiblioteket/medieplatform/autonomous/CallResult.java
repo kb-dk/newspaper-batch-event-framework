@@ -30,23 +30,15 @@ public class CallResult {
     public String toString() {
         StringBuilder resultString = new StringBuilder();
         if (getErrorMessage() != null) {
-            resultString.append(getErrorMessage())
-                        .append("\n");
+            resultString.append(getErrorMessage()).append("\n");
         }
         for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
-            if (result.getValue()
-                      .isSuccess()) {
-                resultString.append("Worked on ")
-                            .append(
-                                    result.getKey()
-                                          .getFullID())
-                            .append(" successfully\n");
+            if (result.getValue().isSuccess()) {
+                resultString.append("Worked on ").append(
+                        result.getKey().getFullID()).append(" successfully\n");
             } else {
-                resultString.append("Failed to process ")
-                            .append(
-                                    result.getKey()
-                                          .getFullID())
-                            .append("\n");
+                resultString.append("Failed to process ").append(
+                        result.getKey().getFullID()).append("\n");
             }
 
         }
@@ -65,8 +57,7 @@ public class CallResult {
             return 2;
         }
         for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
-            if (!result.getValue()
-                       .isSuccess()) {
+            if (!result.getValue().isSuccess()) {
                 return 1;
             }
         }

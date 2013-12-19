@@ -194,8 +194,7 @@ public class DomsEventClientCentral implements DomsEventClient {
             attempts++;
             if (attempts == maxAttempts) {
                 String msg = "Failed to trigger restart of batch round-trip " + getFullBatchId(
-                        batchId,
-                        roundTripNumber) +
+                        batchId, roundTripNumber) +
                              " after " + maxAttempts + " attempts. Giving up.";
                 log.error(msg);
                 throw new CommunicationException(msg);
@@ -234,8 +233,7 @@ public class DomsEventClientCentral implements DomsEventClient {
             roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
         } catch (BackendInvalidResourceException e) {
             throw new NotFoundException(
-                    "Could not find DOMS object for " + getFullBatchId(batchId, roundTripNumber),
-                    e);
+                    "Could not find DOMS object for " + getFullBatchId(batchId, roundTripNumber), e);
         }
         try {
             Date lastModifiedDate = fedora.getObjectProfile(roundTripObjectPid, null).getObjectLastModifiedDate();

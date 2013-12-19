@@ -12,6 +12,7 @@ public interface FedoraTreeFilter {
      * in an AttributeParsingEvent. If not, the datastream will be ignored.
      *
      * @param dsid the id of the datastream
+     *
      * @return true if the datastream should be event'ed
      */
     boolean isAttributeDatastream(String dsid);
@@ -22,6 +23,7 @@ public interface FedoraTreeFilter {
      * to find a child. If not, the relation will be ignored
      *
      * @param predicate the full predicate of the relation
+     *
      * @return true if the relation should denote a node in tree
      */
     boolean isChildRel(String predicate);

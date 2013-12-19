@@ -1,8 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-/**
- * Thrown on trouble initialising the system.
- */
+/** Thrown on trouble initialising the system. */
 public class InitialisationException extends RuntimeException {
     public InitialisationException(String message) {
         super(message);

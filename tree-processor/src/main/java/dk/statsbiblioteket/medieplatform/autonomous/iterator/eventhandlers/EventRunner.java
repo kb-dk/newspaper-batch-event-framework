@@ -60,8 +60,7 @@ public class EventRunner {
                             resultCollector.addFailure(
                                     current.getName(),
                                     EXCEPTION,
-                                    handler.getClass()
-                                           .getSimpleName(),
+                                    handler.getClass().getSimpleName(),
                                     UNEXPECTED_ERROR + e.toString(),
                                     Strings.getStackTrace(e));
                         }
@@ -76,8 +75,7 @@ public class EventRunner {
                             resultCollector.addFailure(
                                     current.getName(),
                                     EXCEPTION,
-                                    handler.getClass()
-                                           .getSimpleName(),
+                                    handler.getClass().getSimpleName(),
                                     UNEXPECTED_ERROR + e.toString(),
                                     Strings.getStackTrace(e));
                         }
@@ -92,8 +90,7 @@ public class EventRunner {
                             resultCollector.addFailure(
                                     current.getName(),
                                     EXCEPTION,
-                                    handler.getClass()
-                                           .getSimpleName(),
+                                    handler.getClass().getSimpleName(),
                                     UNEXPECTED_ERROR + e.toString(),
                                     Strings.getStackTrace(e));
                         }
@@ -110,8 +107,7 @@ public class EventRunner {
                 resultCollector.addFailure(
                         current == null ? "UNKNOWN" : current.getName(),
                         EXCEPTION,
-                        handler.getClass()
-                               .getSimpleName(),
+                        handler.getClass().getSimpleName(),
                         UNEXPECTED_ERROR + e.toString(),
                         Strings.getStackTrace(e));
             }

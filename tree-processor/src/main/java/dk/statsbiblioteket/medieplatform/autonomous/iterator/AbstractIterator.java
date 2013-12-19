@@ -54,9 +54,12 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
     /**
      * This iterator iterates over the current node. It lists first all attributes of the current node and then begins
      * iterating over the child nodes. It has the side effect that once it is finished iterating over attributes, it
-     * will create the first delegate (ie first child node to be iterated over). The delegate is set back to null when the
-     * last child has been read. Therefore calls to this method will have the side effect of changing subsequent calls to
+     * will create the first delegate (ie first child node to be iterated over). The delegate is set back to null when
+     * the
+     * last child has been read. Therefore calls to this method will have the side effect of changing subsequent calls
+     * to
      * getDelegate() from null to non-null, and back to null again at various points in the iteration cycle.
+     *
      * @return the next ParsingEvent
      * @throws NoSuchElementException if we are already finished iterating this object.
      */
@@ -114,26 +117,28 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
     /**
      * Utility method to create teh nodeEnds event. A method so that subclasses can override it to return their
      * own specialisations of this event
+     *
      * @return a node ends event
      */
     protected NodeEndParsingEvent createNodeEndsParsingEvent() {
-        if (isDataFile(getIdOfNode())){
+        if (isDataFile(getIdOfNode())) {
             return new DataFileNodeEndsParsingEvent(getIdOfNode());
         }
         return new NodeEndParsingEvent(getIdOfNode());
     }
 
     private boolean isDataFile(String idOfNode) {
-        return Pattern.matches(dataFilePattern,idOfNode);
+        return Pattern.matches(dataFilePattern, idOfNode);
     }
 
     /**
      * Utility method to create the nodeBegins event. A methods so that subclasses can override it to return their own
      * specialisations of this event
+     *
      * @return a node begins event
      */
     protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
-        if (isDataFile(getIdOfNode())){
+        if (isDataFile(getIdOfNode())) {
             return new DataFileNodeBeginsParsingEvent(getIdOfNode());
         }
         return new NodeBeginsParsingEvent(getIdOfNode());
@@ -155,6 +160,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
      * This is a factory method which creates an iterator over all the children of this element. Typically it will
      * just call a constructor defined in an implementation of this class for each child and return an iterator of the
      * resulting objects.
+     *
      * @return the children iterator
      */
     protected abstract Iterator<DelegatingTreeIterator> initializeChildrenIterator();
@@ -162,10 +168,11 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
     /**
      * Get the iterator over attributes of the current element, initializing if needed.
+     *
      * @return the attribute iterator
      */
-    protected synchronized Iterator<T> getAttributeIterator(){
-        if (attributeIterator == null){
+    protected synchronized Iterator<T> getAttributeIterator() {
+        if (attributeIterator == null) {
             try {
                 attributeIterator = initilizeAttributeIterator();
             } catch (IOException e) {
@@ -179,6 +186,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
     /**
      * This is a factory method which creates an iterator over all attributes of this element, for example all files
      * in a directory.
+     *
      * @return
      */
     protected abstract Iterator<T> initilizeAttributeIterator() throws IOException;
@@ -186,8 +194,10 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
     /**
      * Returns an instance of a concrete subclass of AttributeEvent appropriate for this attribute. There could be
      * different kinds of attribute in a given element and these could be identified and given different behaviours.
-     * @param nodeID the identifier of the node that the attribute resides in
+     *
+     * @param nodeID      the identifier of the node that the attribute resides in
      * @param attributeID the identifier of the attribute.
+     *
      * @return an AttributeParsingEvent
      */
     protected abstract AttributeParsingEvent makeAttributeEvent(T nodeID, T attributeID);
@@ -240,9 +250,7 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
     }
 
-    /**
-     * Reset this iterator/node, so that iteration from here will start fresh.
-     */
+    /** Reset this iterator/node, so that iteration from here will start fresh. */
     @Override
     public void reset() {
         delegate = null;

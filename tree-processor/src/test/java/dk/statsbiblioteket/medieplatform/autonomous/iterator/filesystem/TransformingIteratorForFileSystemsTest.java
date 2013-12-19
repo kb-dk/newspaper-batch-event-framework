@@ -15,24 +15,23 @@ public class TransformingIteratorForFileSystemsTest extends AbstractTests {
 
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
-        if (iterator == null){
+        if (iterator == null) {
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new TransformingIteratorForFileSystems(file,"\\.",".*\\.jp2",".md5");
+            iterator = new TransformingIteratorForFileSystems(file, "\\.", ".*\\.jp2", ".md5");
         }
         return iterator;
 
     }
 
 
-
     @Test
     public void testIterator() throws Exception {
-        super.testIterator(true,false);
+        super.testIterator(true, false);
     }
 
     @Test
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }

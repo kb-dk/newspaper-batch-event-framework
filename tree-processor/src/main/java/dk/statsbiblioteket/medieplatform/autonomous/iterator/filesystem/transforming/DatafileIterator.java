@@ -34,16 +34,13 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     @Override
     protected Iterator<File> initilizeAttributeIterator() {
-        return Arrays.asList(id)
-                     .iterator();
+        return Arrays.asList(id).iterator();
     }
 
     @Override
     protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
         return new FileAttributeParsingEvent(
-                toPathID(new File(attributeID, CONTENTS)),
-                attributeID,
-                getChecksumPostfix());
+                toPathID(new File(attributeID, CONTENTS)), attributeID, getChecksumPostfix());
 
     }
 

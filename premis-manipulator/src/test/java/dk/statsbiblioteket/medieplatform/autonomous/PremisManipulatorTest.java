@@ -27,8 +27,8 @@ public class PremisManipulatorTest {
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
-        PremisManipulatorFactory
-                factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
@@ -36,7 +36,7 @@ public class PremisManipulatorTest {
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreComments(true);
         Diff diff = XMLUnit.compareXML(control, test);
-        if ( ! diff.identical()){
+        if (!diff.identical()) {
             System.out.println(diff.toString());
         }
         Assert.assertTrue(diff.similar());
@@ -45,17 +45,18 @@ public class PremisManipulatorTest {
 
     @Test
     public void testAddEvent() throws Exception {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         Date date = new Date(0);
 
-        manipulator = manipulator.addEvent("batch_uploaded_trigger",date,"details here", "Data_Received",true);
+        manipulator = manipulator.addEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
         StringReader test = new StringReader(manipulator.toXML());
         Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreComments(true);
         Diff diff = XMLUnit.compareXML(control, test);
-        if ( ! diff.identical()){
+        if (!diff.identical()) {
             System.out.println(manipulator.toXML());
             System.out.println(diff.toString());
         }
@@ -70,15 +71,16 @@ public class PremisManipulatorTest {
 
     @Test
     public void testGetAsBatch() throws Exception {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
         Batch batch = premisBlob.toBatch();
-        Assert.assertEquals(BATCH_ID,batch.getBatchID());
+        Assert.assertEquals(BATCH_ID, batch.getBatchID());
         List<Event> events = batch.getEventList();
         for (Event event : events) {
             Assert.assertTrue(event.isSuccess());
-            Assert.assertEquals(event.getDetails(),"details here");
-            Assert.assertEquals(event.getEventID(),"Data_Received");
+            Assert.assertEquals(event.getDetails(), "details here");
+            Assert.assertEquals(event.getEventID(), "Data_Received");
         }
 
     }
@@ -87,11 +89,13 @@ public class PremisManipulatorTest {
      * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
      * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
      * Finally there is an idempotence test that a further call to remove failures has no effect.
+     *
      * @throws JAXBException
      */
     @Test
     public void testRemoveEventsAfterFailure() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
@@ -122,11 +126,13 @@ public class PremisManipulatorTest {
      * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
      * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
      * Finally there is an idempotence test that a further call to remove failures has no effect.
+     *
      * @throws JAXBException
      */
     @Test
     public void testRemoveEventsAfterNamedEvent() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);

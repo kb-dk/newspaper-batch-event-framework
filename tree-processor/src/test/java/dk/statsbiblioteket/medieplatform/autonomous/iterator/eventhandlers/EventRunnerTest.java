@@ -15,7 +15,6 @@ import java.util.List;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -114,15 +113,16 @@ public class EventRunnerTest {
         doCallRealMethod().when(treeEventHandlerMock).pushInjectedEvent(injected);
         doCallRealMethod().when(treeEventHandlerMock).popInjectedEvent();
 
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+        doAnswer(
+                new Answer<Object>() {
+                    @Override
+                    public Object answer(InvocationOnMock invocation) throws Throwable {
 
-                InjectingTreeEventHandler that = (InjectingTreeEventHandler) invocation.getMock();
-                that.pushInjectedEvent(injected);
-                return null;
-            }
-        }).when(treeEventHandlerMock).handleAttribute(pageJp2Attribute);
+                        InjectingTreeEventHandler that = (InjectingTreeEventHandler) invocation.getMock();
+                        that.pushInjectedEvent(injected);
+                        return null;
+                    }
+                }).when(treeEventHandlerMock).handleAttribute(pageJp2Attribute);
 
         //Perform test
         EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock);
@@ -131,7 +131,7 @@ public class EventRunnerTest {
 
         //Verify
         verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin);
-        verify(treeEventHandlerMock,times(9)).popInjectedEvent();
+        verify(treeEventHandlerMock, times(9)).popInjectedEvent();
         verify(treeEventHandlerMock).handleNodeBegin(reelNodeBegin);
         verify(treeEventHandlerMock).handleNodeBegin(dateNodeBegin);
         verify(treeEventHandlerMock).handleAttribute(pageJp2Attribute);

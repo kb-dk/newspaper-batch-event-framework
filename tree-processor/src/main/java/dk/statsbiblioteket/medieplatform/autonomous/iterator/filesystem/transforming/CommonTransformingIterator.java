@@ -13,19 +13,15 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /** Common super class for the transforming iterators. */
-public abstract class CommonTransformingIterator
-        extends AbstractIterator<File> {
+public abstract class CommonTransformingIterator extends AbstractIterator<File> {
     private final String groupingChar;
     private final File batchFolder;
     private String checksumPostfix;
 
 
-    protected CommonTransformingIterator(File id,
-                                         File batchFolder,
-                                         String dataFilePattern,
-                                         String checksumPostfix,
+    protected CommonTransformingIterator(File id, File batchFolder, String dataFilePattern, String checksumPostfix,
                                          String groupingChar) {
-        super(id,dataFilePattern);
+        super(id, dataFilePattern);
         this.batchFolder = batchFolder;
         this.checksumPostfix = checksumPostfix;
         this.groupingChar = groupingChar;
@@ -81,8 +77,7 @@ public abstract class CommonTransformingIterator
     }
 
     @Override
-    protected AttributeParsingEvent makeAttributeEvent(File nodeID,
-                                                       File attributeID) {
+    protected AttributeParsingEvent makeAttributeEvent(File nodeID, File attributeID) {
         return new FileAttributeParsingEvent(toPathID(attributeID), attributeID, checksumPostfix);
     }
 
@@ -117,6 +112,6 @@ public abstract class CommonTransformingIterator
     }
 
     public String toPathID(File id) {
-        return id.getAbsolutePath().replaceFirst(Pattern.quote(getBatchFolder().getAbsolutePath()+"/"), "");
+        return id.getAbsolutePath().replaceFirst(Pattern.quote(getBatchFolder().getAbsolutePath() + "/"), "");
     }
 }

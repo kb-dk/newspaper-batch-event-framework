@@ -19,10 +19,7 @@ public class JerseyContentsAttributeParsingEvent extends JerseyAttributeParsingE
 
     public JerseyContentsAttributeParsingEvent(String name, WebResource resource, String pid) {
         super(
-                name,
-                null,
-                resource.path("/datastreams/")
-                        .path(CONTENTS));
+                name, null, resource.path("/datastreams/").path(CONTENTS));
         this.resource = resource;
 
         this.pid = pid;
@@ -39,15 +36,12 @@ public class JerseyContentsAttributeParsingEvent extends JerseyAttributeParsingE
                                             .get(String.class);
 
             // Example of output: <info:fedora/uuid:0aecd996-ca16-4786-ad70-0d930034d767/CONTENTS> <http://doms.statsbiblioteket.dk/relations/default/0/1/#hasChecksum> "hejsa" .
-            String[] splits = relationsShips.trim()
-                                            .split(WHITESPACES);
+            String[] splits = relationsShips.trim().split(WHITESPACES);
             if (splits.length < 3) {
                 //something funky
                 return null;
             }
-            checksum = splits[2].replaceAll("\"", "")
-                                .trim()
-                                .toLowerCase();
+            checksum = splits[2].replaceAll("\"", "").trim().toLowerCase();
             setChecksum(checksum);
         }
         return super.getChecksum();

@@ -2,10 +2,8 @@ package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
 
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.DataSource;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
-import dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources.NotWorkingProperlyException;
 import dk.statsbiblioteket.util.Pair;
 import org.testng.annotations.Test;
 
@@ -21,17 +19,15 @@ public abstract class TCKTestSuite {
 
     public abstract DataSource getDataSource();
 
-    public abstract Pair<String,Integer> getValidBatchID();
+    public abstract Pair<String, Integer> getValidBatchID();
 
-    public abstract Pair<String,Integer> getInvalidBatchID();
+    public abstract Pair<String, Integer> getInvalidBatchID();
 
     public abstract String getValidAndSucessfullEventIDForValidBatch();
 
 
-
     @Test(groups = "integrationTest")
-    public void testGetBatches() throws
-                                 NotWorkingProperlyException {
+    public void testGetBatches() throws NotWorkingProperlyException {
         List<Batch> batches = getDataSource().getBatches(false, null);
         assertTrue(batches.size() > 0, "The datasource have no content");
         boolean validHaveBeenFound = false;
@@ -69,7 +65,8 @@ public abstract class TCKTestSuite {
     @Test(groups = "integrationTest")
     public void testGetInvalidBatch() throws NotWorkingProperlyException {
         try {
-            Batch batch = getDataSource().getBatch(getInvalidBatchID().getLeft(),getInvalidBatchID().getRight(), false);
+            Batch batch = getDataSource().getBatch(
+                    getInvalidBatchID().getLeft(), getInvalidBatchID().getRight(), false);
             assertNotNull(batch, "Do not return null");
             fail("The invalid batch was found");
         } catch (NotFoundException e) {
@@ -81,7 +78,7 @@ public abstract class TCKTestSuite {
     public void testGetValidBatch() throws NotWorkingProperlyException {
         Batch validBatch = null;
         try {
-            validBatch = getDataSource().getBatch(getValidBatchID().getLeft(),getValidBatchID().getRight(), true);
+            validBatch = getDataSource().getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight(), true);
             assertNotNull(validBatch, "Do not return null");
         } catch (NotFoundException e) {
             fail("The valid batch was not found", e);
@@ -103,7 +100,11 @@ public abstract class TCKTestSuite {
 
         Event event = null;
         try {
-            event = getDataSource().getBatchEvent(getValidBatchID().getLeft(),getValidBatchID().getRight(), getValidAndSucessfullEventIDForValidBatch(), true);
+            event = getDataSource().getBatchEvent(
+                    getValidBatchID().getLeft(),
+                    getValidBatchID().getRight(),
+                    getValidAndSucessfullEventIDForValidBatch(),
+                    true);
             assertNotNull(event, "Do not return null");
         } catch (NotFoundException e) {
             fail("The valid batch event was not found", e);

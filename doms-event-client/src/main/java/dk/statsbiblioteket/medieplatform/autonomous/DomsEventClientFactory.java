@@ -1,8 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.medieplatform.autonomous.IDFormatter;
-import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
-import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
@@ -47,25 +44,18 @@ public class DomsEventClientFactory {
      * @throws PIDGeneratorException Failure to communicate with the pid generator
      * @throws MalformedURLException if any of the urls were broken
      */
-    public DomsEventClient createDomsEventClient()
-            throws
-            JAXBException,
-            PIDGeneratorException,
-            MalformedURLException {
+    public DomsEventClient createDomsEventClient() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
-        EnhancedFedoraImpl
-                fedora =
-                new EnhancedFedoraImpl(creds,
-                                       fedoraLocation.replaceFirst("/(objects)?/?$", ""),
-                                       pidGeneratorLocation,
-                                       null);
-        return new DomsEventClientCentral(fedora,
-                                          idFormatter,
-                                          premisIdentifierType,
-                                          batchTemplate,
-                                          roundTripTemplate,
-                                          hasPartRelation,
-                                          eventsDatastream);
+        EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
+                creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null);
+        return new DomsEventClientCentral(
+                fedora,
+                idFormatter,
+                premisIdentifierType,
+                batchTemplate,
+                roundTripTemplate,
+                hasPartRelation,
+                eventsDatastream);
     }
 
     public String getUsername() {
@@ -143,7 +133,9 @@ public class DomsEventClientFactory {
 
     /**
      * Set the premis identifier type. Default
+     *
      * @param premisIdentifierType the type
+     *
      * @see PremisManipulatorFactory#TYPE
      */
     public void setPremisIdentifierType(String premisIdentifierType) {
@@ -156,6 +148,7 @@ public class DomsEventClientFactory {
 
     /**
      * Set the template objects used to generate batch objects. Default  doms:Template_Batch
+     *
      * @param batchTemplate the template
      */
     public void setBatchTemplate(String batchTemplate) {
@@ -168,6 +161,7 @@ public class DomsEventClientFactory {
 
     /**
      * Set the template object used to generate round trip objects. Default doms:Template_RoundTrip
+     *
      * @param roundTripTemplate the template
      */
     public void setRoundTripTemplate(String roundTripTemplate) {
@@ -180,6 +174,7 @@ public class DomsEventClientFactory {
 
     /**
      * The full predicate for the hasPartRelation. Default info:fedora/fedora-system:def/relations-external#hasPart
+     *
      * @param hasPartRelation the relation
      */
     public void setHasPartRelation(String hasPartRelation) {
@@ -192,6 +187,7 @@ public class DomsEventClientFactory {
 
     /**
      * The name of the premis events datastream in the round trip objects. Default EVENTS
+     *
      * @param eventsDatastream EVENTS
      */
     public void setEventsDatastream(String eventsDatastream) {

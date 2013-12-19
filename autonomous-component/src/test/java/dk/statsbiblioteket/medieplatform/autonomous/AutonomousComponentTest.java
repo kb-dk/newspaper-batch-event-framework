@@ -15,16 +15,14 @@ import java.util.List;
 
 public class AutonomousComponentTest {
     private static final String BATCHID = "40005";
-    private static final long DEFAULT_TIMEOUT=3600000;
+    private static final long DEFAULT_TIMEOUT = 3600000;
     private static final int ROUNDTRIPNUMBER = 1;
     TestingServer testingServer;
     AutonomousComponent autonoumous;
     MockupBatchEventClient eventClient;
 
     @BeforeMethod
-    public void setUp()
-            throws
-            Exception {
+    public void setUp() throws Exception {
         testingServer = new TestingServer();
         TestingComponent component = new TestingComponent();
 
@@ -41,13 +39,21 @@ public class AutonomousComponentTest {
 
         eventClient.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
 
-        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(testingServer.getConnectString(),
-                                                                        new ExponentialBackoffRetry(1000, 3));
+        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
+                testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-        autonoumous = new AutonomousComponent(component, lockClient, eventClient, 1,
-                                              Arrays.asList("Data_Received"), null, null,
-                                              DEFAULT_TIMEOUT, DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
+        autonoumous = new AutonomousComponent(
+                component,
+                lockClient,
+                eventClient,
+                1,
+                Arrays.asList("Data_Received"),
+                null,
+                null,
+                DEFAULT_TIMEOUT,
+                DEFAULT_TIMEOUT,
+                DEFAULT_TIMEOUT);
 
     }
 
@@ -60,16 +66,13 @@ public class AutonomousComponentTest {
      * @throws Exception
      */
     @Test
-    public void testPollAndWork()
-            throws
-            Exception {
+    public void testPollAndWork() throws Exception {
 
         Batch batch = eventClient.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
-            if (event.getEventID()
-                     .equals("Data_Archived")) {
+            if (event.getEventID().equals("Data_Archived")) {
                 testEventFound = true;
             }
         }
@@ -81,8 +84,7 @@ public class AutonomousComponentTest {
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {
-            if (event.getEventID()
-                     .equals("Data_Archived")) {
+            if (event.getEventID().equals("Data_Archived")) {
                 testEventFound = true;
             }
         }

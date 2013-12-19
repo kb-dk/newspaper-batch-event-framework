@@ -4,9 +4,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributePar
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 
-/**
- * Abstract tree event handler, with no-op methods
- */
+/** Abstract tree event handler, with no-op methods */
 public abstract class DefaultTreeEventHandler implements TreeEventHandler {
     @Override
     public void handleNodeBegin(NodeBeginsParsingEvent event) {

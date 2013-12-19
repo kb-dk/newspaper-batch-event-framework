@@ -19,16 +19,16 @@ import java.util.List;
  * Iterator for parsing a tree structure backed by a file system. Each iterator represents a node. A node corresponds
  * to a directory.
  */
-public class SimpleIteratorForFilesystems
-        extends AbstractIterator<File> {
+public class SimpleIteratorForFilesystems extends AbstractIterator<File> {
 
 
     /**
      * Construct an iterator rooted at a given directory
+     *
      * @param dir the directory at which to root the iterator.
      */
     public SimpleIteratorForFilesystems(File dir) {
-        super(dir,"");
+        super(dir, "");
     }
 
     @Override
@@ -57,6 +57,7 @@ public class SimpleIteratorForFilesystems
 
     /**
      * The name of the directory is used as the Id of the node.
+     *
      * @return the name of the directory.
      */
     @Override

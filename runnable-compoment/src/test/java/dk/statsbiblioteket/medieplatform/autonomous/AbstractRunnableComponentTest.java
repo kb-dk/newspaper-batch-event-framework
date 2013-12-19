@@ -61,15 +61,12 @@ public class AbstractRunnableComponentTest {
 
     @Test(groups = "integrationTest")
     public void testBatchStructureFromDoms() throws Exception {
-        System.out
-              .println("Testing batch structure storing vs. DOMS");
+        System.out.println("Testing batch structure storing vs. DOMS");
         Properties properties = new Properties(System.getProperties());
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
 
         properties.setProperty(
-                ConfigConstants.ITERATOR_USE_FILESYSTEM,
-                Boolean.FALSE
-                       .toString());
+                ConfigConstants.ITERATOR_USE_FILESYSTEM, Boolean.FALSE.toString());
         TestingRunnableComponent component = new TestingRunnableComponent(properties);
 
 

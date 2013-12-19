@@ -15,7 +15,7 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
 
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
-        if (iterator == null){
+        if (iterator == null) {
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
             File testRoot = new File(rootTestdataDir, "small-test-batch/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
@@ -25,14 +25,13 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
     }
 
 
-
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator(false,false);
+        super.testIterator(false, false);
     }
 
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }

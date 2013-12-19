@@ -25,8 +25,7 @@ public class JerseyContentsAttributeParsingEventTest {
     public void setUp() throws Exception {
         Properties properties = new Properties();
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
-        System.out
-              .println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
+        System.out.println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
         Client client = Client.create();
         client.addFilter(
                 new HTTPBasicAuthFilter(
@@ -34,25 +33,21 @@ public class JerseyContentsAttributeParsingEventTest {
                         properties.getProperty(ConfigConstants.DOMS_PASSWORD)));
 
         WebResource resource = client.resource(properties.getProperty(ConfigConstants.DOMS_URL));
-        objectResource = resource.path("/objects/")
-                                 .path(PID);
+        objectResource = resource.path("/objects/").path(PID);
         try {
             objectResource.delete();
 
         } catch (Exception e) {
             try {
-                objectResource.queryParam("state", "I")
-                              .put();
+                objectResource.queryParam("state", "I").put();
                 objectResource.delete();
             } catch (Exception e2) {
                 //ignore
             }
         }
 
-        objectResource.queryParam("state", "I")
-                      .post();
-        objectResource.queryParam("state", "I")
-                      .put();
+        objectResource.queryParam("state", "I").post();
+        objectResource.queryParam("state", "I").put();
 
 
     }
@@ -76,16 +71,13 @@ public class JerseyContentsAttributeParsingEventTest {
                               "subject",
                               "info:fedora/" + "contentTest:1" + "/" + JerseyContentsAttributeParsingEvent.CONTENTS)
                       .queryParam(
-                              "predicate",
-                              URLEncoder.encode(JerseyContentsAttributeParsingEvent.HAS_CHECKSUM, "UTF-8"))
+                              "predicate", URLEncoder.encode(JerseyContentsAttributeParsingEvent.HAS_CHECKSUM, "UTF-8"))
                       .queryParam("object", "checksum")
                       .queryParam("isLiteral", "true")
                       .post();
 
         AttributeParsingEvent attribute = new JerseyContentsAttributeParsingEvent(
-                "testContentName",
-                objectResource,
-                PID);
+                "testContentName", objectResource, PID);
 
         assertEquals(attribute.getChecksum(), "checksum");
 

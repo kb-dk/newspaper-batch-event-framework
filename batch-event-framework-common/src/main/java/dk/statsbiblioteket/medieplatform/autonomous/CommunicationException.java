@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-public class CommunicationException extends Exception{
+public class CommunicationException extends Exception {
     public CommunicationException() {
     }
 
@@ -16,7 +16,8 @@ public class CommunicationException extends Exception{
         super(cause);
     }
 
-    public CommunicationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public CommunicationException(String message, Throwable cause, boolean enableSuppression,
+                                  boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

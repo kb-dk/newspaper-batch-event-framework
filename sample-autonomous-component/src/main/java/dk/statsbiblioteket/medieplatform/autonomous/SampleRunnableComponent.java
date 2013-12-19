@@ -14,14 +14,14 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
     private static Logger log = LoggerFactory.getLogger(SampleRunnableComponent.class);
 
 
-
-
     /**
      * Constructor matching super. Super requires a properties to be able to initialise the tree iterator, if needed.
      * If you do not need the tree iterator, ignore properties.
      *
      * You can use properties for your own stuff as well
+     *
      * @param properties properties
+     *
      * @see #getProperties()
      */
     public SampleRunnableComponent(Properties properties) {
@@ -36,10 +36,7 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
     }
 
     @Override
-    public void doWorkOnBatch(Batch batch,
-                              ResultCollector resultCollector)
-            throws
-            Exception {
+    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
         //This is the working method of the component
 
         //IT REALLY MUST BE THREAD SAFE. Multiple threads can invoke this concurrently. Do not use instance variables!
@@ -74,20 +71,25 @@ public class SampleRunnableComponent extends AbstractRunnableComponent {
 
                     //Check that the checksum is readable.
                     String checksum = attributeEvent.getChecksum();
-                    if (checksum == null){
+                    if (checksum == null) {
                         //If there is no checksum, report a failure.
-                        resultCollector
-                                .addFailure(attributeEvent.getName(), "filestructure", getClass().getSimpleName(),
-                                            "Missing checksum");
+                        resultCollector.addFailure(
+                                attributeEvent.getName(),
+                                "filestructure",
+                                getClass().getSimpleName(),
+                                "Missing checksum");
                     }
                     break;
                 }
             }
 
         }
-        if (numberOfFiles < 5){
-            resultCollector.addFailure(batch.getFullID(), "filestructure", getClass().getSimpleName(),
-                                       "There are to few files in the batch");
+        if (numberOfFiles < 5) {
+            resultCollector.addFailure(
+                    batch.getFullID(),
+                    "filestructure",
+                    getClass().getSimpleName(),
+                    "There are to few files in the batch");
         }
         //And finally set the timestamp of the execution.
         resultCollector.setTimestamp(new Date());

@@ -95,12 +95,9 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
             @Override
             public boolean accept(File file) {
                 boolean isFile = file.isFile();
-                boolean isNotChecksum = !file.getName()
-                                             .endsWith(getChecksumPostfix());
-                boolean isNotTransferComplete = !file.getName()
-                                                     .equals(TRANSFER_COMPLETE);
-                boolean isNotTransfer_acknowledged = !file.getName()
-                                                          .equals(TRANSFER_ACKNOWLEDGED);
+                boolean isNotChecksum = !file.getName().endsWith(getChecksumPostfix());
+                boolean isNotTransferComplete = !file.getName().equals(TRANSFER_COMPLETE);
+                boolean isNotTransfer_acknowledged = !file.getName().equals(TRANSFER_ACKNOWLEDGED);
                 return isFile && isNotChecksum && isNotTransferComplete && isNotTransfer_acknowledged;
             }
         }, null);

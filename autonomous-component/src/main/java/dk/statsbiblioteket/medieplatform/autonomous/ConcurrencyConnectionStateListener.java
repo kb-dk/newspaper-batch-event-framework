@@ -13,9 +13,8 @@ import java.util.List;
  * as long as we maintain a connection to the lock server.
  * When the connection is suspended, execution should be paused. When the connection is lost, all
  * execution should stop, as we cannot ensure that the batches are locked anymore.
- *
  */
-public class ConcurrencyConnectionStateListener implements ConnectionStateListener{
+public class ConcurrencyConnectionStateListener implements ConnectionStateListener {
     private static Logger log = org.slf4j.LoggerFactory.getLogger(ConcurrencyConnectionStateListener.class);
 
     private AutonomousComponent autonomousComponent;
@@ -23,6 +22,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
 
     /**
      * Constructs a new state listener
+     *
      * @param autonomousComponent the autonomous component it listens for
      */
     public ConcurrencyConnectionStateListener(AutonomousComponent autonomousComponent) {
@@ -31,7 +31,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
 
     @Override
     public void stateChanged(CuratorFramework client, ConnectionState newState) {
-        switch (newState){
+        switch (newState) {
             case SUSPENDED:
                 log.error("Connection suspended");
                 autonomousComponent.setPaused(true);
@@ -43,7 +43,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
                 stopWorkers();
                 break;
             default:
-                log.error("Connection event: %",newState.name());
+                log.error("Connection event: %", newState.name());
                 autonomousComponent.setPaused(false);
                 unpauseWorkers();
                 break;
@@ -51,27 +51,21 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
     }
 
 
-    /**
-     * Unpause all workers
-     */
+    /** Unpause all workers */
     private void unpauseWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setPause(false);
         }
     }
 
-    /**
-     * Pause all workers
-     */
+    /** Pause all workers */
     private void pauseWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setPause(true);
         }
     }
 
-    /**
-     * Stop all workers
-     */
+    /** Stop all workers */
     private void stopWorkers() {
         for (BatchWorker batchWorker : batchWorkerList) {
             batchWorker.setStop(true);
@@ -80,6 +74,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
 
     /**
      * Add a batch worker to the list of executions to stop or suspend
+     *
      * @param batchWorker the batch worker
      */
     public void add(BatchWorker batchWorker) {

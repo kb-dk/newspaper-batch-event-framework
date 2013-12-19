@@ -17,24 +17,23 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
 
     @Override
     public TreeIterator getIterator() throws URISyntaxException {
-        if (iterator == null){
+        if (iterator == null) {
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
             File testRoot = new File(rootTestdataDir, "small-test-batch/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
-            iterator = new TransformingIteratorForFileSystems(testRoot,"\\.",".*\\.jp2",".md5");
+            iterator = new TransformingIteratorForFileSystems(testRoot, "\\.", ".*\\.jp2", ".md5");
         }
         return iterator;
     }
 
 
-
     @Test(groups = "integrationTest")
     public void testIterator() throws Exception {
-        super.testIterator(true,false);
+        super.testIterator(true, false);
     }
 
     @Test(groups = "integrationTest")
     public void testIteratorWithSkipping() throws Exception {
-        super.testIteratorWithSkipping(false,false);
+        super.testIteratorWithSkipping(false, false);
     }
 }

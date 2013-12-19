@@ -95,10 +95,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      */
     private String getNameFromId(String id) {
         WebResource resource = client.resource(restUrl);
-        String dcContent = resource.path(id)
-                                   .path("/datastreams/DC/content")
-                                   .queryParam(FORMAT, XML)
-                                   .get(String.class);
+        String dcContent = resource.path(id).path("/datastreams/DC/content").queryParam(FORMAT, XML).get(String.class);
         NodeList nodeList;
         try {
             nodeList = (NodeList) dcIdentifierXpath.evaluate(
@@ -107,8 +104,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
             throw new RuntimeException("Invalid XPath. This is a programming error.", e);
         }
         for (int i = 0; i < nodeList.getLength(); i++) {
-            String textContent = nodeList.item(i)
-                                         .getTextContent();
+            String textContent = nodeList.item(i).getTextContent();
             if (textContent.startsWith("path:")) {
                 return textContent.substring("path:".length());
             }
@@ -134,8 +130,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         }
         ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
-            String dsid = nodeList.item(i)
-                                  .getTextContent();
+            String dsid = nodeList.item(i).getTextContent();
             if (filter.isAttributeDatastream(dsid)) {
                 result.add(dsid);
             }
@@ -148,10 +143,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected Iterator<DelegatingTreeIterator> initializeChildrenIterator() {
         WebResource resource = client.resource(restUrl);
         //remember to not urlEncode the id here... Stupid fedora
-        String relationsShips = resource.path(id)
-                                        .path("relationships")
-                                        .queryParam(FORMAT, NTRIPLES)
-                                        .get(String.class);
+        String relationsShips = resource.path(id).path("relationships").queryParam(FORMAT, NTRIPLES).get(String.class);
         List<String> children = parseRelationsToList(relationsShips);
         List<DelegatingTreeIterator> result = new ArrayList<>(children.size());
         for (String child : children) {
@@ -202,10 +194,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     @Override
     protected Iterator<String> initilizeAttributeIterator() {
         WebResource resource = client.resource(restUrl);
-        String datastreamXml = resource.path(id)
-                                       .path("datastreams")
-                                       .queryParam(FORMAT, XML)
-                                       .get(String.class);
+        String datastreamXml = resource.path(id).path("datastreams").queryParam(FORMAT, XML).get(String.class);
 
         return parseDatastreamsFromXml(datastreamXml).iterator();
     }
@@ -223,10 +212,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     protected AttributeParsingEvent makeAttributeEvent(String nodeID, String attributeID) {
         if (attributeID.equals(JerseyContentsAttributeParsingEvent.CONTENTS)) {
             return new JerseyContentsAttributeParsingEvent(
-                    name + "/" + attributeID.toLowerCase(),
-                    client.resource(restUrl)
-                          .path(nodeID),
-                    nodeID);
+                    name + "/" + attributeID.toLowerCase(), client.resource(restUrl).path(nodeID), nodeID);
         } else {
             String response = client.resource(restUrl)
                                     .path(nodeID)
@@ -246,12 +232,7 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
                 throw new RuntimeException("Invalid XPath. This is a programming error.", e);
             }
             return new JerseyAttributeParsingEvent(
-                    name,
-                    checksum,
-                    client.resource(restUrl)
-                          .path(nodeID)
-                          .path("/datastreams/")
-                          .path(attributeID));
+                    name, checksum, client.resource(restUrl).path(nodeID).path("/datastreams/").path(attributeID));
         }
     }
 

@@ -1,20 +1,18 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import com.netflix.curator.framework.CuratorFramework;
+import com.netflix.curator.framework.CuratorFrameworkFactory;
+import com.netflix.curator.retry.ExponentialBackoffRetry;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
+import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.CuratorFrameworkFactory;
-import com.netflix.curator.retry.ExponentialBackoffRetry;
-
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 
 public class AutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(AutonomousComponentUtils.class);
@@ -36,15 +34,16 @@ public class AutonomousComponentUtils {
      *         domsPass: string: password when writing events to the doms batch objects
      *         pidGenerator: String: url to the pidgenerator service
      *         maxThreads: Integer: The number of batches to work on concurrently. Default 1
-     *         maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads. Default one hour
-     *         pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have experienced successfully in order to be eligble to be worked on by this component
-     *         pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have experienced without success in order to be eligble to be worked on by this component
-     *         futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have experienced in order to be eligble to be worked on by this component
-     *
-     *
+     *         maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads.
+     *         Default one hour
+     *         pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
+     *         experienced successfully in order to be eligble to be worked on by this component
+     *         pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
+     *         experienced without success in order to be eligble to be worked on by this component
+     *         futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
+     *         experienced in order to be eligble to be worked on by this component
      */
-    public static CallResult startAutonomousComponent(Properties properties,
-                                                                RunnableComponent component) {
+    public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component) {
         //Make a client for the lock framework, and start it
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
                 properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL),
@@ -61,15 +60,17 @@ public class AutonomousComponentUtils {
 
 
         //This is the number of batches that will be worked on in parallel per invocation
-        int simultaneousProcesses = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_MAXTHREADS, "1"));
+        int simultaneousProcesses = Integer.parseInt(
+                properties.getProperty(
+                        ConfigConstants.AUTONOMOUS_MAXTHREADS, "1"));
         //This is the timeout when attempting to lock SBOI
         long timeoutWaitingToLockSBOI = 5000l;
         //This is the timeout when attempting to lock a batch before working on it
         long timeoutWaitingToLockBatch = 2000l;
         //After this time, the worker thread will be terminated, even if not complete
-        long maxRunTimeForWorker = Long.parseLong(properties.getProperty(
-                ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l+""));
-
+        long maxRunTimeForWorker = Long.parseLong(
+                properties.getProperty(
+                        ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l + ""));
 
 
         //Use all the above to make the autonomous component
@@ -96,8 +97,7 @@ public class AutonomousComponentUtils {
             return new CallResult("Could not get lock on SBOI");
         } catch (LockingException e) {
             System.err.println(
-                    "Failed to communicate with the locking server. Check that the locking server is running and "
-                    + "network connectivity");
+                    "Failed to communicate with the locking server. Check that the locking server is running and " + "network connectivity");
             log.error("Failed to communicate with zookeeper", e);
             return new CallResult("Failed to communicate with zookeeper");
         } catch (CommunicationException e) {
@@ -137,13 +137,9 @@ public class AutonomousComponentUtils {
      * @return as a properties
      * @throws java.io.IOException if the properties file could not be read
      */
-    public static Properties parseArgs(String[] args)
-            throws
-            IOException {
+    public static Properties parseArgs(String[] args) throws IOException {
         Properties properties = new Properties(System.getProperties());
-        for (int i = 0;
-             i < args.length;
-             i++) {
+        for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.equals("-c")) {
                 String configFile = args[i + 1];

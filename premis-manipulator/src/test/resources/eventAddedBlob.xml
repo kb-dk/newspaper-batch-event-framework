@@ -1,4 +1,4 @@
-<premis version="2.2" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns="info:lc/xmlns/premis-v2">
+<premis version="2.2" xmlns="info:lc/xmlns/premis-v2">
     <object xsi:type="representation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <objectIdentifier>
             <objectIdentifierType>Newspaper_digitisation_project</objectIdentifierType>
@@ -13,7 +13,8 @@
         <eventType>Data_Received</eventType>
         <eventDateTime>1970-01-01T01:00:00.000+0100</eventDateTime>
         <eventOutcomeInformation>
-            <eventOutcome>success</eventOutcome><!--or failure-->
+            <eventOutcome>success</eventOutcome>
+            <!--or failure-->
             <eventOutcomeDetail>
                 <eventOutcomeDetailNote>details here</eventOutcomeDetailNote>
             </eventOutcomeDetail>

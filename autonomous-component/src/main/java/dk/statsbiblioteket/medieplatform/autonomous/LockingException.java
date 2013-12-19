@@ -1,8 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-/**
- * General exception thrown when the locking framework fails
- */
+/** General exception thrown when the locking framework fails */
 public class LockingException extends Exception {
     public LockingException() {
     }
@@ -11,8 +9,7 @@ public class LockingException extends Exception {
         super(message);
     }
 
-    public LockingException(String message,
-                            Throwable cause) {
+    public LockingException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -20,10 +17,7 @@ public class LockingException extends Exception {
         super(cause);
     }
 
-    public LockingException(String message,
-                            Throwable cause,
-                            boolean enableSuppression,
-                            boolean writableStackTrace) {
+    public LockingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

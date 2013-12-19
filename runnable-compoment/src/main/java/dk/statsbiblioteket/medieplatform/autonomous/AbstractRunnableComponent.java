@@ -105,11 +105,9 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
                     pid, client, properties.getProperty(ConfigConstants.DOMS_URL), new ConfigurableFilter(
                     Arrays.asList(
                             properties.getProperty(
-                                    ConfigConstants.ITERATOR_DOMS_ATTRIBUTENAMES)
-                                      .split(",")), Arrays.asList(
+                                    ConfigConstants.ITERATOR_DOMS_ATTRIBUTENAMES).split(",")), Arrays.asList(
                     properties.getProperty(
-                            ConfigConstants.ITERATOR_DOMS_PREDICATENAMES)
-                              .split(","))), dataFilePattern);
+                            ConfigConstants.ITERATOR_DOMS_PREDICATENAMES).split(","))), dataFilePattern);
         }
     }
 
@@ -276,7 +274,6 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
 
     @Override
     public final String getComponentVersion() {
-        return getClass().getPackage()
-                .getImplementationVersion();
+        return getClass().getPackage().getImplementationVersion();
     }
 }

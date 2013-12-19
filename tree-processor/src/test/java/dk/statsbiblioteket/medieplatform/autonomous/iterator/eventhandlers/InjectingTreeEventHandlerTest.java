@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 public class InjectingTreeEventHandlerTest {
 
     @Test
-    public void testInjectingTreeHandler(){
+    public void testInjectingTreeHandler() {
         InjectingTreeEventHandler injectingTreeEventHandler = new InjectingTreeEventHandler() {
 
             @Override
@@ -34,17 +34,18 @@ public class InjectingTreeEventHandlerTest {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         };
-        InMemoryAttributeParsingEvent parsingEventBefore = new InMemoryAttributeParsingEvent("testEvent",new byte[]{5,5,5},"checksum");
+        InMemoryAttributeParsingEvent parsingEventBefore = new InMemoryAttributeParsingEvent(
+                "testEvent", new byte[]{5, 5, 5}, "checksum");
 
         injectingTreeEventHandler.pushInjectedEvent(parsingEventBefore);
         injectingTreeEventHandler.pushInjectedEvent(parsingEventBefore);
 
         ParsingEvent event1 = injectingTreeEventHandler.popInjectedEvent();
-        Assert.assertEquals(parsingEventBefore,event1);
+        Assert.assertEquals(parsingEventBefore, event1);
 
 
         ParsingEvent event2 = injectingTreeEventHandler.popInjectedEvent();
-        Assert.assertEquals(parsingEventBefore,event2);
+        Assert.assertEquals(parsingEventBefore, event2);
 
 
     }

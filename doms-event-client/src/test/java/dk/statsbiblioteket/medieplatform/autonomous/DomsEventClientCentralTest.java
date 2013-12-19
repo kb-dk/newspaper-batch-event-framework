@@ -8,6 +8,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -17,11 +20,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
-
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 public class DomsEventClientCentralTest {
 
@@ -48,8 +50,7 @@ public class DomsEventClientCentralTest {
         Assert.assertEquals(8, log.size());
         for (String s : log) {
             Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out
-                  .println(s);
+            System.out.println(s);
         }
 
     }
@@ -73,8 +74,7 @@ public class DomsEventClientCentralTest {
         Assert.assertEquals(8, log.size());
         for (String s : log) {
             Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out
-                  .println(s);
+            System.out.println(s);
         }
 
     }
@@ -97,8 +97,7 @@ public class DomsEventClientCentralTest {
         Assert.assertEquals(log.size(), 3);
         for (String s : log) {
             Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out
-                  .println(s);
+            System.out.println(s);
         }
 
     }
@@ -119,14 +118,14 @@ public class DomsEventClientCentralTest {
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
             Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
-            System.out
-                  .println(s);
+            System.out.println(s);
         }
 
     }
 
     /**
      * Tests the case where we remove all events after the first error.
+     *
      * @throws Exception
      */
     @Test
@@ -136,21 +135,29 @@ public class DomsEventClientCentralTest {
         objectProfile.setObjectLastModifiedDate(new Date());
         when(enhancedFedora.getObjectProfile(anyString(), anyLong())).thenReturn(objectProfile);
         PremisManipulator manipulator = getPremisManipulator();
-        when(enhancedFedora.getXMLDatastreamContents(anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
+        when(
+                enhancedFedora.getXMLDatastreamContents(
+                        anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
         ArrayList<String> pids = new ArrayList<>();
         pids.add("uuid:thepid");
         when(enhancedFedora.findObjectFromDCIdentifier(anyString())).thenReturn(pids);
 
         //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
         //is successful
-        doThrow(new ConcurrentModificationException())
-                .doNothing()
-                .when(enhancedFedora)   .modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), any(byte[].class), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        doThrow(new ConcurrentModificationException()).doNothing().when(enhancedFedora).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                any(byte[].class),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
 
         DomsEventClientCentral doms = new DomsEventClientCentral(
-                        enhancedFedora,
-                        new NewspaperIDFormatter(),
-                        PremisManipulatorFactory.TYPE,
+                enhancedFedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
                 DomsEventClientFactory.BATCH_TEMPLATE,
                 DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventClientFactory.HAS_PART,
@@ -163,8 +170,17 @@ public class DomsEventClientCentralTest {
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), captor.capture(), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
+                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
+        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                captor.capture(),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
 
         //The failed events should have been stripped from the xml
         String newXml = new String(captor.getValue());
@@ -180,6 +196,7 @@ public class DomsEventClientCentralTest {
 
     /**
      * Tests the case where we remove all events after a given event.
+     *
      * @throws Exception
      */
     @Test
@@ -189,16 +206,24 @@ public class DomsEventClientCentralTest {
         objectProfile.setObjectLastModifiedDate(new Date());
         when(enhancedFedora.getObjectProfile(anyString(), anyLong())).thenReturn(objectProfile);
         PremisManipulator manipulator = getPremisManipulator();
-        when(enhancedFedora.getXMLDatastreamContents(anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
+        when(
+                enhancedFedora.getXMLDatastreamContents(
+                        anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
         ArrayList<String> pids = new ArrayList<>();
         pids.add("uuid:thepid");
         when(enhancedFedora.findObjectFromDCIdentifier(anyString())).thenReturn(pids);
 
         //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
         //is successful
-        doThrow(new ConcurrentModificationException())
-                .doNothing()
-                .when(enhancedFedora)   .modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), any(byte[].class), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        doThrow(new ConcurrentModificationException()).doNothing().when(enhancedFedora).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                any(byte[].class),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
 
         DomsEventClientCentral doms = new DomsEventClientCentral(
                 enhancedFedora,
@@ -216,8 +241,17 @@ public class DomsEventClientCentralTest {
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), captor.capture(), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
+                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
+        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                captor.capture(),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
 
         //The failed events should have been stripped from the xml
         String newXml = new String(captor.getValue());
@@ -234,6 +268,7 @@ public class DomsEventClientCentralTest {
     /**
      * This tests that if the attempt to modify the EVENTS datastream keeps failing then the code will give up after
      * the specified number of attempts.
+     *
      * @throws Exception
      */
     @Test
@@ -243,42 +278,61 @@ public class DomsEventClientCentralTest {
         objectProfile.setObjectLastModifiedDate(new Date());
         when(enhancedFedora.getObjectProfile(anyString(), anyLong())).thenReturn(objectProfile);
         PremisManipulator manipulator = getPremisManipulator();
-        when(enhancedFedora.getXMLDatastreamContents(anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
+        when(
+                enhancedFedora.getXMLDatastreamContents(
+                        anyString(), anyString(), anyLong())).thenReturn(manipulator.toXML());
         ArrayList<String> pids = new ArrayList<>();
         pids.add("uuid:thepid");
         when(enhancedFedora.findObjectFromDCIdentifier(anyString())).thenReturn(pids);
 
         //This ensure that the call always throws the exception
-        doThrow(new ConcurrentModificationException())
-                .when(enhancedFedora)
-                .modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), any(byte[].class), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        doThrow(new ConcurrentModificationException()).when(enhancedFedora).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                any(byte[].class),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
 
         DomsEventClientCentral doms = new DomsEventClientCentral(
-                        enhancedFedora,
-                        new NewspaperIDFormatter(),
-                        PremisManipulatorFactory.TYPE,
+                enhancedFedora,
+                new NewspaperIDFormatter(),
+                PremisManipulatorFactory.TYPE,
                 DomsEventClientFactory.BATCH_TEMPLATE,
                 DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventClientFactory.HAS_PART,
                 DomsEventClientFactory.EVENTS);
         final int MAX_ATTEMPTS = 10;
         try {
-            int eventsRemoved =  doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L);
+            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L);
             fail("Should have thrown a " + CommunicationException.class.getSimpleName());
         } catch (CommunicationException e) {
             //expected
         }
-        verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(anyString(), anyString(), any(ChecksumType.class), anyString(), any(byte[].class), any((new ArrayList<String>()).getClass()), anyString(), anyLong());
+        verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(
+                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
+        verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(
+                anyString(),
+                anyString(),
+                any(ChecksumType.class),
+                anyString(),
+                any(byte[].class),
+                any((new ArrayList<String>()).getClass()),
+                anyString(),
+                anyLong());
     }
 
     /**
      * Get a Premis object with some successful and some failed events.
+     *
      * @return
      * @throws JAXBException
      */
     private PremisManipulator getPremisManipulator() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(new NewspaperIDFormatter(),PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);

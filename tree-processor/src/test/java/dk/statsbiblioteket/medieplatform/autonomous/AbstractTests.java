@@ -28,22 +28,15 @@ public abstract class AbstractTests {
         return s;
     }
 
-    public abstract TreeIterator getIterator()
-            throws
-            URISyntaxException,
-            IOException;
+    public abstract TreeIterator getIterator() throws URISyntaxException, IOException;
 
-    public void testIterator(final boolean print, final boolean printContent)
-            throws
-            Exception {
+    public void testIterator(final boolean print, final boolean printContent) throws Exception {
 
 
-        printStructure(getIterator(), print,printContent);
+        printStructure(getIterator(), print, printContent);
     }
 
-    private String printEvent(ParsingEvent next)
-            throws
-            IOException {
+    private String printEvent(ParsingEvent next) throws IOException {
         switch (next.getType()) {
             case NodeBegin:
                 return "<node name=\"" + next.getName() + "\">";
@@ -52,8 +45,7 @@ public abstract class AbstractTests {
             case Attribute:
                 if (next instanceof AttributeParsingEvent) {
                     AttributeParsingEvent attributeParsingEvent = (AttributeParsingEvent) next;
-                    return "<attribute name=\"" + next.getName() + "\" checksum=\"" + attributeParsingEvent
-                            .getChecksum() + "\" />";
+                    return "<attribute name=\"" + next.getName() + "\" checksum=\"" + attributeParsingEvent.getChecksum() + "\" />";
                 }
 
             default:
@@ -61,9 +53,7 @@ public abstract class AbstractTests {
         }
     }
 
-    public void testIteratorWithSkipping(final boolean print,final boolean printContent)
-            throws
-            Exception {
+    public void testIteratorWithSkipping(final boolean print, final boolean printContent) throws Exception {
 
         List<TreeIterator> avisIterators = new ArrayList<>();
 
@@ -76,7 +66,7 @@ public abstract class AbstractTests {
             String s;
             switch (next.getType()) {
                 case NodeBegin:
-                    if (next.getName().endsWith(".jp2")){
+                    if (next.getName().endsWith(".jp2")) {
                         Assert.assertTrue(next instanceof DataFileNodeBeginsParsingEvent);
                     }
 
@@ -92,7 +82,7 @@ public abstract class AbstractTests {
                     }
                     break;
                 case NodeEnd:
-                    if (next.getName().endsWith(".jp2")){
+                    if (next.getName().endsWith(".jp2")) {
                         Assert.assertTrue(next instanceof DataFileNodeEndsParsingEvent);
                     }
 
@@ -122,10 +112,8 @@ public abstract class AbstractTests {
 
     }
 
-    private void printStructure(TreeIterator avisIterator,
-                                final boolean print, final boolean printContent)
-            throws
-            IOException {
+    private void printStructure(TreeIterator avisIterator, final boolean print, final boolean printContent) throws
+                                                                                                            IOException {
         int indent = 0;
         int files = 0;
         while (avisIterator.hasNext()) {
@@ -168,6 +156,6 @@ public abstract class AbstractTests {
 
         }
         Assert.assertEquals(indent, 0, "Indent is not reset after iteration");
-        Assert.assertTrue(files > 1, "We have not encountered very much, only "+files+", is the test data broken?");
+        Assert.assertTrue(files > 1, "We have not encountered very much, only " + files + ", is the test data broken?");
     }
 }

@@ -1,8 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-/**
- * The batch or event requested was not found.
- */
+/** The batch or event requested was not found. */
 public class NotFoundException extends Exception {
 
     public NotFoundException() {

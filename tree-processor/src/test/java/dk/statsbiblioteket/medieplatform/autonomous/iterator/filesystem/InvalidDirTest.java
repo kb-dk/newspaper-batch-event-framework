@@ -9,9 +9,9 @@ public class InvalidDirTest {
 
     @Test(expectedExceptions = RuntimeException.class)
 
-    public void testInvalidDir(){
-        TransformingIteratorForFileSystems iterator =
-                new TransformingIteratorForFileSystems(new File("/invalid"), "\\.", ".*\\.jp2", ".md5");
+    public void testInvalidDir() {
+        TransformingIteratorForFileSystems iterator = new TransformingIteratorForFileSystems(
+                new File("/invalid"), "\\.", ".*\\.jp2", ".md5");
         iterator.next();
         iterator.next();
         iterator.next();

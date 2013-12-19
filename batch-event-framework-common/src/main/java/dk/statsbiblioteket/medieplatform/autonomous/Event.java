@@ -2,9 +2,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import java.util.Date;
 
-/**
- * An event that have taken place on a batch
- */
+/** An event that have taken place on a batch */
 public class Event {
 
     private String eventID;
@@ -12,9 +10,7 @@ public class Event {
     private String details;
     private Date date;
 
-    /**
-     * No-args constructor
-     */
+    /** No-args constructor */
     public Event() {
     }
 
