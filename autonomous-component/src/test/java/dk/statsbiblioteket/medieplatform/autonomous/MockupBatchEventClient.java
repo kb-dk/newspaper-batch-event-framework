@@ -51,9 +51,9 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents, List<String> futureEvents) throws
-                                                                                            CommunicationException {
+    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
+                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                  List<String> futureEvents) throws CommunicationException {
         return null;
     }
 
@@ -76,7 +76,7 @@ public class MockupBatchEventClient implements BatchEventClient {
 
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastEvents, List<String> pastEventsExclude,
+    public Iterator<Batch> getBatches(boolean details, List<String> pastEvents, List<String> pastEventsExclude,
                                       List<String> futureEvents) throws CommunicationException {
         List<Batch> result = new ArrayList<>();
         for (Batch batch : batches) {
@@ -104,8 +104,9 @@ public class MockupBatchEventClient implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                             List<String> futureEvents) throws CommunicationException {
-        return getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    public Iterator<Batch> getCheckedBatches(boolean details, List<String> pastSuccessfulEvents,
+                                             List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                                       CommunicationException {
+        return getBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 }

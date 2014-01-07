@@ -91,10 +91,16 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents, List<String> futureEvents) throws
-                                                                                            CommunicationException {
-        return getSboiClient().search(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
+                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                  List<String> futureEvents) throws CommunicationException {
+        return getSboiClient().search(
+                details,
+                batchID,
+                roundTripNumber,
+                pastSuccessfulEvents,
+                pastFailedEvents,
+                futureEvents);
     }
 
     @Override
@@ -119,15 +125,16 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getBatches(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                       List<String> futureEvents) throws CommunicationException {
-        return getSboiClient().getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        return getSboiClient().getBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
 
     }
 
     @Override
-    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                             List<String> futureEvents) throws CommunicationException {
-        return getSboiClient().getCheckedBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    public Iterator<Batch> getCheckedBatches(boolean details, List<String> pastSuccessfulEvents,
+                                             List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                                       CommunicationException {
+        return getSboiClient().getCheckedBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 }

@@ -36,6 +36,7 @@ public class SBOIClientImpl implements SBOIInterface {
     private static final String BATCH_ID = "batch_id";
     private static final String PREMIS = "premis";
     private static final String UUID = "round_trip_uuid";
+    private static final String PREMIS_NO_DETAILS = "premis_no_details";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
     private final PremisManipulatorFactory premisManipulatorFactory;
@@ -53,16 +54,17 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     @Override
-    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getBatches(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                       List<String> futureEvents) throws CommunicationException {
 
-        return search(null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        return search(details, null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 
     @Override
-    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                             List<String> futureEvents) throws CommunicationException {
-        Iterator<Batch> sboiBatches = getBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+    public Iterator<Batch> getCheckedBatches(boolean details, List<String> pastSuccessfulEvents,
+                                             List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                                       CommunicationException {
+        Iterator<Batch> sboiBatches = getBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();
@@ -105,13 +107,14 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     @Override
-    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents, List<String> futureEvents) throws
-                                                                                            CommunicationException {
+    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
+                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                  List<String> futureEvents) throws CommunicationException {
 
         try {
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", PREMIS + "," + UUID);
+            jsonQuery.put("search.document.resultfields", getPremisFieldName(details) + "," + UUID);
+
             jsonQuery.put(
                     "search.document.query",
                     toQueryString(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents));
@@ -133,9 +136,11 @@ public class SBOIClientImpl implements SBOIInterface {
             List<Batch> results = new ArrayList<>(nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
+
+                String premis = DOM.selectString(node, "field[@name='" + getPremisFieldName(details) + "']");
                 Batch batch = premisManipulatorFactory.createFromBlob(
                         new ByteArrayInputStream(
-                                DOM.selectString(node, "field[@name='" + PREMIS + "']").getBytes())).toBatch();
+                                premis.getBytes())).toBatch();
 
                 String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
                 batch.setDomsID(uuid);
@@ -146,6 +151,14 @@ public class SBOIClientImpl implements SBOIInterface {
         } catch (Exception e) {
             log.warn("Caught Unknown Exception", e);
             throw new CommunicationException(e);
+        }
+    }
+
+    private String getPremisFieldName(boolean details) {
+        if (details) {
+            return PREMIS;
+        } else {
+            return PREMIS_NO_DETAILS;
         }
     }
 
@@ -161,7 +174,7 @@ public class SBOIClientImpl implements SBOIInterface {
      */
     @Override
     public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException {
-        Iterator<Batch> result = search(batchID, roundTripNumber, null, null, null);
+        Iterator<Batch> result = search(true, batchID, roundTripNumber, null, null, null);
         if (result.hasNext()) {
             return result.next();
         }

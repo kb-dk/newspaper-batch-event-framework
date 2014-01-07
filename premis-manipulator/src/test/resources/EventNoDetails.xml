@@ -1,0 +1,35 @@
+<premis xmlns="info:lc/xmlns/premis-v2" version="2.2"
+        >
+    <object xsi:type="representation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <objectIdentifier>
+            <objectIdentifierType>Newspaper_digitisation_project</objectIdentifierType>
+            <objectIdentifierValue>B400022028254-RT1</objectIdentifierValue>
+        </objectIdentifier>
+    </object>
+    <event>
+        <eventIdentifier>
+            <eventIdentifierType>Newspaper_digitisation_project</eventIdentifierType>
+            <eventIdentifierValue>B400022028254-RT1-1389099221440</eventIdentifierValue>
+        </eventIdentifier>
+        <eventType>Data_Received</eventType>
+        <eventDateTime>2014-01-07T13:53:41.440+0100</eventDateTime>
+        <eventOutcomeInformation>
+            <eventOutcome>success</eventOutcome>
+
+        </eventOutcomeInformation>
+        <linkingAgentIdentifier>
+            <linkingAgentIdentifierType>Newspaper_digitisation_project</linkingAgentIdentifierType>
+            <linkingAgentIdentifierValue>register-batch-trigger</linkingAgentIdentifierValue>
+        </linkingAgentIdentifier>
+        <linkingObjectIdentifier>
+            <linkingObjectIdentifierType>Newspaper_digitisation_project</linkingObjectIdentifierType>
+            <linkingObjectIdentifierValue>B400022028254-RT1</linkingObjectIdentifierValue>
+        </linkingObjectIdentifier>
+    </event>
+    <agent>
+        <agentIdentifier>
+            <agentIdentifierType>Newspaper_digitisation_project</agentIdentifierType>
+            <agentIdentifierValue>register-batch-trigger</agentIdentifierValue>
+        </agentIdentifier>
+    </agent>
+</premis>

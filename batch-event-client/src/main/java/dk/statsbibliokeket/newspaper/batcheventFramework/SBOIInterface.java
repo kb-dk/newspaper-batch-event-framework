@@ -19,10 +19,9 @@ public interface SBOIInterface {
      * @param futureEvents         Events that the batch must not have experienced
      *
      * @return An iterator over the found batches
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException
-     *          if the communication failed
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Batch> getBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<Batch> getBatches(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                       List<String> futureEvents) throws CommunicationException;
 
     /**
@@ -34,11 +33,11 @@ public interface SBOIInterface {
      * @param futureEvents         Events that the batch must not have experienced
      *
      * @return An iterator over the found batches
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException
-     *          if the communication failed
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Batch> getCheckedBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                             List<String> futureEvents) throws CommunicationException;
+    public Iterator<Batch> getCheckedBatches(boolean details, List<String> pastSuccessfulEvents,
+                                             List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                                       CommunicationException;
 
 
     /**
@@ -48,9 +47,8 @@ public interface SBOIInterface {
      * @param roundTripNumber the round trip number
      *
      * @return the batch if found
-     * @throws CommunicationException if the communication failed
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.NotFoundException
-     *                                if the described batch could not be found
+     * @throws CommunicationException                                         if the communication failed
+     * @throws dk.statsbiblioteket.medieplatform.autonomous.NotFoundException if the described batch could not be found
      */
     public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException;
 
@@ -66,8 +64,8 @@ public interface SBOIInterface {
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<Batch> search(String batchID, Integer roundTripNumber, List<String> pastSuccessfulEvents,
-                                  List<String> pastFailedEvents, List<String> futureEvents) throws
-                                                                                            CommunicationException;
+    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
+                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                  List<String> futureEvents) throws CommunicationException;
 
 }

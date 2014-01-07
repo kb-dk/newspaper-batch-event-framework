@@ -44,17 +44,26 @@ public class SBOIDatasource implements DataSource {
                                                                                        NotWorkingProperlyException {
         try {
             Iterator<Batch> batches = getClient().getBatches(
-                    Arrays.asList("Data_Received"), new ArrayList<String>(), new ArrayList<String>());
+                    includeDetails, Arrays.asList("Data_Received"), new ArrayList<String>(), new ArrayList<String>());
             List<Batch> results = new ArrayList<>();
             while (batches.hasNext()) {
                 Batch next = batches.next();
                 results.add(next);
             }
-            return stripDetails(results.iterator(), includeDetails);
+            return iteratorToList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
         }
 
+    }
+
+    private List<Batch> iteratorToList(Iterator<Batch> batches) {
+        ArrayList<Batch> result = new ArrayList<>();
+        while (batches.hasNext()) {
+            Batch next = batches.next();
+            result.add(next);
+        }
+        return result;
     }
 
     /**

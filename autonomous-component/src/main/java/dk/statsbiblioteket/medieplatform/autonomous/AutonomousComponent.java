@@ -165,7 +165,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                 //get batches, lock n, release the SBOI
                 //get batches
                 Iterator<Batch> batches = batchEventClient.getCheckedBatches(
-                        pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                        false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
@@ -260,7 +260,7 @@ public class AutonomousComponent implements Callable<CallResult> {
         while (true) {
             Set<Batch> batches = asSet(
                     batchEventClient.getBatches(
-                            pastSuccessfulEvents, pastFailedEvents, futureEvents));
+                            false, pastSuccessfulEvents, pastFailedEvents, futureEvents));
             boolean allBatchesAreDone = true;
             for (Map.Entry<BatchWorker, InterProcessLock> batchWorkerInterProcessLockEntry : workers.entrySet()) {
                 Batch batch = batchWorkerInterProcessLockEntry.getKey().getBatch();

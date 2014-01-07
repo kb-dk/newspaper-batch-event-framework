@@ -17,6 +17,7 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 public class PremisManipulatorTest {
 
@@ -161,5 +162,16 @@ public class PremisManipulatorTest {
         assertEquals(newXml, evenNewerXml);
     }
 
+    @Test
+    public void testNoDetails() throws JAXBException {
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        try {
+            PremisManipulator premisBlob = factory.createFromBlob(getFile("EventNoDetails.xml"));
+        } catch (Exception e) {
+            fail("Failed to read premis without details", e);
+        }
+
+    }
 
 }

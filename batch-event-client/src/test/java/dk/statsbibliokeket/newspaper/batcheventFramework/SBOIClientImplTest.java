@@ -24,7 +24,7 @@ public class SBOIClientImplTest {
                 props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory(
                 new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), null);
         Iterator<Batch> batches = summa.getBatches(
-                Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+                true, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();
