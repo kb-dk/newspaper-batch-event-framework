@@ -45,11 +45,6 @@ public class SBOIDatasource implements DataSource {
         try {
             Iterator<Batch> batches = getClient().getBatches(
                     includeDetails, Arrays.asList("Data_Received"), new ArrayList<String>(), new ArrayList<String>());
-            List<Batch> results = new ArrayList<>();
-            while (batches.hasNext()) {
-                Batch next = batches.next();
-                results.add(next);
-            }
             return iteratorToList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
