@@ -50,12 +50,6 @@ public class MockupBatchEventClient implements BatchEventClient {
         return null;
     }
 
-    @Override
-    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
-                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                  List<String> futureEvents) throws CommunicationException {
-        return null;
-    }
 
     @Override
     public Batch getBatch(String domsID) throws CommunicationException {

@@ -29,12 +29,15 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             }
             SBOIDatasourceConfiguration conf = new SBOIDatasourceConfiguration();
             conf.setSummaLocation(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL));
+            conf.setDomsLocation(props.getProperty(ConfigConstants.DOMS_URL));
+            conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
+            conf.setDomsPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
             dataSource = new SBOIDatasource(conf);
             BatchEventClientImpl batchClient = new BatchEventClientImpl(
                     conf.getSummaLocation(),
-                    props.getProperty(ConfigConstants.DOMS_URL),
-                    props.getProperty(ConfigConstants.DOMS_USERNAME),
-                    props.getProperty(ConfigConstants.DOMS_PASSWORD),
+                    conf.getDomsLocation(),
+                    conf.getDomsUser(),
+                    conf.getDomsPassword(),
                     props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
             try {
                 try {

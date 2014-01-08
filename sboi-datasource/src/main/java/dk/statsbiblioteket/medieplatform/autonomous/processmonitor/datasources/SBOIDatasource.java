@@ -2,13 +2,18 @@ package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
 import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIClientImpl;
 import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIInterface;
+import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 
+import javax.xml.bind.JAXBException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,12 +36,29 @@ public class SBOIDatasource implements DataSource {
                 client = new SBOIClientImpl(
                         configuration.getSummaLocation(),
                         new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE),
-                        null);
+                        getDomsEventClient());
             }
             return client;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private DomsEventClient getDomsEventClient() {
+        DomsEventClientFactory factory = new DomsEventClientFactory();
+
+        factory.setFedoraLocation(configuration.getDomsLocation());
+        factory.setUsername(configuration.getDomsUser());
+        factory.setPassword(configuration.getDomsPassword());
+        DomsEventClient domsEventClient;
+        try {
+            domsEventClient = factory.createDomsEventClient();
+        } catch (JAXBException | MalformedURLException | PIDGeneratorException e) {
+            throw new RuntimeException(e);
+        }
+
+        return domsEventClient;
+
     }
 
     @Override

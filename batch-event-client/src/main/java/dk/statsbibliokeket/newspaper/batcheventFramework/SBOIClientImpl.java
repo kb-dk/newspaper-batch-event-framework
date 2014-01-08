@@ -106,10 +106,21 @@ public class SBOIClientImpl implements SBOIInterface {
                 .disjoint(futureEvents, successEvents) && Collections.disjoint(futureEvents, failEvents);
     }
 
-    @Override
-    public Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
-                                  List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                  List<String> futureEvents) throws CommunicationException {
+    /**
+     * Perform a search for batches matching the given criteria
+     *
+     * @param batchID              the batch id. Can be null for all batches
+     * @param roundTripNumber      the round trip number. Can be null to match all round trips
+     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
+     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
+     * @param futureEvents         Events that the batch must not have experienced
+     *
+     * @return An iterator over the found batches
+     * @throws CommunicationException if the communication failed
+     */
+    private Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
+                                   List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                   List<String> futureEvents) throws CommunicationException {
 
         try {
             JSONObject jsonQuery = new JSONObject();
@@ -136,15 +147,20 @@ public class SBOIClientImpl implements SBOIInterface {
             List<Batch> results = new ArrayList<>(nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
-
-                String premis = DOM.selectString(node, "field[@name='" + getPremisFieldName(details) + "']");
-                Batch batch = premisManipulatorFactory.createFromBlob(
-                        new ByteArrayInputStream(
-                                premis.getBytes())).toBatch();
-
                 String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
-                batch.setDomsID(uuid);
-                results.add(batch);
+                Batch result = null;
+                if (!details) { //no details, so we can retrieve everything from Summa
+                    String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
+                    result = premisManipulatorFactory.createFromBlob(
+                            new ByteArrayInputStream(
+                                    premis.getBytes())).toBatch();
+                    result.setDomsID(uuid);
+
+                } else {//Details requested so go to DOMS
+                    result = domsEventClient.getBatch(uuid);
+                }
+
+                results.add(result);
 
             }
             return results.iterator();
@@ -156,7 +172,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
     private String getPremisFieldName(boolean details) {
         if (details) {
-            return PREMIS;
+            return "";
         } else {
             return PREMIS_NO_DETAILS;
         }
