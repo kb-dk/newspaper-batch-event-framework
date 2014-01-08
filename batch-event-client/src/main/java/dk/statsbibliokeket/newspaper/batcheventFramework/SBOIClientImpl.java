@@ -69,7 +69,12 @@ public class SBOIClientImpl implements SBOIInterface {
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();
             try {
-                Batch instead = domsEventClient.getBatch(next.getDomsID());
+                Batch instead;
+                if (details) { //No need to look it up again, details cause us to look up from doms anyhow
+                    instead = next;
+                } else {
+                    instead = domsEventClient.getBatch(next.getDomsID());
+                }
                 if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                     result.add(instead);
                 }
