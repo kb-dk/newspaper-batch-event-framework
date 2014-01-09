@@ -1,3 +1,11 @@
+1.4
+* The SBOI datasource have been made less resource consuming. This seems to speed up the process monitor x3.
+* The SBOI integration now respects the details=false flag. If details=true, the batch is retrieved from DOMS, as this is faster and memory lighter
+* Changed the autonomous component locking strategy.1. SBOI locks are kept for the entire duration of the component execution. So two instances of the same component cannot run concurrently. 2. When requesting batches from SBOI, retrieve the list of events for each batch from DOMS, to guard against any race conditions.
+* Added the AbstractHadoopComponent to make it easier to make autonomous hadoop components.
+* Added various hadoop helper functions
+* isPreservable added to the resultCollector to allow the not-event-setting components to work
+
 1.3
 * Autonomous components now will not stop until the SBOI instance have been reindexed and the batches they worked on are no longer eligible.
 * updated to version 1.0.2 of doms client
