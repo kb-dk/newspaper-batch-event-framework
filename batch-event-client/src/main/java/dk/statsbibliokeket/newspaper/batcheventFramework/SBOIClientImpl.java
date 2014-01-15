@@ -129,7 +129,7 @@ public class SBOIClientImpl implements SBOIInterface {
 
         try {
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", getPremisFieldName(details) + "," + UUID);
+            jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
 
             jsonQuery.put(
                     "search.document.query",
@@ -173,6 +173,20 @@ public class SBOIClientImpl implements SBOIInterface {
             log.warn("Caught Unknown Exception", e);
             throw new CommunicationException(e);
         }
+    }
+
+    private String commaSeparate(String... elements) {
+        StringBuilder result = new StringBuilder();
+        for (String element : elements) {
+            if (element == null) {
+                continue;
+            }
+            if (result.length() != 0) {
+                result.append(",");
+            }
+            result.append(element);
+        }
+        return result.toString();
     }
 
     private String getPremisFieldName(boolean details) {
