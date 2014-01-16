@@ -1,3 +1,6 @@
+1.4.1
+* Fixed the comma separated list stuff when quering SBOI with details
+
 1.4
 * The SBOI datasource have been made less resource consuming. This seems to speed up the process monitor x3.
 * The SBOI integration now respects the details=false flag. If details=true, the batch is retrieved from DOMS, as this is faster and memory lighter
