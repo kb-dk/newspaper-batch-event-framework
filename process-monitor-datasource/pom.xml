@@ -5,11 +5,12 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.1</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <packaging>pom</packaging>
 
     <artifactId>process-monitor-datasource</artifactId>
+  <version> 1.5-SNAPSHOT</version>
 
 
     <properties>

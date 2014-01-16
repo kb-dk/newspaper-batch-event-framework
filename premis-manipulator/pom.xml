@@ -5,10 +5,11 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.1</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>premis-manipulator</artifactId>
+  <version> 1.5-SNAPSHOT</version>
 
     <build>
         <plugins>
@@ -39,7 +40,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
-            <version>1.4.1</version>
+            <version>1.5-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
