@@ -5,17 +5,17 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.4.1</version>
     </parent>
 
     <artifactId>hadoop-component</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.4.1</version>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>runnable-compoment</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
