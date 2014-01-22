@@ -43,7 +43,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
                 stopWorkers();
                 break;
             default:
-                log.error("Connection event: %", newState.name());
+                log.info("Connection event: {}", newState.name());
                 autonomousComponent.setPaused(false);
                 unpauseWorkers();
                 break;

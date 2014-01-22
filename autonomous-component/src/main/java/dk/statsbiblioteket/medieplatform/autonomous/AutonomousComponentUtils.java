@@ -91,17 +91,12 @@ public class AutonomousComponentUtils {
             //This call will return when the work is done
             return autonoumous.call();
         } catch (CouldNotGetLockException e) {
-            System.err.println(
-                    "Could not lock SBOI. Is this component running already? SBOI is locked to this component's name");
             log.error("Could not get lock on SBOI", e);
             return new CallResult("Could not get lock on SBOI");
         } catch (LockingException e) {
-            System.err.println(
-                    "Failed to communicate with the locking server. Check that the locking server is running and " + "network connectivity");
             log.error("Failed to communicate with zookeeper", e);
             return new CallResult("Failed to communicate with zookeeper");
         } catch (CommunicationException e) {
-            System.err.println("Failed to communicate with the backend systems. The work done is lost.");
             log.error("Commmunication exception when invoking backend services", e);
             return new CallResult("Commmunication exception when invoking backend services");
         } finally {
