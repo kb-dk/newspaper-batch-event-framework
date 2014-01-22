@@ -1,3 +1,6 @@
+1.4.2
+* Stop framework poluting stderr and stdout
+
 1.4.1
 * Fixed the comma separated list stuff when quering SBOI with details
 
