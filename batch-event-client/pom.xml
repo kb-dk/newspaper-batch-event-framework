@@ -5,11 +5,11 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <artifactId>batch-event-client</artifactId>
-    <version> 1.5-SNAPSHOT</version>
+    <version> 1.4.2</version>
 
     <build>
         <resources>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>doms-event-client</artifactId>
-            <version> 1.5-SNAPSHOT</version>
+            <version> 1.4.2</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
