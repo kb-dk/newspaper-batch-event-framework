@@ -45,12 +45,15 @@ public interface SBOIInterface {
      *
      * @param batchID         the batch id
      * @param roundTripNumber the round trip number
+     * @param details should details be included
      *
      * @return the batch if found
      * @throws CommunicationException                                         if the communication failed
      * @throws dk.statsbiblioteket.medieplatform.autonomous.NotFoundException if the described batch could not be found
      */
-    public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException;
+    public Batch getBatch(String batchID, Integer roundTripNumber, boolean details) throws
+                                                                                    CommunicationException,
+                                                                                    NotFoundException;
 
 
 }

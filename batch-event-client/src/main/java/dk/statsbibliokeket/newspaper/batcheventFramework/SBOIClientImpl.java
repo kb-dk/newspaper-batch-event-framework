@@ -208,8 +208,10 @@ public class SBOIClientImpl implements SBOIInterface {
      * @throws NotFoundException      if the described batch could not be found
      */
     @Override
-    public Batch getBatch(String batchID, Integer roundTripNumber) throws CommunicationException, NotFoundException {
-        Iterator<Batch> result = search(true, batchID, roundTripNumber, null, null, null);
+    public Batch getBatch(String batchID, Integer roundTripNumber, boolean details) throws
+                                                                                    CommunicationException,
+                                                                                    NotFoundException {
+        Iterator<Batch> result = search(details, batchID, roundTripNumber, null, null, null);
         if (result.hasNext()) {
             return result.next();
         }

@@ -123,7 +123,7 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            return stripDetails(getClient().getBatch(batchID, roundTripNumber), includeDetails);
+            return getClient().getBatch(batchID, roundTripNumber, includeDetails);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }

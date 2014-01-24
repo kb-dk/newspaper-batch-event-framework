@@ -103,4 +103,11 @@ public class MockupBatchEventClient implements BatchEventClient {
                                                                                                        CommunicationException {
         return getBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
+
+    @Override
+    public Batch getBatch(String batchID, Integer roundTripNumber, boolean details) throws
+                                                                                    CommunicationException,
+                                                                                    NotFoundException {
+        return getBatch(batchID, roundTripNumber);
+    }
 }

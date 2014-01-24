@@ -86,9 +86,17 @@ public class BatchEventClientImpl implements BatchEventClient {
     }
 
     @Override
+    public Batch getBatch(String batchId, Integer roundTripNumber, boolean details) throws
+                                                                                    CommunicationException,
+                                                                                    NotFoundException {
+        return getSboiClient().getBatch(batchId, roundTripNumber, details);
+    }
+
+    @Override
     public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         return getDomsEventClient().getBatch(batchId, roundTripNumber);
     }
+
 
     @Override
     public Batch getBatch(String domsID) throws CommunicationException, NotFoundException {
