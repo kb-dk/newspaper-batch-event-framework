@@ -36,11 +36,13 @@ public class BatchWorker implements Runnable {
 
     @Override
     public void run() {
+
         try {
             //do work
             resultCollector.setTimestamp(new Date());
             component.doWorkOnBatch(batch, resultCollector);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            log.warn("Component threw exception", e);
             //the work failed
             resultCollector.addFailure(
                     batch.getFullID(),
@@ -51,7 +53,10 @@ public class BatchWorker implements Runnable {
         }
         if (resultCollector.isPreservable()) {
             preserveResult(batch, resultCollector);
+        } else {
+            log.info("The result collector is not marked as preservable, so it is not preserved in DOMS");
         }
+
     }
 
     public ResultCollector getResultCollector() {
@@ -74,6 +79,7 @@ public class BatchWorker implements Runnable {
                 }
             }
             if (stop) {
+                log.warn("The worker is stopped, so the result will not be preserved");
                 return;
             }
             batchEventClient.addEventToBatch(
