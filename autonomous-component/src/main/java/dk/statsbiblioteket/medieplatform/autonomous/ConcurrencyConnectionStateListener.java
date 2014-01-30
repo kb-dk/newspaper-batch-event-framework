@@ -38,7 +38,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
                 pauseWorkers();
                 break;
             case LOST:
-                log.error("Connection suspended");
+                log.error("Connection lost");
                 autonomousComponent.setStopped(true);
                 stopWorkers();
                 break;
