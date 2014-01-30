@@ -1,3 +1,7 @@
+1.4.3
+* Add fault berrier in BatchWorker with logging
+* Add various logging to framework
+
 1.4.2
 * Stop framework poluting stderr and stdout
 
