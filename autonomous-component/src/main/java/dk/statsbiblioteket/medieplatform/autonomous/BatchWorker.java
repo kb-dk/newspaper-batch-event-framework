@@ -1,6 +1,7 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import dk.statsbiblioteket.util.Strings;
+import org.slf4j.Logger;
 
 import java.util.Date;
 
@@ -10,6 +11,9 @@ import java.util.Date;
  * result will be written back to DOMS
  */
 public class BatchWorker implements Runnable {
+
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchWorker.class);
+
 
     RunnableComponent component;
     private ResultCollector resultCollector;
@@ -80,7 +84,8 @@ public class BatchWorker implements Runnable {
                     result.toReport(),
                     component.getEventID(),
                     result.isSuccess());
-        } catch (CommunicationException e) {
+        } catch (Throwable e) {
+            log.error("Caught exception while attempting to preserve result for batch", e);
             resultCollector.addFailure(
                     batch.getFullID(),
                     "exception",
