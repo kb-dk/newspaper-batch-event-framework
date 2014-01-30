@@ -5,19 +5,19 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.3</version>
     </parent>
 
 
     <artifactId>runnable-compoment</artifactId>
-  <version> 1.4.3-SNAPSHOT</version>
+  <version> 1.4.3</version>
 
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>tree-processor</artifactId>
-            <version> 1.4.3-SNAPSHOT</version>
+            <version> 1.4.3</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
