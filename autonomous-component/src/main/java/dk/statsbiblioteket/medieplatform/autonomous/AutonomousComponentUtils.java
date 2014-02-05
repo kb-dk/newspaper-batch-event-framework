@@ -72,6 +72,12 @@ public class AutonomousComponentUtils {
                 properties.getProperty(
                         ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l + ""));
 
+        String maxResultsProperty = properties.getProperty(ConfigConstants.MAX_RESULTS_COLLECTED);
+        Integer maxResults = null;
+        if (maxResultsProperty != null) {
+            maxResults = Integer.parseInt(maxResultsProperty);
+        }
+
 
         //Use all the above to make the autonomous component
         AutonomousComponent autonoumous = new AutonomousComponent(
@@ -84,7 +90,8 @@ public class AutonomousComponentUtils {
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
                 timeoutWaitingToLockSBOI,
                 timeoutWaitingToLockBatch,
-                maxRunTimeForWorker);
+                maxRunTimeForWorker,
+                maxResults);
 
 
         try {//Start the component

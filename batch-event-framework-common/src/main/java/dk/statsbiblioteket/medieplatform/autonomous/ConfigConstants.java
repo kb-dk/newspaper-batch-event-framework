@@ -109,5 +109,10 @@ public class ConfigConstants {
 
     public static final String THREADS_PER_BATCH = "autonomous.component.threadsPerBatch";
 
+    /**
+     * The maximum number of results collected/reported by the component.
+     */
+    public static final String MAX_RESULTS_COLLECTED = "autonomous.component.maxResults";
+
 
 }

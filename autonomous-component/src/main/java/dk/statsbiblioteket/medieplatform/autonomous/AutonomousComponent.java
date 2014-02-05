@@ -40,12 +40,22 @@ public class AutonomousComponent implements Callable<CallResult> {
     private List<String> futureEvents;
     private boolean paused = false;
     private boolean stopped = false;
+    private Integer maxResults;
 
 
     public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient,
                                BatchEventClient batchEventClient, int simultaneousProcesses,
                                List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout) {
+        this(runnable, lockClient, batchEventClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
+                futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null);
+    }
+
+    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient,
+                               BatchEventClient batchEventClient, int simultaneousProcesses,
+                               List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                               List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout, Integer maxResults) {
+
         this.lockClient = lockClient;
         this.batchEventClient = batchEventClient;
         this.timeoutSBOI = timeoutSBOI;
@@ -58,7 +68,7 @@ public class AutonomousComponent implements Callable<CallResult> {
         this.futureEvents = futureEvents;
         concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
         this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
-
+        this.maxResults = maxResults;
     }
 
     /**
@@ -179,7 +189,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                         log.info("Batch {} locked, creating a worker", batch.getFullID());
                         BatchWorker worker = new BatchWorker(
                                 runnable,
-                                new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion()),
+                                new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
                                 batch,
                                 batchEventClient);
                         workers.put(worker, batchlock);
