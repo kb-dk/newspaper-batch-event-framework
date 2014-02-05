@@ -25,13 +25,36 @@ public class ResultCollector {
 
     private boolean preservable = true;
 
-    public ResultCollector(String tool, String version) {
+    private Integer maxResults;
+    private int resultCount;
+    private Failure lastFailure;
+
+    /**
+     *
+     * @param tool
+     * @param version
+     * @param maxResults  The maximum number of results to collect. If null then unlimited results may be collected.
+     */
+    public ResultCollector(String tool, String version, Integer maxResults) {
         resultStructure = new ObjectFactory().createResult();
         setSuccess(true);
         resultStructure.setFailures(new Failures());
         resultStructure.setTool(tool);
         resultStructure.setVersion(version);
         setTimestamp(new Date());
+        this.maxResults = maxResults;
+        resultCount = 0;
+    }
+
+    /**
+     * This method is marked as deprecated. Use the alternative constructor where the maximum number of allowable
+     * results is explicitly specified.
+     * @param tool
+     * @param version
+     */
+    @Deprecated
+    public ResultCollector(String tool, String version) {
+       this(tool, version, null);
     }
 
     /**
@@ -83,7 +106,7 @@ public class ResultCollector {
     }
 
     /**
-     * Add a specific failure to the result collector. All these parameters must be non-null and non-empty
+     * Add a specific failure to the result collector. All these parameters, except the last, must be non-null and non-empty
      *
      * @param reference   the reference to the file/object that caused the failure
      * @param type        the type of failure
@@ -92,6 +115,7 @@ public class ResultCollector {
      * @param details     additional details, can be null
      */
     public void addFailure(String reference, String type, String component, String description, String... details) {
+        resultCount++; //The count of the current failure, starting at 1.
         log.info(
                 "Adding failure for " +
                 "resource '{}' " +
@@ -110,12 +134,25 @@ public class ResultCollector {
             xmlDetails.getContent().add(Strings.join(Arrays.asList(details), "\n"));
             failure.setDetails(xmlDetails);
         }
-        list.add(failure);
+        if (maxResults == null || resultCount < maxResults) {
+            list.add(failure);
+        } else {
+            Details currentDetails = failure.getDetails();
+            if (currentDetails == null) {
+                currentDetails = new Details();
+            }
+            currentDetails.getContent().add(0, description);
+            failure.setDetails(currentDetails);
+            failure.setDescription("The number of results (" + resultCount + ") exceeded the maximum number that can be" +
+                    " collected (" + maxResults + ").");
+            lastFailure = failure;
+        }
         setSuccess(false);
     }
 
     /**
-     * Merge the failures from this ResultCollector into the given result collector
+     * Merge the failures from this ResultCollector into the given result collector. The maxResults specified in the
+     * specified in the "that" argument is respected.
      *
      * @param that the result collector to merge into
      *
@@ -138,7 +175,6 @@ public class ResultCollector {
             if (that.getTimestamp().before(this.getTimestamp())) {
                 that.setTimestamp(this.getTimestamp());
             }
-
         }
         return that;
     }
@@ -155,6 +191,9 @@ public class ResultCollector {
 
     /** Return the report as xml */
     public String toReport() {
+        if (lastFailure != null) {
+            resultStructure.getFailures().getFailure().add(lastFailure);
+        }
         try {
             JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
             Marshaller marshaller = context.createMarshaller();
