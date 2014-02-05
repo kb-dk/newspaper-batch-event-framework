@@ -187,6 +187,9 @@ public class AutonomousComponent implements Callable<CallResult> {
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
                         log.info("Batch {} locked, creating a worker", batch.getFullID());
+                        if (maxResults != null) {
+                            log.debug("Worker will report a maximum of {} results.", maxResults);
+                        }
                         BatchWorker worker = new BatchWorker(
                                 runnable,
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
