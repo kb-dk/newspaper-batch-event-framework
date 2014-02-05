@@ -1,10 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeBeginsParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DataFileNodeEndsParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.*;
 import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
 
@@ -39,7 +35,11 @@ public abstract class AbstractTests {
     private String printEvent(ParsingEvent next) throws IOException {
         switch (next.getType()) {
             case NodeBegin:
-                return "<node name=\"" + next.getName() + "\">";
+                if (next instanceof  Fedora3NodeBeginsParsingEvent) {
+                    return "<node name=\"" + next.getName() + "\" pid=\"" + ((Fedora3NodeBeginsParsingEvent) next).getPid() + "\">";
+                } else {
+                    return "<node name=\"" + next.getName() + "\">";
+                }
             case NodeEnd:
                 return "</node>";
             case Attribute:

@@ -5,6 +5,8 @@ import com.sun.jersey.api.client.WebResource;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.Fedora3NodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.util.xml.DOM;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.slf4j.Logger;
@@ -86,6 +88,11 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         this.name = getNameFromId(id);
     }
 
+    @Override
+    protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
+        return new Fedora3NodeBeginsParsingEvent(super.createNodeBeginsParsingEvent(), id);
+    }
+
     /**
      * Given an object id, get the name from dc:identifier
      *
@@ -111,6 +118,8 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         }
         return id;
     }
+
+
 
     /**
      * Parse the list of datastreams from the datastream xml list. Removes the ones that should

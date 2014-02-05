@@ -32,7 +32,13 @@ public class IteratorForFedora3Test extends AbstractTests {
 
 
             Properties properties = new Properties();
-            properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
+            File file = new File(System.getProperty("integration.test.newspaper.properties"));
+            if (!file.exists()) {
+                throw new RuntimeException("No such file " + file.getAbsolutePath());
+            } else {
+                System.out.println("Loading properties from " + file.getAbsolutePath());
+            }
+            properties.load(new FileReader(file));
             System.out.println(properties.getProperty(ConfigConstants.DOMS_USERNAME));
             Client client = Client.create();
             client.addFilter(
