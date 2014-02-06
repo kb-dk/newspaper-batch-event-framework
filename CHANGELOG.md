@@ -1,3 +1,10 @@
+1.4.5
+* Add default constructor to node begin event with a null location
+
+1.4.4
+* Add possibility for limiting the number over failures reported
+* Add location to node begin event
+
 1.4.3
 * Add fault berrier in BatchWorker with logging
 * Add various logging to framework
