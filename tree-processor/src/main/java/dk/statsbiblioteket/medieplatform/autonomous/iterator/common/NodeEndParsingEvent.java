@@ -8,6 +8,10 @@ package dk.statsbiblioteket.medieplatform.autonomous.iterator.common;
 public class NodeEndParsingEvent extends ParsingEvent {
 
 
+    public NodeEndParsingEvent(String name) {
+        super(name, ParsingEventType.NodeEnd, null);
+    }
+
     public NodeEndParsingEvent(String name, String location) {
         super(name, ParsingEventType.NodeEnd, location);
     }
