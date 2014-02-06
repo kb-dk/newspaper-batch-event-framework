@@ -5,7 +5,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>hadoop-helpers</artifactId>
-        <version> 1.4.4-SNAPSHOT</version>
+        <version> 1.4.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-file-converters</artifactId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
-            <version>1.4.4-SNAPSHOT</version>
+            <version>1.4.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
