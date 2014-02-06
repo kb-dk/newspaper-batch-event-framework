@@ -152,7 +152,7 @@ public class ResultCollector {
 
     /**
      * Merge the failures from this ResultCollector into the given result collector. The maxResults specified in the
-     * specified in the "that" argument is respected.
+     * "that" argument is respected.
      *
      * @param that the result collector to merge into
      *
