@@ -36,14 +36,14 @@ public class EventRunnerTest {
                 thenReturn(true).thenReturn(true).                 //Attributes
                 thenReturn(true).thenReturn(true).thenReturn(true).//Ends
                 thenReturn(false);
-        NodeBeginsParsingEvent batchNodeBegin = new NodeBeginsParsingEvent("BatchNode");
-        NodeBeginsParsingEvent reelNodeBegin = new NodeBeginsParsingEvent("ReelNode");
-        NodeBeginsParsingEvent dateNodeBegin = new NodeBeginsParsingEvent("DateNode");
+        NodeBeginsParsingEvent batchNodeBegin = new NodeBeginsParsingEvent("BatchNode", null);
+        NodeBeginsParsingEvent reelNodeBegin = new NodeBeginsParsingEvent("ReelNode", null);
+        NodeBeginsParsingEvent dateNodeBegin = new NodeBeginsParsingEvent("DateNode", null);
         AttributeParsingEvent pageJp2Attribute = createAttributeParsingEventStub("pageJp2Attribute");
         AttributeParsingEvent pageXmlAttribute = createAttributeParsingEventStub("pageXmlAttribute");
-        NodeEndParsingEvent dateNodeEnd = new NodeEndParsingEvent("DateNode");
-        NodeEndParsingEvent reelNodeEnd = new NodeEndParsingEvent("ReelNode");
-        NodeEndParsingEvent batchNodeEnd = new NodeEndParsingEvent("BatchNode");
+        NodeEndParsingEvent dateNodeEnd = new NodeEndParsingEvent("DateNode", null);
+        NodeEndParsingEvent reelNodeEnd = new NodeEndParsingEvent("ReelNode", null);
+        NodeEndParsingEvent batchNodeEnd = new NodeEndParsingEvent("BatchNode", null);
         when(treeIteratorMock.next()).
                 thenReturn(batchNodeBegin).
                 thenReturn(reelNodeBegin).
@@ -87,14 +87,14 @@ public class EventRunnerTest {
                 thenReturn(true).thenReturn(true).thenReturn(true).                 //Attributes
                 thenReturn(true).thenReturn(true).thenReturn(true).//Ends
                 thenReturn(false);
-        NodeBeginsParsingEvent batchNodeBegin = new NodeBeginsParsingEvent("BatchNode");
-        NodeBeginsParsingEvent reelNodeBegin = new NodeBeginsParsingEvent("ReelNode");
-        NodeBeginsParsingEvent dateNodeBegin = new NodeBeginsParsingEvent("DateNode");
+        NodeBeginsParsingEvent batchNodeBegin = new NodeBeginsParsingEvent("BatchNode", null);
+        NodeBeginsParsingEvent reelNodeBegin = new NodeBeginsParsingEvent("ReelNode", null);
+        NodeBeginsParsingEvent dateNodeBegin = new NodeBeginsParsingEvent("DateNode", null);
         AttributeParsingEvent pageJp2Attribute = createAttributeParsingEventStub("pageJp2Attribute");
         AttributeParsingEvent pageXmlAttribute = createAttributeParsingEventStub("pageXmlAttribute");
-        NodeEndParsingEvent dateNodeEnd = new NodeEndParsingEvent("DateNode");
-        NodeEndParsingEvent reelNodeEnd = new NodeEndParsingEvent("ReelNode");
-        NodeEndParsingEvent batchNodeEnd = new NodeEndParsingEvent("BatchNode");
+        NodeEndParsingEvent dateNodeEnd = new NodeEndParsingEvent("DateNode", null);
+        NodeEndParsingEvent reelNodeEnd = new NodeEndParsingEvent("ReelNode", null);
+        NodeEndParsingEvent batchNodeEnd = new NodeEndParsingEvent("BatchNode", null);
         when(treeIteratorMock.next()).
                 thenReturn(batchNodeBegin).
                 thenReturn(reelNodeBegin).

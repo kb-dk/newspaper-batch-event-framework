@@ -10,8 +10,8 @@ import java.io.InputStream;
 public abstract class AttributeParsingEvent extends ParsingEvent {
 
 
-    public AttributeParsingEvent(String name) {
-        super(name, ParsingEventType.Attribute);
+    public AttributeParsingEvent(String name, String location) {
+        super(name, ParsingEventType.Attribute, location);
     }
 
     /**

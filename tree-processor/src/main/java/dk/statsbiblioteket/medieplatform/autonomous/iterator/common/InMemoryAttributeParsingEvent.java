@@ -22,7 +22,7 @@ public class InMemoryAttributeParsingEvent extends AttributeParsingEvent {
      * @param checksum the checksum for the data
      */
     public InMemoryAttributeParsingEvent(String name, byte[] data, String checksum) {
-        super(name);
+        super(name, null);
         this.data = data;
         this.checksum = checksum;
     }

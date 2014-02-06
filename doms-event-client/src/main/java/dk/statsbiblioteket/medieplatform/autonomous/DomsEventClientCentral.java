@@ -290,11 +290,12 @@ public class DomsEventClientCentral implements DomsEventClient {
 
         try {
             //find the Round Trip object
-            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatFullID(batchId, roundTripNumber));
+            final String dcIdentifier = idFormatter.formatFullID(batchId, roundTripNumber);
+            List<String> founds = fedora.findObjectFromDCIdentifier(dcIdentifier);
             if (founds.size() > 0) {
                 return founds.get(0);
             }
-            throw new BackendInvalidResourceException("Round Trip object not found");
+            throw new BackendInvalidResourceException("Round Trip object not found for dc identifier " + dcIdentifier);
         } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
             throw new CommunicationException(e);
         }

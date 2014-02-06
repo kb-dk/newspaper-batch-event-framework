@@ -116,15 +116,16 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
     /**
      * Utility method to create teh nodeEnds event. A method so that subclasses can override it to return their
-     * own specialisations of this event
+     * own specialisations of this event. In this implementation the location is set to the String representation of
+     * the node id.
      *
      * @return a node ends event
      */
     protected NodeEndParsingEvent createNodeEndsParsingEvent() {
         if (isDataFile(getIdOfNode())) {
-            return new DataFileNodeEndsParsingEvent(getIdOfNode());
+            return new DataFileNodeEndsParsingEvent(getIdOfNode(), id.toString());
         }
-        return new NodeEndParsingEvent(getIdOfNode());
+        return new NodeEndParsingEvent(getIdOfNode(), id.toString());
     }
 
     private boolean isDataFile(String idOfNode) {
@@ -133,15 +134,16 @@ public abstract class AbstractIterator<T> implements DelegatingTreeIterator {
 
     /**
      * Utility method to create the nodeBegins event. A methods so that subclasses can override it to return their own
-     * specialisations of this event
+     * specialisations of this event. In this implementation the location is set to the String representation of
+     * the node id.
      *
      * @return a node begins event
      */
     protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
         if (isDataFile(getIdOfNode())) {
-            return new DataFileNodeBeginsParsingEvent(getIdOfNode());
+            return new DataFileNodeBeginsParsingEvent(getIdOfNode(), id.toString());
         }
-        return new NodeBeginsParsingEvent(getIdOfNode());
+        return new NodeBeginsParsingEvent(getIdOfNode(), id.toString());
     }
 
     /**

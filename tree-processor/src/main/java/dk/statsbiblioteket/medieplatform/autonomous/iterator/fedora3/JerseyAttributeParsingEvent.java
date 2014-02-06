@@ -17,7 +17,7 @@ public class JerseyAttributeParsingEvent extends AttributeParsingEvent {
     private String checksum;
 
     public JerseyAttributeParsingEvent(String name, String checksum, WebResource resource) {
-        super(name);
+        super(name, resource.getURI().toString());
         this.checksum = checksum;
         this.resource = resource;
     }

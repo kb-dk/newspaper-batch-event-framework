@@ -44,13 +44,21 @@ public class DatafileIterator extends CommonTransformingIterator {
 
     }
 
+    /**
+     * In this implementation, the location is the absolute path to the directory represented by this node.
+     * @return
+     */
     @Override
     protected NodeEndParsingEvent createNodeEndsParsingEvent() {
-        return new DataFileNodeEndsParsingEvent(getIdOfNode());
+        return new DataFileNodeEndsParsingEvent(getIdOfNode(), id.getAbsolutePath());
     }
 
+    /**
+         * In this implementation, the location is the absolute path to the directory represented by this node.
+         * @return
+         */
     @Override
     protected NodeBeginsParsingEvent createNodeBeginsParsingEvent() {
-        return new DataFileNodeBeginsParsingEvent(getIdOfNode());
+        return new DataFileNodeBeginsParsingEvent(getIdOfNode(), id.getAbsolutePath());
     }
 }

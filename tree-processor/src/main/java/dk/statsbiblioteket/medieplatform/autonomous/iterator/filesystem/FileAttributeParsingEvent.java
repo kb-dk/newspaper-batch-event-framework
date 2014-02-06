@@ -10,7 +10,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
-/** This class represents a the Parsing Event of encountering a File */
+/** This class represents a the Parsing Event of encountering a File
+ *  In this implementation of ParsingEvent, the location field is associated with the
+ *  absolute filepath to the file being represented.
+ * */
 
 public class FileAttributeParsingEvent extends AttributeParsingEvent {
 
@@ -19,13 +22,13 @@ public class FileAttributeParsingEvent extends AttributeParsingEvent {
     private File checksumFile;
 
     public FileAttributeParsingEvent(String name, File file) {
-        super(name);
+        super(name, file.getAbsolutePath());
         this.file = file;
         this.checksumFile = null;
     }
 
     public FileAttributeParsingEvent(String name, File file, String checksumPostfix) {
-        super(name);
+        super(name, file.getAbsolutePath());
         this.file = file;
         this.checksumFile = new File(file.getAbsolutePath() + checksumPostfix);
     }

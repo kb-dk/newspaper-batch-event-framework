@@ -39,13 +39,13 @@ public abstract class AbstractTests {
     private String printEvent(ParsingEvent next) throws IOException {
         switch (next.getType()) {
             case NodeBegin:
-                return "<node name=\"" + next.getName() + "\">";
+                return "<node name=\"" + next.getName() + "\" location=\"" + next.getLocation() + "\">";
             case NodeEnd:
                 return "</node>";
             case Attribute:
                 if (next instanceof AttributeParsingEvent) {
                     AttributeParsingEvent attributeParsingEvent = (AttributeParsingEvent) next;
-                    return "<attribute name=\"" + next.getName() + "\" checksum=\"" + attributeParsingEvent.getChecksum() + "\" />";
+                    return "<attribute name=\"" + next.getName() + "\" checksum=\"" + attributeParsingEvent.getChecksum() + "\" location=\"" + next.getLocation() + "\"/>";
                 }
 
             default:
