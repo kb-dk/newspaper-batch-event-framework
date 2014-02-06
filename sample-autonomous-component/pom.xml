@@ -5,17 +5,17 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.4</version>
+        <version>1.4.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>sample-autonomous-component</artifactId>
-    <version> 1.4.4</version>
+    <version> 1.4.5-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>autonomous-component</artifactId>
-            <version> 1.4.4</version>
+            <version> 1.4.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>
