@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:9b5ef995-df5f-4484-9fe0-24cd727928a9/datastreams/ALTO?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-datastreams-ALTO-GR3eo.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:15 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1051"
+        }
+    }
+}

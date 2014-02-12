@@ -1,0 +1,3 @@
+<info:fedora/uuid:f55895b1-52f7-4bc0-8589-2c909a48bedf> <http://doms.statsbiblioteket.dk/relations/default/0/1/#isPartOfCollection> <info:fedora/doms:Newspaper_Collection> .
+<info:fedora/uuid:f55895b1-52f7-4bc0-8589-2c909a48bedf> <info:fedora/fedora-system:def/model#hasModel> <info:fedora/fedora-system:FedoraObject-3.0> .
+<info:fedora/uuid:f55895b1-52f7-4bc0-8589-2c909a48bedf> <info:fedora/fedora-system:def/relations-external#hasPart> <info:fedora/uuid:5348dbc0-e277-497f-b737-ef6bf44580c2> .

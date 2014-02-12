@@ -1,0 +1,31 @@
+<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+<mods:titleInfo>
+<mods:title>Kiøbenhavns Kongelig alene priviligerede Adresse-Contoirs Efterretninger</mods:title>
+</mods:titleInfo>
+<mods:titleInfo type="uniform" authority="Statens Avissamling">
+<mods:title>adresseavisen1759</mods:title>
+</mods:titleInfo>
+<mods:originInfo>
+<mods:place>
+<mods:placeTerm type="text">København</mods:placeTerm>
+</mods:place>
+<!--required-->
+<mods:dateIssued encoding="iso8601">1795-06-15</mods:dateIssued>
+</mods:originInfo>
+<mods:note type="noteAboutReproduction">present</mods:note>
+<mods:relatedItem type="host">
+<mods:part>
+<mods:detail type="volume">
+<mods:number>27</mods:number>
+</mods:detail>
+<mods:detail type="edition">
+<mods:number>2</mods:number>
+<mods:caption>Anden udgave</mods:caption>
+</mods:detail>
+<mods:detail type="issue">
+<mods:number>313</mods:number>
+</mods:detail>
+</mods:part>
+</mods:relatedItem>
+</mods:mods>
+

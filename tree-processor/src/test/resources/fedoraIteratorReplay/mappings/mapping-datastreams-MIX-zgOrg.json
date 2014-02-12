@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:4e0c9764-72f9-4aa5-ba0b-e981f5799513/datastreams/MIX?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-datastreams-MIX-zgOrg.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:16 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1049"
+        }
+    }
+}

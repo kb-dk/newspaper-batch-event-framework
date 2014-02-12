@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:3e92de2b-f6f3-43d0-906c-26a13ff7f1d9/datastreams/EDITION/content",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-EDITION-content-u57jK.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "content-disposition": "inline; filename=\"EDITION.xml\"",
+            "Date": "Wed, 12 Feb 2014 12:15:16 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1173"
+        }
+    }
+}

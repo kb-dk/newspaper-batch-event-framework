@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:b12c2f5e-72fc-44aa-be23-9da76cfdb3ae/datastreams?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-uuid:b12c2f5e-72fc-44aa-be23-9da76cfdb3ae-datastreams-PwkyW.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:15 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "990"
+        }
+    }
+}

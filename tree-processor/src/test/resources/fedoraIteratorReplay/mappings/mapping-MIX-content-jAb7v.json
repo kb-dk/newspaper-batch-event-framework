@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:2d72d3f5-77c7-407a-b0ec-62df554a6a08/datastreams/MIX/content",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-MIX-content-jAb7v.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "content-disposition": "inline; filename=\"MIX.xml\"",
+            "Date": "Wed, 12 Feb 2014 12:15:15 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "3875"
+        }
+    }
+}

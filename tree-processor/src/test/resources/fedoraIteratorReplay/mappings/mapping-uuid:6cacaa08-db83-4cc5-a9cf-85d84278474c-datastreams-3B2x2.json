@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:6cacaa08-db83-4cc5-a9cf-85d84278474c/datastreams?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-uuid:6cacaa08-db83-4cc5-a9cf-85d84278474c-datastreams-3B2x2.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:16 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "991"
+        }
+    }
+}

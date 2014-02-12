@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:429764c7-9cb0-485d-b2b1-f4c18300b79b/datastreams/MODS?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-datastreams-MODS-yFsj0.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:17 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1043"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:d82b9cbb-05a8-41e4-84eb-6c8e7c2b4d35/datastreams/MODS/content",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-MODS-content-RhBQo.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "content-disposition": "inline; filename=\"MODS.xml\"",
+            "Date": "Wed, 12 Feb 2014 12:15:15 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1177"
+        }
+    }
+}

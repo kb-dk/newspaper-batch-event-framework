@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects?pid=true&query=identifier~path:B400022028241-RT1&maxResults=1&resultFormat=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-fedora-objects-t7SIg.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Set-Cookie": "JSESSIONID=36D3C501E3DD0C197C67D5F25E84EDDB; Path=/fedora",
+            "Date": "Wed, 12 Feb 2014 12:15:14 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "470"
+        }
+    }
+}

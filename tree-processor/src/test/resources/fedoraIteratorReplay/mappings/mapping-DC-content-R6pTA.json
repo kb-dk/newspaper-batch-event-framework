@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:f7e7d31a-5f26-4df1-a470-bfd0f794a82e/datastreams/DC/content?format=xml",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-DC-content-R6pTA.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "content-disposition": "inline; filename=\"Dublin Core Record for this object.xml\"",
+            "Date": "Wed, 12 Feb 2014 12:15:18 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "489"
+        }
+    }
+}

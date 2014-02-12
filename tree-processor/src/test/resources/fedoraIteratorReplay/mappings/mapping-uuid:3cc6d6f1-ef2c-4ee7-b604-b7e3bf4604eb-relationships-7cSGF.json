@@ -1,0 +1,16 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:3cc6d6f1-ef2c-4ee7-b604-b7e3bf4604eb/relationships?format=ntriples",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-uuid:3cc6d6f1-ef2c-4ee7-b604-b7e3bf4604eb-relationships-7cSGF.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "Date": "Wed, 12 Feb 2014 12:15:17 GMT",
+            "Content-Type": "text/plain",
+            "Content-Length": "324"
+        }
+    }
+}

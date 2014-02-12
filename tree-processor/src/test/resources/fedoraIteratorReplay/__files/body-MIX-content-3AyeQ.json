@@ -1,0 +1,80 @@
+<mix:mix xmlns:mix="http://www.loc.gov/mix/v20">
+<mix:BasicDigitalObjectInformation>
+<mix:ObjectIdentifier>
+<mix:objectIdentifierType>Image Unique ID</mix:objectIdentifierType>
+<mix:objectIdentifierValue>400022028241-1-0007A</mix:objectIdentifierValue>
+</mix:ObjectIdentifier>
+<mix:fileSize>3560601</mix:fileSize>
+<mix:FormatDesignation>
+<mix:formatName>JPEG2000 – part 1</mix:formatName>
+<mix:formatVersion>ISO-IEC 15444-1:2004</mix:formatVersion>
+</mix:FormatDesignation>
+<mix:Compression>
+<mix:compressionScheme>JP2 lossless</mix:compressionScheme>
+</mix:Compression>
+<mix:Fixity>
+<mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+<mix:messageDigest>51657F7AD2BEA3F76915E3C9020AD6C8</mix:messageDigest>
+<mix:messageDigestOriginator>Ninestars</mix:messageDigestOriginator>
+</mix:Fixity>
+</mix:BasicDigitalObjectInformation>
+<mix:BasicImageInformation>
+<mix:BasicImageCharacteristics>
+<mix:imageWidth>2210</mix:imageWidth>
+<mix:imageHeight>2772</mix:imageHeight>
+<mix:PhotometricInterpretation>
+<mix:colorSpace>greyscale</mix:colorSpace>
+</mix:PhotometricInterpretation>
+</mix:BasicImageCharacteristics>
+</mix:BasicImageInformation>
+<mix:ImageCaptureMetadata>
+<mix:SourceInformation>
+<mix:sourceType>microfilm</mix:sourceType>
+<mix:SourceID>
+<mix:sourceIDType>Microfilm reel barcode #</mix:sourceIDType>
+<mix:sourceIDValue>400022028241-1</mix:sourceIDValue>
+</mix:SourceID>
+<mix:SourceID>
+<mix:sourceIDType>Location on microfilm</mix:sourceIDType>
+<mix:sourceIDValue>0007A</mix:sourceIDValue>
+</mix:SourceID>
+</mix:SourceInformation>
+<mix:GeneralCaptureInformation>
+<mix:dateTimeCreated>2013-11-12T11:48:06</mix:dateTimeCreated>
+<mix:imageProducer>State and University Library; Ninestars Information Technologies LTD; operator-name-here</mix:imageProducer>
+</mix:GeneralCaptureInformation>
+<mix:ScannerCapture>
+<mix:scannerManufacturer>Wicks and Wilson</mix:scannerManufacturer>
+<mix:ScannerModel>
+<mix:scannerModelName>Scanstation</mix:scannerModelName>
+<mix:scannerModelNumber>RS325</mix:scannerModelNumber>
+<mix:scannerModelSerialNo>SN#8060359</mix:scannerModelSerialNo>
+</mix:ScannerModel>
+<mix:ScanningSystemSoftware><!--Repeatable-->
+<mix:scanningSoftwareName>Rollfilm</mix:scanningSoftwareName>
+<mix:scanningSoftwareVersionNo>2.6g</mix:scanningSoftwareVersionNo>
+</mix:ScanningSystemSoftware>
+</mix:ScannerCapture>
+</mix:ImageCaptureMetadata>
+<mix:ImageAssessmentMetadata>
+<mix:SpatialMetrics>
+<mix:samplingFrequencyUnit>in.</mix:samplingFrequencyUnit>
+<mix:xSamplingFrequency>
+<mix:numerator>400</mix:numerator>
+<mix:denominator>1</mix:denominator>
+</mix:xSamplingFrequency>
+<mix:ySamplingFrequency>
+<mix:numerator>400</mix:numerator>
+<mix:denominator>1</mix:denominator>
+</mix:ySamplingFrequency>
+</mix:SpatialMetrics>
+<mix:ImageColorEncoding>
+<mix:BitsPerSample>
+<mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+<mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+</mix:BitsPerSample>
+<mix:samplesPerPixel>1</mix:samplesPerPixel>
+</mix:ImageColorEncoding>
+</mix:ImageAssessmentMetadata>
+</mix:mix>
+

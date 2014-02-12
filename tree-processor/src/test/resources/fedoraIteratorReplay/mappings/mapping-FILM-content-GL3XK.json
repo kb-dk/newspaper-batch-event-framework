@@ -1,0 +1,17 @@
+{
+    "request": {
+        "url": "/fedora/objects/uuid:05d840bf-8bb6-48e5-b214-2ab39f6259f8/datastreams/FILM/content",
+        "method": "GET"
+    },
+    "response": {
+        "status": 200,
+        "bodyFileName": "body-FILM-content-GL3XK.json",
+        "headers": {
+            "Server": "Apache-Coyote/1.1",
+            "content-disposition": "inline; filename=\"FILM.xml\"",
+            "Date": "Wed, 12 Feb 2014 12:15:14 GMT",
+            "Content-Type": "text/xml",
+            "Content-Length": "1666"
+        }
+    }
+}
