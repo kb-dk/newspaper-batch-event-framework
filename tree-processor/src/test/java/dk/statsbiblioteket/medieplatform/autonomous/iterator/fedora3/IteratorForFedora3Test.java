@@ -91,7 +91,7 @@ public class IteratorForFedora3Test extends AbstractTests {
         }
     }
 
-    @AfterMethod
+    @AfterMethod(groups = "integrationTest")
     public void tearDownReplay() throws Exception {
         if (wireMockServer != null) {
             wireMockServer.stop();
@@ -144,7 +144,8 @@ public class IteratorForFedora3Test extends AbstractTests {
 
             iterator = new IteratorForFedora3(
                     pid,
-                    client, domsUrl,
+                    client,
+                    domsUrl,
                     new ConfigurableFilter(
                             Arrays.asList("MODS", "FILM", "EDITION", "ALTO", "MIX"),
                             Arrays.asList("info:fedora/fedora-system:def/relations-external#hasPart")),
