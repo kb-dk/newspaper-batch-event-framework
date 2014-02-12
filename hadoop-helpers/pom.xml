@@ -5,11 +5,11 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.5-SNAPSHOT</version>
+        <version>1.4.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-helpers</artifactId>
-  <version> 1.4.5-SNAPSHOT</version>
+  <version> 1.4.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>hadoop-doms-integration</module>
