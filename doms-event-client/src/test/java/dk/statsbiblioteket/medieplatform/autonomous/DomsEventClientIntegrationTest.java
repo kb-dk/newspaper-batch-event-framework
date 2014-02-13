@@ -31,7 +31,7 @@ public class DomsEventClientIntegrationTest {
         DomsEventClient doms = factory.createDomsEventClient();
 
 
-        String batchId = "4000220252" + Math.random() * 100;
+        String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
@@ -119,7 +119,7 @@ public class DomsEventClientIntegrationTest {
 
         DomsEventClient doms = factory.createDomsEventClient();
 
-        String batchId = "4000220252" + Math.random() * 100;
+        String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
@@ -181,7 +181,7 @@ public class DomsEventClientIntegrationTest {
 
         DomsEventClient doms = factory.createDomsEventClient();
 
-        String batchId = "4000220252" + Math.random() * 100;
+        String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
         String details = "Details here";
 
@@ -249,7 +249,7 @@ public class DomsEventClientIntegrationTest {
 
         DomsEventClient doms = factory.createDomsEventClient();
 
-        String batchId = "4000220252" + Math.random() * 100;
+        String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
         Credentials creds = new Credentials(
                 props.getProperty(ConfigConstants.DOMS_USERNAME), props.getProperty(ConfigConstants.DOMS_PASSWORD));
@@ -284,6 +284,10 @@ public class DomsEventClientIntegrationTest {
 
         }
 
+    }
+
+    private String getRandomBatchId() {
+        return "4000220252" + Math.round(Math.random() * 100);
     }
 
 
