@@ -78,7 +78,6 @@ public class IteratorForFedora3Test extends AbstractTests {
     @Test(groups = {"externalTest"}, enabled = true)
     public void testIterator() throws Exception {
         super.testIterator(true, false);
-        throw new Error();
     }
 
     @Test(groups = {"externalTest"}, enabled = true)
