@@ -27,12 +27,12 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
     }
 
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"testDataTest"})
     public void testIterator() throws Exception {
         super.testIterator(true, false);
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"testDataTest"})
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping(false, false);
     }

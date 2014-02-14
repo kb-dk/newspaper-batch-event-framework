@@ -64,7 +64,7 @@ public class AbstractRunnableComponentTest {
         return temp;
     }
 
-    @Test
+    @Test(groups = "standAloneTest")
     public void testBatchStructureFromDoms() throws Exception {
         System.out.println("Testing batch structure storing vs. DOMS");
         Properties properties = new Properties(System.getProperties());

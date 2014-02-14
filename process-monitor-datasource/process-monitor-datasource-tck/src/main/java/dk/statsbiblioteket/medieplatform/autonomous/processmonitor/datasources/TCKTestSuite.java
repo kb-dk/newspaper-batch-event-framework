@@ -26,7 +26,7 @@ public abstract class TCKTestSuite {
     public abstract String getValidAndSucessfullEventIDForValidBatch();
 
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testGetBatches() throws NotWorkingProperlyException {
         List<Batch> batches = getDataSource().getBatches(false, null);
         assertTrue(batches.size() > 0, "The datasource have no content");
@@ -62,7 +62,7 @@ public abstract class TCKTestSuite {
         }
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testGetInvalidBatch() throws NotWorkingProperlyException {
         try {
             Batch batch = getDataSource().getBatch(
@@ -74,7 +74,7 @@ public abstract class TCKTestSuite {
         }
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testGetValidBatch() throws NotWorkingProperlyException {
         Batch validBatch = null;
         try {
@@ -95,7 +95,7 @@ public abstract class TCKTestSuite {
         }
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testGetEvent() throws NotWorkingProperlyException {
 
         Event event = null;

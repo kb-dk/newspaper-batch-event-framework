@@ -15,7 +15,7 @@ import static org.testng.Assert.assertTrue;
 
 public class DomsEventClientIntegrationTest {
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testAddEventToBatch1() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -105,7 +105,7 @@ public class DomsEventClientIntegrationTest {
      *
      * @throws Exception
      */
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testBackupEventsForBatch() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -167,7 +167,7 @@ public class DomsEventClientIntegrationTest {
      *
      * @throws Exception
      */
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testTriggerWorkflowRestart() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -235,7 +235,7 @@ public class DomsEventClientIntegrationTest {
      *
      * @throws Exception
      */
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testTriggerWorkflowRestartEmptyEventList() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
