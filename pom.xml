@@ -25,6 +25,7 @@
         <module>runnable-compoment</module>
         <module>hadoop-component</module>
         <module>hadoop-helpers</module>
+        <module>batch-iterator</module>
     </modules>
     <dependencyManagement>
         <dependencies>
