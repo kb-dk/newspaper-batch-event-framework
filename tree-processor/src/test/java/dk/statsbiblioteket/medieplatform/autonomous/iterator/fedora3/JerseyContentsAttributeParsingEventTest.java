@@ -21,7 +21,7 @@ public class JerseyContentsAttributeParsingEventTest {
     private static final String PID = "contentTest:1";
     private WebResource objectResource;
 
-    @BeforeMethod(groups = "integrationTest")
+    @BeforeMethod(groups = {"externalTest"})
     public void setUp() throws Exception {
         Properties properties = new Properties();
         properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
@@ -52,13 +52,13 @@ public class JerseyContentsAttributeParsingEventTest {
 
     }
 
-    @AfterMethod(groups = "integrationTest")
+    @AfterMethod(groups = {"externalTest"})
     public void tearDown() throws Exception {
         objectResource.delete();
 
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"externalTest"})
     public void testGetChecksum() throws Exception {
         objectResource.path("/datastreams/")
                       .path(JerseyContentsAttributeParsingEvent.CONTENTS)

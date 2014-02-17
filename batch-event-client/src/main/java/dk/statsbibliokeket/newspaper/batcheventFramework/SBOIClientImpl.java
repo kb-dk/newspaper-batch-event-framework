@@ -135,7 +135,7 @@ public class SBOIClientImpl implements SBOIInterface {
                     "search.document.query",
                     toQueryString(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents));
             jsonQuery.put("search.document.startindex", 0);
-            jsonQuery.put("search.document.maxrecords", 10);
+            jsonQuery.put("search.document.maxrecords", 1000);
 
             String searchResultString;
             synchronized (summaSearch) {//TODO is this nessesary?

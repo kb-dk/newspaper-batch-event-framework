@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-batch-event-framework</artifactId>
-        <version>1.4.5-SNAPSHOT</version>
+        <version>1.4.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>premis-manipulator</artifactId>
-  <version> 1.4.5-SNAPSHOT</version>
+    <version>1.4.6-SNAPSHOT</version>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.8.2</version>
+                <version>0.8.3</version>
                 <executions>
                     <execution>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <generatePackage>dk.statsbiblioteket.autonomous.premis</generatePackage>
+                        </configuration>
+
                     </execution>
+
                 </executions>
-                <configuration>
-                    <generatePackage>dk.statsbiblioteket.autonomous.premis</generatePackage>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -40,7 +45,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
-            <version>1.4.5-SNAPSHOT</version>
+            <version>1.4.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

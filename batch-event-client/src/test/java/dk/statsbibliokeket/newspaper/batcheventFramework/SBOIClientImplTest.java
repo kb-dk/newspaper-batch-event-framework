@@ -21,7 +21,7 @@ import java.util.Properties;
 
 public class SBOIClientImplTest {
 
-    @Test(groups = "integrationTest", enabled = true)
+    @Test(groups = {"externalTest"}, enabled = true)
     public void testGetBatches() throws Exception {
         Properties props = getProperties();
 

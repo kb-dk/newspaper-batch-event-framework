@@ -25,12 +25,12 @@ public class IteratorForFileSystemsTestTestdata1 extends AbstractTests {
     }
 
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"testDataTest"})
     public void testIterator() throws Exception {
         super.testIterator(false, false);
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = {"testDataTest"})
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping(false, false);
     }

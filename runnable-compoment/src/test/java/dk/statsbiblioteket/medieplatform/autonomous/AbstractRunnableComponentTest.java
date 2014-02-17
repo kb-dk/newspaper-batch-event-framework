@@ -1,12 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
-import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
-import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.sun.jersey.core.util.Base64;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
-import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.util.Streams;
 import org.testng.Assert;
@@ -16,13 +15,19 @@ import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.List;
+import java.net.URLEncoder;
 import java.util.Properties;
+import java.util.UUID;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 public class AbstractRunnableComponentTest {
     public static final String BATCH_TEMPLATE = "doms:Template_Batch";
@@ -59,28 +64,78 @@ public class AbstractRunnableComponentTest {
         return temp;
     }
 
-    @Test(groups = "integrationTest")
+    @Test(groups = "standAloneTest")
     public void testBatchStructureFromDoms() throws Exception {
         System.out.println("Testing batch structure storing vs. DOMS");
         Properties properties = new Properties(System.getProperties());
-        properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
+        //        properties.load(new FileReader(new File(System.getProperty("integration.test.newspaper.properties"))));
 
         properties.setProperty(
                 ConfigConstants.ITERATOR_USE_FILESYSTEM, Boolean.FALSE.toString());
+        String username = "username";
+        properties.setProperty(
+                ConfigConstants.DOMS_USERNAME, username);
+        String password = "password";
+        properties.setProperty(
+                ConfigConstants.DOMS_PASSWORD, password);
+
         TestingRunnableComponent component = new TestingRunnableComponent(properties);
 
 
         Batch batch = new Batch("5000");
-        EnhancedFedora enhancedFedora = getEnhancedFedora(properties);
+        String pid = "uuid:" + UUID.randomUUID().toString();
+        WireMockServer wireMockServer
+                = new WireMockServer(wireMockConfig().port(8089)); //No-args constructor will start on port 8080, no HTTPS
+        wireMockServer.start();
 
-        String testData = "<test>hej, this is test data</test>";
+        properties.setProperty(ConfigConstants.DOMS_URL, "http://localhost:" + wireMockServer.port() + "/fedora");
 
-        createBatchRoundTrip(batch, enhancedFedora);
 
-        component.storeBatchStructure(batch, new ByteArrayInputStream(testData.getBytes()));
-        InputStream retrieved = component.retrieveBatchStructure(batch);
-        String retrievedString = toString(retrieved);
-        Assert.assertEquals(testData, retrievedString);
+        WireMock.configureFor("localhost", wireMockServer.port());
+        givenThat(
+                WireMock.get(
+                        urlEqualTo("/fedora/objects?pid=true&query=identifier~path:" + batch.getFullID() + "&maxResults=1&resultFormat=xml"))
+                        .withHeader(
+                                "Authorization", equalTo(encode(username, password.getBytes())))
+                        .willReturn(
+                                aResponse().withBody(
+                                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                        "<result xmlns=\"http://www.fedora.info/definitions/1/0/types/\" xmlns:types=\"http://www.fedora.info/definitions/1/0/types/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.fedora.info/definitions/1/0/types/ http://localhost:7880/fedora/schema/findObjects.xsd\">\n" +
+                                        "  <resultList>\n" +
+                                        "  <objectFields>\n" +
+                                        "      <pid>" + pid + "</pid>\n" +
+                                        "  </objectFields>\n" +
+                                        "  </resultList>\n" +
+                                        "</result>")));
+
+        String batchStructure = "<test>hej, this is test data</test>";
+        givenThat(
+                WireMock.put(
+                        urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid) + "/datastreams/BATCHSTRUCTURE?mimeType=text/xml&logMessage=Updating+batch+structure"))
+                        .withHeader(
+                                "Authorization", equalTo(encode(username, password.getBytes())))
+                        .withRequestBody(
+                                equalTo(batchStructure))
+                        .willReturn(
+                                aResponse().withStatus(201)));
+
+        givenThat(
+                WireMock.get(
+                        urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid) + "/datastreams/BATCHSTRUCTURE/content?asOfDateTime="))
+                        .withHeader(
+                                "Authorization", equalTo(encode(username, password.getBytes())))
+                        .willReturn(
+                                aResponse().withBody(batchStructure)));
+
+
+        try {
+            component.storeBatchStructure(batch, new ByteArrayInputStream(batchStructure.getBytes()));
+            InputStream retrieved = component.retrieveBatchStructure(batch);
+            String retrievedString = toString(retrieved);
+            Assert.assertEquals(batchStructure, retrievedString);
+        } finally {
+            wireMockServer.stop();
+        }
     }
 
     /**
@@ -97,45 +152,27 @@ public class AbstractRunnableComponentTest {
                                                                     JAXBException {
         return new EnhancedFedoraImpl(
                 new Credentials(
-                        properties.getProperty(ConfigConstants.DOMS_USERNAME),
-                        properties.getProperty(ConfigConstants.DOMS_PASSWORD)),
+                        properties.getProperty(ConfigConstants.DOMS_USERNAME, "username"),
+                        properties.getProperty(ConfigConstants.DOMS_PASSWORD, "password")),
                 properties.getProperty(ConfigConstants.DOMS_URL),
-                properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL),
+                properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL, "null"),
                 null);
     }
 
-    public String createBatchRoundTrip(Batch batch, EnhancedFedora fedora) throws CommunicationException {
+    public String encode(String username, byte[] password) {
         try {
-            try {
-                //find the roundTrip Object
 
-                try {
-                    //find the Round Trip object
-                    List<String> founds = fedora.findObjectFromDCIdentifier("path:" + batch.getFullID());
-                    if (founds.size() > 0) {
-                        return founds.get(0);
-                    }
-                    throw new BackendInvalidResourceException("Round Trip object not found");
-                } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
-                    throw new CommunicationException(e);
-                }
-            } catch (BackendInvalidResourceException e) {
-                //no roundTripObject, so sad
-                //but alas, we can continue
-            }
+            final byte[] prefix = (username + ":").getBytes("UTF-8");
+            final byte[] usernamePassword = new byte[prefix.length + password.length];
 
-            String createBatchRoundTripComment = "";
-            String roundTripObject;
+            System.arraycopy(prefix, 0, usernamePassword, 0, prefix.length);
+            System.arraycopy(password, 0, usernamePassword, prefix.length, password.length);
 
-            roundTripObject = fedora.cloneTemplate(
-                    ROUND_TRIP_TEMPLATE, Arrays.asList("path:" + batch.getFullID()), createBatchRoundTripComment);
-            return roundTripObject;
-        } catch (BackendMethodFailedException | BackendInvalidCredsException | PIDGeneratorException |
-                BackendInvalidResourceException | ObjectIsWrongTypeException e) {
-            throw new CommunicationException(e);
+            return "Basic " + new String(Base64.encode(usernamePassword), "ASCII");
+        } catch (UnsupportedEncodingException ex) {
+            // This should never occur
+            throw new RuntimeException(ex);
         }
-
-
     }
 
 }

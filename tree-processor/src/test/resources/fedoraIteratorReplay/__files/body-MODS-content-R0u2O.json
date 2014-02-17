@@ -1,0 +1,26 @@
+<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+<mods:part>
+<mods:detail type="sectionLabel">
+<mods:number>Sektion 1</mods:number>
+</mods:detail>
+<mods:extent unit="pages">
+<mods:start>13</mods:start>
+</mods:extent>
+</mods:part>
+<mods:relatedItem type="original">
+<mods:identifier type="reel number">400022028241-1</mods:identifier>
+<mods:identifier type="reel sequence number">2</mods:identifier>
+<mods:physicalDescription>
+<mods:form type="microfilm"/>
+<mods:note type="pagecondition">Not tested</mods:note>
+<mods:note type="photocondition">Not tested</mods:note>
+</mods:physicalDescription>
+<mods:note type="noteAboutReproduction">present</mods:note>
+</mods:relatedItem>
+<mods:relatedItem type="host">
+<mods:titleInfo type="uniform" authority="Statens Avissamling" >
+<mods:title>adresseavisen1759</mods:title>
+</mods:titleInfo>
+</mods:relatedItem>
+</mods:mods>
+

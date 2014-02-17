@@ -1,0 +1,6 @@
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <info:fedora/fedora-system:def/relations-external#hasPart> <info:fedora/uuid:c625596a-9bbc-4331-b55c-beb55a3b80fe> .
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <info:fedora/fedora-system:def/relations-external#hasPart> <info:fedora/uuid:05d840bf-8bb6-48e5-b214-2ab39f6259f8> .
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <info:fedora/fedora-system:def/model#hasModel> <info:fedora/doms:ContentModel_RoundTrip> .
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <http://doms.statsbiblioteket.dk/relations/default/0/1/#isPartOfCollection> <info:fedora/doms:Newspaper_Collection> .
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <info:fedora/fedora-system:def/model#hasModel> <info:fedora/fedora-system:FedoraObject-3.0> .
+<info:fedora/uuid:65e7ece1-1b90-4f12-9f8f-c8e77b354f66> <info:fedora/fedora-system:def/model#hasModel> <info:fedora/doms:ContentModel_DOMS> .

@@ -22,14 +22,14 @@ public class ResultCollectorTest {
                    resultCollector.addFailure(reference, type, "check1", "description", "details1\n", "details2\n");
         }
         String report = resultCollector.toReport();
-        assertEquals(maxResults, report.split("<failure>").length - 1, report);
-        assertTrue(report.contains(actualResults + ""), report);
-        assertFalse(report.contains((actualResults -1 ) + ""), report);
+        assertEquals(maxResults, report.split("<failure>").length - 1, "More results than maxresults");
+        assertTrue(report.contains(actualResults + ""), "Report does not contain expected result");
+        assertFalse(report.contains((actualResults -1 ) + ""), "Report contains unexpected result");
     }
 
 
     /** Test the merging of resultCollectors */
-    @Test
+    @Test()
     public void testMerger() {
         ResultCollector resultCollector = new ResultCollector("check1", "0.1");
         String reference = "reference";
@@ -48,25 +48,25 @@ public class ResultCollectorTest {
         Date now = new Date();
         resultCollector.setTimestamp(now);
         resultCollectorIdentity.setTimestamp(now);
-        assertEquals(resultCollectorIdentity.toReport(), resultCollector.toReport());
+        assertEquals(resultCollectorIdentity.toReport(), resultCollector.toReport(),"The two reports are not identical");
 
         ResultCollector result = new ResultCollector("batch", "0.1");
 
-        assertTrue(result.isSuccess());
+        assertTrue(result.isSuccess(),"A new report is not succesful");
 
         resultCollector.mergeInto(result);
-        assertFalse(result.isSuccess());
+        assertFalse(result.isSuccess(),"Success after merge");
         String firstMerger = result.toReport();
 
 
         resultCollector2.mergeInto(result);
-        assertFalse(result.isSuccess());
+        assertFalse(result.isSuccess(),"Success after merge");
         String secondMerger = result.toReport();
 
         Assert.assertNotEquals(firstMerger, secondMerger, "The second merger changed nothing");
 
         resultCollector.mergeInto(result);
-        assertFalse(result.isSuccess());
+        assertFalse(result.isSuccess(),"Success after merge");
         String thirdMerger = result.toReport();
 
         Assert.assertNotEquals(secondMerger, thirdMerger, "merging twice is not idempotent");

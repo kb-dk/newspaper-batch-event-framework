@@ -75,12 +75,12 @@ public class IteratorForFedora3Test extends AbstractTests {
         return pid;
     }
 
-    @Test(groups = "integrationTest", enabled = true)
+    @Test(groups = {"externalTest"}, enabled = true)
     public void testIterator() throws Exception {
         super.testIterator(true, false);
     }
 
-    @Test(groups = "integrationTest", enabled = true)
+    @Test(groups = {"externalTest"}, enabled = true)
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping(false, false);
     }
