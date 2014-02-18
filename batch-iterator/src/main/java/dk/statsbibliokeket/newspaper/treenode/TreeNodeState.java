@@ -79,7 +79,7 @@ public class TreeNodeState extends DefaultTreeEventHandler {
         currentNode = createNode(event.getName(), nextNodeType, currentNode, event.getLocation());
     }
 
-    public TreeNode createNode(String name, NodeType nodeType, TreeNode previousNode, String location) {
-        return new TreeNode(name, nodeType, previousNode, location);
+    public TreeNode createNode(String name, NodeType nodeType, TreeNode parentNode, String location) {
+        return new TreeNode(name, nodeType, parentNode, location);
     }
 }
