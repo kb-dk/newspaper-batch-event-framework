@@ -13,7 +13,9 @@ public class TreeNodeWithChildren extends TreeNode {
     public TreeNodeWithChildren(String name, NodeType type, TreeNodeWithChildren parent, String location) {
         super(name, type, parent, location);
         children = new ArrayList<>();
-        parent.addChild(this);
+        if (parent != null) {
+            parent.addChild(this);
+        }
     }
 
     public void addChild(TreeNodeWithChildren childNode) {
