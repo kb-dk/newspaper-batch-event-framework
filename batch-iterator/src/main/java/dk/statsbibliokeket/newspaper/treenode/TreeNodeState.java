@@ -23,15 +23,30 @@ public class TreeNodeState extends DefaultTreeEventHandler {
     }
 
     @Override
-    public void handleNodeBegin(NodeBeginsParsingEvent event) {
+    public final void handleNodeBegin(NodeBeginsParsingEvent event) {
         updateCurrentNode(event);
+        processNodeBegin(event);
     }
 
+    /**
+     * Additional actions to be performed at start of node. Can be overridden in subclasses.
+     * @param event
+     */
+    protected void processNodeBegin(NodeBeginsParsingEvent event) { }
+
+
     @Override
-    public void handleNodeEnd(NodeEndParsingEvent event) {
+    public final void handleNodeEnd(NodeEndParsingEvent event) {
+        processNodeEnd(event);
         previousNode = currentNode;
         currentNode = currentNode.getParent();
     }
+
+    /**
+     * Additional actions to be performed at end of node. Can be overridden in subclasses.
+     * @param event
+     */
+    protected void processNodeEnd(NodeEndParsingEvent event)  {}
 
     // Todo This is becoming a complicated. consider switch to state machine pattern.
     private void updateCurrentNode(NodeBeginsParsingEvent event) {
@@ -79,7 +94,7 @@ public class TreeNodeState extends DefaultTreeEventHandler {
         currentNode = createNode(event.getName(), nextNodeType, currentNode, event.getLocation());
     }
 
-    public TreeNode createNode(String name, NodeType nodeType, TreeNode parentNode, String location) {
+    protected TreeNode createNode(String name, NodeType nodeType, TreeNode parentNode, String location) {
         return new TreeNode(name, nodeType, parentNode, location);
     }
 }
