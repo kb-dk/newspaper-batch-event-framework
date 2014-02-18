@@ -13,13 +13,13 @@ public class TreeNodeWithChildren extends TreeNode {
     public TreeNodeWithChildren(String name, NodeType type, TreeNodeWithChildren parent, String location) {
         super(name, type, parent, location);
         children = new ArrayList<>();
+        parent.addChild(this);
     }
 
     public void addChild(TreeNodeWithChildren childNode) {
-        final TreeNode parent = getParent();
-        if (parent != null) {
-            ((TreeNodeWithChildren) parent).addChild(this);
-        }
+       if (children != null) {
+           children.add(childNode);
+       }
     }
 
     public List<TreeNodeWithChildren> getChildren() {
