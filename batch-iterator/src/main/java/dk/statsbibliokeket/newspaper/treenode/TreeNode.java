@@ -12,7 +12,13 @@ public class TreeNode {
     private final TreeNode parent;
     private final String location;
 
-
+    /**
+     * Constructor for this node.
+     * @param name the name (label) of this node,
+     * @param type the type of the node.
+     * @param parent the parent of this node (may be null).
+     * @param location the location of this node - either a doms-pid or a filepath.
+     */
     public TreeNode(String name, NodeType type, TreeNode parent, String location) {
         this.name = name;
         this.type = type;
@@ -20,6 +26,12 @@ public class TreeNode {
         this.location = location;
     }
 
+    /**
+     * Constructor for this node.
+     * @param name the name (label) of this node,
+     * @param type the type of the node.
+     * @param parent the parent of this node (may be null).
+     */
     public TreeNode(String name, NodeType type, TreeNode parent) {
         this(name, type, parent, null);
     }

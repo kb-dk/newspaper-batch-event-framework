@@ -1,7 +1,8 @@
 package dk.statsbibliokeket.newspaper.treenode;
 
 /**
- *
+ * Specialised subclass of TreeNodeState which uses TreeNodeWithChildren elements so that one
+ * can take action based on the children of a given node.
  */
 public class TreeNodeStateWithChildren extends TreeNodeState {
 

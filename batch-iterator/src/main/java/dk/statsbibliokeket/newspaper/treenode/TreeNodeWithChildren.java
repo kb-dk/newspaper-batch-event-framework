@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * A subclass of TreeNode which also maintains a list of its own children.
  */
 public class TreeNodeWithChildren extends TreeNode {
 
@@ -18,12 +18,20 @@ public class TreeNodeWithChildren extends TreeNode {
         }
     }
 
-    public void addChild(TreeNodeWithChildren childNode) {
+    /**
+     * Add a child to this node.
+     * @param childNode
+     */
+    private void addChild(TreeNodeWithChildren childNode) {
        if (children != null) {
            children.add(childNode);
        }
     }
 
+    /**
+     * Get the list of children of this node.
+     * @return the children.
+     */
     public List<TreeNodeWithChildren> getChildren() {
         return children;
     }

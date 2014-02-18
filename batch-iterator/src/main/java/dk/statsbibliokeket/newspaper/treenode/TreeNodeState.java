@@ -94,6 +94,15 @@ public class TreeNodeState extends DefaultTreeEventHandler {
         currentNode = createNode(event.getName(), nextNodeType, currentNode, event.getLocation());
     }
 
+    /**
+     * Factory method to create the child node. Can be overridden in subclasses to enable generation of
+     * specialised subtypes of TreeNode.
+     * @param name
+     * @param nodeType
+     * @param parentNode
+     * @param location
+     * @return
+     */
     protected TreeNode createNode(String name, NodeType nodeType, TreeNode parentNode, String location) {
         return new TreeNode(name, nodeType, parentNode, location);
     }
