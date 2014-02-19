@@ -97,11 +97,11 @@ public class TreeNodeState extends DefaultTreeEventHandler {
     /**
      * Factory method to create the child node. Can be overridden in subclasses to enable generation of
      * specialised subtypes of TreeNode.
-     * @param name
-     * @param nodeType
-     * @param parentNode
-     * @param location
-     * @return
+     * @param name the name of the node to create.
+     * @param nodeType the type of node to create.
+     * @param parentNode the parent node of the node to create.
+     * @param location the location (filepath or doms-pid) of the node to create.
+     * @return  the new node.
      */
     protected TreeNode createNode(String name, NodeType nodeType, TreeNode parentNode, String location) {
         return new TreeNode(name, nodeType, parentNode, location);
