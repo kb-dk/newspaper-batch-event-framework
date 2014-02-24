@@ -17,12 +17,11 @@ public class BatchContextUtils {
      * @throws SQLException in case of SQL errors.
      */
     public static BatchContext buildBatchContext(MfPakDAO mfPakDAO, Batch batch) throws SQLException {
-        BatchContext context = new BatchContext();
+        BatchContext context = new BatchContext(batch);
         
         context.setEntities(mfPakDAO.getBatchNewspaperEntities(batch.getBatchID()));
         context.setAvisId(mfPakDAO.getNewspaperID(batch.getBatchID()));
         context.setBatchOptions(mfPakDAO.getBatchOptions(batch.getBatchID()));
-        context.setBatch(batch);
         context.setDateRanges(mfPakDAO.getBatchDateRanges(batch.getBatchID()));
         context.setShipmentDate(mfPakDAO.getBatchShipmentDate(batch.getBatchID()));
         

@@ -17,9 +17,13 @@ public class BatchContext {
     private List<NewspaperEntity> entities;
     private List<NewspaperDateRange> dateRanges;
     private String avisId;
-    private Batch batch;
+    private final Batch batch;
     private NewspaperBatchOptions batchOptions;
     private Date shipmentDate;
+    
+    BatchContext(Batch batch) {
+        this.batch = batch;
+    }
     
     public Date getShipmentDate() {
         if(shipmentDate == null) {
@@ -29,7 +33,7 @@ public class BatchContext {
         }
     }
 
-    public void setShipmentDate(Date shipmentDate) {
+    void setShipmentDate(Date shipmentDate) {
         this.shipmentDate = shipmentDate;
     }
 
@@ -41,7 +45,7 @@ public class BatchContext {
         }
     }
 
-    public void setDateRanges(List<NewspaperDateRange> dateRanges) {
+    void setDateRanges(List<NewspaperDateRange> dateRanges) {
         this.dateRanges = dateRanges;
     }
 
@@ -49,15 +53,11 @@ public class BatchContext {
         return batch;
     }
 
-    public void setBatch(Batch batch) {
-        this.batch = batch;
-    }
-
     public List<NewspaperEntity> getEntities() {
         return Collections.unmodifiableList(entities);
     }
     
-    public void setEntities(List<NewspaperEntity> entities) {
+    void setEntities(List<NewspaperEntity> entities) {
         this.entities = entities;
     }
     
@@ -65,7 +65,7 @@ public class BatchContext {
         return batchOptions;
     }
     
-    public void setBatchOptions(NewspaperBatchOptions batchOptions) {
+    void setBatchOptions(NewspaperBatchOptions batchOptions) {
         this.batchOptions = batchOptions;
     }
     
@@ -73,7 +73,7 @@ public class BatchContext {
         return avisId;
     }
     
-    public void setAvisId(String avisId) {
+    void setAvisId(String avisId) {
         this.avisId = avisId;
     }
 }
