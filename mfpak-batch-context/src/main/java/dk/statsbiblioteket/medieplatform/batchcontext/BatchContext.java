@@ -34,7 +34,11 @@ public class BatchContext {
     }
 
     public List<NewspaperDateRange> getDateRanges() {
-        return Collections.unmodifiableList(dateRanges);
+        if(dateRanges == null) {
+            return null;
+        } else {
+            return Collections.unmodifiableList(dateRanges);    
+        }
     }
 
     public void setDateRanges(List<NewspaperDateRange> dateRanges) {
