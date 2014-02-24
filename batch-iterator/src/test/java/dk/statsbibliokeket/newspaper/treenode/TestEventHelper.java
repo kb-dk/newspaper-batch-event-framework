@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 public class TestEventHelper {
 
     public static NodeBeginsParsingEvent createBatchBeginEvent(int sequenceNumber) {
-        return new NodeBeginsParsingEvent("B40002202824" + sequenceNumber + "RT1");
+        return new NodeBeginsParsingEvent("B40002202824" + sequenceNumber + "-RT1");
     }
 
     public static NodeBeginsParsingEvent createReelBeginEvent(int sequenceNumber) {

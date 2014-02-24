@@ -29,80 +29,81 @@ public class TreeNodesStructurePrint {
                                                                                          ".*\\.jp2",
                                                                                          ".md5"));
 
-
         final TreeNodeState nodeState = new TreeNodeState();
+        final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
+        eventRunner.runEvents(Arrays.<TreeEventHandler>asList(handler), null);
+    }
 
+    private static class PrintingTreeEventHandler implements TreeEventHandler {
 
-        eventRunner.runEvents(Arrays.<TreeEventHandler>asList(
-                                            new TreeEventHandler() {
+        private final TreeNodeState nodeState;
 
-                                                private String printEvent(ParsingEvent event,
-                                                                          String type)
-                                                        throws
-                                                        IOException {
+        public PrintingTreeEventHandler(TreeNodeState nodeState) {
+            this.nodeState = nodeState;
+        }
 
-                                                    switch (event.getType()) {
-                                                        case NodeBegin:
-                                                            return "<" + type + " name=\"" + event.getName() + "\">";
-                                                        case NodeEnd:
-                                                            return "</" + type + ">";
-                                                        case Attribute:
-                                                            if (event instanceof AttributeParsingEvent) {
-                                                                AttributeParsingEvent attributeParsingEvent =
-                                                                        (AttributeParsingEvent) event;
-                                                                return "<" + "attribute" + " name=\"" + event.getName()
-                                                                       + "\" checksum=\"" + attributeParsingEvent
-                                                                        .getChecksum() + "\" />";
-                                                            }
+        private String printEvent(ParsingEvent event,
+                                  String type)
+                throws
+                IOException {
 
-                                                        default:
-                                                            return event.toString();
-                                                    }
-                                                }
+            switch (event.getType()) {
+                case NodeBegin:
+                    return "<" + type + " name=\"" + event.getName() + "\">";
+                case NodeEnd:
+                    return "</" + type + ">";
+                case Attribute:
+                    if (event instanceof AttributeParsingEvent) {
+                        AttributeParsingEvent attributeParsingEvent =
+                                (AttributeParsingEvent) event;
+                        return "<" + "attribute" + " name=\"" + event.getName()
+                                + "\" checksum=\"" + attributeParsingEvent
+                                .getChecksum() + "\" />";
+                    }
 
-                                                @Override
-                                                public void handleNodeBegin(NodeBeginsParsingEvent event) {
-                                                    try {
-                                                        nodeState.handleNodeBegin(event);
-                                                        TreeNode currentNode = nodeState.getCurrentNode();
-                                                        System.out
-                                                              .println(printEvent(event, currentNode.getType().name()));
-                                                    } catch (IOException e) {
-                                                        throw new RuntimeException(e);
-                                                    }
-                                                }
+                default:
+                    return event.toString();
+            }
+        }
 
-                                                @Override
-                                                public void handleNodeEnd(NodeEndParsingEvent event) {
-                                                    try {
-                                                        TreeNode currentNode = nodeState.getCurrentNode();
-                                                        nodeState.handleNodeEnd(event);
-                                                        System.out
-                                                              .println(printEvent(event, currentNode.getType().name()));
-                                                    } catch (IOException e) {
-                                                        throw new RuntimeException(e);
-                                                    }
-                                                }
+        @Override
+        public void handleNodeBegin(NodeBeginsParsingEvent event) {
+            try {
+                nodeState.handleNodeBegin(event);
+                TreeNode currentNode = nodeState.getCurrentNode();
+                System.out
+                        .println(printEvent(event, currentNode.getType().name()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-                                                @Override
-                                                public void handleAttribute(AttributeParsingEvent event) {
-                                                    try {
+        @Override
+        public void handleNodeEnd(NodeEndParsingEvent event) {
+            try {
+                TreeNode currentNode = nodeState.getCurrentNode();
+                nodeState.handleNodeEnd(event);
+                System.out
+                        .println(printEvent(event, currentNode.getType().name()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-                                                        System.out.println(printEvent(event, "attribute"));
-                                                    } catch (IOException e) {
-                                                        throw new RuntimeException(e);
-                                                    }
-                                                }
+        @Override
+        public void handleAttribute(AttributeParsingEvent event) {
+            try {
 
-                                                @Override
-                                                public void handleFinish() {
-                                                    //To change body of implemented methods use
-                                                    // File | Settings | File Templates.
-                                                }
-                                            }
+                System.out.println(printEvent(event, "attribute"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-                                           ), null);
-
-
+        @Override
+        public void handleFinish() {
+            //To change body of implemented methods use
+            // File | Settings | File Templates.
+        }
     }
 }
