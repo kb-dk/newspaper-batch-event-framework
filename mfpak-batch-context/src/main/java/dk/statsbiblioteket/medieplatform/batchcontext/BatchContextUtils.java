@@ -22,6 +22,9 @@ public class BatchContextUtils {
         context.setEntities(mfPakDAO.getBatchNewspaperEntities(batch.getBatchID()));
         context.setAvisId(mfPakDAO.getNewspaperID(batch.getBatchID()));
         context.setBatchOptions(mfPakDAO.getBatchOptions(batch.getBatchID()));
+        context.setBatch(batch);
+        context.setDateRanges(mfPakDAO.getBatchDateRanges(batch.getBatchID()));
+        context.setShipmentDate(mfPakDAO.getBatchShipmentDate(batch.getBatchID()));
         
         return context;
     }
