@@ -56,24 +56,22 @@ public abstract class CommonTransformingIterator extends AbstractIterator<File> 
     }
 
     /**
-     * Get the only group that contain no datafiles from a list grouping. If there is no unique group, return null
+     * Get the shortest group that contain no datafiles from a list grouping. If there is no unique group, return null
      *
      * @param groupedByPrefix the map of groups
      *
-     * @return the only group without datafiles or null
+     * @return the shortest group without datafiles or null
      */
-    protected Pair<String, List<File>> getUniqueNoDataFilesGroup(Map<String, List<File>> groupedByPrefix) {
-        Pair<String, List<File>> uniqueGroup = null;
+    protected Pair<String, List<File>> getShortestNoDataFilesGroup(Map<String, List<File>> groupedByPrefix) {
+        Pair<String, List<File>> shortestGroup = null;
         for (Map.Entry<String, List<File>> group : groupedByPrefix.entrySet()) {
             if (!containsDatafiles(group.getValue())) {
-                if (uniqueGroup == null) {
-                    uniqueGroup = new Pair<>(group.getKey(), group.getValue());
-                } else {
-                    return null;
+                if (shortestGroup == null || shortestGroup.getLeft().length() > group.getKey().length()) {
+                    shortestGroup = new Pair<>(group.getKey(), group.getValue());
                 }
             }
         }
-        return uniqueGroup;
+        return shortestGroup;
     }
 
     @Override

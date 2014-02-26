@@ -1,10 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transforming;
 
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
-import dk.statsbiblioteket.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
+import dk.statsbiblioteket.util.Pair;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -105,7 +106,7 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
         //If there is any datafiles, we group by prefix. If there are no datafiles, we expect the structure to be flat
         if (containsDatafiles(attributes)) {
             Map<String, List<File>> groupedByPrefix = groupByPrefix(attributes);
-            Pair<String, List<File>> noDataGroup = getUniqueNoDataFilesGroup(groupedByPrefix);
+            Pair<String, List<File>> noDataGroup = getShortestNoDataFilesGroup(groupedByPrefix);
             if (noDataGroup != null) {
                 attributes = noDataGroup.getRight();
             }
