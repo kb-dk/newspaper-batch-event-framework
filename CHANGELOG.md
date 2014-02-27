@@ -1,5 +1,8 @@
-1.4.6
-* Updated to newspaper-parent 1.1
+1.5
+* Updated to newspaper-parent 1.1, as part of new testability strategy
+* Many updates for better and more maintainable tests
+* New TreeNode iterator
+* Support directories with both directory metadata and virtual metadata groups without files (for missing pages in newspaper project)
 
 1.4.5
 * Add default constructor to node begin event with a null location
