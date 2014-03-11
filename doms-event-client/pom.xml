@@ -9,33 +9,27 @@
     </parent>
 
     <artifactId>doms-event-client</artifactId>
-    <version>1.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
-            <version>1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-client</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>premis-manipulator</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>runnable-compoment</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>tree-processor</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
@@ -61,7 +55,6 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>1.42</version>
             <scope>test</scope>
             <!-- Include this if you have dependency conflicts for Guava, Jetty, Jackson or Apache HTTP Client -->
             <!--<classifier>standalone</classifier>-->

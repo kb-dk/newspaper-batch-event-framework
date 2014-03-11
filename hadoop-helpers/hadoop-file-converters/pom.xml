@@ -5,21 +5,21 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>hadoop-helpers</artifactId>
-        <version> 1.6-SNAPSHOT</version>
+        <version>1.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-file-converters</artifactId>
 
     <dependencies>
         <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>batch-event-framework-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-framework-common</artifactId>
-            <version>1.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

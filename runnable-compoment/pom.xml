@@ -8,16 +8,13 @@
         <version>1.6-SNAPSHOT</version>
     </parent>
 
-
     <artifactId>runnable-compoment</artifactId>
-    <version>1.6-SNAPSHOT</version>
-
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>batch-event-framework-common</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>premis-manipulator</artifactId>
-    <version>1.6-SNAPSHOT</version>
 
     <build>
         <plugins>
@@ -26,9 +25,7 @@
                         <configuration>
                             <generatePackage>dk.statsbiblioteket.autonomous.premis</generatePackage>
                         </configuration>
-
                     </execution>
-
                 </executions>
             </plugin>
         </plugins>
@@ -36,14 +33,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>batch-event-framework-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-framework-common</artifactId>
-            <version>1.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

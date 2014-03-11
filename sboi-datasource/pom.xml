@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>sboi-datasource</artifactId>
-    <version> 1.6-SNAPSHOT</version>
 
     <build>
         <resources>
@@ -56,28 +55,22 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>process-monitor-datasource-interfaces</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>process-monitor-datasource-tck</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-client</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <artifactId>premis-manipulator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
             <artifactId>ecmTemplates</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>premis-manipulator</artifactId>
-            <version>1.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -9,17 +9,12 @@
     </parent>
 
     <artifactId>hadoop-component</artifactId>
-    <version> 1.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>doms-event-client</artifactId>
-            <version> 1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

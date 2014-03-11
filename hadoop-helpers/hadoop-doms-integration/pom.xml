@@ -5,18 +5,12 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>hadoop-helpers</artifactId>
-        <version> 1.6-SNAPSHOT</version>
+        <version>1.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-doms-integration</artifactId>
-    <version> 1.6-SNAPSHOT</version>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
@@ -26,17 +20,6 @@
             <groupId>dk.statsbiblioteket.doms.central</groupId>
             <artifactId>centralWebservice-lib</artifactId>
         </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-framework-common</artifactId>
-            <version>1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-        </dependency>
     </dependencies>
-
 
 </project>

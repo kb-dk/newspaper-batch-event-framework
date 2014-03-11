@@ -9,26 +9,22 @@
     </parent>
 
     <artifactId>sample-autonomous-component</artifactId>
-    <version> 1.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>autonomous-component</artifactId>
-            <version> 1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>doms-event-client</artifactId>
-            <version> 1.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
@@ -41,8 +37,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
-
-
     </dependencies>
 
     <build>

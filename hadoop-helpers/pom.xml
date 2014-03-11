@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>hadoop-helpers</artifactId>
-  <version> 1.6-SNAPSHOT</version>
+
     <packaging>pom</packaging>
     <modules>
         <module>hadoop-doms-integration</module>
