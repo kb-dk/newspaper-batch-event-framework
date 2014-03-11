@@ -1,14 +1,9 @@
-package dk.statsbibliokeket.newspaper.batcheventFramework;
+package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
-import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
-import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
-import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
@@ -19,13 +14,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
-public class SBOIClientImplTest {
+public class SBOIEventIndexTest {
 
     @Test(groups = {"externalTest"}, enabled = true)
     public void testGetBatches() throws Exception {
         Properties props = getProperties();
 
-        SBOIClientImpl summa = getSboiClient(props);
+        SBOIEventIndex summa = getSboiClient(props);
         Iterator<Batch> batches = summa.getBatches(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
         int count = 0;
@@ -37,20 +32,20 @@ public class SBOIClientImplTest {
 
     }
 
-    private SBOIClientImpl getSboiClient(Properties props) throws
+    private SBOIEventIndex getSboiClient(Properties props) throws
                                                            MalformedURLException,
                                                            JAXBException,
                                                            PIDGeneratorException {
 
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
-        DomsEventClient domsClient = factory.createDomsEventClient();
+        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
 
-        return new SBOIClientImpl(
+        return new SBOIEventIndex(
                 props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), domsClient);
+                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), domsEventStorage);
     }
 
     private Properties getProperties() throws IOException {

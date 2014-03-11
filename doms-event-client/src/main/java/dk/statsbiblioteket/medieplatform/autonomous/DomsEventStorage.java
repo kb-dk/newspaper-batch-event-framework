@@ -1,13 +1,14 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -17,10 +18,10 @@ import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 
-/** Implementation of the DomsEventClient, using the Central Webservice library to communicate with DOMS */
-public class DomsEventClientCentral implements DomsEventClient {
+/** Implementation of the EventStorer and EventExplorer, using the Central Webservice library to communicate with DOMS */
+public class DomsEventStorage implements EventStorer {
 
-    private static Logger log = LoggerFactory.getLogger(DomsEventClientCentral.class);
+    private static Logger log = LoggerFactory.getLogger(DomsEventStorage.class);
 
     private final EnhancedFedora fedora;
     private final IDFormatter idFormatter;
@@ -32,8 +33,8 @@ public class DomsEventClientCentral implements DomsEventClient {
     private String createBatchRoundTripComment = "TODO"; //TODO
     private String addEventToBatchComment = "TODO";//TODO
 
-    DomsEventClientCentral(EnhancedFedora fedora, IDFormatter idFormatter, String type, String batchTemplate,
-                           String roundTripTemplate, String hasPart_relation, String eventsDatastream) throws
+    DomsEventStorage(EnhancedFedora fedora, IDFormatter idFormatter, String type, String batchTemplate,
+                     String roundTripTemplate, String hasPart_relation, String eventsDatastream) throws
                                                                                                        JAXBException {
         this.fedora = fedora;
         this.idFormatter = idFormatter;
@@ -72,7 +73,15 @@ public class DomsEventClientCentral implements DomsEventClient {
         }
     }
 
-    @Override
+    /**
+     * Create a batch and round trip object, without adding any events
+     *
+     * @param batchId         the batch id
+     * @param roundTripNumber the round trip number
+     *
+     * @return the pid of the doms object corresponding to the round trip
+     * @throws CommunicationException if communication with doms failed
+     */
     public String createBatchRoundTrip(String batchId, int roundTripNumber) throws CommunicationException {
         String id = idFormatter.formatFullID(batchId, roundTripNumber);
         try {
@@ -125,7 +134,6 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     }
 
-    @Override
     public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException {
         String roundTripID;
         try {
@@ -138,7 +146,15 @@ public class DomsEventClientCentral implements DomsEventClient {
 
     }
 
-    @Override
+    /**
+     * Retrieve a batch
+     *
+     * @param domsId the id of the round trip object in doms
+     *
+     * @return the batch
+     * @throws NotFoundException      if the batch is not found
+     * @throws CommunicationException if communication with doms failed
+     */
     public Batch getBatch(String domsId) throws CommunicationException {
         try {
             String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
@@ -284,7 +300,7 @@ public class DomsEventClientCentral implements DomsEventClient {
      * @throws BackendInvalidResourceException
      *                                object not found
      */
-    private String getRoundTripID(String batchId, int roundTripNumber) throws
+    String getRoundTripID(String batchId, int roundTripNumber) throws
                                                                        CommunicationException,
                                                                        BackendInvalidResourceException {
 

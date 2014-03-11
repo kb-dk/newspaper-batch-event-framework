@@ -1,15 +1,16 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Properties;
 
-public class SampleRunnableComponent extends AbstractRunnableComponent {
+public class SampleRunnableComponent extends SBOIBasedAbstractRunnableComponent {
 
     private static Logger log = LoggerFactory.getLogger(SampleRunnableComponent.class);
 

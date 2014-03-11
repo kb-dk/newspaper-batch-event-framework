@@ -19,14 +19,13 @@ public class AutonomousComponentTest {
     private static final int ROUNDTRIPNUMBER = 1;
     TestingServer testingServer;
     AutonomousComponent autonoumous;
-    MockupBatchEventClient eventClient;
+    private TestingComponent component;
 
     @BeforeMethod
     public void setUp() throws Exception {
         testingServer = new TestingServer();
-        TestingComponent component = new TestingComponent();
+        component = new TestingComponent();
 
-        eventClient = new MockupBatchEventClient();
         Batch testBatch = new Batch(BATCHID);
         testBatch.setRoundTripNumber(ROUNDTRIPNUMBER);
         Event testEvent = new Event();
@@ -37,17 +36,14 @@ public class AutonomousComponentTest {
 
         testBatch.setEventList(new ArrayList<>(Arrays.asList(testEvent)));
 
-        eventClient.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
+        component.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
 
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-        autonoumous = new AutonomousComponent(
-                component,
-                lockClient,
-                eventClient,
-                1,
+        autonoumous = new AutonomousComponent(component,
+                lockClient, 1,
                 Arrays.asList("Data_Received"),
                 null,
                 null,
@@ -68,7 +64,7 @@ public class AutonomousComponentTest {
     @Test
     public void testPollAndWork() throws Exception {
 
-        Batch batch = eventClient.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Batch batch = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
@@ -80,7 +76,7 @@ public class AutonomousComponentTest {
 
         autonoumous.call();
 
-        Batch batchAfter = eventClient.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Batch batchAfter = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {

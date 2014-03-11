@@ -3,11 +3,9 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import java.util.Date;
 
 /**
- * The doms event client. This client is the interface to the doms event storage. You use it to add events to batches,
- * create batches and to retrieve batches.
+ * Interface for storing result of an event.
  */
-public interface DomsEventClient {
-
+public interface EventStorer {
     /**
      * Add an event to a batch in doms. Will create the batch if it does not currently exist
      *
@@ -23,40 +21,6 @@ public interface DomsEventClient {
      */
     void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
                          String eventType, boolean outcome) throws CommunicationException;
-
-    /**
-     * Create a batch and round trip object, without adding any events
-     *
-     * @param batchId         the batch id
-     * @param roundTripNumber the round trip number
-     *
-     * @return the pid of the doms object corresponding to the round trip
-     * @throws CommunicationException if communication with doms failed
-     */
-    String createBatchRoundTrip(String batchId, int roundTripNumber) throws CommunicationException;
-
-    /**
-     * Retrieve a batch
-     *
-     * @param batchId         the batch id
-     * @param roundTripNumber the round trip number
-     *
-     * @return the batch
-     * @throws NotFoundException      if the batch is not found
-     * @throws CommunicationException if communication with doms failed
-     */
-    Batch getBatch(String batchId, Integer roundTripNumber) throws NotFoundException, CommunicationException;
-
-    /**
-     * Retrieve a batch
-     *
-     * @param domsID the id of the round trip object in doms
-     *
-     * @return the batch
-     * @throws NotFoundException      if the batch is not found
-     * @throws CommunicationException if communication with doms failed
-     */
-    Batch getBatch(String domsID) throws NotFoundException, CommunicationException;
 
     /**
      * This method
@@ -107,6 +71,4 @@ public interface DomsEventClient {
     int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries, long waitTime) throws
                                                                                                                  CommunicationException,
                                                                                                                  NotFoundException;
-
-
 }

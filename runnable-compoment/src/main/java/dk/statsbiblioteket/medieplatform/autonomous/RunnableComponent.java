@@ -36,4 +36,16 @@ public interface RunnableComponent {
      * @throws Exception if something failed
      */
     void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception;
+
+    /**
+     * Return the event trigger used for triggering events.
+     * @return The event trigger.
+     */
+    EventTrigger getEventTrigger();
+
+    /**
+     * Return the event storer used for storing results of events.
+     * @return The event storer.
+     */
+    EventStorer getEventStorer();
 }

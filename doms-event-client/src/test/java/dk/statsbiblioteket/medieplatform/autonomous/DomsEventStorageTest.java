@@ -1,11 +1,12 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
-import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
-import dk.statsbiblioteket.doms.central.connectors.fedora.structures.ObjectProfile;
 import org.mockito.ArgumentCaptor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
+import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
+import dk.statsbiblioteket.doms.central.connectors.fedora.structures.ObjectProfile;
 
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public class DomsEventClientCentralTest {
+public class DomsEventStorageTest {
 
     public static final String BATCH_ID = "400022028241";
     public static final int ROUND_TRIP_NUMBER = 1;
@@ -35,14 +36,14 @@ public class DomsEventClientCentralTest {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 fedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
 
         doms.addEventToBatch(
                 BATCH_ID, ROUND_TRIP_NUMBER + 1, "agent", new Date(0), "Details here", "Data_Received", true);
@@ -60,14 +61,14 @@ public class DomsEventClientCentralTest {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 fedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
 
         doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
 
@@ -83,14 +84,14 @@ public class DomsEventClientCentralTest {
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupBatchNoRoundTripObject(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 fedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
 
         doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
 
@@ -106,14 +107,14 @@ public class DomsEventClientCentralTest {
     public void testCreateBatchRoundTrip() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 fedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
         doms.createBatchRoundTrip(BATCH_ID, ROUND_TRIP_NUMBER);
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
@@ -154,14 +155,14 @@ public class DomsEventClientCentralTest {
                 anyString(),
                 anyLong());
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 enhancedFedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L);
         assertEquals(eventsRemoved, 6);
@@ -225,14 +226,14 @@ public class DomsEventClientCentralTest {
                 anyString(),
                 anyLong());
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 enhancedFedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L, "e5");
         assertEquals(eventsRemoved, 4);
@@ -296,14 +297,14 @@ public class DomsEventClientCentralTest {
                 anyString(),
                 anyLong());
 
-        DomsEventClientCentral doms = new DomsEventClientCentral(
+        DomsEventStorage doms = new DomsEventStorage(
                 enhancedFedora,
                 new NewspaperIDFormatter(),
                 PremisManipulatorFactory.TYPE,
-                DomsEventClientFactory.BATCH_TEMPLATE,
-                DomsEventClientFactory.ROUND_TRIP_TEMPLATE,
-                DomsEventClientFactory.HAS_PART,
-                DomsEventClientFactory.EVENTS);
+                DomsEventStorageFactory.BATCH_TEMPLATE,
+                DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
+                DomsEventStorageFactory.HAS_PART,
+                DomsEventStorageFactory.EVENTS);
         final int MAX_ATTEMPTS = 10;
         try {
             int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L);

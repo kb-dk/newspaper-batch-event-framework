@@ -3,8 +3,6 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +48,6 @@ public class AutonomousComponentUtils {
                 new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
-        //Make a batch event client to query and store events
-        BatchEventClient eventClient = new BatchEventClientImpl(
-                properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
-                properties.getProperty(ConfigConstants.DOMS_URL),
-                properties.getProperty(ConfigConstants.DOMS_USERNAME),
-                properties.getProperty(ConfigConstants.DOMS_PASSWORD),
-                properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
-
-
         //This is the number of batches that will be worked on in parallel per invocation
         int simultaneousProcesses = Integer.parseInt(
                 properties.getProperty(
@@ -82,9 +71,7 @@ public class AutonomousComponentUtils {
         //Use all the above to make the autonomous component
         AutonomousComponent autonoumous = new AutonomousComponent(
                 component,
-                lockClient,
-                eventClient,
-                simultaneousProcesses,
+                lockClient, simultaneousProcesses,
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),

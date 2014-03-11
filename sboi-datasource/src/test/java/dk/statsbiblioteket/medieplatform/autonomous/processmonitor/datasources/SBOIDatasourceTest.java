@@ -1,16 +1,15 @@
 package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClientImpl;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
-import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.util.Pair;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Properties;
 
 public class SBOIDatasourceTest extends TCKTestSuite {
@@ -33,36 +32,19 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
             conf.setDomsPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
             dataSource = new SBOIDatasource(conf);
-            BatchEventClientImpl batchClient = new BatchEventClientImpl(
-                    conf.getSummaLocation(),
-                    conf.getDomsLocation(),
-                    conf.getDomsUser(),
-                    conf.getDomsPassword(),
-                    props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+            DomsEventStorageFactory domsEventStorageFactory = new DomsEventStorageFactory();
+            domsEventStorageFactory.setFedoraLocation(conf.getDomsLocation());
+            domsEventStorageFactory.setUsername(conf.getDomsUser());
+            domsEventStorageFactory.setPassword(conf.getDomsPassword());
+            domsEventStorageFactory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+            DomsEventStorage domsClient;
             try {
-                try {
-                    Batch testBatch = batchClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
-                } catch (NotFoundException e) {
-                    //So, the test batch was not in the system
-
-                    //Add it
-                    batchClient.addEventToBatch(
-                            getValidBatchID().getLeft(),
-                            getValidBatchID().getRight(),
-                            "SBOI unit test",
-                            new Date(),
-                            "no details",
-                            getValidAndSucessfullEventIDForValidBatch(),
-                            true);
-
-                    try {
-                        //Wait for the Summa system to reindex the doms
-                        Thread.sleep(6 * MINUTES);
-                    } catch (InterruptedException e1) {
-                        //so, if you want to interruped me, fix it yourself.
-                    }
-                }
-
+                domsClient = domsEventStorageFactory.createDomsEventStorage();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                Batch testBatch = domsClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
             } catch (CommunicationException e) {
                 throw new RuntimeException(e);
             }

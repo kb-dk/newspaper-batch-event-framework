@@ -1,16 +1,16 @@
 package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
-import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIClientImpl;
-import dk.statsbibliokeket.newspaper.batcheventFramework.SBOIInterface;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClientFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
+import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
+import dk.statsbiblioteket.medieplatform.autonomous.EventExplorer;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.SBOIEventIndex;
 
 import javax.xml.bind.JAXBException;
 import java.net.MalformedURLException;
@@ -24,19 +24,19 @@ import java.util.Map;
 public class SBOIDatasource implements DataSource {
 
     private SBOIDatasourceConfiguration configuration;
-    private SBOIInterface client = null;
+    private EventExplorer client = null;
 
     public SBOIDatasource(SBOIDatasourceConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    private synchronized SBOIInterface getClient() {
+    private synchronized EventExplorer getEventExplorer() {
         try {
             if (client == null) {
-                client = new SBOIClientImpl(
+                client = new SBOIEventIndex(
                         configuration.getSummaLocation(),
                         new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE),
-                        getDomsEventClient());
+                        getDomsEventStorage());
             }
             return client;
         } catch (Exception e) {
@@ -44,20 +44,20 @@ public class SBOIDatasource implements DataSource {
         }
     }
 
-    private DomsEventClient getDomsEventClient() {
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+    private DomsEventStorage getDomsEventStorage() {
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
 
         factory.setFedoraLocation(configuration.getDomsLocation());
         factory.setUsername(configuration.getDomsUser());
         factory.setPassword(configuration.getDomsPassword());
-        DomsEventClient domsEventClient;
+        DomsEventStorage domsEventStorage;
         try {
-            domsEventClient = factory.createDomsEventClient();
+            domsEventStorage = factory.createDomsEventStorage();
         } catch (JAXBException | MalformedURLException | PIDGeneratorException e) {
             throw new RuntimeException(e);
         }
 
-        return domsEventClient;
+        return domsEventStorage;
 
     }
 
@@ -65,8 +65,8 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<Batch> batches = getClient().getBatches(
-                    includeDetails, Arrays.asList("Data_Received"), new ArrayList<String>(), new ArrayList<String>());
+            Iterator<Batch> batches = getEventExplorer().getBatches(includeDetails, Arrays.asList("Data_Received"),
+                                                                   new ArrayList<String>(), new ArrayList<String>());
             return iteratorToList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
@@ -123,7 +123,7 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            return getClient().getBatch(batchID, roundTripNumber, includeDetails);
+            return getDomsEventStorage().getBatch(batchID, roundTripNumber);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }

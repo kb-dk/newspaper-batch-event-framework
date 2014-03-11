@@ -1,7 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.util.Strings;
 import org.slf4j.Logger;
+
+import dk.statsbiblioteket.util.Strings;
 
 import java.util.Date;
 
@@ -18,16 +19,16 @@ public class BatchWorker implements Runnable {
     RunnableComponent component;
     private ResultCollector resultCollector;
     private Batch batch;
-    private DomsEventClient batchEventClient;
+    private EventStorer eventStorer;
     private boolean pause = false;
     private boolean stop = false;
 
     public BatchWorker(RunnableComponent component, ResultCollector resultCollector, Batch batch,
-                       DomsEventClient batchEventClient) {
+                       EventStorer eventStorer) {
         this.component = component;
         this.resultCollector = resultCollector;
         this.batch = batch;
-        this.batchEventClient = batchEventClient;
+        this.eventStorer = eventStorer;
     }
 
     private String getComponentFormattedName() {
@@ -82,14 +83,9 @@ public class BatchWorker implements Runnable {
                 log.warn("The worker is stopped, so the result will not be preserved");
                 return;
             }
-            batchEventClient.addEventToBatch(
-                    batch.getBatchID(),
-                    batch.getRoundTripNumber(),
-                    getComponentFormattedName(),
-                    result.getTimestamp(),
-                    result.toReport(),
-                    component.getEventID(),
-                    result.isSuccess());
+            eventStorer.addEventToBatch(batch.getBatchID(), batch.getRoundTripNumber(),
+                                             getComponentFormattedName(), result.getTimestamp(), result.toReport(),
+                                             component.getEventID(), result.isSuccess());
         } catch (Throwable e) {
             log.error("Caught exception while attempting to preserve result for batch", e);
             resultCollector.addFailure(

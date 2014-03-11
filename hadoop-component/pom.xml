@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>runnable-compoment</artifactId>
+            <artifactId>doms-event-client</artifactId>
             <version> 1.6-SNAPSHOT</version>
         </dependency>
         <dependency>

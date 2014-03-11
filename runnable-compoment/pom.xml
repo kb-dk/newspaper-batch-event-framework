@@ -15,22 +15,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
-            <version>1.42</version>
-            <scope>test</scope>
-            <!-- Include this if you have dependency conflicts for Guava, Jetty, Jackson or Apache HTTP Client -->
-            <!--<classifier>standalone</classifier>-->
-        </dependency>
-
-        <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>tree-processor</artifactId>
+            <artifactId>batch-event-framework-common</artifactId>
             <version>1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.doms.central</groupId>
-            <artifactId>centralWebservice-lib</artifactId>
         </dependency>
     </dependencies>
 

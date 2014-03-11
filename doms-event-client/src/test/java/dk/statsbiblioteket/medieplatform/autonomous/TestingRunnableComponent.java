@@ -2,7 +2,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import java.util.Properties;
 
-public class TestingRunnableComponent extends AbstractRunnableComponent {
+public class TestingRunnableComponent extends SBOIBasedAbstractRunnableComponent {
 
     protected TestingRunnableComponent(Properties properties) {
         super(properties);

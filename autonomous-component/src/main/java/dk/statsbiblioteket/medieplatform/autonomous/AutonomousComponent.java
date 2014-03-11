@@ -3,7 +3,6 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.recipes.locks.InterProcessLock;
 import com.netflix.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
-import dk.statsbibliokeket.newspaper.batcheventFramework.BatchEventClient;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ public class AutonomousComponent implements Callable<CallResult> {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
-    private final BatchEventClient batchEventClient;
     private final long timeoutSBOI;
     private final long timeoutBatch;
     private final RunnableComponent runnable;
@@ -43,21 +41,17 @@ public class AutonomousComponent implements Callable<CallResult> {
     private Integer maxResults;
 
 
-    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient,
-                               BatchEventClient batchEventClient, int simultaneousProcesses,
-                               List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                               List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout) {
-        this(runnable, lockClient, batchEventClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
+    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
+                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout) {
+        this(runnable, lockClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
                 futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null);
     }
 
-    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient,
-                               BatchEventClient batchEventClient, int simultaneousProcesses,
-                               List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                               List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout, Integer maxResults) {
+    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
+                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
+                               Integer maxResults) {
 
         this.lockClient = lockClient;
-        this.batchEventClient = batchEventClient;
         this.timeoutSBOI = timeoutSBOI;
         this.timeoutBatch = timeoutBatch;
         this.runnable = runnable;
@@ -174,8 +168,8 @@ public class AutonomousComponent implements Callable<CallResult> {
                 log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = batchEventClient.getCheckedBatches(
-                        false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                Iterator<Batch> batches = runnable.getEventTrigger().getTriggeredBatches(pastSuccessfulEvents,
+                                                                                         pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
@@ -193,8 +187,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                         BatchWorker worker = new BatchWorker(
                                 runnable,
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
-                                batch,
-                                batchEventClient);
+                                batch, runnable.getEventStorer());
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
                             log.info("We now have sufficient workers, look for no more batches");
@@ -255,53 +248,6 @@ public class AutonomousComponent implements Callable<CallResult> {
             releaseQuietly(SBOILock);
         }
         return result;
-    }
-
-    /**
-     * This method blocks until:
-     * A query to the batchEventClient (SBOI) returns no batches that the supplied workers have worked on.
-     * If this method was not called, any further invocation of the component would start to work on the same
-     * batches as this invocation. This method in effect blocks until the SBOI have been reindexed.
-     * This method uses busy waiting, until we can devise a better waiting scheme. It sleeps for pollTime milliseconds
-     *
-     * @param workers the workers that have worked
-     *
-     * @throws CommunicationException if communication with SBOI failed
-     * @see #pollTime
-     */
-    private void waitUntilSBOIUpdated(Map<BatchWorker, InterProcessLock> workers) throws CommunicationException {
-        while (true) {
-            Set<Batch> batches = asSet(
-                    batchEventClient.getBatches(
-                            false, pastSuccessfulEvents, pastFailedEvents, futureEvents));
-            boolean allBatchesAreDone = true;
-            for (Map.Entry<BatchWorker, InterProcessLock> batchWorkerInterProcessLockEntry : workers.entrySet()) {
-                Batch batch = batchWorkerInterProcessLockEntry.getKey().getBatch();
-                InterProcessLock lock = batchWorkerInterProcessLockEntry.getValue();
-                if (!batches.contains(batch)) {
-                    log.debug(
-                            "Batch {} not is no longer available for us, so the SBOI index have updated",
-                            batch.getFullID());
-                } else {
-                    log.debug(
-                            "Batch {} is still available for us, so the SBOI index have not yet updated",
-                            batch.getFullID());
-                    allBatchesAreDone = false;
-                    break;
-                }
-            }
-            if (allBatchesAreDone) {
-                log.info("All our batches is no longer available from the SBOI, we can now shut down.");
-                break;
-            } else {
-                try {
-                    log.debug("Some of our batches have yet to be updated in SBOI, time to sleep.");
-                    Thread.sleep(pollTime);
-                } catch (InterruptedException e) {
-                    //ignore
-                }
-            }
-        }
     }
 
     private Set<Batch> asSet(Iterator<Batch> batches) {

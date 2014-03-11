@@ -1,9 +1,10 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
-import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
+import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 
 import java.io.FileInputStream;
 import java.util.Date;
@@ -13,7 +14,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class DomsEventClientIntegrationTest {
+public class DomsEventStorageIntegrationTest {
 
     @Test(groups = {"externalTest"})
     public void testAddEventToBatch1() throws Exception {
@@ -21,15 +22,13 @@ public class DomsEventClientIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-
-        DomsEventClient doms = factory.createDomsEventClient();
-
+        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -48,10 +47,9 @@ public class DomsEventClientIntegrationTest {
 
 
         try {
-            doms.addEventToBatch(
-                    batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
+            domsEventStorage.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
 
-            Batch batch = doms.getBatch(batchId, roundTripNumber);
+            Batch batch = domsEventStorage.getBatch(batchId, roundTripNumber);
             Assert.assertEquals(batch.getBatchID(), batchId);
             Assert.assertEquals(batch.getRoundTripNumber(), roundTripNumber);
 
@@ -68,10 +66,9 @@ public class DomsEventClientIntegrationTest {
 
 
             Integer newRoundTripNumber = roundTripNumber + 5;
-            doms.addEventToBatch(
-                    batchId, newRoundTripNumber, "agent", timestamp, details, eventID, true);
+            domsEventStorage.addEventToBatch(batchId, newRoundTripNumber, "agent", timestamp, details, eventID, true);
 
-            batch = doms.getBatch(batchId, newRoundTripNumber);
+            batch = domsEventStorage.getBatch(batchId, newRoundTripNumber);
             Assert.assertEquals(batch.getBatchID(), batchId);
             Assert.assertEquals(batch.getRoundTripNumber(), newRoundTripNumber);
 
@@ -111,13 +108,13 @@ public class DomsEventClientIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        DomsEventClient doms = factory.createDomsEventClient();
+        EventStorer eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -137,9 +134,9 @@ public class DomsEventClientIntegrationTest {
 
         try {
 
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
 
-            String backupEvents = ((DomsEventClientCentral) doms).backupEventsForBatch(batchId, roundTripNumber);
+            String backupEvents = ((DomsEventStorage) eventStorer).backupEventsForBatch(batchId, roundTripNumber);
             assertTrue(
                     backupEvents.matches("EVENTS_[0-9]{1,}"),
                     "Failed to create backup events datastream. Unexpected name '" + backupEvents + "'");
@@ -173,13 +170,13 @@ public class DomsEventClientIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        DomsEventClient doms = factory.createDomsEventClient();
+        EventStorer eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -195,15 +192,15 @@ public class DomsEventClientIntegrationTest {
         NewspaperIDFormatter formatter = new NewspaperIDFormatter();
 
         try {
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(100), details, "e1", true);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(200), details, "e2", true);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(300), details, "e3", true);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(400), details, "e4", false);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(500), details, "e5", true);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(600), details, "e6", false);
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(700), details, "e7", true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(100), details, "e1", true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(200), details, "e2", true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(300), details, "e3", true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(400), details, "e4", false);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(500), details, "e5", true);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(600), details, "e6", false);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(700), details, "e7", true);
 
-            doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
 
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
@@ -241,13 +238,13 @@ public class DomsEventClientIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventClientFactory factory = new DomsEventClientFactory();
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        DomsEventClient doms = factory.createDomsEventClient();
+        EventStorer eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -263,15 +260,15 @@ public class DomsEventClientIntegrationTest {
         try {
             String details = "Details here";
 
-            doms.addEventToBatch(batchId, roundTripNumber, "agent", new Date(-1000L), details, "e1", false);
+            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(-1000L), details, "e1", false);
 
-            doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
 
 
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(events.contains("event"), events);
-            doms.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
         } finally {
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId)).get(0);
             if (pid != null) {

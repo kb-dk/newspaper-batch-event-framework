@@ -1,10 +1,5 @@
 package dk.statsbiblioteket.medieplatform.hadoop;
 
-import dk.statsbiblioteket.medieplatform.autonomous.AbstractRunnableComponent;
-import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
-import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
-import dk.statsbiblioteket.util.xml.XSLT;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -15,6 +10,12 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
+import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
+import dk.statsbiblioteket.medieplatform.autonomous.SBOIBasedAbstractRunnableComponent;
+import dk.statsbiblioteket.util.xml.XSLT;
 
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import java.util.Properties;
  *
  * The doWorkOnBatch method have been implemented, and a abstract getTool()
  */
-public abstract class AbstractHadoopRunnableComponent extends AbstractRunnableComponent {
+public abstract class AbstractHadoopRunnableComponent extends SBOIBasedAbstractRunnableComponent {
 
     private static Logger log = LoggerFactory.getLogger(AbstractHadoopRunnableComponent.class);
 

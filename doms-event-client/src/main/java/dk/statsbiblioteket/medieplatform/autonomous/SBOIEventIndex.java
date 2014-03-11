@@ -1,20 +1,15 @@
-package dk.statsbibliokeket.newspaper.batcheventFramework;
+package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
-import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventClient;
-import dk.statsbiblioteket.medieplatform.autonomous.Event;
-import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
-import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
-import dk.statsbiblioteket.util.xml.DOM;
-import dk.statsbiblioteket.util.xml.XPathSelector;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
+import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
+import dk.statsbiblioteket.util.xml.DOM;
+import dk.statsbiblioteket.util.xml.XPathSelector;
 
 import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
@@ -26,27 +21,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/** Implementation of the SBOI interface. Uses soap, json and xml to query the summa instance for batches */
-public class SBOIClientImpl implements SBOIInterface {
+/** Implementation of the {@link EventExplorer} and {@link EventTrigger} interface using SBOI summa index and DOMS.
+ * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS. */
+public class SBOIEventIndex implements EventTrigger, EventExplorer {
 
     private static final String SUCCESSEVENT = "success_event";
     private static final String FAILEVENT = "fail_event";
     private static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     private static final String ROUND_TRIP_NO = "round_trip_no";
     private static final String BATCH_ID = "batch_id";
-    private static final String PREMIS = "premis";
     private static final String UUID = "round_trip_uuid";
     private static final String PREMIS_NO_DETAILS = "premis_no_details";
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchEventClientImpl.class);
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
     private final PremisManipulatorFactory premisManipulatorFactory;
-    private DomsEventClient domsEventClient;
+    private DomsEventStorage domsEventStorage;
     private final SearchWS summaSearch;
 
-    public SBOIClientImpl(String summaLocation, PremisManipulatorFactory premisManipulatorFactory,
-                          DomsEventClient domsEventClient) throws MalformedURLException {
+    public SBOIEventIndex(String summaLocation, PremisManipulatorFactory premisManipulatorFactory,
+                          DomsEventStorage domsEventStorage) throws MalformedURLException {
         this.premisManipulatorFactory = premisManipulatorFactory;
-        this.domsEventClient = domsEventClient;
+        this.domsEventStorage = domsEventStorage;
         summaSearch = new SearchWSService(
                 new java.net.URL(summaLocation),
                 new QName("http://statsbiblioteket.dk/summa/search", "SearchWSService")).getSearchWS();
@@ -61,25 +56,21 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     @Override
-    public Iterator<Batch> getCheckedBatches(boolean details, List<String> pastSuccessfulEvents,
-                                             List<String> pastFailedEvents, List<String> futureEvents) throws
+    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException {
+        return domsEventStorage.getBatch(batchId, roundTripNumber);
+    }
+
+    @Override
+    public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                               List<String> futureEvents) throws
                                                                                                        CommunicationException {
-        Iterator<Batch> sboiBatches = getBatches(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        Iterator<Batch> sboiBatches = getBatches(false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();
-            try {
-                Batch instead;
-                if (details) { //No need to look it up again, details cause us to look up from doms anyhow
-                    instead = next;
-                } else {
-                    instead = domsEventClient.getBatch(next.getDomsID());
-                }
-                if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
-                    result.add(instead);
-                }
-            } catch (NotFoundException e) {
-                throw new CommunicationException(e);
+            Batch instead = domsEventStorage.getBatch(next.getDomsID());
+            if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
+                result.add(instead);
             }
         }
         return result.iterator();
@@ -162,7 +153,7 @@ public class SBOIClientImpl implements SBOIInterface {
                     result.setDomsID(uuid);
 
                 } else {//Details requested so go to DOMS
-                    result = domsEventClient.getBatch(uuid);
+                    result = domsEventStorage.getBatch(uuid);
                 }
 
                 results.add(result);
@@ -197,27 +188,6 @@ public class SBOIClientImpl implements SBOIInterface {
         }
     }
 
-    /**
-     * Retrieve a batch from the summa index
-     *
-     * @param batchID         the batch id
-     * @param roundTripNumber the round trip number
-     *
-     * @return the batch if found
-     * @throws CommunicationException if the communication failed
-     * @throws NotFoundException      if the described batch could not be found
-     */
-    @Override
-    public Batch getBatch(String batchID, Integer roundTripNumber, boolean details) throws
-                                                                                    CommunicationException,
-                                                                                    NotFoundException {
-        Iterator<Batch> result = search(details, batchID, roundTripNumber, null, null, null);
-        if (result.hasNext()) {
-            return result.next();
-        }
-        throw new NotFoundException("batchid " + batchID + " not found");
-    }
-
     private String spaced(String string) {
         return " " + string.trim() + " ";
     }
@@ -227,7 +197,7 @@ public class SBOIClientImpl implements SBOIInterface {
     }
 
     /**
-     * Format the retrictions as a summa query string
+     * Format the restrictions as a summa query string
      *
      * @param batchID              the batch id
      * @param roundTripNumber      the round trip number

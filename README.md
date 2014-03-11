@@ -4,21 +4,6 @@ newspaper-batch-event-framework
 This component consists of the following parts, in order of invocation:
 
 
-Batch-trigger
------------------------
-Bridges the script with DomsEventClient, by receiving command line arguments,
-and calling methods on DomsEventClient to create a batch object in DOMS with a
-Premis event representing the triggering attached.
-
-trigger-on-new-batch script:
-Configured by IT Operations and run from a cron job. This script looks for new
-(not previously processed) batches received from Ninestars. Then calls the
-CreateBatch java module with the batch ID and round trip number from the
-received batch directory structure, as well as the connection-information to
-DOMS and a PID (Persistent ID) generator.
-
-
-
 Doms-event-client
 ---------------------------
 Creates a batch object in DOMS with a Premis event.
@@ -30,7 +15,10 @@ Manipulates a Premis event, creates a new one if one is not given.
 
 Batch-event-framework-common
 -----------------------------
-This module have the very most common classes, such as Batch and Event. Everybody will need to depend on this
+This module have the very most common classes, such as Batch and Event, and interfaces such as EventTrigger,
+EventExplorer and EventStorer.
+
+Everybody will need to depend on this.
 
 Tree-processor
 ----------------------------
@@ -47,7 +35,7 @@ This module is a group of three modules concerning themselves with the process m
 
 SBOI-datasource
 --------------------------
-This module is an implemenation of the datasource interface by using the Batch-event-client to query SBOI for
+This module is an implementation of the datasource interface by using the event explorer to query SBOI and DOMS for
 batches.
 
 Autonomous-component
@@ -56,10 +44,17 @@ This module holds the code that allows you to make an autonomous component
 
 Runnable-component
 --------------------------
-This code holds the runnable component interfaces, that you must implement to make a component for this framework
+This code holds the runnable component interfaces, that you must implement to make a runnable component for this framework
 or the ninestars suite
 
 Sample-autonomous-component
 --------------------------
 This is the sample autonomous component, that should help you get started writing your own
 
+Hadoop-helpers
+--------------------------
+Helper code for writing hadoop jobs and integrating with this framework.
+
+Hadoop-component
+--------------------------
+A runnable component superclass for hadoop jobs.

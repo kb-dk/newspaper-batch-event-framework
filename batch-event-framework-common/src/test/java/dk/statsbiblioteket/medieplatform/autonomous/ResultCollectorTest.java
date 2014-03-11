@@ -23,8 +23,8 @@ public class ResultCollectorTest {
         }
         String report = resultCollector.toReport();
         assertEquals(maxResults, report.split("<failure>").length - 1, "More results than maxresults " + report);
-        assertTrue(report.contains(actualResults + ""), "Report does not contain expected result " + report);
-        assertFalse(report.contains((actualResults -1 ) + ""), "Report contains unexpected result " + report);
+        assertTrue(report.contains("number of results ("+  actualResults + ")"), "Report does not contain expected result " + report);
+        assertFalse(report.contains("number of results ("+  (actualResults -1 ) + ""), "Report contains unexpected result " + report);
     }
 
 

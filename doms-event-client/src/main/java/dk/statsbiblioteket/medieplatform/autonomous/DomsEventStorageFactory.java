@@ -8,10 +8,13 @@ import javax.xml.bind.JAXBException;
 import java.net.MalformedURLException;
 
 /**
- * Factory to create the doms event client. Usage pattern: Create a new factory object. Use the setters to set
- * properties. When done, call createDomsEventClient, and a doms event client will be constructed
+ * Factory to create the {@link DomsEventStorage} implementation of {@link EventStorer}.
+ *
+ * Usage pattern:
+ *   Create a new factory object. Use the setters to set properties.
+ *   When done, call {@link #createDomsEventStorage}, and a doms event storage will be constructed.
  */
-public class DomsEventClientFactory {
+public class DomsEventStorageFactory {
 
 
     //Default values
@@ -37,18 +40,18 @@ public class DomsEventClientFactory {
     private String eventsDatastream = EVENTS;
 
     /**
-     * Create the doms event client from the properties
+     * Create the doms event storage from the properties
      *
-     * @return a new doms event client
+     * @return a new doms event storage
      * @throws JAXBException         if failure to parse the included premis schemas. Should not happen
      * @throws PIDGeneratorException Failure to communicate with the pid generator
      * @throws MalformedURLException if any of the urls were broken
      */
-    public DomsEventClient createDomsEventClient() throws JAXBException, PIDGeneratorException, MalformedURLException {
+    public DomsEventStorage createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                 creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null);
-        return new DomsEventClientCentral(
+        return new DomsEventStorage(
                 fedora,
                 idFormatter,
                 premisIdentifierType,
