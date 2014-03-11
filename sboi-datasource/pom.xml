@@ -65,6 +65,11 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>doms-event-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>premis-manipulator</artifactId>
             <version>${project.version}</version>
         </dependency>

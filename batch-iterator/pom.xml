@@ -51,11 +51,6 @@
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>doms-event-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>tree-processor</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -65,21 +60,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>dk.statsbiblioteket.doms.central</groupId>
-            <artifactId>summaSearch-interface</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <classifier>jdk15</classifier>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
