@@ -21,8 +21,8 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Batch> batches = summa.getBatches(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+        Iterator<Batch> batches = summa.findBatches(false, Arrays.asList("Data_Received"), new ArrayList<String>(),
+                                                    Arrays.asList("Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();

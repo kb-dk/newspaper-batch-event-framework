@@ -6,7 +6,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
-import dk.statsbiblioteket.medieplatform.autonomous.EventExplorer;
+import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
@@ -24,13 +24,13 @@ import java.util.Map;
 public class SBOIDatasource implements DataSource {
 
     private SBOIDatasourceConfiguration configuration;
-    private EventExplorer client = null;
+    private EventAccessor client = null;
 
     public SBOIDatasource(SBOIDatasourceConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    private synchronized EventExplorer getEventExplorer() {
+    private synchronized EventAccessor getEventExplorer() {
         try {
             if (client == null) {
                 client = new SBOIEventIndex(
@@ -65,8 +65,8 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<Batch> batches = getEventExplorer().getBatches(includeDetails, Arrays.asList("Data_Received"),
-                                                                   new ArrayList<String>(), new ArrayList<String>());
+            Iterator<Batch> batches = getEventExplorer().findBatches(includeDetails, Arrays.asList("Data_Received"),
+                                                                     new ArrayList<String>(), new ArrayList<String>());
             return iteratorToList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);

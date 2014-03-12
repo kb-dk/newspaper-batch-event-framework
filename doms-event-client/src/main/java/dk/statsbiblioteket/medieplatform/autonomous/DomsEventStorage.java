@@ -18,7 +18,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 
-/** Implementation of the EventStorer and EventExplorer, using the Central Webservice library to communicate with DOMS */
+/** Access to DOMS batch and event storageusing the Central Webservice library to communicate with DOMS.
+ * Implements the {@link EventStorer} interface. */
 public class DomsEventStorage implements EventStorer {
 
     private static Logger log = LoggerFactory.getLogger(DomsEventStorage.class);

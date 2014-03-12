@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/** Implementation of the {@link EventExplorer} and {@link EventTrigger} interface using SBOI summa index and DOMS.
+/** Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
  * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS. */
-public class SBOIEventIndex implements EventTrigger, EventExplorer {
+public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
     private static final String SUCCESSEVENT = "success_event";
     private static final String FAILEVENT = "fail_event";
@@ -49,8 +49,8 @@ public class SBOIEventIndex implements EventTrigger, EventExplorer {
     }
 
     @Override
-    public Iterator<Batch> getBatches(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                      List<String> futureEvents) throws CommunicationException {
+    public Iterator<Batch> findBatches(boolean details, List<String> pastSuccessfulEvents,
+                                       List<String> pastFailedEvents, List<String> futureEvents) throws CommunicationException {
 
         return search(details, null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
@@ -64,7 +64,7 @@ public class SBOIEventIndex implements EventTrigger, EventExplorer {
     public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                                List<String> futureEvents) throws
                                                                                                        CommunicationException {
-        Iterator<Batch> sboiBatches = getBatches(false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        Iterator<Batch> sboiBatches = findBatches(false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();

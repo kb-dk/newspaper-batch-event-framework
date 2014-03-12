@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Interface for exploring details about events.
+ * Interface for accessing details about events.
  */
-public interface EventExplorer {
+public interface EventAccessor {
     /**
      * Retrieve a batch
      *
@@ -29,7 +29,7 @@ public interface EventExplorer {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Batch> getBatches(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                      List<String> futureEvents) throws CommunicationException;
+    public Iterator<Batch> findBatches(boolean details, List<String> pastSuccessfulEvents,
+                                       List<String> pastFailedEvents, List<String> futureEvents) throws CommunicationException;
 
 }
