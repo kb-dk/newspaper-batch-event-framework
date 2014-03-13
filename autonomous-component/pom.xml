@@ -12,11 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>runnable-compoment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.netflix.curator</groupId>
             <artifactId>curator-recipes</artifactId>
         </dependency>
