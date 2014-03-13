@@ -10,7 +10,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator
 import java.util.Date;
 import java.util.Properties;
 
-public class SampleRunnableComponent extends SBOIBasedAbstractRunnableComponent {
+public class SampleRunnableComponent extends TreeProcessorAbstractRunnableComponent {
 
     private static Logger log = LoggerFactory.getLogger(SampleRunnableComponent.class);
 

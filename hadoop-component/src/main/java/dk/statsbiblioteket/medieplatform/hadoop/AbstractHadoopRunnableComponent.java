@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
-import dk.statsbiblioteket.medieplatform.autonomous.SBOIBasedAbstractRunnableComponent;
+import dk.statsbiblioteket.medieplatform.autonomous.TreeProcessorAbstractRunnableComponent;
 import dk.statsbiblioteket.util.xml.XSLT;
 
 import javax.xml.transform.TransformerException;
@@ -32,7 +32,7 @@ import java.util.Properties;
  *
  * The doWorkOnBatch method have been implemented, and a abstract getTool()
  */
-public abstract class AbstractHadoopRunnableComponent extends SBOIBasedAbstractRunnableComponent {
+public abstract class AbstractHadoopRunnableComponent extends TreeProcessorAbstractRunnableComponent {
 
     private static Logger log = LoggerFactory.getLogger(AbstractHadoopRunnableComponent.class);
 

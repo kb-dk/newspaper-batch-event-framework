@@ -49,8 +49,9 @@ public class AutonomousComponentTest {
                 null,
                 DEFAULT_TIMEOUT,
                 DEFAULT_TIMEOUT,
-                DEFAULT_TIMEOUT);
-
+                DEFAULT_TIMEOUT,
+                component.getEventTrigger(),
+                component.getEventStorer());
     }
 
     /**

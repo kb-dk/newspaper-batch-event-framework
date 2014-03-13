@@ -13,15 +13,15 @@
 
 
     <modules>
-        <module>premis-manipulator</module>
-        <module>doms-event-client</module>
+        <module>sboi-doms-event-framework</module>
         <module>process-monitor-datasource</module>
         <module>autonomous-component</module>
         <module>tree-processor</module>
+        <module>tree-processor-runnable-component</module>
+        <module>sboi-doms-autonomous-component</module>
         <module>sample-autonomous-component</module>
         <module>sboi-datasource</module>
         <module>batch-event-framework-common</module>
-        <module>runnable-compoment</module>
         <module>hadoop-component</module>
         <module>hadoop-helpers</module>
         <module>batch-iterator</module>

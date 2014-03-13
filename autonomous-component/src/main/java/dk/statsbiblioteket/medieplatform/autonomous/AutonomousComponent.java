@@ -39,17 +39,19 @@ public class AutonomousComponent implements Callable<CallResult> {
     private boolean paused = false;
     private boolean stopped = false;
     private Integer maxResults;
-
+    private EventTrigger eventTrigger;
+    private EventStorer eventStorer;
 
     public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
-                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout) {
+                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
+                               EventTrigger eventTrigger, EventStorer eventStorer) {
         this(runnable, lockClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
-                futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null);
+                futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null, eventTrigger, eventStorer);
     }
 
     public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
                                List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
-                               Integer maxResults) {
+                               Integer maxResults, EventTrigger eventTrigger, EventStorer eventStorer) {
 
         this.lockClient = lockClient;
         this.timeoutSBOI = timeoutSBOI;
@@ -60,6 +62,8 @@ public class AutonomousComponent implements Callable<CallResult> {
         this.pastSuccessfulEvents = pastSuccessfulEvents;
         this.pastFailedEvents = pastFailedEvents;
         this.futureEvents = futureEvents;
+        this.eventTrigger = eventTrigger;
+        this.eventStorer = eventStorer;
         concurrencyConnectionStateListener = new ConcurrencyConnectionStateListener(this);
         this.lockClient.getConnectionStateListenable().addListener(concurrencyConnectionStateListener);
         this.maxResults = maxResults;
@@ -168,8 +172,8 @@ public class AutonomousComponent implements Callable<CallResult> {
                 log.info("SBOI locked, quering for batches");
                 //get batches, lock n, release the SBOI
                 //get batches
-                Iterator<Batch> batches = runnable.getEventTrigger().getTriggeredBatches(pastSuccessfulEvents,
-                                                                                         pastFailedEvents, futureEvents);
+                Iterator<Batch> batches = eventTrigger
+                        .getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (batches.hasNext()) {
                     Batch batch = batches.next();
@@ -187,7 +191,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                         BatchWorker worker = new BatchWorker(
                                 runnable,
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
-                                batch, runnable.getEventStorer());
+                                batch, eventStorer);
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
                             log.info("We now have sufficient workers, look for no more batches");

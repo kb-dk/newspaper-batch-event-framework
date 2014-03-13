@@ -30,7 +30,6 @@ public class TestingComponent implements RunnableComponent {
         System.out.println("working");
     }
 
-    @Override
     public EventTrigger getEventTrigger() {
         return new EventTrigger() {
             @Override
@@ -42,7 +41,6 @@ public class TestingComponent implements RunnableComponent {
         };
     }
 
-    @Override
     public EventStorer getEventStorer() {
         return new EventStorer() {
             @Override

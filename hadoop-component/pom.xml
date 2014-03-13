@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>doms-event-client</artifactId>
+            <artifactId>tree-processor-runnable-component</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

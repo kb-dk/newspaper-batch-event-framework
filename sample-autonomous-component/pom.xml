@@ -13,12 +13,12 @@
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>autonomous-component</artifactId>
+            <artifactId>tree-processor-runnable-component</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>doms-event-client</artifactId>
+            <artifactId>sboi-doms-autonomous-component</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
