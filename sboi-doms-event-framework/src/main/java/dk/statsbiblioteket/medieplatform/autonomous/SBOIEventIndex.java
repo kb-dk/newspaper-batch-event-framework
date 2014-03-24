@@ -56,7 +56,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException {
+    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         return domsEventStorage.getBatch(batchId, roundTripNumber);
     }
 

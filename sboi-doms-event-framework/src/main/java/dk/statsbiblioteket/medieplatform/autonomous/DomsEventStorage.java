@@ -31,8 +31,8 @@ public class DomsEventStorage implements EventStorer {
     private final String hasPart_relation;
     private final String eventsDatastream;
     private final PremisManipulatorFactory premisFactory;
-    private String createBatchRoundTripComment = "TODO"; //TODO
-    private String addEventToBatchComment = "TODO";//TODO
+    private String createBatchRoundTripComment = "Creating batch round trip";
+    private String addEventToBatchComment = "Adding event to natch round trip";
 
     DomsEventStorage(EnhancedFedora fedora, IDFormatter idFormatter, String type, String batchTemplate,
                      String roundTripTemplate, String hasPart_relation, String eventsDatastream) throws
@@ -135,13 +135,13 @@ public class DomsEventStorage implements EventStorer {
 
     }
 
-    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException {
+    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         String roundTripID;
         try {
             roundTripID = getRoundTripID(batchId, roundTripNumber);
             return getBatch(roundTripID);
         } catch (BackendInvalidResourceException e) {
-            throw new CommunicationException(e);
+            throw new NotFoundException(e);
         }
 
 
