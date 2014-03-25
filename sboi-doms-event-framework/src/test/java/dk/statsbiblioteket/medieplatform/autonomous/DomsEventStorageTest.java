@@ -1,12 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import org.mockito.ArgumentCaptor;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
 import dk.statsbiblioteket.doms.central.connectors.fedora.structures.ObjectProfile;
+import org.mockito.ArgumentCaptor;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
@@ -153,6 +152,7 @@ public class DomsEventStorageTest {
                 any(byte[].class),
                 any((new ArrayList<String>()).getClass()),
                 anyString(),
+                anyString(),
                 anyLong());
 
         DomsEventStorage doms = new DomsEventStorage(
@@ -172,14 +172,13 @@ public class DomsEventStorageTest {
 
         //There should be two calls to each of these methods, once for each attempt
         verify(enhancedFedora, times(2)).modifyDatastreamByValue(
-                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
                 anyString(),
                 anyString(),
                 any(ChecksumType.class),
                 anyString(),
                 captor.capture(),
                 any((new ArrayList<String>()).getClass()),
+                anyString(),
                 anyString(),
                 anyLong());
 
@@ -224,6 +223,7 @@ public class DomsEventStorageTest {
                 any(byte[].class),
                 any((new ArrayList<String>()).getClass()),
                 anyString(),
+                anyString(),
                 anyLong());
 
         DomsEventStorage doms = new DomsEventStorage(
@@ -243,14 +243,13 @@ public class DomsEventStorageTest {
 
         //There should be two calls to each of these methods, once for each attempt
         verify(enhancedFedora, times(2)).modifyDatastreamByValue(
-                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(2)).modifyDatastreamByValue(
                 anyString(),
                 anyString(),
                 any(ChecksumType.class),
                 anyString(),
                 captor.capture(),
                 any((new ArrayList<String>()).getClass()),
+                anyString(),
                 anyString(),
                 anyLong());
 
@@ -295,6 +294,7 @@ public class DomsEventStorageTest {
                 any(byte[].class),
                 any((new ArrayList<String>()).getClass()),
                 anyString(),
+                anyString(),
                 anyLong());
 
         DomsEventStorage doms = new DomsEventStorage(
@@ -313,14 +313,13 @@ public class DomsEventStorageTest {
             //expected
         }
         verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(
-                anyString(), anyString(), anyString(), any((new ArrayList<String>()).getClass()), anyString());
-        verify(enhancedFedora, times(MAX_ATTEMPTS)).modifyDatastreamByValue(
                 anyString(),
                 anyString(),
                 any(ChecksumType.class),
                 anyString(),
                 any(byte[].class),
                 any((new ArrayList<String>()).getClass()),
+                anyString(),
                 anyString(),
                 anyLong());
     }

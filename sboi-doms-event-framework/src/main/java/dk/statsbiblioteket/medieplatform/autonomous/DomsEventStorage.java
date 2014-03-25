@@ -1,14 +1,13 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -18,8 +17,10 @@ import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 
-/** Access to DOMS batch and event storageusing the Central Webservice library to communicate with DOMS.
- * Implements the {@link EventStorer} interface. */
+/**
+ * Access to DOMS batch and event storageusing the Central Webservice library to communicate with DOMS.
+ * Implements the {@link EventStorer} interface.
+ */
 public class DomsEventStorage implements EventStorer {
 
     private static Logger log = LoggerFactory.getLogger(DomsEventStorage.class);
@@ -35,8 +36,7 @@ public class DomsEventStorage implements EventStorer {
     private String addEventToBatchComment = "Adding event to natch round trip";
 
     DomsEventStorage(EnhancedFedora fedora, IDFormatter idFormatter, String type, String batchTemplate,
-                     String roundTripTemplate, String hasPart_relation, String eventsDatastream) throws
-                                                                                                       JAXBException {
+                     String roundTripTemplate, String hasPart_relation, String eventsDatastream) throws JAXBException {
         this.fedora = fedora;
         this.idFormatter = idFormatter;
         this.batchTemplate = batchTemplate;
@@ -64,7 +64,15 @@ public class DomsEventStorage implements EventStorer {
             premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
             try {
                 fedora.modifyDatastreamByValue(
-                        roundTripObjectPid, eventsDatastream, premisObject.toXML(), null, addEventToBatchComment);
+                        roundTripObjectPid,
+                        eventsDatastream,
+                        null,
+                        null,
+                        premisObject.toXML().getBytes(),
+                        null,
+                        "text/xml",
+                        addEventToBatchComment,
+                        null);
             } catch (BackendInvalidResourceException e1) {
                 //But I just created the object, it must be there
                 throw new CommunicationException(e1);
@@ -261,7 +269,7 @@ public class DomsEventStorage implements EventStorer {
                     = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             int eventsRemoved = premisObject.removeEventsFromFailureOrEvent(eventId);
             if (eventsRemoved > 0) {
-                backupEventsForBatch(batchId, roundTripNumber);
+                //backupEventsForBatch(batchId, roundTripNumber);
                 try {
                     fedora.modifyDatastreamByValue(
                             roundTripObjectPid,
@@ -270,6 +278,7 @@ public class DomsEventStorage implements EventStorer {
                             null,
                             premisObject.toXML().getBytes("UTF-8"),
                             null,
+                            "text/xml",
                             "Event list trimmed of all events after earliest failure",
                             lastModifiedDate.getTime());
                 } catch (ConcurrentModificationException e) {
@@ -277,7 +286,8 @@ public class DomsEventStorage implements EventStorer {
                             "Failed to trigger restart of batch round trip for " +
                             getFullBatchId(
                                     batchId,
-                                    roundTripNumber) + " on this attempt. Another process modified the object concurrently.");
+                                    roundTripNumber) + " on this attempt. Another process modified the object concurrently."
+                            );
                     return -1;
                 } catch (UnsupportedEncodingException e) {
                     throw new Error("UTF-8 not supported.", e);
@@ -297,13 +307,12 @@ public class DomsEventStorage implements EventStorer {
      * Retrieve the corresponding doms pid of the round trip object
      *
      * @return the doms round trip pid
-     * @throws CommunicationException failed to communicate
-     * @throws BackendInvalidResourceException
-     *                                object not found
+     * @throws CommunicationException          failed to communicate
+     * @throws BackendInvalidResourceException object not found
      */
     String getRoundTripID(String batchId, int roundTripNumber) throws
-                                                                       CommunicationException,
-                                                                       BackendInvalidResourceException {
+                                                               CommunicationException,
+                                                               BackendInvalidResourceException {
 
         try {
             //find the Round Trip object

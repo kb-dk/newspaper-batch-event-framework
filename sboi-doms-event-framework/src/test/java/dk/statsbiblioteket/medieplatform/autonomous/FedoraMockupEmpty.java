@@ -4,6 +4,7 @@ import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
+import dk.statsbiblioteket.doms.central.connectors.fedora.generated.Validation;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 
@@ -47,7 +48,19 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                                                BackendInvalidCredsException,
                                                                BackendInvalidResourceException,
                                                                ConcurrentModificationException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+
+    }
+
+    @Override
+    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
+                                        byte[] contents, List<String> alternativeIdentifiers, String mimeType,
+                                        String comment, Long lastModifiedDate) throws
+                                                                               BackendMethodFailedException,
+                                                                               BackendInvalidCredsException,
+                                                                               BackendInvalidResourceException,
+                                                                               ConcurrentModificationException {
+        addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
     }
 
     @Override
@@ -57,6 +70,14 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
         addToLog("Listing objects with label " + string);
         ArrayList<String> result = new ArrayList<String>();
         return result;
+    }
+
+    @Override
+    public Validation validate(String pid) throws
+                                           BackendInvalidCredsException,
+                                           BackendMethodFailedException,
+                                           BackendInvalidResourceException {
+        return null;
     }
 
     @Override
