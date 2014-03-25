@@ -75,7 +75,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
-            <artifactId>ecmTemplates</artifactId>
+            <artifactId>centralWebservice-lib</artifactId>
         </dependency>
     </dependencies>
 </project>
