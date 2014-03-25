@@ -3,7 +3,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>newspaper-parent</artifactId>
-        <version>1.1</version>
+        <version>1.2-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -64,6 +64,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+<!--
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>ecmTemplates</artifactId>
@@ -87,10 +88,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+-->
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>1.0.2</version>
+                <version>1.2-SNAPSHOT</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -113,7 +115,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>summaSearch-interface</artifactId>
-                <version>1.0.1</version>
+                <version>1.2-SNAPSHOT</version><!--This should match central-lib above-->
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -224,26 +226,6 @@
         </dependencies>
 
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>never</forkMode>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <forkMode>never</forkMode>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <scm>
         <connection>scm:git:https://github.com/statsbiblioteket/newspaper-batch-event-framework</connection>
