@@ -104,8 +104,8 @@ public class TreeProcessorAbstractRunnableComponentTest {
                                                                          "</result>")));
 
         String batchStructure = "<test>hej, this is test data</test>";
-        WireMock.givenThat(WireMock.put(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid)
-                                                                    + "/datastreams/BATCHSTRUCTURE?mimeType=text/xml&logMessage=Updating+batch+structure"))
+        WireMock.givenThat(WireMock.post(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid)
+                                                                    + "/datastreams/BATCHSTRUCTURE?logMessage=Updating+batch+structure&mimeType=text/xml&controlGroup=M"))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .withRequestBody(WireMock.equalTo(batchStructure))
                                    .willReturn(WireMock.aResponse().withStatus(201)));
