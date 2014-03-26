@@ -69,11 +69,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>premis-manipulator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>dk.statsbiblioteket.doms.central</groupId>
             <artifactId>centralWebservice-lib</artifactId>
         </dependency>
