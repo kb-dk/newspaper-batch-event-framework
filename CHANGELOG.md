@@ -1,3 +1,11 @@
+1.6
+* Use newest sbutil 0.5.17
+* Use the 1.2 central lib (enhanced fedora)
+* Use the 1.2 newspaper parent
+* Events datastream is mime text/xml. Tests updated to match. Fixed the annoying versioning test
+* Remove the failsafe plugins from the modules
+* Major restructuring of runnable components: Introducing interfaces for triggering events, storing results of events and exploring events.
+
 1.5
 * Updated to newspaper-parent 1.1, as part of new testability strategy
 * Many updates for better and more maintainable tests
