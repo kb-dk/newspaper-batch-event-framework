@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.sbutil</groupId>
                 <artifactId>sbutil-common</artifactId>
-                <version>0.5.14</version>
+                <version>0.5.17</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
