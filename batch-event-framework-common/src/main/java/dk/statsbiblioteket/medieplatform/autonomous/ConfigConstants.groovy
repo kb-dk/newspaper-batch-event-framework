@@ -31,7 +31,6 @@ public class ConfigConstants {
     /** The path to the scape control policies RDF document */
     public static final String SCAPE_CONTROL_POLICIES_PATH = "scape.control.policies.path";
 
-
     //Batch iterator
     /** Boolean value determining if we will iterate on the batch on the filesystem or in the doms. */
     public static final String ITERATOR_USE_FILESYSTEM = "iterator.useFileSystem";
@@ -75,7 +74,6 @@ public class ConfigConstants {
      */
     public static final String AUTONOMOUS_BATCH_STRUCTURE_STORAGE_DIR = "autonomous.batch.structure.folder";
 
-
     //-----------HADOOP OPTIONS ------------//
     /** Used to set the batch ID to the hadoop job. Never to be used in a normal config file */
     public static final String BATCH_ID = "batchID";
@@ -84,7 +82,6 @@ public class ConfigConstants {
      * folder names below this path
      */
     public static final String JOB_FOLDER = "job.folder";
-
 
     /**
      * Path to the (nfs) folder where the data files can be read. Must end with /. Used as a prefix before all the
@@ -101,7 +98,6 @@ public class ConfigConstants {
      * this.
      */
     public static final String FILES_PER_MAP_TASK = "hadoop.files.per.map.tasks";
-
 
     /** This property specifies where the dissemination files should be written to. */
     public static final String DISSEMINATION_FOLDER = "dissemination.files.folder";
