@@ -15,6 +15,7 @@ import java.util.Properties;
 public class SBOIDomsAutonomousComponentUtils {
     private static Logger log = LoggerFactory.getLogger(SBOIDomsAutonomousComponentUtils.class);
 
+
     /**
      * Create an autonomous component from a runnable component and start it. Stuff is configured from the included
      * properties
@@ -23,25 +24,28 @@ public class SBOIDomsAutonomousComponentUtils {
      * @param component  the runnable component to invoke
      *
      * @return the result of the invocation. A map from batch Full IDs to results. If the execution failed, a message
-     *         will be printed to std.err and the result map will be empty
+     * will be printed to std.err and the result map will be empty
      *
-     *         lockserver: string: url to the zookeeper server
-     *         summa: string, url to the summa webservice
-     *         domsUrl: string, url to the fedora doms instance
-     *         domsUser: string; username when writing events to the doms batch objects
-     *         domsPass: string: password when writing events to the doms batch objects
-     *         pidGenerator: String: url to the pidgenerator service
-     *         maxThreads: Integer: The number of batches to work on concurrently. Default 1
-     *         maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads.
-     *         Default one hour
-     *         pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
-     *         experienced successfully in order to be eligble to be worked on by this component
-     *         pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
-     *         experienced without success in order to be eligble to be worked on by this component
-     *         futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
-     *         experienced in order to be eligble to be worked on by this component
+     * lockserver: string: url to the zookeeper server
+     * summa: string, url to the summa webservice
+     * domsUrl: string, url to the fedora doms instance
+     * domsUser: string; username when writing events to the doms batch objects
+     * domsPass: string: password when writing events to the doms batch objects
+     * pidGenerator: String: url to the pidgenerator service
+     * maxThreads: Integer: The number of batches to work on concurrently. Default 1
+     * maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads.
+     * Default one hour
+     * pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced successfully in order to be eligble to be worked on by this component
+     * pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced without success in order to be eligble to be worked on by this component
+     * futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
+     * experienced in order to be eligble to be worked on by this component
+     *
      */
-    public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component) {
+
+    public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component,
+                                                      EventTrigger eventTrigger, EventStorer eventStorer) {
         //Make a client for the lock framework, and start it
         CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
                 properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL),
@@ -51,7 +55,8 @@ public class SBOIDomsAutonomousComponentUtils {
         //This is the number of batches that will be worked on in parallel per invocation
         int simultaneousProcesses = Integer.parseInt(
                 properties.getProperty(
-                        ConfigConstants.AUTONOMOUS_MAXTHREADS, "1"));
+                        ConfigConstants.AUTONOMOUS_MAXTHREADS, "1")
+                                                    );
         //This is the timeout when attempting to lock SBOI
         long timeoutWaitingToLockSBOI = 5000l;
         //This is the timeout when attempting to lock a batch before working on it
@@ -59,7 +64,8 @@ public class SBOIDomsAutonomousComponentUtils {
         //After this time, the worker thread will be terminated, even if not complete
         long maxRunTimeForWorker = Long.parseLong(
                 properties.getProperty(
-                        ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l + ""));
+                        ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l + "")
+                                                 );
 
         String maxResultsProperty = properties.getProperty(ConfigConstants.MAX_RESULTS_COLLECTED);
         Integer maxResults = null;
@@ -67,18 +73,27 @@ public class SBOIDomsAutonomousComponentUtils {
             maxResults = Integer.parseInt(maxResultsProperty);
         }
 
+        if (eventTrigger == null) {
+            eventTrigger = getEventTrigger(properties);
+        }
+        if (eventStorer == null) {
+            eventStorer = getEventStorer(properties);
+        }
 
         //Use all the above to make the autonomous component
         AutonomousComponent autonoumous = new AutonomousComponent(
                 component,
-                lockClient, simultaneousProcesses,
+                lockClient,
+                simultaneousProcesses,
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
                 toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
                 timeoutWaitingToLockSBOI,
                 timeoutWaitingToLockBatch,
                 maxRunTimeForWorker,
-                maxResults, getEventTrigger(properties), getEventStorer(properties));
+                maxResults,
+                eventTrigger,
+                eventStorer);
 
 
         try {//Start the component
@@ -96,25 +111,56 @@ public class SBOIDomsAutonomousComponentUtils {
         } finally {
             lockClient.close();
         }
+
     }
 
-    private static synchronized SBOIEventIndex getEventTrigger(Properties properties) {
+
+    /**
+     * Create an autonomous component from a runnable component and start it. Stuff is configured from the included
+     * properties
+     *
+     * @param properties the properties to use
+     * @param component  the runnable component to invoke
+     *
+     * @return the result of the invocation. A map from batch Full IDs to results. If the execution failed, a message
+     * will be printed to std.err and the result map will be empty
+     *
+     * lockserver: string: url to the zookeeper server
+     * summa: string, url to the summa webservice
+     * domsUrl: string, url to the fedora doms instance
+     * domsUser: string; username when writing events to the doms batch objects
+     * domsPass: string: password when writing events to the doms batch objects
+     * pidGenerator: String: url to the pidgenerator service
+     * maxThreads: Integer: The number of batches to work on concurrently. Default 1
+     * maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads.
+     * Default one hour
+     * pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced successfully in order to be eligble to be worked on by this component
+     * pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced without success in order to be eligble to be worked on by this component
+     * futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
+     * experienced in order to be eligble to be worked on by this component
+     */
+    public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component) {
+        return startAutonomousComponent(properties, component, null, null);
+    }
+
+    public static synchronized SBOIEventIndex getEventTrigger(Properties properties) {
         try {
-            return new SBOIEventIndex(properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
-                                                new PremisManipulatorFactory(new NewspaperIDFormatter(),
-                                                                             PremisManipulatorFactory.TYPE),
-                                                getEventStorer(properties));
+            return new SBOIEventIndex(
+                    properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory(
+                    new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), getEventStorer(properties)
+            );
         } catch (Exception e) {
             log.error("Unable to initialize event trigger", e);
             throw new InitialisationException("Unable to initialize event trigger", e);
         }
     }
 
-    private static synchronized DomsEventStorage getEventStorer(Properties properties) {
+    public static synchronized DomsEventStorage getEventStorer(Properties properties) {
         DomsEventStorageFactory domsEventStorageFactory = new DomsEventStorageFactory();
         domsEventStorageFactory.setFedoraLocation(properties.getProperty(ConfigConstants.DOMS_URL));
-        domsEventStorageFactory
-                .setPidGeneratorLocation(properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+        domsEventStorageFactory.setPidGeneratorLocation(properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
         domsEventStorageFactory.setUsername(properties.getProperty(ConfigConstants.DOMS_USERNAME));
         domsEventStorageFactory.setPassword(properties.getProperty(ConfigConstants.DOMS_PASSWORD));
         try {
