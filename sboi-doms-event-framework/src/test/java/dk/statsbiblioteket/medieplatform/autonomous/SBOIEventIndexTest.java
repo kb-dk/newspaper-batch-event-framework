@@ -11,8 +11,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Properties;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 public class SBOIEventIndexTest {
 
@@ -26,11 +32,56 @@ public class SBOIEventIndexTest {
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();
+
             count++;
         }
         Assert.assertTrue(count > 0, "No batches Found");
 
     }
+
+    @Test(groups = {"externalTest"}, enabled = true)
+    public void testGetBatchFromList() throws Exception {
+        Properties props = getProperties();
+
+        SBOIEventIndex summa = getSboiClient(props);
+        Iterator<Batch> batches = summa.findBatches(
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+        Batch first = batches.next();
+        Iterator<Batch> batches2 = summa.search(
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), first);
+
+        assertEquals(
+                batches2.next(),first);
+
+    }
+
+
+    @Test(groups = {"externalTest"}, enabled = true)
+    public void testGetBatchesFromList() throws Exception {
+        Properties props = getProperties();
+
+        SBOIEventIndex summa = getSboiClient(props);
+        Iterator<Batch> batches = summa.findBatches(
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+        Batch first = batches.next();
+        Batch second = batches.next();
+
+        Iterator<Batch> batches2 = summa.search(
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), first,second);
+
+        HashSet<Batch> results = new HashSet<Batch>();
+        results.add(first);
+        results.add(second);
+        assertTrue(results.contains(batches2.next()));
+        assertTrue(results.contains(batches2.next()));
+        try {
+            batches2.next();
+            fail();
+        } catch (NoSuchElementException e){
+
+        }
+    }
+
 
     private SBOIEventIndex getSboiClient(Properties props) throws
                                                            MalformedURLException,

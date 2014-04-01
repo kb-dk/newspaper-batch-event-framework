@@ -34,7 +34,7 @@ public class TestingComponent implements RunnableComponent {
         return new EventTrigger() {
             @Override
             public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                                       List<String> futureEvents)
+                                                       List<String> futureEvents, Batch... batches1)
                     throws CommunicationException {
                 return batches.iterator();
             }

@@ -21,8 +21,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/** Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
- * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS. */
+/**
+ * Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
+ * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS.
+ */
 public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
     private static final String SUCCESSEVENT = "success_event";
@@ -50,9 +52,10 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
     @Override
     public Iterator<Batch> findBatches(boolean details, List<String> pastSuccessfulEvents,
-                                       List<String> pastFailedEvents, List<String> futureEvents) throws CommunicationException {
+                                       List<String> pastFailedEvents, List<String> futureEvents) throws
+                                                                                                 CommunicationException {
 
-        return search(details, null, null, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        return search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
     }
 
     @Override
@@ -62,9 +65,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
     @Override
     public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                               List<String> futureEvents) throws
-                                                                                                       CommunicationException {
-        Iterator<Batch> sboiBatches = findBatches(false, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                                               List<String> futureEvents, Batch... batches) throws CommunicationException {
+        Iterator<Batch> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             Batch next = sboiBatches.next();
@@ -102,21 +104,22 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                 .disjoint(futureEvents, successEvents) && Collections.disjoint(futureEvents, failEvents);
     }
 
+
+
+
     /**
      * Perform a search for batches matching the given criteria
      *
-     * @param batchID              the batch id. Can be null for all batches
-     * @param roundTripNumber      the round trip number. Can be null to match all round trips
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
      * @param pastFailedEvents     Events that the batch must have experienced, but which failed
      * @param futureEvents         Events that the batch must not have experienced
+     * @param batches              if set, the resulting iterator will only contain batches from this set.
      *
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    private Iterator<Batch> search(boolean details, String batchID, Integer roundTripNumber,
-                                   List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                   List<String> futureEvents) throws CommunicationException {
+    public Iterator<Batch> search(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                   List<String> futureEvents, Batch... batches) throws CommunicationException {
 
         try {
             JSONObject jsonQuery = new JSONObject();
@@ -124,8 +127,9 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
             jsonQuery.put(
                     "search.document.query",
-                    toQueryString(batchID, roundTripNumber, pastSuccessfulEvents, pastFailedEvents, futureEvents));
+                    toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,batches));
             jsonQuery.put("search.document.startindex", 0);
+            //TODO fix this static maxrecords
             jsonQuery.put("search.document.maxrecords", 1000);
 
             String searchResultString;
@@ -149,7 +153,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                     String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
                     result = premisManipulatorFactory.createFromBlob(
                             new ByteArrayInputStream(
-                                    premis.getBytes())).toBatch();
+                                    premis.getBytes())
+                                                                    ).toBatch();
                     result.setDomsID(uuid);
 
                 } else {//Details requested so go to DOMS
@@ -196,37 +201,43 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
         return "\"" + string + "\"";
     }
 
-    /**
-     * Format the restrictions as a summa query string
-     *
-     * @param batchID              the batch id
-     * @param roundTripNumber      the round trip number
-     * @param successfulPastEvents the successful events the batch must have experienced
-     * @param failedPastEvents     the failed events the batch must have experienced
-     * @param futureEvents         the events the batch must not have experienced
-     *
-     * @return the query string
-     */
-    private String toQueryString(String batchID, Integer roundTripNumber, List<String> successfulPastEvents,
-                                 List<String> failedPastEvents, List<String> futureEvents) {
 
+    private String toQueryString(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                 List<String> futureEvents, Batch... batches) {
         String base = spaced(RECORD_BASE);
-        if (batchID != null) {
-            base = base + " " + BATCH_ID + ":B" + batchID;
-        }
-        if (roundTripNumber != null) {
-            base = base + " " + ROUND_TRIP_NO + ":RT" + roundTripNumber.toString();
+
+        StringBuilder batchesString = new StringBuilder();
+        if (batches != null && batches.length > 0){
+            batchesString.append(" ( ");
+
+            boolean first = true;
+            for (Batch batch : batches) {
+                if (first){
+                    first = false;
+                }  else {
+                    batchesString.append(" OR ");
+                }
+                batchesString.append(" ( ");
+                batchesString.append(BATCH_ID).append(":B").append(batch.getBatchID());
+                batchesString.append(" ");
+                batchesString.append(ROUND_TRIP_NO).append(":RT").append(batch.getRoundTripNumber());
+                batchesString.append(" ) ");
+
+            }
+            batchesString.append(" ) ");
+
+
         }
 
         StringBuilder events = new StringBuilder();
-        if (successfulPastEvents != null) {
-            for (String successfulPastEvent : successfulPastEvents) {
-                events.append(spaced(SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
+        if (pastSuccessfulEvents != null) {
+            for (String successfulPastEvent : pastSuccessfulEvents) {
+                events.append(spaced("+"+SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
             }
         }
-        if (failedPastEvents != null) {
-            for (String failedPastEvent : failedPastEvents) {
-                events.append(spaced(FAILEVENT + ":" + quoted(failedPastEvent)));
+        if (pastFailedEvents != null) {
+            for (String failedPastEvent : pastFailedEvents) {
+                events.append(spaced("+"+FAILEVENT + ":" + quoted(failedPastEvent)));
             }
         }
         if (futureEvents != null) {
@@ -235,7 +246,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                 events.append(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
             }
         }
-        return base + events.toString();
+        return base + batchesString.toString() + events.toString();
 
     }
 
