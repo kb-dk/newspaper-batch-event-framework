@@ -48,7 +48,7 @@ public class SBOIEventIndexTest {
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
         Batch first = batches.next();
         Iterator<Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), first);
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), Arrays.asList(first));
 
         assertEquals(
                 batches2.next(),first);
@@ -67,7 +67,7 @@ public class SBOIEventIndexTest {
         Batch second = batches.next();
 
         Iterator<Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), first,second);
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), Arrays.asList(first,second));
 
         HashSet<Batch> results = new HashSet<Batch>();
         results.add(first);

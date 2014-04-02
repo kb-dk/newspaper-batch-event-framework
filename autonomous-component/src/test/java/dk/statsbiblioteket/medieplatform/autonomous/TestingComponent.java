@@ -34,10 +34,17 @@ public class TestingComponent implements RunnableComponent {
         return new EventTrigger() {
             @Override
             public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                                       Collection<String> futureEvents, Batch... batches1)
+                                                       Collection<String> futureEvents)
                     throws CommunicationException {
                 return batches.iterator();
             }
+
+            @Override
+            public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                                       Collection<String> futureEvents, Collection<Batch> batches1) throws CommunicationException {
+                return batches.iterator();
+            }
+
         };
     }
 
