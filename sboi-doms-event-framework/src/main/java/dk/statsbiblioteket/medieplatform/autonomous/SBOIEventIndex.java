@@ -55,7 +55,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                                        List<String> pastFailedEvents, List<String> futureEvents) throws
                                                                                                  CommunicationException {
 
-        return search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents);
+        return search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents,null);
     }
 
     @Override
@@ -65,7 +65,13 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
     @Override
     public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents, Batch... batches) throws CommunicationException {
+                                               Collection<String> futureEvents) throws CommunicationException {
+        return getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
+    }
+
+    @Override
+    public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                               Collection<String> futureEvents, Collection<Batch> batches) throws CommunicationException {
         Iterator<Batch> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
@@ -113,15 +119,20 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
      * @param pastFailedEvents     Events that the batch must have experienced, but which failed
      * @param futureEvents         Events that the batch must not have experienced
-     * @param batches              if set, the resulting iterator will only contain batches from this set.
+     * @param batches              if not null, the resulting iterator will only contain batches from this set. If the
+     *                             batches is empty, the result will be empty.
      *
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
     public Iterator<Batch> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                  Collection<String> futureEvents, Batch... batches) throws CommunicationException {
+                                  Collection<String> futureEvents, Collection<Batch> batches) throws CommunicationException {
 
         try {
+            if (batches != null && batches.isEmpty()){
+                //If the batches constraint is set to no result, give no result.
+                return new ArrayList<Batch>().iterator();
+            }
             JSONObject jsonQuery = new JSONObject();
             jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
 
@@ -129,7 +140,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                     "search.document.query",
                     toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,batches));
             jsonQuery.put("search.document.startindex", 0);
-            //TODO fix this static maxrecords
+            //TODO fix this static maxrecords  (we can order on creation date)
             jsonQuery.put("search.document.maxrecords", 1000);
 
             String searchResultString;
@@ -151,10 +162,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                 Batch result = null;
                 if (!details) { //no details, so we can retrieve everything from Summa
                     String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
-                    result = premisManipulatorFactory.createFromBlob(
-                            new ByteArrayInputStream(
-                                    premis.getBytes())
-                                                                    ).toBatch();
+                    result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
+                                                     .toBatch();
                     result.setDomsID(uuid);
 
                 } else {//Details requested so go to DOMS
@@ -202,11 +211,11 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
 
-    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Batch... batches) {
+    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<Batch> batches) {
         String base = spaced(RECORD_BASE);
 
         StringBuilder batchesString = new StringBuilder();
-        if (batches != null && batches.length > 0){
+        if (batches != null ){
             batchesString.append(" ( ");
 
             boolean first = true;
