@@ -1,7 +1,7 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /** The interface to the Summa Batch Object Index */
 public interface EventTrigger {
@@ -19,7 +19,7 @@ public interface EventTrigger {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                               List<String> futureEvents, Batch... batches) throws
+    public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                               Collection<String> futureEvents, Batch... batches) throws
                                                                                             CommunicationException;
 }

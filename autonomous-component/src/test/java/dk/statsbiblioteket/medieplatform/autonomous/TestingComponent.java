@@ -1,9 +1,9 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 public class TestingComponent implements RunnableComponent {
 
@@ -33,8 +33,8 @@ public class TestingComponent implements RunnableComponent {
     public EventTrigger getEventTrigger() {
         return new EventTrigger() {
             @Override
-            public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                                       List<String> futureEvents, Batch... batches1)
+            public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                                       Collection<String> futureEvents, Batch... batches1)
                     throws CommunicationException {
                 return batches.iterator();
             }

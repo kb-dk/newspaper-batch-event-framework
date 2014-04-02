@@ -1,20 +1,20 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
+import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
+import dk.statsbiblioteket.util.xml.DOM;
+import dk.statsbiblioteket.util.xml.XPathSelector;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
-import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.util.xml.DOM;
-import dk.statsbiblioteket.util.xml.XPathSelector;
-
 import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,8 +64,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Iterator<Batch> getTriggeredBatches(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                               List<String> futureEvents, Batch... batches) throws CommunicationException {
+    public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                               Collection<String> futureEvents, Batch... batches) throws CommunicationException {
         Iterator<Batch> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
@@ -89,8 +89,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      *
      * @return true if the batch match all requirements
      */
-    private boolean match(Batch batch, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                          List<String> futureEvents) {
+    private boolean match(Batch batch, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                          Collection<String> futureEvents) {
         Set<String> successEvents = new HashSet<>();
         Set<String> failEvents = new HashSet<>();
         for (Event event : batch.getEventList()) {
@@ -118,8 +118,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<Batch> search(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                   List<String> futureEvents, Batch... batches) throws CommunicationException {
+    public Iterator<Batch> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                  Collection<String> futureEvents, Batch... batches) throws CommunicationException {
 
         try {
             JSONObject jsonQuery = new JSONObject();
@@ -202,8 +202,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
 
-    private String toQueryString(List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                 List<String> futureEvents, Batch... batches) {
+    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Batch... batches) {
         String base = spaced(RECORD_BASE);
 
         StringBuilder batchesString = new StringBuilder();
