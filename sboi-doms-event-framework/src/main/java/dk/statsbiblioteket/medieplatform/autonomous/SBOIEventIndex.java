@@ -133,45 +133,60 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                 //If the batches constraint is set to no result, give no result.
                 return new ArrayList<Batch>().iterator();
             }
-            JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
+            List<Batch> results = new ArrayList<>();
 
-            jsonQuery.put(
-                    "search.document.query",
-                    toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,batches));
-            jsonQuery.put("search.document.startindex", 0);
-            //TODO fix this static maxrecords  (we can order on creation date)
-            jsonQuery.put("search.document.maxrecords", 1000);
+            boolean moreResults = true;
+            int startIndex = 0;
+            int maxRecords  = 100;
 
-            String searchResultString;
-            synchronized (summaSearch) {//TODO is this nessesary?
-                searchResultString = summaSearch.directJSON(jsonQuery.toString());
-            }
+            while (moreResults) {
+                JSONObject jsonQuery = new JSONObject();
+                jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
 
-            Document searchResultDOM = DOM.stringToDOM(searchResultString);
-            XPathSelector xPath = DOM.createXPathSelector();
+                jsonQuery.put(
+                        "search.document.query",
+                        toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents, batches));
+                jsonQuery.put("search.document.sortkey", "initial_date");
 
 
-            NodeList nodeList = xPath.selectNodeList(
-                    searchResultDOM, "/responsecollection/response/documentresult/record");
+                jsonQuery.put("search.document.startindex", startIndex);
 
-            List<Batch> results = new ArrayList<>(nodeList.getLength());
-            for (int i = 0; i < nodeList.getLength(); ++i) {
-                Node node = nodeList.item(i);
-                String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
-                Batch result = null;
-                if (!details) { //no details, so we can retrieve everything from Summa
-                    String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
-                    result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
-                                                     .toBatch();
-                    result.setDomsID(uuid);
+                jsonQuery.put("search.document.maxrecords", maxRecords);
 
-                } else {//Details requested so go to DOMS
-                    result = domsEventStorage.getBatch(uuid);
+                String searchResultString;
+                synchronized (summaSearch) {//TODO is this nessesary?
+                    searchResultString = summaSearch.directJSON(jsonQuery.toString());
                 }
 
-                results.add(result);
+                Document searchResultDOM = DOM.stringToDOM(searchResultString);
+                XPathSelector xPath = DOM.createXPathSelector();
 
+
+                NodeList nodeList = xPath.selectNodeList(
+                        searchResultDOM, "/responsecollection/response/documentresult/record");
+                if (nodeList.getLength() < maxRecords){
+                    moreResults = false;
+                } else {
+                    startIndex +=maxRecords;
+                }
+
+                for (int i = 0; i < nodeList.getLength(); ++i) {
+                    Node node = nodeList.item(i);
+                    String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
+                    Batch result = null;
+                    if (!details) { //no details, so we can retrieve everything from Summa
+                        String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
+                        result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
+                                                         .toBatch();
+                        result.setDomsID(uuid);
+
+                    } else {//Details requested so go to DOMS
+                        result = domsEventStorage.getBatch(uuid);
+                    }
+
+                    results.add(result);
+
+                }
             }
             return results.iterator();
         } catch (Exception e) {
