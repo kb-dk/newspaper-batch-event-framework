@@ -1,3 +1,6 @@
+1.7
+* Support alternative triggers to the SBOI/DOMS trigger, and make the SBOI-triggers support a limiting list of batches.
+
 1.6
 * Use newest sbutil 0.5.17
 * Use the 1.2 central lib (enhanced fedora)
