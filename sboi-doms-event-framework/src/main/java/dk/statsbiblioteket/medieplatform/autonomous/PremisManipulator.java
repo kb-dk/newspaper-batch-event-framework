@@ -16,10 +16,10 @@ import dk.statsbiblioteket.autonomous.premis.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -49,17 +49,22 @@ public class PremisManipulator {
     private final IDFormatter idFormat;
 
 
-    public PremisManipulator(InputStream premis, IDFormatter format, String type, Marshaller marshaller,
-                             Unmarshaller unmarshaller) throws JAXBException {
+    public PremisManipulator(InputStream premis, IDFormatter format, String type, JAXBContext context) throws JAXBException {
         this.idFormat = format;
         this.type = type;
-        this.marshaller = marshaller;
-        this.premis = ((JAXBElement<PremisComplexType>) unmarshaller.unmarshal(premis)).getValue();
+        this.marshaller = createMarshaller(context);
+        this.premis = ((JAXBElement<PremisComplexType>) context.createUnmarshaller().unmarshal(premis)).getValue();
     }
 
-    public PremisManipulator(String batchID, int roundTripNumber, IDFormatter format, String type,
-                             Marshaller marshaller) {
-        this.marshaller = marshaller;
+    private static Marshaller createMarshaller(JAXBContext context) throws JAXBException {
+        Marshaller temp = context.createMarshaller();
+        temp.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        return temp;
+    }
+
+    public PremisManipulator(String batchID, int roundTripNumber, IDFormatter format, String type, JAXBContext context) throws
+                                                                                                                        JAXBException {
+        this.marshaller = createMarshaller(context);
         premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
         this.idFormat = format;

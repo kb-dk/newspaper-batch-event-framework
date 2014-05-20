@@ -15,8 +15,7 @@ public class PremisManipulatorFactory {
     public final static String TYPE = "Newspaper_digitisation_project";
     private final IDFormatter format;
     private final String type;
-    private final Unmarshaller unmarshaller;
-    private final Marshaller marshaller;
+    private final JAXBContext context;
 
 
     /**
@@ -28,12 +27,9 @@ public class PremisManipulatorFactory {
     public PremisManipulatorFactory(IDFormatter format, String type) throws JAXBException {
         this.format = format;
         this.type = type;
-        JAXBContext context = JAXBContext.newInstance(dk.statsbiblioteket.autonomous.premis.ObjectFactory.class);
-        unmarshaller = context.createUnmarshaller();
-        marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-
+        context = JAXBContext.newInstance(dk.statsbiblioteket.autonomous.premis.ObjectFactory.class);
     }
+
 
     /**
      * Create a new premisManipulator from an inputstream of premis. We assume that the premis have a Object.
@@ -44,7 +40,7 @@ public class PremisManipulatorFactory {
      * @throws JAXBException if the parsing failed
      */
     public PremisManipulator createFromBlob(InputStream blob) throws JAXBException {
-        return new PremisManipulator(blob, format, type, marshaller, unmarshaller);
+        return new PremisManipulator(blob, format, type, context);
     }
 
     /**
@@ -58,7 +54,7 @@ public class PremisManipulatorFactory {
      * @throws JAXBException if the parsing failed
      */
     public PremisManipulator createInitialPremisBlob(String batchID, int roundTripNumber) throws JAXBException {
-        return new PremisManipulator(batchID, roundTripNumber, format, type, marshaller);
+        return new PremisManipulator(batchID, roundTripNumber, format, type, context);
     }
 
 }
