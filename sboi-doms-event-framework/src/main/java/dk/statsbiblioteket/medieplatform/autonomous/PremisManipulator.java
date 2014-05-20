@@ -305,6 +305,7 @@ public class PremisManipulator {
             marshaller.marshal(new ObjectFactory().createPremis(premis), writer);
             return writer.toString();
         } catch (JAXBException e) {
+            log.error("Failed to serialize premis as Xml",e);
             return null;
         }
     }
