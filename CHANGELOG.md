@@ -1,3 +1,7 @@
+1.8
+* Enable support for building with Java 8
+* Fix PremisManipulator not being thread safe (which caused failures of registering events in DOMS after)
+
 1.7
 * Support alternative triggers to the SBOI/DOMS trigger, and make the SBOI-triggers support a limiting list of batches.
 
