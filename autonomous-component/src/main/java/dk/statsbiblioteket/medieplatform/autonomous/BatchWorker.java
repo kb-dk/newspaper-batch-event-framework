@@ -37,10 +37,10 @@ public class BatchWorker implements Runnable {
 
     @Override
     public void run() {
-
+        final Date before = new Date();
         try {
             //do work
-            resultCollector.setTimestamp(new Date());
+            resultCollector.setTimestamp(before);
             component.doWorkOnBatch(batch, resultCollector);
         } catch (Throwable e) {
             log.warn("Component threw exception", e);
@@ -52,6 +52,9 @@ public class BatchWorker implements Runnable {
                     "Component threw exception: " + e.toString(),
                     Strings.getStackTrace(e));
         }
+        final Date after = new Date();
+        resultCollector.setDuration(after.getTime() - before.getTime());
+
         if (resultCollector.isPreservable()) {
             preserveResult(batch, resultCollector);
         } else {

@@ -25,10 +25,18 @@
                 <xs:element ref="date">
                     <xs:annotation>
                         <xs:documentation>
-                            This is the time when the execution was executed
+                            This is the time when the execution was started
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
+                <xs:element ref="duration">
+                    <xs:annotation>
+                        <xs:documentation>
+                            This is the time the execution took
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+
                 <xs:element ref="failures" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation>
@@ -60,6 +68,7 @@
         </xs:complexType>
     </xs:element>
     <xs:element name="date" type="xs:dateTime"/>
+    <xs:element name="duration" type="xs:duration"/>
     <xs:element name="outcome">
         <xs:simpleType>
             <xs:restriction base="xs:NCName">

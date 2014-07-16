@@ -1,3 +1,6 @@
+1.9---
+* Record the duration as part of the result
+
 1.8
 * Enable support for building with Java 8
 * Fix PremisManipulator not being thread safe (which caused failures of registering events in DOMS after)

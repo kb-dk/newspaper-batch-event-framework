@@ -223,8 +223,16 @@ public class ResultCollector {
      */
     public void setTimestamp(Date timestamp) {
         resultStructure.setDate(format(timestamp));
-
     }
+
+    public void setDuration(long durationInMS){
+        try {
+            resultStructure.setDuration(DatatypeFactory.newInstance().newDuration(durationInMS));
+        } catch (DatatypeConfigurationException e) {
+            throw new Error(e);
+        }
+    }
+
 
     private XMLGregorianCalendar format(Date date) {
         GregorianCalendar c = new GregorianCalendar();
