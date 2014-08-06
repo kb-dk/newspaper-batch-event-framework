@@ -8,7 +8,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>newspaper-batch-event-framework</artifactId>
-    <version>1.9</version>
+    <version>1.10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -232,7 +232,7 @@
         <developerConnection>scm:git:git@github.com:statsbiblioteket/newspaper-batch-event-framework
         </developerConnection>
         <url>https://github.com/statsbiblioteket/newspaper-batch-event-framework</url>
-        <tag>newspaper-batch-event-framework-1.9</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
 
