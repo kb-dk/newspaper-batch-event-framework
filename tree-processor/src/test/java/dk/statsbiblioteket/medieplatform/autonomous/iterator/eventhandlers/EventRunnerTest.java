@@ -13,9 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -57,20 +55,21 @@ public class EventRunnerTest {
         TreeEventHandler treeEventHandlerMock = mock(TreeEventHandler.class);
 
         //Perform test
-        EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock);
+
         List<TreeEventHandler> eventHandlers = Arrays.asList(new TreeEventHandler[]{treeEventHandlerMock});
-        batchStructureCheckerUT.runEvents(eventHandlers, null);
+        EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock, eventHandlers,null);
+        batchStructureCheckerUT.run();
 
         //Verify
-        verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin);
-        verify(treeEventHandlerMock).handleNodeBegin(reelNodeBegin);
-        verify(treeEventHandlerMock).handleNodeBegin(dateNodeBegin);
-        verify(treeEventHandlerMock).handleAttribute(pageJp2Attribute);
-        verify(treeEventHandlerMock).handleAttribute(pageXmlAttribute);
-        verify(treeEventHandlerMock).handleNodeEnd(dateNodeEnd);
-        verify(treeEventHandlerMock).handleNodeEnd(reelNodeEnd);
-        verify(treeEventHandlerMock).handleNodeEnd(batchNodeEnd);
-        verify(treeEventHandlerMock).handleFinish();
+        verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin,batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeBegin(reelNodeBegin, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeBegin(dateNodeBegin, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleAttribute(pageJp2Attribute, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleAttribute(pageXmlAttribute, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(dateNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(reelNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(batchNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleFinish(batchStructureCheckerUT);
         verifyNoMoreInteractions(treeEventHandlerMock);
     }
 
@@ -95,6 +94,7 @@ public class EventRunnerTest {
         NodeEndParsingEvent dateNodeEnd = new NodeEndParsingEvent("DateNode", null);
         NodeEndParsingEvent reelNodeEnd = new NodeEndParsingEvent("ReelNode", null);
         NodeEndParsingEvent batchNodeEnd = new NodeEndParsingEvent("BatchNode", null);
+        when(treeIteratorMock.hasNext()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
         when(treeIteratorMock.next()).
                 thenReturn(batchNodeBegin).
                 thenReturn(reelNodeBegin).
@@ -108,40 +108,35 @@ public class EventRunnerTest {
 
         final AttributeParsingEvent injected = createAttributeParsingEventStub("injectedAttribute");
 
-        final InjectingTreeEventHandler treeEventHandlerMock = mock(InjectingTreeEventHandler.class);
+        final TreeEventHandler treeEventHandlerMock = mock(TreeEventHandler.class);
 
-        doCallRealMethod().when(treeEventHandlerMock).pushInjectedEvent(injected);
-        doCallRealMethod().when(treeEventHandlerMock).popInjectedEvent();
 
-        doAnswer(
-                new Answer<Object>() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) throws Throwable {
-
-                        InjectingTreeEventHandler that = (InjectingTreeEventHandler) invocation.getMock();
-                        that.pushInjectedEvent(injected);
-                        return null;
-                    }
-                }).when(treeEventHandlerMock).handleAttribute(pageJp2Attribute);
 
         //Perform test
-        EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock);
         List<TreeEventHandler> eventHandlers = Arrays.asList(new TreeEventHandler[]{treeEventHandlerMock});
-        batchStructureCheckerUT.runEvents(eventHandlers, null);
+        EventRunner batchStructureCheckerUT = new EventRunner(treeIteratorMock, eventHandlers, null);
+        doAnswer(new Answer<Object>() {
+                    @Override
+                    public Object answer(InvocationOnMock invocation) throws Throwable {
+                        EventRunner runner = (EventRunner) invocation.getArguments()[1];
+                        runner.pushEvent(injected);
+                        return null;
+                    }
+                }).when(treeEventHandlerMock).handleAttribute(pageJp2Attribute, batchStructureCheckerUT);
+
+        batchStructureCheckerUT.run();
 
         //Verify
-        verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin);
-        verify(treeEventHandlerMock, times(9)).popInjectedEvent();
-        verify(treeEventHandlerMock).handleNodeBegin(reelNodeBegin);
-        verify(treeEventHandlerMock).handleNodeBegin(dateNodeBegin);
-        verify(treeEventHandlerMock).handleAttribute(pageJp2Attribute);
-        verify(treeEventHandlerMock).pushInjectedEvent(injected);
-        verify(treeEventHandlerMock).handleAttribute(injected);
-        verify(treeEventHandlerMock).handleAttribute(pageXmlAttribute);
-        verify(treeEventHandlerMock).handleNodeEnd(dateNodeEnd);
-        verify(treeEventHandlerMock).handleNodeEnd(reelNodeEnd);
-        verify(treeEventHandlerMock).handleNodeEnd(batchNodeEnd);
-        verify(treeEventHandlerMock).handleFinish();
+        verify(treeEventHandlerMock).handleNodeBegin(batchNodeBegin, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeBegin(reelNodeBegin, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeBegin(dateNodeBegin, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleAttribute(pageJp2Attribute, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleAttribute(injected, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleAttribute(pageXmlAttribute, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(dateNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(reelNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleNodeEnd(batchNodeEnd, batchStructureCheckerUT);
+        verify(treeEventHandlerMock).handleFinish(batchStructureCheckerUT);
         verifyNoMoreInteractions(treeEventHandlerMock);
     }
 

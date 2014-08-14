@@ -22,16 +22,16 @@ public class TreeNodesStructurePrint {
 
         String pathToTestBatch =
                 System.getProperty("integration.test.newspaper.testdata") + "/small-test-batch/B400022028241-RT1/";
-
-
+        final TreeNodeState nodeState = new TreeNodeState();
+        final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
         EventRunner eventRunner = new EventRunner(new TransformingIteratorForFileSystems(new File(pathToTestBatch),
                                                                                          "\\.",
                                                                                          ".*\\.jp2",
-                                                                                         ".md5"));
+                                                                                         ".md5"),
+                Arrays.asList(handler),
+                null);
 
-        final TreeNodeState nodeState = new TreeNodeState();
-        final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
-        eventRunner.runEvents(Arrays.<TreeEventHandler>asList(handler), null);
+        eventRunner.run();
     }
 
     private static class PrintingTreeEventHandler implements TreeEventHandler {
@@ -67,7 +67,7 @@ public class TreeNodesStructurePrint {
         }
 
         @Override
-        public void handleNodeBegin(NodeBeginsParsingEvent event) {
+        public void handleNodeBegin(NodeBeginsParsingEvent event, EventRunner runner) {
             try {
                 nodeState.handleNodeBegin(event);
                 TreeNode currentNode = nodeState.getCurrentNode();
@@ -79,7 +79,7 @@ public class TreeNodesStructurePrint {
         }
 
         @Override
-        public void handleNodeEnd(NodeEndParsingEvent event) {
+        public void handleNodeEnd(NodeEndParsingEvent event, EventRunner runner) {
             try {
                 TreeNode currentNode = nodeState.getCurrentNode();
                 nodeState.handleNodeEnd(event);
@@ -91,7 +91,7 @@ public class TreeNodesStructurePrint {
         }
 
         @Override
-        public void handleAttribute(AttributeParsingEvent event) {
+        public void handleAttribute(AttributeParsingEvent event, EventRunner runner) {
             try {
 
                 System.out.println(printEvent(event, "attribute"));
@@ -101,7 +101,7 @@ public class TreeNodesStructurePrint {
         }
 
         @Override
-        public void handleFinish() {
+        public void handleFinish(EventRunner runner) {
             //To change body of implemented methods use
             // File | Settings | File Templates.
         }
