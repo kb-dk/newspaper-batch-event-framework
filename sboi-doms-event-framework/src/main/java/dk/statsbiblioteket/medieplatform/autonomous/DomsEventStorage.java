@@ -131,7 +131,7 @@ public class DomsEventStorage implements EventStorer {
 
             String premisBlob = premisFactory.createInitialPremisBlob(batchId, roundTripNumber).toXML();
             fedora.modifyDatastreamByValue(
-                    roundTripObject, eventsDatastream, premisBlob, null, createBatchRoundTripComment);
+                    roundTripObject, eventsDatastream, null,null,premisBlob.getBytes(), null, "text/xml",createBatchRoundTripComment,null);
 
 
             return roundTripObject;

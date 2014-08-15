@@ -1,6 +1,6 @@
 {
     "request": {
-        "url": "/fedora/objects?pid=true&query=identifier~path:B400022028241-RT1&maxResults=1&resultFormat=xml",
+        "url": "/fedora/objects?pid=true&query=identifier%3Dpath:B400022028241-RT1&maxResults=1&resultFormat=xml",
         "method": "GET"
     },
     "response": {

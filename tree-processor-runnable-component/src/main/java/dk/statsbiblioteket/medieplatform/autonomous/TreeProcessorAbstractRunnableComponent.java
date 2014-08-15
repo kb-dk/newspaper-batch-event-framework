@@ -172,7 +172,7 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
                 EnhancedFedora fedora = getEnhancedFedora();
                 pid = getRoundTripObject(batch, fedora);
                 fedora.modifyDatastreamByValue(
-                        pid, BATCH_STRUCTURE, toString(batchStructure), null, "Updating batch structure");
+                        pid, BATCH_STRUCTURE, null,null,toString(batchStructure).getBytes(),null,"text/xml", "Updating batch structure",null);
             } catch (BackendInvalidResourceException | MalformedURLException | PIDGeneratorException |
                     BackendMethodFailedException | JAXBException |
                     BackendInvalidCredsException e) {
