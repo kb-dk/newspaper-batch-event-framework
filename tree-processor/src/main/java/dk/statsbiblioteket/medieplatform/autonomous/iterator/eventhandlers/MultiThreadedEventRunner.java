@@ -26,7 +26,10 @@ public class MultiThreadedEventRunner extends EventRunner {
         this.executor = executor;
     }
 
-
+    @Override
+    protected void handleFinish(ParsingEvent current, TreeEventHandler handler) {
+        super.handleFinish(current, handler);
+    }
 
     @Override
     protected void handleNodeBegins(ParsingEvent current) {
@@ -36,13 +39,11 @@ public class MultiThreadedEventRunner extends EventRunner {
             //It will then return than iterator.
             //And the iterator where this was called will skip to the next node begins that was not this tree
             TreeIterator childIterator = iterator.skipToNextSibling();
-            MultiThreadedEventRunner childRunner = new MultiThreadedEventRunner(childIterator,eventHandlers,resultCollector,
-                    forker,
-                    executor);
+            EventRunner childRunner = new EventRunner(childIterator,eventHandlers,resultCollector,true);
             Future<?> future = executor.submit(childRunner);
             childTasks.add(future);
         } else {
-            super.handleNodeEnd(current);
+            super.handleNodeBegins(current);
         }
 
     }
@@ -61,7 +62,7 @@ public class MultiThreadedEventRunner extends EventRunner {
                 }
             }
         }
-        super.handleNodeBegins(current);
+        super.handleNodeEnd(current);
     }
 
     public interface EventCondition{

@@ -19,6 +19,8 @@ public class EventRunner implements Runnable {
     protected final List<TreeEventHandler> eventHandlers;
     protected final ResultCollector resultCollector;
 
+    private boolean spawn = false;
+
 
     private Queue<ParsingEvent> pushedEvents = new ConcurrentLinkedQueue<>();
 
@@ -33,6 +35,17 @@ public class EventRunner implements Runnable {
         this.eventHandlers = eventHandlers;
         this.resultCollector = resultCollector;
     }
+
+    /**
+     * Initialise the EventRunner with a tree iterator.
+     *
+     * @param iterator The tree iterator to run events on.
+     */
+    protected EventRunner(TreeIterator iterator, List<TreeEventHandler> eventHandlers, ResultCollector resultCollector, boolean spawn) {
+        this(iterator,eventHandlers,resultCollector);
+        this.spawn = spawn;
+    }
+
 
     /**
      * Trigger all the given event handlers on all events of the iterator.
@@ -61,8 +74,10 @@ public class EventRunner implements Runnable {
                 }
             }
         }
-        for (TreeEventHandler handler : eventHandlers) {
-            handleFinish(current, handler);
+        if (!spawn) {
+            for (TreeEventHandler handler : eventHandlers) {
+                handleFinish(current, handler);
+            }
         }
     }
 
@@ -95,7 +110,7 @@ public class EventRunner implements Runnable {
     protected void handleNodeEnd(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
-                handler.handleNodeEnd((NodeEndParsingEvent) current,this);
+                handler.handleNodeEnd((NodeEndParsingEvent) current, this);
             } catch (Exception e) {
                 resultCollector.addFailure(current.getName(),
                         EXCEPTION,
