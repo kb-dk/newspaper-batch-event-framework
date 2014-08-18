@@ -89,7 +89,7 @@ public class TreeProcessorAbstractRunnableComponentTest {
 
         WireMock.configureFor("localhost", wireMockServer.port());
         WireMock.givenThat(WireMock.get(WireMock.urlEqualTo(
-                "/fedora/objects?pid=true&query=identifier~path:" + batch.getFullID()
+                "/fedora/objects?pid=true&query=identifier%3Dpath:" + batch.getFullID()
                         + "&maxResults=1&resultFormat=xml"))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .willReturn(WireMock.aResponse()

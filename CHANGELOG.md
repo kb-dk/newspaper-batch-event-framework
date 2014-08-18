@@ -1,5 +1,6 @@
-1.9---
+1.9
 * Record the duration as part of the result
+* Fix handling of queries for batches with roundtrip 0 (from mfpak)
 
 1.8
 * Enable support for building with Java 8
