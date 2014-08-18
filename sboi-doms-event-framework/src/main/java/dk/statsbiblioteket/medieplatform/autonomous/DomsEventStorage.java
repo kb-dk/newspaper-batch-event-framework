@@ -151,8 +151,16 @@ public class DomsEventStorage implements EventStorer {
         } catch (BackendInvalidResourceException e) {
             throw new NotFoundException(e);
         }
+    }
 
-
+    /**
+     * Returns all Batch roundtrip objects for a given batchId, sorted in ascending order.
+     * Returns null if the batchId is not known.
+     * @param batchId the batchId.
+     * @return the sorted list of roundtrip objects.
+     */
+    public List<Batch> getAllRoundTrips(String batchId) {
+        return null;
     }
 
     /**
