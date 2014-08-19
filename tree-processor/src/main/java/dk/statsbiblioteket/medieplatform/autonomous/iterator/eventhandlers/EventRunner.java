@@ -55,7 +55,7 @@ public class EventRunner implements Runnable {
     public void run()  {
         ParsingEvent current = null;
         while (!pushedEvents.isEmpty() || iterator.hasNext()) {
-            current = pushedEvents.poll();
+            current = popInjectedEvent();
             if (current == null) {
                 current = iterator.next();
             }
@@ -75,25 +75,31 @@ public class EventRunner implements Runnable {
             }
         }
         if (!spawn) {
-            for (TreeEventHandler handler : eventHandlers) {
-                handleFinish(current, handler);
+            handleFinish();
+        }
+    }
+
+    public ParsingEvent popInjectedEvent() {
+        ParsingEvent current;
+        current = pushedEvents.poll();
+        return current;
+    }
+
+    public void handleFinish() {
+        for (TreeEventHandler handler : eventHandlers) {
+            try {
+                handler.handleFinish(this);
+            } catch (Exception e) {
+                resultCollector.addFailure("General Batch failure",
+                        EXCEPTION,
+                        handler.getClass().getSimpleName(),
+                        UNEXPECTED_ERROR + e.toString(),
+                        Strings.getStackTrace(e));
             }
         }
     }
 
-    protected void handleFinish(ParsingEvent current, TreeEventHandler handler) {
-        try {
-            handler.handleFinish(this);
-        } catch (Exception e) {
-            resultCollector.addFailure(current == null ? "UNKNOWN" : current.getName(),
-                    EXCEPTION,
-                    handler.getClass().getSimpleName(),
-                    UNEXPECTED_ERROR + e.toString(),
-                    Strings.getStackTrace(e));
-        }
-    }
-
-    protected void handleAttribute(ParsingEvent current) {
+    public void handleAttribute(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
                 handler.handleAttribute((AttributeParsingEvent) current,this);
@@ -107,7 +113,7 @@ public class EventRunner implements Runnable {
         }
     }
 
-    protected void handleNodeEnd(ParsingEvent current) {
+    public void handleNodeEnd(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
                 handler.handleNodeEnd((NodeEndParsingEvent) current, this);
@@ -121,7 +127,7 @@ public class EventRunner implements Runnable {
         }
     }
 
-    protected void handleNodeBegins(ParsingEvent current) {
+    public void handleNodeBegins(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
                 handler.handleNodeBegin((NodeBeginsParsingEvent) current,this);

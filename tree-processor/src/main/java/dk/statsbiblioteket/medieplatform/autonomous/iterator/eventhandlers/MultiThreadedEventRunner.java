@@ -27,12 +27,12 @@ public class MultiThreadedEventRunner extends EventRunner {
     }
 
     @Override
-    protected void handleFinish(ParsingEvent current, TreeEventHandler handler) {
-        super.handleFinish(current, handler);
+    public void handleFinish() {
+        super.handleFinish();
     }
 
     @Override
-    protected void handleNodeBegins(ParsingEvent current) {
+    public void handleNodeBegins(ParsingEvent current) {
         if (forker.shouldFork(current)) {
             //any further will spawn sub iterators
             //Skip to next sibling will branch of the iterator that began with this node begins
@@ -49,7 +49,7 @@ public class MultiThreadedEventRunner extends EventRunner {
     }
 
     @Override
-    protected void handleNodeEnd(ParsingEvent current) {
+    public void handleNodeEnd(ParsingEvent current) {
 
         if (forker.shouldJoin(current)) {
             for (Future<?> childTask : childTasks) {
