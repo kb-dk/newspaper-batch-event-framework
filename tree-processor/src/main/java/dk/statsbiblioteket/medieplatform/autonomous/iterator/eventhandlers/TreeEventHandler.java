@@ -11,25 +11,25 @@ public interface TreeEventHandler {
      *
      * @param event Contains information on the node.
      */
-    public void handleNodeBegin(NodeBeginsParsingEvent event);
+    public void handleNodeBegin(NodeBeginsParsingEvent event, EventRunner runner);
 
     /**
      * Signifies that a node end has been reached.
      *
      * @param event Contains information on the node.
      */
-    public void handleNodeEnd(NodeEndParsingEvent event);
+    public void handleNodeEnd(NodeEndParsingEvent event, EventRunner runner);
 
     /**
      * Signifies that a leaf has been reached.
      *
      * @param event Contains information on leaf.
      */
-    public void handleAttribute(AttributeParsingEvent event);
+    public void handleAttribute(AttributeParsingEvent event, EventRunner runner);
 
     /**
      * Signifies that the parsing of the batch has been is finished, and any crosscutting batch
      * analysis should done.
      */
-    public void handleFinish();
+    public void handleFinish(EventRunner runner);
 }
