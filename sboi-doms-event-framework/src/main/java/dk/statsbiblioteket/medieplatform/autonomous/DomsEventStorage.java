@@ -5,6 +5,7 @@ import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceExcepti
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
+import dk.statsbiblioteket.doms.central.connectors.fedora.structures.FedoraRelation;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Access to DOMS batch and event storageusing the Central Webservice library to communicate with DOMS.
@@ -159,8 +157,29 @@ public class DomsEventStorage implements EventStorer {
      * @param batchId the batchId.
      * @return the sorted list of roundtrip objects.
      */
-    public List<Batch> getAllRoundTrips(String batchId) {
-        return null;
+    public List<Batch> getAllRoundTrips(String batchId) throws CommunicationException {
+        Comparator<Batch> roundtripComparator = new Comparator<Batch>() {
+            @Override
+            public int compare(Batch o1, Batch o2) {
+                return o1.getRoundTripNumber() - o2.getRoundTripNumber();
+            }
+        };
+        try {
+            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatBatchID(batchId));
+            if (founds == null || founds.size() == 0) {
+                return null;
+            }
+            String batchObjectPid = founds.get(0);
+            List<FedoraRelation> roundtripRelations = fedora.getNamedRelations(batchObjectPid, hasPart_relation, null);
+            List<Batch> roundtrips = new ArrayList<Batch>();
+            for (FedoraRelation roundtripRelation: roundtripRelations) {
+                roundtrips.add(getBatch(roundtripRelation.getObject()));
+            }
+            Collections.sort(roundtrips, roundtripComparator);
+            return roundtrips;
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | BackendInvalidResourceException e) {
+            throw new CommunicationException(e);
+        }
     }
 
     /**

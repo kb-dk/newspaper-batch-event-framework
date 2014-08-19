@@ -110,7 +110,7 @@ public class DomsEventStorageIntegrationTest {
         }
     }
 
-    //@Test(groups = {"externalTest"})
+    @Test(groups = {"externalTest"})
     public void testGetAllRoundtrips() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -130,10 +130,14 @@ public class DomsEventStorageIntegrationTest {
         String details = "Details here";
 
         domsEventStorage.addEventToBatch(batchId, 1, "agent", timestamp, details, eventID, true);
-        domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
         domsEventStorage.addEventToBatch(batchId, 4, "agent", timestamp, details, eventID, true);
+        domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
         List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
         assertEquals(roundtrips.size(), 3);
+        //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
+        //because the roundtrips are returned in the order created.
+        assertEquals((int) roundtrips.get(0).getRoundTripNumber(), 1);
+        assertEquals((int) roundtrips.get(2).getRoundTripNumber(), 4);
     }
 
     /**
