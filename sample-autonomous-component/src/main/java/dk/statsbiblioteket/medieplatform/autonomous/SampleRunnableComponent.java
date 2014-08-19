@@ -92,7 +92,5 @@ public class SampleRunnableComponent extends TreeProcessorAbstractRunnableCompon
                     getClass().getSimpleName(),
                     "There are to few files in the batch");
         }
-        //And finally set the timestamp of the execution.
-        resultCollector.setTimestamp(new Date());
     }
 }

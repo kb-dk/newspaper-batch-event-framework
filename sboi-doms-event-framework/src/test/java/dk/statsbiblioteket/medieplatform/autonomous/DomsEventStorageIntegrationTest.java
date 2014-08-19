@@ -1,12 +1,14 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
+import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.util.xml.DOM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -16,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -107,6 +110,36 @@ public class DomsEventStorageIntegrationTest {
         }
     }
 
+    @Test(groups = {"externalTest"})
+    public void testGetAllRoundtrips() throws Exception {
+        String pathToProperties = System.getProperty("integration.test.newspaper.properties");
+        Properties props = new Properties();
+        props.load(new FileInputStream(pathToProperties));
+
+        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
+        factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
+        factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
+        factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+
+        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
+
+        String batchId = getRandomBatchId();
+        Date timestamp = new Date(0);
+        String eventID = "Data_Received";
+        String details = "Details here";
+
+        domsEventStorage.addEventToBatch(batchId, 1, "agent", timestamp, details, eventID, true);
+        domsEventStorage.addEventToBatch(batchId, 4, "agent", timestamp, details, eventID, true);
+        domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
+        List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
+        assertEquals(roundtrips.size(), 3);
+        //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
+        //because the roundtrips are returned in the order created.
+        assertEquals((int) roundtrips.get(0).getRoundTripNumber(), 1);
+        assertEquals((int) roundtrips.get(2).getRoundTripNumber(), 4);
+    }
+
     /**
      * Create a round-trip object with an EVENTS datastream. Create a backup of the datastream and check
      * that it is actually identical to the original.
@@ -156,7 +189,7 @@ public class DomsEventStorageIntegrationTest {
 
             eventStorer.addEventToBatch(
                     batchId, roundTripNumber, "agent", first, "initial event", "InitialEvent", true);
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             long beforeUpdate = System.currentTimeMillis();
 
             Thread.sleep(1000);
