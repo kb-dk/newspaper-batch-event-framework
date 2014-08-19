@@ -10,6 +10,7 @@ import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWron
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.List;
 
 public class FedoraMockupEmpty extends AbstractFedoraMockup {
@@ -32,16 +33,17 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
     }
 
     @Override
-    public void modifyDatastreamByValue(String pid, String datastream, String contents, List<String> alternatives,
+    public Date modifyDatastreamByValue(String pid, String datastream, String contents, List<String> alternatives,
                                         String comment) throws
                                                         BackendInvalidCredsException,
                                                         BackendMethodFailedException,
                                                         BackendInvalidResourceException {
         addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+        return new Date();
     }
 
     @Override
-    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
+    public Date modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
                                         byte[] contents, List<String> alternativeIdentifiers, String comment,
                                         Long lastModifiedDate) throws
                                                                BackendMethodFailedException,
@@ -49,11 +51,12 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                                                BackendInvalidResourceException,
                                                                ConcurrentModificationException {
         addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+        return new Date();
 
     }
 
     @Override
-    public void modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
+    public Date modifyDatastreamByValue(String pid, String datastream, ChecksumType checksumType, String checksum,
                                         byte[] contents, List<String> alternativeIdentifiers, String mimeType,
                                         String comment, Long lastModifiedDate) throws
                                                                                BackendMethodFailedException,
@@ -61,6 +64,7 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                                                                BackendInvalidResourceException,
                                                                                ConcurrentModificationException {
         addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+        return new Date();
     }
 
     @Override

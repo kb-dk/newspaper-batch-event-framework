@@ -11,11 +11,12 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,7 +42,7 @@ public class DomsSaverReducerTest {
         when(fedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
         doThrow(new IllegalArgumentException()).when(fedora).modifyDatastreamByValue(
                 anyString(), anyString(), anyString(), anyList(), anyString());
-        doNothing().when(fedora).modifyDatastreamByValue(
+        doReturn(new Date()).when(fedora).modifyDatastreamByValue(
                 eq(testPid), eq(jpylyzer), anyString(), anyList(), anyString());
         try {
             fedora.modifyDatastreamByValue(null, null, null, null, null);

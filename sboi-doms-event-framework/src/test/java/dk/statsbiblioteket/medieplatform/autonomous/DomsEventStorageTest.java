@@ -144,7 +144,7 @@ public class DomsEventStorageTest {
 
         //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
         //is successful
-        doThrow(new ConcurrentModificationException()).doNothing().when(enhancedFedora).modifyDatastreamByValue(
+        doThrow(new ConcurrentModificationException()).doReturn(new Date()).when(enhancedFedora).modifyDatastreamByValue(
                 anyString(),
                 anyString(),
                 any(ChecksumType.class),
@@ -215,7 +215,7 @@ public class DomsEventStorageTest {
 
         //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
         //is successful
-        doThrow(new ConcurrentModificationException()).doNothing().when(enhancedFedora).modifyDatastreamByValue(
+        doThrow(new ConcurrentModificationException()).doReturn(new Date()).when(enhancedFedora).modifyDatastreamByValue(
                 anyString(),
                 anyString(),
                 any(ChecksumType.class),

@@ -51,7 +51,7 @@ public class TestingComponent implements RunnableComponent {
     public EventStorer getEventStorer() {
         return new EventStorer() {
             @Override
-            public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp,
+            public Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp,
                                         String details, String eventType, boolean outcome)
                     throws CommunicationException {
                 for (Batch batch : batches) {
@@ -64,6 +64,7 @@ public class TestingComponent implements RunnableComponent {
                         batch.getEventList().add(event);
                     }
                 }
+                return new Date();
             }
 
             @Override

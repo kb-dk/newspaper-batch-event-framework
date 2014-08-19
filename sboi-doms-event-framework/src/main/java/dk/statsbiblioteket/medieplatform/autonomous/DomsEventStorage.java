@@ -45,7 +45,7 @@ public class DomsEventStorage implements EventStorer {
     }
 
     @Override
-    public void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
+    public Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
                                 String eventType, boolean outcome) throws CommunicationException {
         String roundTripObjectPid = createBatchRoundTrip(batchId, roundTripNumber);
 
@@ -61,7 +61,7 @@ public class DomsEventStorage implements EventStorer {
             }
             premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
             try {
-                fedora.modifyDatastreamByValue(
+                return fedora.modifyDatastreamByValue(
                         roundTripObjectPid,
                         eventsDatastream,
                         null,

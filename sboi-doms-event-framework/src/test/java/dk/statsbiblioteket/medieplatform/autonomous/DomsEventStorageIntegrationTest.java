@@ -1,14 +1,12 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
-import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.util.xml.DOM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -18,7 +16,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -185,21 +182,27 @@ public class DomsEventStorageIntegrationTest {
                 fedora.deleteObject(pid, "cleaning up before test");
 
             }
-
-
-            eventStorer.addEventToBatch(
-                    batchId, roundTripNumber, "agent", first, "initial event", "InitialEvent", true);
+            Date beforeUpdate = eventStorer.addEventToBatch(batchId,
+                    roundTripNumber,
+                    "agent",
+                    first,
+                    "initial event",
+                    "InitialEvent",
+                    true);
             Thread.sleep(2000);
-            long beforeUpdate = System.currentTimeMillis();
-
+            Date afterUpdate = eventStorer.addEventToBatch(batchId,
+                    roundTripNumber,
+                    "agent",
+                    timestamp,
+                    details,
+                    eventID,
+                    true);
             Thread.sleep(1000);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
-            Thread.sleep(1000);
-
-            long afterUpdate = System.currentTimeMillis();
-
-            Thread.sleep(1000);
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 3, 10000, eventID);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId,
+                    roundTripNumber,
+                    3,
+                    10000,
+                    eventID);
             Thread.sleep(1000);
 
             long afterReset = System.currentTimeMillis();
@@ -211,8 +214,8 @@ public class DomsEventStorageIntegrationTest {
                     "Failed to create backup events datastream. Unexpected name '" + backupEvents + "'");
 */
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
-            String originalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", beforeUpdate);
-            String updatedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterUpdate);
+            String originalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", beforeUpdate.getTime());
+            String updatedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterUpdate.getTime());
             String revertedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterReset);
             String finalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(originalEvents.contains(details), pretty(originalEvents));
