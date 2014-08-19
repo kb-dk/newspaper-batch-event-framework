@@ -207,36 +207,6 @@ public class DomsEventStorage implements EventStorer {
 
     }
 
-    /**
-     * This method creates a timestamped backup of the EVENTS datastream for this round-trip.
-     *
-     * @param batchId         the batchId.
-     * @param roundTripNumber the round-trip number.
-     *
-     * @return the name of the new datastream.
-     * @throws CommunicationException if there was a problem communicating with DOMS.
-     */
-    String backupEventsForBatch(String batchId, int roundTripNumber) throws CommunicationException, NotFoundException {
-        String roundTripObjectPid = null;
-        try {
-            roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
-        } catch (BackendInvalidResourceException e) {
-            throw new NotFoundException("Did not find " + getFullBatchId(batchId, roundTripNumber), e);
-        }
-        try {
-            try {
-                String backupDatastream = eventsDatastream + "_" + new Date().getTime();
-                String eventXml = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
-                fedora.modifyDatastreamByValue(roundTripObjectPid, backupDatastream, eventXml, null, "Premis backup");
-                return backupDatastream;
-            } catch (BackendInvalidResourceException e) {
-                return null;
-            }
-        } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
-            throw new CommunicationException(e);
-        }
-    }
-
     @Override
     public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts,
                                                       long waitTime, String eventId) throws
