@@ -28,7 +28,7 @@ public class SBOIEventIndexTest {
 
         SBOIEventIndex summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findBatches(false, Arrays.asList("Data_Received"), new ArrayList<String>(),
-                                                    Arrays.asList("Approved"));
+                                                    Arrays.asList("Roundtrip_Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Batch next = batches.next();
@@ -45,10 +45,10 @@ public class SBOIEventIndexTest {
 
         SBOIEventIndex summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findBatches(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
         Batch first = batches.next();
         Iterator<Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), Arrays.asList(first));
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
 
         assertEquals(
                 batches2.next(),first);
@@ -62,12 +62,12 @@ public class SBOIEventIndexTest {
 
         SBOIEventIndex summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findBatches(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"));
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
         Batch first = batches.next();
         Batch second = batches.next();
 
         Iterator<Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Approved"), Arrays.asList(first,second));
+                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
 
         HashSet<Batch> results = new HashSet<Batch>();
         results.add(first);
