@@ -368,7 +368,7 @@ public class DomsEventStorageIntegrationTest {
     }
 
     private String getRandomBatchId() {
-        return "4000220252" + Math.round(Math.random() * 100);
+        return "4666220252" + Math.round(Math.random() * 100);
     }
 
 
