@@ -143,6 +143,9 @@ public class DomsEventStorage implements EventStorer {
 
     public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         String roundTripID;
+        if (roundTripNumber == null) {
+            roundTripNumber = 0;
+        }
         try {
             roundTripID = getRoundTripID(batchId, roundTripNumber);
             return getBatch(roundTripID);
