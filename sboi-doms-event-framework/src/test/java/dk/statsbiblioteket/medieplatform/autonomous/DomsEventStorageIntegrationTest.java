@@ -205,18 +205,10 @@ public class DomsEventStorageIntegrationTest {
                     eventID);
             Thread.sleep(1000);
 
-            long afterReset = System.currentTimeMillis();
-            /*
-            String backupEvents = ((DomsEventStorage) eventStorer).backupEventsForBatch(batchId, roundTripNumber);
-
-            assertTrue(
-                    backupEvents.matches("EVENTS_[0-9]{1,}"),
-                    "Failed to create backup events datastream. Unexpected name '" + backupEvents + "'");
-*/
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
             String originalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", beforeUpdate.getTime());
             String updatedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterUpdate.getTime());
-            String revertedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterReset);
+            String revertedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS");
             String finalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(originalEvents.contains(details), pretty(originalEvents));
             assertFalse(revertedEvents.contains(details), pretty(revertedEvents));
