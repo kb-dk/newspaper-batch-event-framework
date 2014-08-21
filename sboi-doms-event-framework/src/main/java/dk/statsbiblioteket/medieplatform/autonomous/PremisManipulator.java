@@ -131,7 +131,8 @@ public class PremisManipulator {
                 result.setDate(legacyDateFormat.parse(premisEvent.getEventDateTime()));
             } catch(ParseException e2){
                 //no date is set, then
-                log.warn("Premis event {} have no date set", result.getEventID());
+                log.warn("Failed to parse Premis event {} date {} (may not be set)",
+                         result.getEventID(), premisEvent.getEventDateTime());
             }
         }
         EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation().get(0);
