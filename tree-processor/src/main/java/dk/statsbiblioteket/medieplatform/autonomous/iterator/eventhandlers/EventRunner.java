@@ -9,8 +9,6 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator
 import dk.statsbiblioteket.util.Strings;
 
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EventRunner implements Runnable {
     public static final String EXCEPTION = "exception";
@@ -22,7 +20,6 @@ public class EventRunner implements Runnable {
     private boolean spawn = false;
 
 
-    private Queue<ParsingEvent> pushedEvents = new ConcurrentLinkedQueue<>();
 
 
     /**
@@ -54,7 +51,7 @@ public class EventRunner implements Runnable {
      */
     public void run()  {
         ParsingEvent current = null;
-        while (!pushedEvents.isEmpty() || iterator.hasNext()) {
+        while (iterator.hasNext()) {
             current = popInjectedEvent();
             if (current == null) {
                 current = iterator.next();
@@ -80,15 +77,22 @@ public class EventRunner implements Runnable {
     }
 
     public ParsingEvent popInjectedEvent() {
-        ParsingEvent current;
-        current = pushedEvents.poll();
-        return current;
+        for (TreeEventHandler eventHandler : eventHandlers) {
+            if (eventHandler instanceof InjectingTreeEventHandler) {
+                InjectingTreeEventHandler handler = (InjectingTreeEventHandler) eventHandler;
+                ParsingEvent event = handler.popEvent();
+                if (event != null){
+                    return event;
+                }
+            }
+        }
+        return null;
     }
 
     public void handleFinish() {
         for (TreeEventHandler handler : eventHandlers) {
             try {
-                handler.handleFinish(this);
+                handler.handleFinish();
             } catch (Exception e) {
                 resultCollector.addFailure("General Batch failure",
                         EXCEPTION,
@@ -102,7 +106,7 @@ public class EventRunner implements Runnable {
     public void handleAttribute(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
-                handler.handleAttribute((AttributeParsingEvent) current,this);
+                handler.handleAttribute((AttributeParsingEvent) current);
             } catch (Exception e) {
                 resultCollector.addFailure(current.getName(),
                         EXCEPTION,
@@ -116,7 +120,7 @@ public class EventRunner implements Runnable {
     public void handleNodeEnd(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
-                handler.handleNodeEnd((NodeEndParsingEvent) current, this);
+                handler.handleNodeEnd((NodeEndParsingEvent) current);
             } catch (Exception e) {
                 resultCollector.addFailure(current.getName(),
                         EXCEPTION,
@@ -130,7 +134,7 @@ public class EventRunner implements Runnable {
     public void handleNodeBegins(ParsingEvent current) {
         for (TreeEventHandler handler : eventHandlers) {
             try {
-                handler.handleNodeBegin((NodeBeginsParsingEvent) current,this);
+                handler.handleNodeBegin((NodeBeginsParsingEvent) current);
             } catch (Exception e) {
                 resultCollector.addFailure(current.getName(),
                         EXCEPTION,
@@ -139,9 +143,5 @@ public class EventRunner implements Runnable {
                         Strings.getStackTrace(e));
             }
         }
-    }
-
-    public void pushEvent(ParsingEvent parsingEvent) {
-        pushedEvents.add(parsingEvent);
     }
 }
