@@ -46,7 +46,7 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    @BeforeMethod(groups = {"standAloneTest"},enabled = false)
+    @BeforeMethod(groups = {"standAloneTest"})
     public void shouldWeReplay() throws URISyntaxException, IOException {
         File file = new File(
                 Thread.currentThread().getContextClassLoader().getResource(
@@ -59,7 +59,7 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
         }
     }
 
-    @BeforeMethod(groups = {"standAloneTest"},enabled = false)
+    @BeforeMethod(groups = {"standAloneTest"})
     public void setUpReplay() throws Exception {
         /*Generate these replay files by doing this
 
@@ -162,12 +162,12 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
         return pid;
     }
 
-    @Test(groups = {"standAloneTest"}, enabled = false)
+    @Test(groups = {"standAloneTest"})
     public void testIterator() throws Exception {
         super.testIterator(true, false);
     }
 
-    @Test(groups = {"standAloneTest"}, enabled = false)
+    @Test(groups = {"standAloneTest"})
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping(false, false);
     }
