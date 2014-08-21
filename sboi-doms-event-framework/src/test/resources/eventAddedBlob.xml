@@ -11,7 +11,7 @@
             <eventIdentifierValue>B400022028241-RT1-0</eventIdentifierValue>
         </eventIdentifier>
         <eventType>Data_Received</eventType>
-        <eventDateTime>1970-01-01T01:00:00.000+0100</eventDateTime>
+        <eventDateTime>1970-01-01T01:00:00.000+01:00</eventDateTime>
         <eventOutcomeInformation>
             <eventOutcome>success</eventOutcome>
             <!--or failure-->

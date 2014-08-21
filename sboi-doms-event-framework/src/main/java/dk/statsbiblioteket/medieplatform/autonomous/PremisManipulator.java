@@ -44,7 +44,8 @@ public class PremisManipulator {
     private static Logger log = LoggerFactory.getLogger(PremisManipulator.class);
     private final PremisComplexType premis;
     private Marshaller marshaller;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    private final SimpleDateFormat legacyDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
     private final String type;
     private final IDFormatter idFormat;
 
@@ -126,8 +127,12 @@ public class PremisManipulator {
         try {
             result.setDate(dateFormat.parse(premisEvent.getEventDateTime()));
         } catch (ParseException e) {
-            //no date is set, then
-            log.warn("Premis event {} have no date set", result.getEventID());
+            try {
+                result.setDate(legacyDateFormat.parse(premisEvent.getEventDateTime()));
+            } catch(ParseException e2){
+                //no date is set, then
+                log.warn("Premis event {} have no date set", result.getEventID());
+            }
         }
         EventOutcomeInformationComplexType eventOutcomeInformation = premisEvent.getEventOutcomeInformation().get(0);
         for (JAXBElement<?> jaxbElement : eventOutcomeInformation.getContent()) {
