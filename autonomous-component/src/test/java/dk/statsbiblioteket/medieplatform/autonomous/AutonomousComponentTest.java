@@ -5,6 +5,7 @@ import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
 import com.netflix.curator.test.TestingServer;
 import junit.framework.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -20,6 +21,7 @@ public class AutonomousComponentTest {
     TestingServer testingServer;
     AutonomousComponent autonoumous;
     private TestingComponent component;
+    private CuratorFramework lockClient;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -38,7 +40,7 @@ public class AutonomousComponentTest {
 
         component.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
 
-        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
+        lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
 
@@ -52,6 +54,11 @@ public class AutonomousComponentTest {
                 DEFAULT_TIMEOUT,
                 component.getEventTrigger(),
                 component.getEventStorer());
+    }
+
+    @AfterMethod
+    public void tearDown() throws Exception {
+        lockClient.close();
     }
 
     /**
