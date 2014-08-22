@@ -42,18 +42,20 @@ public class AutonomousComponentTest {
 
         lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
-        lockClient.start();
 
-        autonoumous = new AutonomousComponent(component,
-                lockClient, 1,
-                Arrays.asList("Data_Received"),
-                null,
-                null,
-                DEFAULT_TIMEOUT,
-                DEFAULT_TIMEOUT,
-                DEFAULT_TIMEOUT,
-                component.getEventTrigger(),
-                component.getEventStorer());
+            lockClient.start();
+            autonoumous = new AutonomousComponent(component,
+                    lockClient,
+                    1,
+                    Arrays.asList("Data_Received"),
+                    null,
+                    null,
+                    DEFAULT_TIMEOUT,
+                    DEFAULT_TIMEOUT,
+                    DEFAULT_TIMEOUT,
+                    component.getEventTrigger(),
+                    component.getEventStorer());
+
     }
 
     @AfterMethod

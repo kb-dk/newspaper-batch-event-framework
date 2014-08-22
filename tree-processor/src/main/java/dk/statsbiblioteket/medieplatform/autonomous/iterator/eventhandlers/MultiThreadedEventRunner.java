@@ -1,6 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers;
 
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 import dk.statsbiblioteket.util.Strings;
@@ -32,7 +34,7 @@ public class MultiThreadedEventRunner extends EventRunner {
     }
 
     @Override
-    public void handleNodeBegins(ParsingEvent current) {
+    public void handleNodeBegins(NodeBeginsParsingEvent current) {
         if (forker.shouldFork(current)) {
             //any further will spawn sub iterators
             //Skip to next sibling will branch of the iterator that began with this node begins
@@ -49,7 +51,7 @@ public class MultiThreadedEventRunner extends EventRunner {
     }
 
     @Override
-    public void handleNodeEnd(ParsingEvent current) {
+    public void handleNodeEnd(NodeEndParsingEvent current) {
 
         if (forker.shouldJoin(current)) {
             for (Future<?> childTask : childTasks) {

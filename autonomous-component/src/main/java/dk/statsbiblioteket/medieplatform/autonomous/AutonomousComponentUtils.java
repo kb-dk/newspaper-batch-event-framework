@@ -47,66 +47,58 @@ public class AutonomousComponentUtils {
     public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component,
                                                       EventTrigger eventTrigger, EventStorer eventStorer) {
         //Make a client for the lock framework, and start it
-        CuratorFramework lockClient = CuratorFrameworkFactory.newClient(
-                properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL), new ExponentialBackoffRetry(1000, 3));
+        CuratorFramework lockClient
+                = CuratorFrameworkFactory.newClient(properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL),
+                new ExponentialBackoffRetry(1000, 3));
         lockClient.start();
-
-        //This is the number of batches that will be worked on in parallel per invocation
-        int simultaneousProcesses = Integer.parseInt(
-                properties.getProperty(
-                        ConfigConstants.AUTONOMOUS_MAXTHREADS, "1")
-                                                    );
-        //This is the timeout when attempting to lock SBOI
-        long timeoutWaitingToLockSBOI = 5000l;
-        //This is the timeout when attempting to lock a batch before working on it
-        long timeoutWaitingToLockBatch = 2000l;
-        //After this time, the worker thread will be terminated, even if not complete
-        long maxRunTimeForWorker = Long.parseLong(
-                properties.getProperty(
-                        ConfigConstants.AUTONOMOUS_MAX_RUNTIME, 60 * 60 * 1000l + "")
-                                                 );
-
-        String maxResultsProperty = properties.getProperty(ConfigConstants.MAX_RESULTS_COLLECTED);
-        Integer maxResults = null;
-        if (maxResultsProperty != null) {
-            maxResults = Integer.parseInt(maxResultsProperty);
-        }
-
-        if (eventTrigger == null) {
-            throw new IllegalArgumentException("eventTrigger null");
-        }
-        if (eventStorer == null) {
-            throw new IllegalArgumentException("eventStorer null");
-        }
-
-        //Use all the above to make the autonomous component
-        AutonomousComponent autonoumous = new AutonomousComponent(
-                component,
-                lockClient,
-                simultaneousProcesses,
-                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
-                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
-                toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
-                timeoutWaitingToLockSBOI,
-                timeoutWaitingToLockBatch,
-                maxRunTimeForWorker,
-                maxResults,
-                eventTrigger,
-                eventStorer);
-
-
-        try {//Start the component
-            //This call will return when the work is done
-            return autonoumous.call();
-        } catch (CouldNotGetLockException e) {
-            log.error("Could not get lock on SBOI", e);
-            return new CallResult("Could not get lock on SBOI");
-        } catch (LockingException e) {
-            log.error("Failed to communicate with zookeeper", e);
-            return new CallResult("Failed to communicate with zookeeper");
-        } catch (CommunicationException e) {
-            log.error("Commmunication exception when invoking backend services", e);
-            return new CallResult("Commmunication exception when invoking backend services");
+        try {
+            //This is the number of batches that will be worked on in parallel per invocation
+            int simultaneousProcesses = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_MAXTHREADS,
+                            "1"));
+            //This is the timeout when attempting to lock SBOI
+            long timeoutWaitingToLockSBOI = 5000l;
+            //This is the timeout when attempting to lock a batch before working on it
+            long timeoutWaitingToLockBatch = 2000l;
+            //After this time, the worker thread will be terminated, even if not complete
+            long maxRunTimeForWorker = Long.parseLong(properties.getProperty(ConfigConstants.AUTONOMOUS_MAX_RUNTIME,
+                            60 * 60 * 1000l + ""));
+            String maxResultsProperty = properties.getProperty(ConfigConstants.MAX_RESULTS_COLLECTED);
+            Integer maxResults = null;
+            if (maxResultsProperty != null) {
+                maxResults = Integer.parseInt(maxResultsProperty);
+            }
+            if (eventTrigger == null) {
+                throw new IllegalArgumentException("eventTrigger null");
+            }
+            if (eventStorer == null) {
+                throw new IllegalArgumentException("eventStorer null");
+            }
+            //Use all the above to make the autonomous component
+            AutonomousComponent autonoumous = new AutonomousComponent(component,
+                    lockClient,
+                    simultaneousProcesses,
+                    toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
+                    toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
+                    toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
+                    timeoutWaitingToLockSBOI,
+                    timeoutWaitingToLockBatch,
+                    maxRunTimeForWorker,
+                    maxResults,
+                    eventTrigger,
+                    eventStorer);
+            try {//Start the component
+                //This call will return when the work is done
+                return autonoumous.call();
+            } catch (CouldNotGetLockException e) {
+                log.error("Could not get lock on SBOI", e);
+                return new CallResult("Could not get lock on SBOI");
+            } catch (LockingException e) {
+                log.error("Failed to communicate with zookeeper", e);
+                return new CallResult("Failed to communicate with zookeeper");
+            } catch (CommunicationException e) {
+                log.error("Commmunication exception when invoking backend services", e);
+                return new CallResult("Commmunication exception when invoking backend services");
+            }
         } finally {
             lockClient.close();
         }

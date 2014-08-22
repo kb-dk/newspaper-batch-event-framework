@@ -208,42 +208,45 @@ public class AutonomousComponent implements Callable<CallResult> {
 
             checkLockServerConnectionState();
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
-            ArrayList<Future<?>> futures = new ArrayList<>();
-            for (BatchWorker batchWorker : workers.keySet()) {
-                log.info("Submitting worker for batch {}", batchWorker.getBatch().getBatchID());
-                concurrencyConnectionStateListener.add(batchWorker);
-                Future<?> future = pool.submit(batchWorker);
-                futures.add(future);
-            }
-            log.info("Shutting down the pool, and waiting for the workers to terminate");
-            pool.shutdown();
-
-            //The wait loop for the running threads
-            long start = System.currentTimeMillis();
-            boolean allDone = false;
-            while (!allDone) {
-                log.trace("Waiting to terminate");
-                allDone = true;
-                for (Future<?> future : futures) {
-                    allDone = allDone && future.isDone();
+            try {
+                ArrayList<Future<?>> futures = new ArrayList<>();
+                for (BatchWorker batchWorker : workers.keySet()) {
+                    log.info("Submitting worker for batch {}", batchWorker.getBatch().getBatchID());
+                    concurrencyConnectionStateListener.add(batchWorker);
+                    Future<?> future = pool.submit(batchWorker);
+                    futures.add(future);
                 }
-                checkLockServerConnectionState(pool);
-                try {
-                    Thread.sleep(pollTime);
-                } catch (InterruptedException e) {
-                    //okay, continue
-                }
-                if (System.currentTimeMillis() - start > workerTimout) {
-                    log.error("Worker timeout exceeded (" + workerTimout + "ms), shutting down all threads. We still need to wait for them" + " to terminate, however.");
-                    pool.shutdownNow();
+                log.info("Shutting down the pool, and waiting for the workers to terminate");
+                pool.shutdown();
+                //The wait loop for the running threads
+                long start = System.currentTimeMillis();
+                boolean allDone = false;
+                while (!allDone) {
+                    log.trace("Waiting to terminate");
+                    allDone = true;
                     for (Future<?> future : futures) {
-                        future.cancel(true);
+                        allDone = allDone && future.isDone();
+                    }
+                    checkLockServerConnectionState(pool);
+                    try {
+                        Thread.sleep(pollTime);
+                    } catch (InterruptedException e) {
+                        //okay, continue
+                    }
+                    if (System.currentTimeMillis() - start > workerTimout) {
+                        log.error("Worker timeout exceeded (" + workerTimout + "ms), shutting down all threads. We still need to wait for them" + " to terminate, however.");
+                        pool.shutdownNow();
+                        for (Future<?> future : futures) {
+                            future.cancel(true);
+                        }
                     }
                 }
-            }
-            log.info("All is now done, all workers have completed");
-            for (BatchWorker batchWorker : workers.keySet()) {
-                result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
+                log.info("All is now done, all workers have completed");
+                for (BatchWorker batchWorker : workers.keySet()) {
+                    result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
+                }
+            } finally {
+                //clean up pool?
             }
         } finally {
             for (InterProcessLock interProcessLock : workers.values()) {
