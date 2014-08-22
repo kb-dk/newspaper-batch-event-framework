@@ -38,14 +38,14 @@ public class DomsSaverReducerTest {
         String jpylyzerOutput = "<jpylyzer/>";
 
 
-        final EnhancedFedora fedora = mock(EnhancedFedora.class);
-        when(fedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
-        doThrow(new IllegalArgumentException()).when(fedora).modifyDatastreamByValue(
+        final EnhancedFedora mockFedora = mock(EnhancedFedora.class);
+        when(mockFedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
+        doThrow(new IllegalArgumentException()).when(mockFedora).modifyDatastreamByValue(
                 anyString(), anyString(), anyString(), anyList(), anyString());
-        doReturn(new Date()).when(fedora).modifyDatastreamByValue(
+        doReturn(new Date()).when(mockFedora).modifyDatastreamByValue(
                 eq(testPid), eq(jpylyzer), anyString(), anyList(), anyString());
         try {
-            fedora.modifyDatastreamByValue(null, null, null, null, null);
+            mockFedora.modifyDatastreamByValue(null, null, null, null, null);
             fail();
         } catch (IllegalArgumentException e) {
 
@@ -54,7 +54,7 @@ public class DomsSaverReducerTest {
                 new DomsSaverReducer() {
                     @Override
                     protected EnhancedFedora createFedoraClient(Context context) throws IOException {
-                        return fedora;
+                        return mockFedora;
                     }
                 });
 
