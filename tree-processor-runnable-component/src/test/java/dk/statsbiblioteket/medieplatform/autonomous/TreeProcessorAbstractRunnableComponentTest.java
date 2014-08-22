@@ -4,14 +4,13 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.sun.jersey.core.util.Base64;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedoraImpl;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import dk.statsbiblioteket.util.Streams;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -104,14 +103,16 @@ public class TreeProcessorAbstractRunnableComponentTest {
                                                                          "</result>")));
 
         String batchStructure = "<test>hej, this is test data</test>";
+
         WireMock.givenThat(WireMock.post(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid)
                                                                     + "/datastreams/BATCHSTRUCTURE?logMessage=Updating+batch+structure&mimeType=text/xml&controlGroup=M"))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .withRequestBody(WireMock.equalTo(batchStructure))
-                                   .willReturn(WireMock.aResponse().withStatus(201)));
+                                   .willReturn(WireMock.aResponse().withStatus(201)
+                                                       .withHeader("Content-Type", "text/xml")
+                                                       .withBody("<datastreamProfile  xmlns=\"http://www.fedora.info/definitions/1/0/management/\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.fedora.info/definitions/1/0/management/ http://www.fedora.info/definitions/1/0/datastreamProfile.xsd\" pid=\"fedora-system:FedoraObject-3.0\" dsID=\"ONTOLOGY\" ><dsLabel>Class declaration for this content model</dsLabel><dsVersionID>ONTOLOGY1.0</dsVersionID><dsCreateDate>2014-08-13T09:30:16.794Z</dsCreateDate><dsState>A</dsState><dsMIME>application/rdf+xml</dsMIME><dsFormatURI>info:fedora/fedora-system:FedoraOntology-1.0</dsFormatURI><dsControlGroup>X</dsControlGroup><dsSize>1492</dsSize><dsVersionable>false</dsVersionable><dsInfoType></dsInfoType><dsLocation>fedora-system:FedoraObject-3.0+ONTOLOGY+ONTOLOGY1.0</dsLocation><dsLocationType></dsLocationType><dsChecksumType>DISABLED</dsChecksumType><dsChecksum>none</dsChecksum></datastreamProfile>")));
 
-        WireMock.givenThat(WireMock.get(WireMock.urlEqualTo(
-                "/fedora/objects/" + URLEncoder.encode(pid) + "/datastreams/BATCHSTRUCTURE/content?asOfDateTime="))
+        WireMock.givenThat(WireMock.get(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid) + "/datastreams/BATCHSTRUCTURE/content?asOfDateTime="))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .willReturn(WireMock.aResponse().withBody(batchStructure)));
 

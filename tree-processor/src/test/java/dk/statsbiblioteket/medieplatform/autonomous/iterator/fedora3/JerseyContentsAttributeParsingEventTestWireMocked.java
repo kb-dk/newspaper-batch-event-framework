@@ -32,7 +32,7 @@ public class JerseyContentsAttributeParsingEventTestWireMocked {
     public WireMockServer wireMockServer;
     private String checksum = "checksum";
 
-    @BeforeMethod(groups = {"standAloneTest"})
+    @BeforeMethod(groups = {"standAloneTest"},enabled = false)
     public void setUp() throws Exception {
         Properties properties = new Properties();
         String property = System.getProperty("integration.test.newspaper.properties");
@@ -75,7 +75,7 @@ public class JerseyContentsAttributeParsingEventTestWireMocked {
 
     }
 
-    @Test(groups = {"standAloneTest"})
+    @Test(groups = {"standAloneTest"},enabled = false)
     public void testGetChecksum() throws Exception {
 
         AttributeParsingEvent attribute = new JerseyContentsAttributeParsingEvent(

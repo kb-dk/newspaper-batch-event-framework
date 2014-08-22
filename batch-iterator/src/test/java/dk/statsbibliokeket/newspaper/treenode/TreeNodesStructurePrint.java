@@ -22,16 +22,16 @@ public class TreeNodesStructurePrint {
 
         String pathToTestBatch =
                 System.getProperty("integration.test.newspaper.testdata") + "/small-test-batch/B400022028241-RT1/";
-
-
+        final TreeNodeState nodeState = new TreeNodeState();
+        final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
         EventRunner eventRunner = new EventRunner(new TransformingIteratorForFileSystems(new File(pathToTestBatch),
                                                                                          "\\.",
                                                                                          ".*\\.jp2",
-                                                                                         ".md5"));
+                                                                                         ".md5"),
+                Arrays.asList(handler),
+                null);
 
-        final TreeNodeState nodeState = new TreeNodeState();
-        final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
-        eventRunner.runEvents(Arrays.<TreeEventHandler>asList(handler), null);
+        eventRunner.run();
     }
 
     private static class PrintingTreeEventHandler implements TreeEventHandler {

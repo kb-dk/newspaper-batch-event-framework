@@ -6,19 +6,18 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsi
 
 /** Abstract tree event handler, with no-op methods */
 public abstract class DefaultTreeEventHandler implements TreeEventHandler {
-    @Override
+
+
+
+    public void handleFinish() {
+    }
+
     public void handleNodeBegin(NodeBeginsParsingEvent event) {
     }
 
-    @Override
     public void handleNodeEnd(NodeEndParsingEvent event) {
     }
 
-    @Override
     public void handleAttribute(AttributeParsingEvent event) {
-    }
-
-    @Override
-    public void handleFinish() {
     }
 }

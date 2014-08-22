@@ -13,6 +13,7 @@ import dk.statsbiblioteket.doms.central.connectors.fedora.structures.SearchResul
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
 import org.w3c.dom.Document;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -220,30 +221,31 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
     }
 
     @Override
-    public void modifyDatastreamByValue(String s, String s2, String s3, List<String> strings, String s4) throws
+    public Date modifyDatastreamByValue(String s, String s2, String s3, List<String> strings, String s4) throws
                                                                                                          BackendInvalidCredsException,
                                                                                                          BackendMethodFailedException,
                                                                                                          BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
-
+        return new Date();
     }
 
     @Override
-    public void modifyDatastreamByValue(String s, String s2, String s3, String s4, List<String> strings,
+    public Date modifyDatastreamByValue(String s, String s2, String s3, String s4, List<String> strings,
                                         String s5) throws
                                                    BackendInvalidCredsException,
                                                    BackendMethodFailedException,
                                                    BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
+        return new Date();
     }
 
     @Override
-    public void modifyDatastreamByValue(String s, String s2, String s3, String s4, String s5, List<String> strings,
+    public Date modifyDatastreamByValue(String s, String s2, String s3, String s4, String s5, List<String> strings,
                                         String s6) throws
                                                    BackendInvalidCredsException,
                                                    BackendMethodFailedException,
                                                    BackendInvalidResourceException {
-        addToLog(UNEXPECTED_METHOD);
+        addToLog(UNEXPECTED_METHOD); return new Date();
     }
 
     @Override
@@ -255,29 +257,32 @@ public abstract class AbstractFedoraMockup implements EnhancedFedora {
     }
 
     @Override
-    public void addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6,
+    public Date addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6,
                                       List<String> strings, String s7) throws
                                                                        BackendInvalidCredsException,
                                                                        BackendMethodFailedException,
                                                                        BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
+        return new Date();
     }
 
     @Override
-    public void addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6, String s7,
+    public Date addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6, String s7,
                                       String s8, List<String> strings, String s9) throws
                                                                                   BackendInvalidCredsException,
                                                                                   BackendMethodFailedException,
                                                                                   BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
+        return new Date();
     }
 
     @Override
-    public void addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6, String s7,
+    public Date addExternalDatastream(String s, String s2, String s3, String s4, String s5, String s6, String s7,
                                       List<String> strings, String s8) throws
                                                                        BackendInvalidCredsException,
                                                                        BackendMethodFailedException,
                                                                        BackendInvalidResourceException {
         addToLog(UNEXPECTED_METHOD);
+        return new Date();
     }
 }

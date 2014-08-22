@@ -8,104 +8,93 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.TreeIterator;
 import dk.statsbiblioteket.util.Strings;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-/**
- * For an iterator, triggers all event handlers on a given event.
- *
- * @author jrg
- */
-public class EventRunner {
-    private static final String EXCEPTION = "exception";
-    private static final String UNEXPECTED_ERROR = "Unexpected error: ";
-    private TreeIterator iterator;
+public class EventRunner implements Runnable {
+    public static final String EXCEPTION = "exception";
+    public static final String UNEXPECTED_ERROR = "Unexpected error: ";
+    protected TreeIterator iterator;
+    protected final List<TreeEventHandler> eventHandlers;
+    protected final ResultCollector resultCollector;
+
+    private boolean spawn = false;
+
+
+
 
     /**
      * Initialise the EventRunner with a tree iterator.
      *
      * @param iterator The tree iterator to run events on.
      */
-    public EventRunner(TreeIterator iterator) {
+    public EventRunner(TreeIterator iterator, List<TreeEventHandler> eventHandlers, ResultCollector resultCollector) {
         this.iterator = iterator;
+        this.eventHandlers = eventHandlers;
+        this.resultCollector = resultCollector;
     }
 
     /**
-     * Trigger all the given event handlers on all events of the iterator.
+     * Initialise the EventRunner with a tree iterator.
      *
-     * @param eventHandlers List of event handlers to trigger.
-     *
-     * @throws IOException
+     * @param iterator The tree iterator to run events on.
      */
-    public void runEvents(List<TreeEventHandler> eventHandlers, ResultCollector resultCollector) throws IOException {
+    protected EventRunner(TreeIterator iterator, List<TreeEventHandler> eventHandlers, ResultCollector resultCollector, boolean spawn) {
+        this(iterator,eventHandlers,resultCollector);
+        this.spawn = spawn;
+    }
 
-        List<InjectingTreeEventHandler> injectingTreeEventHandlers = getInjectingTreeEventHandlers(eventHandlers);
 
+    /**
+     * Trigger all the given event handlers on all events of the iterator.
+    *
+     * @throws java.io.IOException
+     */
+    public void run()  {
         ParsingEvent current = null;
         while (iterator.hasNext()) {
-
-            current = getInjectedParsingEvent(injectingTreeEventHandlers);
+            current = popInjectedEvent();
             if (current == null) {
                 current = iterator.next();
             }
-
             switch (current.getType()) {
                 case NodeBegin: {
-                    for (TreeEventHandler handler : eventHandlers) {
-                        try {
-                            handler.handleNodeBegin((NodeBeginsParsingEvent) current);
-                        } catch (Exception e) {
-                            resultCollector.addFailure(
-                                    current.getName(),
-                                    EXCEPTION,
-                                    handler.getClass().getSimpleName(),
-                                    UNEXPECTED_ERROR + e.toString(),
-                                    Strings.getStackTrace(e));
-                        }
-                    }
+                    handleNodeBegins(current);
                     break;
                 }
                 case NodeEnd: {
-                    for (TreeEventHandler handler : eventHandlers) {
-                        try {
-                            handler.handleNodeEnd((NodeEndParsingEvent) current);
-                        } catch (Exception e) {
-                            resultCollector.addFailure(
-                                    current.getName(),
-                                    EXCEPTION,
-                                    handler.getClass().getSimpleName(),
-                                    UNEXPECTED_ERROR + e.toString(),
-                                    Strings.getStackTrace(e));
-                        }
-                    }
+                    handleNodeEnd(current);
                     break;
                 }
                 case Attribute: {
-                    for (TreeEventHandler handler : eventHandlers) {
-                        try {
-                            handler.handleAttribute((AttributeParsingEvent) current);
-                        } catch (Exception e) {
-                            resultCollector.addFailure(
-                                    current.getName(),
-                                    EXCEPTION,
-                                    handler.getClass().getSimpleName(),
-                                    UNEXPECTED_ERROR + e.toString(),
-                                    Strings.getStackTrace(e));
-                        }
-                    }
+                    handleAttribute(current);
                     break;
                 }
             }
         }
+        if (!spawn) {
+            handleFinish();
+        }
+    }
 
+    public ParsingEvent popInjectedEvent() {
+        for (TreeEventHandler eventHandler : eventHandlers) {
+            if (eventHandler instanceof InjectingTreeEventHandler) {
+                InjectingTreeEventHandler handler = (InjectingTreeEventHandler) eventHandler;
+                ParsingEvent event = handler.popEvent();
+                if (event != null){
+                    return event;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void handleFinish() {
         for (TreeEventHandler handler : eventHandlers) {
             try {
                 handler.handleFinish();
             } catch (Exception e) {
-                resultCollector.addFailure(
-                        current == null ? "UNKNOWN" : current.getName(),
+                resultCollector.addFailure("General Batch failure",
                         EXCEPTION,
                         handler.getClass().getSimpleName(),
                         UNEXPECTED_ERROR + e.toString(),
@@ -114,43 +103,45 @@ public class EventRunner {
         }
     }
 
-    /**
-     * Iterate through the given injectingTreeEventHandlers. If any of them have an injected event, pop it and return.
-     *
-     * @param injectingTreeEventHandlers the injecting event handlers
-     *
-     * @return an event or null
-     */
-    private ParsingEvent getInjectedParsingEvent(List<InjectingTreeEventHandler> injectingTreeEventHandlers) {
-        ParsingEvent current;
-        for (InjectingTreeEventHandler injectingTreeEventHandler : injectingTreeEventHandlers) {
+    public void handleAttribute(ParsingEvent current) {
+        for (TreeEventHandler handler : eventHandlers) {
             try {
-                current = injectingTreeEventHandler.popInjectedEvent();
-                if (current != null) {
-                    return current;
-                }
-            } catch (NoSuchElementException e) {
-                continue;
+                handler.handleAttribute((AttributeParsingEvent) current);
+            } catch (Exception e) {
+                resultCollector.addFailure(current.getName(),
+                        EXCEPTION,
+                        handler.getClass().getSimpleName(),
+                        UNEXPECTED_ERROR + e.toString(),
+                        Strings.getStackTrace(e));
             }
         }
-        return null;
     }
 
-    /**
-     * Filter out the injecting event handlers from the list of event handlers
-     *
-     * @param eventHandlers all the event handlers
-     *
-     * @return the injecting event handlers
-     */
-    private List<InjectingTreeEventHandler> getInjectingTreeEventHandlers(List<TreeEventHandler> eventHandlers) {
-        List<InjectingTreeEventHandler> injectingTreeEventHandlers = new ArrayList<>();
-        for (TreeEventHandler eventHandler : eventHandlers) {
-            if (eventHandler instanceof InjectingTreeEventHandler) {
-                InjectingTreeEventHandler injectingTreeEventHandler = (InjectingTreeEventHandler) eventHandler;
-                injectingTreeEventHandlers.add(injectingTreeEventHandler);
+    public void handleNodeEnd(ParsingEvent current) {
+        for (TreeEventHandler handler : eventHandlers) {
+            try {
+                handler.handleNodeEnd((NodeEndParsingEvent) current);
+            } catch (Exception e) {
+                resultCollector.addFailure(current.getName(),
+                        EXCEPTION,
+                        handler.getClass().getSimpleName(),
+                        UNEXPECTED_ERROR + e.toString(),
+                        Strings.getStackTrace(e));
             }
         }
-        return injectingTreeEventHandlers;
+    }
+
+    public void handleNodeBegins(ParsingEvent current) {
+        for (TreeEventHandler handler : eventHandlers) {
+            try {
+                handler.handleNodeBegin((NodeBeginsParsingEvent) current);
+            } catch (Exception e) {
+                resultCollector.addFailure(current.getName(),
+                        EXCEPTION,
+                        handler.getClass().getSimpleName(),
+                        UNEXPECTED_ERROR + e.toString(),
+                        Strings.getStackTrace(e));
+            }
+        }
     }
 }

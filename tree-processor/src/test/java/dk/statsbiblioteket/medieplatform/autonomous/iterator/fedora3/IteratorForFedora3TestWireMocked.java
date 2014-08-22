@@ -162,12 +162,12 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
         return pid;
     }
 
-    @Test(groups = {"standAloneTest"}, enabled = true)
+    @Test(groups = {"standAloneTest"})
     public void testIterator() throws Exception {
         super.testIterator(true, false);
     }
 
-    @Test(groups = {"standAloneTest"}, enabled = true)
+    @Test(groups = {"standAloneTest"})
     public void testIteratorWithSkipping() throws Exception {
         super.testIteratorWithSkipping(false, false);
     }

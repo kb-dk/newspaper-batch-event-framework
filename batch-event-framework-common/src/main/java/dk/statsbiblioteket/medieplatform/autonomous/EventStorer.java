@@ -19,7 +19,7 @@ public interface EventStorer {
      *
      * @throws CommunicationException if communication with doms failed
      */
-    void addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
+    Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
                          String eventType, boolean outcome) throws CommunicationException;
 
     /**

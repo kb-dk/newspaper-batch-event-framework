@@ -11,11 +11,12 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,28 +38,25 @@ public class DomsSaverReducerTest {
         String jpylyzerOutput = "<jpylyzer/>";
 
 
-        final EnhancedFedora mockFedora = mock(EnhancedFedora.class);
-        when(mockFedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
-        doThrow(new IllegalArgumentException()).when(mockFedora).modifyDatastreamByValue(
+        final EnhancedFedora fedora = mock(EnhancedFedora.class);
+        when(fedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
+        doThrow(new IllegalArgumentException()).when(fedora).modifyDatastreamByValue(
                 anyString(), anyString(), anyString(), anyList(), anyString());
-        doNothing().when(mockFedora).modifyDatastreamByValue(
+        doReturn(new Date()).when(fedora).modifyDatastreamByValue(
                 eq(testPid), eq(jpylyzer), anyString(), anyList(), anyString());
         try {
-            mockFedora.modifyDatastreamByValue(null, null, null, null, null);
+            fedora.modifyDatastreamByValue(null, null, null, null, null);
             fail();
         } catch (IllegalArgumentException e) {
 
         }
-        final DomsSaverReducer reducer = new DomsSaverReducer() {
-            @Override
-            protected EnhancedFedora createFedoraClient(Context context) throws IOException {
-                this.fedora = mockFedora;
-                return mockFedora;
-            }
-        };
-
         reduceDriver = ReduceDriver.newReduceDriver(
-                reducer);
+                new DomsSaverReducer() {
+                    @Override
+                    protected EnhancedFedora createFedoraClient(Context context) throws IOException {
+                        return fedora;
+                    }
+                });
 
 
         reduceDriver.getConfiguration().setIfUnset(ConfigConstants.BATCH_ID, batchID);
