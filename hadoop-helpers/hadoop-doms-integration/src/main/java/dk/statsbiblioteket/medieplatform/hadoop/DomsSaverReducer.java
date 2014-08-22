@@ -23,45 +23,13 @@ import java.util.List;
  * The input is filepath, jpylyzer xml output
  * The output is filepath, domspid
  */
-public class DomsSaverReducer extends Reducer<Text, Text, Text, Text> {
-
-    public static final String HADOOP_SAVER_DATASTREAM = "hadoop.saver.doms.datastream";
+public class DomsSaverReducer extends AbstractDomsReducer {
 
     private static Logger log = Logger.getLogger(DomsSaverReducer.class);
-    private EnhancedFedora fedora;
-    private String batchID = null;
-    private String datastreamName;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
-        fedora = createFedoraClient(context);
-        batchID = context.getConfiguration().get(ConfigConstants.BATCH_ID);
-        datastreamName = context.getConfiguration().get(HADOOP_SAVER_DATASTREAM);
-    }
-
-    /**
-     * Get the fedora client
-     *
-     * @param context the hadoop context
-     *
-     * @return the fedora client
-     * @throws java.io.IOException
-     */
-    protected EnhancedFedora createFedoraClient(Context context) throws IOException {
-        try {
-            Configuration conf = context.getConfiguration();
-
-            String username = conf.get(ConfigConstants.DOMS_USERNAME);
-            String password = conf.get(ConfigConstants.DOMS_PASSWORD);
-            String domsUrl = conf.get(ConfigConstants.DOMS_URL);
-            return new EnhancedFedoraImpl(
-                    new Credentials(username, password), domsUrl, null, null);
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        } catch (PIDGeneratorException e) {
-            throw new IOException(e);
-        }
     }
 
     /**
@@ -110,44 +78,5 @@ public class DomsSaverReducer extends Reducer<Text, Text, Text, Text> {
             log.error(e);
             throw new IOException(e);
         }
-
-
     }
-
-    /**
-     * Get the doms pid from the filename
-     *
-     * @param key the filename
-     *
-     * @return the doms pid
-     */
-    private String getDomsPid(Text key) throws BackendInvalidCredsException, BackendMethodFailedException {
-
-        String filePath = translate(key.toString());
-        String path = "path:" + filePath;
-        List<String> hits = fedora.findObjectFromDCIdentifier(path);
-        if (hits.isEmpty()) {
-
-            throw new RuntimeException("Failed to look up doms object for DC identifier '" + path + "'");
-        } else {
-            if (hits.size() > 1) {
-                log.warn("Found multipe pids for dc identifier '" + path + "', using the first one '" + hits.get(0) + "'");
-            }
-            return hits.get(0);
-        }
-
-    }
-
-    /**
-     * Translate the filename back to the original path as stored in doms
-     *
-     * @param file the filename
-     *
-     * @return the original path
-     */
-    private String translate(String file) {
-        return file.substring(file.indexOf(batchID)).replaceAll("_", "/");
-    }
-
-
 }

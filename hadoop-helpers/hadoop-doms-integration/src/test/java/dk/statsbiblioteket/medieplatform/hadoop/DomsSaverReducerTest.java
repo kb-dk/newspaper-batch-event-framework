@@ -37,25 +37,28 @@ public class DomsSaverReducerTest {
         String jpylyzerOutput = "<jpylyzer/>";
 
 
-        final EnhancedFedora fedora = mock(EnhancedFedora.class);
-        when(fedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
-        doThrow(new IllegalArgumentException()).when(fedora).modifyDatastreamByValue(
+        final EnhancedFedora mockFedora = mock(EnhancedFedora.class);
+        when(mockFedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
+        doThrow(new IllegalArgumentException()).when(mockFedora).modifyDatastreamByValue(
                 anyString(), anyString(), anyString(), anyList(), anyString());
-        doNothing().when(fedora).modifyDatastreamByValue(
+        doNothing().when(mockFedora).modifyDatastreamByValue(
                 eq(testPid), eq(jpylyzer), anyString(), anyList(), anyString());
         try {
-            fedora.modifyDatastreamByValue(null, null, null, null, null);
+            mockFedora.modifyDatastreamByValue(null, null, null, null, null);
             fail();
         } catch (IllegalArgumentException e) {
 
         }
+        final DomsSaverReducer reducer = new DomsSaverReducer() {
+            @Override
+            protected EnhancedFedora createFedoraClient(Context context) throws IOException {
+                this.fedora = mockFedora;
+                return mockFedora;
+            }
+        };
+
         reduceDriver = ReduceDriver.newReduceDriver(
-                new DomsSaverReducer() {
-                    @Override
-                    protected EnhancedFedora createFedoraClient(Context context) throws IOException {
-                        return fedora;
-                    }
-                });
+                reducer);
 
 
         reduceDriver.getConfiguration().setIfUnset(ConfigConstants.BATCH_ID, batchID);
