@@ -1,3 +1,8 @@
+1.10
+* Add AbstractDomsReducer class for reduce operations that interact with with doms. 
+* Updated to version 1.5 of doms central 
+* Make the event runner multithreaded
+
 1.9
 * Record the duration as part of the result
 * Fix handling of queries for batches with roundtrip 0 (from mfpak)
