@@ -125,16 +125,16 @@ public class DomsEventStorageIntegrationTest {
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
         String details = "Details here";
-
+        int n = domsEventStorage.getAllRoundTrips(batchId).size();
         domsEventStorage.addEventToBatch(batchId, 1, "agent", timestamp, details, eventID, true);
         domsEventStorage.addEventToBatch(batchId, 4, "agent", timestamp, details, eventID, true);
         domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
         List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
-        assertEquals(roundtrips.size(), 3);
+        assertEquals(roundtrips.size(), 3+n);
         //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
         //because the roundtrips are returned in the order created.
-        assertEquals((int) roundtrips.get(0).getRoundTripNumber(), 1);
-        assertEquals((int) roundtrips.get(2).getRoundTripNumber(), 4);
+        assertEquals((int) roundtrips.get(0+n).getRoundTripNumber(), 1);
+        assertEquals((int) roundtrips.get(2+n).getRoundTripNumber(), 4);
     }
 
     /**
