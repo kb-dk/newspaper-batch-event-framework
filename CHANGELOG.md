@@ -1,8 +1,8 @@
 1.10
 * Add AbstractDomsReducer class for reduce operations that interact with with doms. 
 * Updated to version 1.5 of doms central 
-..* This changes identifier lookups from using 'like' to 'equals'. 
-..* Calls to modifyDatastream and thus AddEvent* methods now return date to mark the server timestamp of the operation
+  * This changes identifier lookups from using 'like' to 'equals'. 
+  * Calls to modifyDatastream and thus AddEvent* methods now return date to mark the server timestamp of the operation
 * Make the event runner multithreaded. This caused changes to how InjectingTreeEventHandlers work
 * Premis Events now have a correctly formattet date
 * Introduced the event "Roundtrip_Approved"
