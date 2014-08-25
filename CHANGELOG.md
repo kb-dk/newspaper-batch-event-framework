@@ -1,7 +1,12 @@
 1.10
 * Add AbstractDomsReducer class for reduce operations that interact with with doms. 
 * Updated to version 1.5 of doms central 
-* Make the event runner multithreaded
+ * This should use Equals, not Like when doing identifier lookups. 
+ * modifyDatastream and thus AddEvent* methods now returh date to mark the server timestamp of the operation
+* Make the event runner multithreaded. This caused some changes to how InjectingTreeEventHandlers work
+* Premis Events now have a correctly formattet date
+* Introduced the event "Roundtrip_Approved"
+* Method to get all roundtrips from SBOI
 
 1.9
 * Record the duration as part of the result
