@@ -125,7 +125,14 @@ public class DomsEventStorageIntegrationTest {
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
         String details = "Details here";
-        int n = domsEventStorage.getAllRoundTrips(batchId).size();
+        final List<Batch> allRoundTrips = domsEventStorage.getAllRoundTrips(batchId);
+        int n;
+        if (allRoundTrips != null) {
+            n = allRoundTrips.size();
+            System.out.println("Found '"+n+"' events before test");
+        } else {
+            n = 0;
+        }
         domsEventStorage.addEventToBatch(batchId, 1, "agent", timestamp, details, eventID, true);
         domsEventStorage.addEventToBatch(batchId, 4, "agent", timestamp, details, eventID, true);
         domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
@@ -360,7 +367,7 @@ public class DomsEventStorageIntegrationTest {
     }
 
     private String getRandomBatchId() {
-        return "4666220252" + Math.round(Math.random() * 100);
+        return "46662202" + Math.round(Math.random() * 10000);
     }
 
 
