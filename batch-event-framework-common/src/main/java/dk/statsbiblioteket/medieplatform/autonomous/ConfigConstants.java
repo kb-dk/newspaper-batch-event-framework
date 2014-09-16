@@ -1,5 +1,7 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.lang.String;
+
 public class ConfigConstants {
 
     //Doms
@@ -119,5 +121,5 @@ public class ConfigConstants {
     /**
      * The number of times a component should retry operations on fedora, where supported.
      */
-    public static final java.lang.String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
+    public static final String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
 }
