@@ -106,7 +106,9 @@ public class ConfigConstants {
     /** This property specifies where the dissemination files should be written to. */
     public static final String DISSEMINATION_FOLDER = "dissemination.files.folder";
 
-
+    /**
+     * The number of threads to concurrently start in components that support parallel execution.
+     */
     public static final String THREADS_PER_BATCH = "autonomous.component.threadsPerBatch";
 
     /**
@@ -114,5 +116,8 @@ public class ConfigConstants {
      */
     public static final String MAX_RESULTS_COLLECTED = "autonomous.component.maxResults";
 
-
+    /**
+     * The number of times a component should retry operations on fedora, where supported.
+     */
+    public static final java.lang.String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
 }
