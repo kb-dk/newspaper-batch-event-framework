@@ -1,3 +1,6 @@
+1.11
+* Add autonomous.component.fedoraRetries configuration option to ConfigConstants
+
 1.10
 * Add AbstractDomsReducer class for reduce operations that interact with with doms. 
 * Updated to version 1.5 of doms central 
