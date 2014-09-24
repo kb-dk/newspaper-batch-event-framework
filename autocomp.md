@@ -5,7 +5,7 @@ The Autonomous components can be though of as little robots, working on an assem
 
 Most of their life is spent sleeping. Periodically, they open their eyes, to check if a new piece of work have arrived for them. This is what we call "The Polling Step". They implement an Event Trigger, to find all items, which are ready to be worked on corresponding to this robot's place. 
 
-If the robot finds that an item is ready to work on, it starts working on this item. The robot will not poll for more work while working. Some of the robots will be able to multitask, ie. work on multiple items at once, and others will not. Some robots will request a number of items to work on, even if it cannot work on them all at the same time. This behaivour is just a way to ensure that the robot have sufficient work to last it until the next polling step.
+If the robot finds that an item is ready to work on, it starts working on this item. The robot will not poll for more work while working. Some of the robots will be able to multitask, ie. work on multiple items at once, and others will not. Some robots will request a number of items to work on, even if it cannot work on them all at the same time. This behaviour is just a way to ensure that the robot have sufficient work to last it until the next polling step.
 
 When a robot has finished work on an item, it must record this, so the assembly line can move forward. It records the event in the event storer for the item, in the form of an event somewhat like "I, <ROBOT>, did this <THIS WORK> on item <ID> with <THIS RESULT>".
 
@@ -51,7 +51,7 @@ The default event trigger is the SBOI Event trigger
   * We make a search in Summa triggering on the following:
   * List all item objects, where 
     * the type of the item is of a specific kind
-    * (last modified is later than last event registered for this component) or (the event for this component has not yet been registered )
+    * last modified is later than last event registered for this component (if any)
     * a set of specific events have been registered on this item and were succesful
     * a set of specific events have been registered on this item and were unsuccesful
     * a set of specific events have NOT been registered on this item
