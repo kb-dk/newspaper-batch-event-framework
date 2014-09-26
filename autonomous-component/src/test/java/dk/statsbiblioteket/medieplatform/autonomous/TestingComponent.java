@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 public class TestingComponent implements RunnableComponent {
 
-    private ArrayList<Batch> batches;
+    private ArrayList<? extends Item> batches;
 
     @Override
     public String getComponentName() {
@@ -26,25 +26,32 @@ public class TestingComponent implements RunnableComponent {
     }
 
     @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
+    public void doWorkOnItem(Item batch, ResultCollector resultCollector) throws Exception {
         System.out.println("working");
+    }
+
+    @Override
+    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
+        doWorkOnItem(batch,resultCollector);
     }
 
     public EventTrigger getEventTrigger() {
         return new EventTrigger() {
             @Override
-            public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+            public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
                                                        Collection<String> futureEvents)
                     throws CommunicationException {
                 return batches.iterator();
             }
 
             @Override
-            public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                                       Collection<String> futureEvents, Collection<Batch> batches1) throws CommunicationException {
+            public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents,
+                                                                Collection<String> pastFailedEvents,
+                                                                Collection<String> futureEvents,
+                                                                Collection<? extends Item> batches) throws
+                                                                                                    CommunicationException {
                 return batches.iterator();
             }
-
         };
     }
 
@@ -54,8 +61,8 @@ public class TestingComponent implements RunnableComponent {
             public Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp,
                                         String details, String eventType, boolean outcome)
                     throws CommunicationException {
-                for (Batch batch : batches) {
-                    if (batch.getBatchID().equals(batchId) && batch.getRoundTripNumber() == roundTripNumber) {
+                for (Item batch : batches) {
+                    if (batch.getFullID().equals(Batch.formatFullID(batchId,roundTripNumber))) {
                         Event event = new Event();
                         event.setDate(timestamp);
                         event.setEventID(eventType);
@@ -65,6 +72,13 @@ public class TestingComponent implements RunnableComponent {
                     }
                 }
                 return new Date();
+            }
+
+            @Override
+            public Date addEventToItem(String itemID, String agent, Date timestamp, String details, String eventType,
+                                       boolean outcome) throws CommunicationException {
+                //TODO
+                return null;
             }
 
             @Override
@@ -83,17 +97,17 @@ public class TestingComponent implements RunnableComponent {
         };
     }
 
-    public void setBatches(ArrayList<Batch> batches) {
+    public void setBatches(ArrayList<? extends Item> batches) {
         this.batches = batches;
     }
 
-    public ArrayList<Batch> getBatches() {
+    public ArrayList<? extends Item> getBatches() {
         return batches;
     }
 
-    public Batch getBatch(String batchid, int roundtripnumber) {
-        for (Batch batch : batches) {
-            if (batch.getBatchID().equals(batchid) && batch.getRoundTripNumber().equals(roundtripnumber)) {
+    public Item getBatch(String batchid, int roundtripnumber) {
+        for (Item batch : batches) {
+            if (batch.getFullID().equals(Batch.formatFullID(batchid,roundtripnumber))){
                 return batch;
             }
         }

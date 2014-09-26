@@ -11,7 +11,7 @@ public class SampleRunnableComponentTest {
         ResultCollector result = new ResultCollector(
                 runnableComponent.getComponentName(), runnableComponent.getComponentVersion());
         Batch batch = new Batch("60000");
-        runnableComponent.doWorkOnBatch(batch, result);
+        runnableComponent.doWorkOnItem(batch, result);
         Assert.assertTrue(result.isSuccess());
 
     }

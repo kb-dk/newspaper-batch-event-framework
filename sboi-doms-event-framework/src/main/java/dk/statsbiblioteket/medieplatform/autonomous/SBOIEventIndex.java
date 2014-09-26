@@ -51,7 +51,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Iterator<Batch> findBatches(boolean details, List<String> pastSuccessfulEvents,
+    public Iterator<? extends Item> findBatches(boolean details, List<String> pastSuccessfulEvents,
                                        List<String> pastFailedEvents, List<String> futureEvents) throws
                                                                                                  CommunicationException {
 
@@ -64,18 +64,18 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
                                                Collection<String> futureEvents) throws CommunicationException {
         return getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
     }
 
     @Override
-    public Iterator<Batch> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents, Collection<Batch> batches) throws CommunicationException {
-        Iterator<Batch> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
+    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                               Collection<String> futureEvents, Collection<? extends Item> batches) throws CommunicationException {
+        Iterator<? extends Item> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
         ArrayList<Batch> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
-            Batch next = sboiBatches.next();
+            Item next = sboiBatches.next();
             Batch instead = domsEventStorage.getBatch(next.getDomsID());
             if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                 result.add(instead);
@@ -125,8 +125,8 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<Batch> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                  Collection<String> futureEvents, Collection<Batch> batches) throws CommunicationException {
+    public Iterator<? extends Item> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                  Collection<String> futureEvents, Collection<? extends Item> batches) throws CommunicationException {
 
         try {
             if (batches != null && batches.isEmpty()){
@@ -211,7 +211,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
 
-    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<Batch> batches) {
+    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<? extends Item> batches) {
         String base = spaced(RECORD_BASE);
 
         StringBuilder batchesString = new StringBuilder();
@@ -219,18 +219,14 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
             batchesString.append(" ( ");
 
             boolean first = true;
-            for (Batch batch : batches) {
+            for (Item batch : batches) {
                 if (first){
                     first = false;
                 }  else {
                     batchesString.append(" OR ");
                 }
                 batchesString.append(" ( ");
-                batchesString.append(BATCH_ID).append(":B").append(batch.getBatchID());
-                if (batch.getRoundTripNumber() > 0) {
-                    batchesString.append(" ");
-                    batchesString.append(ROUND_TRIP_NO).append(":RT").append(batch.getRoundTripNumber());
-                }
+                batchesString.append(BATCH_ID).append(":").append(batch.getFullID());
                 batchesString.append(" ) ");
 
             }

@@ -11,23 +11,23 @@ import java.util.Date;
  * Unless the component specifically requests it (by settting presevable=false on the result collector) the
  * result will be written back to DOMS
  */
-public class BatchWorker implements Runnable {
+public class AutonomousWorker implements Runnable {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(BatchWorker.class);
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousWorker.class);
 
 
     RunnableComponent component;
     private ResultCollector resultCollector;
-    private Batch batch;
+    private Item item;
     private EventStorer eventStorer;
     private boolean pause = false;
     private boolean stop = false;
 
-    public BatchWorker(RunnableComponent component, ResultCollector resultCollector, Batch batch,
-                       EventStorer eventStorer) {
+    public AutonomousWorker(RunnableComponent component, ResultCollector resultCollector, Item item,
+                            EventStorer eventStorer) {
         this.component = component;
         this.resultCollector = resultCollector;
-        this.batch = batch;
+        this.item = item;
         this.eventStorer = eventStorer;
     }
 
@@ -41,12 +41,12 @@ public class BatchWorker implements Runnable {
         try {
             //do work
             resultCollector.setTimestamp(before);
-            component.doWorkOnBatch(batch, resultCollector);
+            component.doWorkOnItem(item, resultCollector);
         } catch (Throwable e) {
             log.warn("Component threw exception", e);
             //the work failed
             resultCollector.addFailure(
-                    batch.getFullID(),
+                    item.getFullID(),
                     "exception",
                     component.getClass().getSimpleName(),
                     "Component threw exception: " + e.toString(),
@@ -56,7 +56,7 @@ public class BatchWorker implements Runnable {
         resultCollector.setDuration(after.getTime() - before.getTime());
 
         if (resultCollector.isPreservable()) {
-            preserveResult(batch, resultCollector);
+            preserveResult(item, resultCollector);
         } else {
             log.info("The result collector is not marked as preservable, so it is not preserved in DOMS");
         }
@@ -70,10 +70,10 @@ public class BatchWorker implements Runnable {
     /**
      * This method stores the event back into DOMS, so it should be visible to the SBOI soonish
      *
-     * @param batch  the batch worked on
+     * @param item  the item worked on
      * @param result the result of the work
      */
-    private void preserveResult(Batch batch, ResultCollector result) {
+    private void preserveResult(Item item, ResultCollector result) {
         try {
             while (pause && !stop) {
                 try {
@@ -86,13 +86,16 @@ public class BatchWorker implements Runnable {
                 log.warn("The worker is stopped, so the result will not be preserved");
                 return;
             }
-            eventStorer.addEventToBatch(batch.getBatchID(), batch.getRoundTripNumber(),
-                                             getComponentFormattedName(), result.getTimestamp(), result.toReport(),
-                                             component.getEventID(), result.isSuccess());
+            eventStorer.addEventToItem(item.getDomsID(),
+                    getComponentFormattedName(),
+                    result.getTimestamp(),
+                    result.toReport(),
+                    component.getEventID(),
+                    result.isSuccess());
         } catch (Throwable e) {
-            log.error("Caught exception while attempting to preserve result for batch", e);
+            log.error("Caught exception while attempting to preserve result for item", e);
             resultCollector.addFailure(
-                    batch.getFullID(),
+                    item.getFullID(),
                     "exception",
                     component.getClass().getSimpleName(),
                     "Autonomous component system threw exception: " + e.toString(),
@@ -100,8 +103,8 @@ public class BatchWorker implements Runnable {
         }
     }
 
-    public Batch getBatch() {
-        return batch;
+    public Item getItem() {
+        return item;
     }
 
     public void setPause(boolean pause) {

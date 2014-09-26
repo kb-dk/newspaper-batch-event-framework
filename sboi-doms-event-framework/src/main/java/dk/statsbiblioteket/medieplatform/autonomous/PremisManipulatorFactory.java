@@ -54,7 +54,19 @@ public class PremisManipulatorFactory {
      * @throws JAXBException if the parsing failed
      */
     public PremisManipulator createInitialPremisBlob(String batchID, int roundTripNumber) throws JAXBException {
-        return new PremisManipulator(batchID, roundTripNumber, format, type, context);
+        return new PremisManipulator(new Batch(batchID,roundTripNumber).getFullID(), format, type, context);
     }
 
+    /**
+     * Create a new premisManipulator from the id's of a batch. The premis will be initialised with an Object with
+     * the correct identifier.
+     *
+     * @param itemId         the item id
+     *
+     * @return a premis manipulator.
+     * @throws JAXBException if the parsing failed
+     */
+    public PremisManipulator createInitialPremisBlob(String itemId) throws JAXBException {
+        return new PremisManipulator(itemId, format, type, context);
+    }
 }

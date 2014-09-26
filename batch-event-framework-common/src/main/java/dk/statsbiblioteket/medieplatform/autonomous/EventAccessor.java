@@ -29,7 +29,7 @@ public interface EventAccessor {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Batch> findBatches(boolean details, List<String> pastSuccessfulEvents,
+    public Iterator<? extends Item> findBatches(boolean details, List<String> pastSuccessfulEvents,
                                        List<String> pastFailedEvents, List<String> futureEvents) throws CommunicationException;
 
 }

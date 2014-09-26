@@ -110,12 +110,12 @@ public class AutonomousComponent implements Callable<CallResult> {
     /**
      * Get the lock path for this batch for this component
      *
-     * @param batch the batch to lock
+     * @param item the item to lock
      *
      * @return the zookeepr lock path
      */
-    private static String getBatchLockPath(RunnableComponent runnable, Batch batch) {
-        return "/" + runnable.getComponentName() + "/" + batch.getFullID();
+    private static String getBatchLockPath(RunnableComponent runnable, Item item) {
+        return "/" + runnable.getComponentName() + "/" + item.getFullID();
     }
 
     /**
@@ -159,7 +159,7 @@ public class AutonomousComponent implements Callable<CallResult> {
 
         InterProcessLock SBOILock = null;
         CallResult result = new CallResult();
-        Map<BatchWorker, InterProcessLock> workers = new HashMap<>();
+        Map<AutonomousWorker, InterProcessLock> workers = new HashMap<>();
         try {
             //lock SBOI for this component name
             SBOILock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
@@ -169,32 +169,31 @@ public class AutonomousComponent implements Callable<CallResult> {
                     throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
                 }
 
-                log.info("SBOI locked, quering for batches");
-                //get batches, lock n, release the SBOI
-                //get batches
-                Iterator<Batch> batches = eventTrigger
+                log.info("SBOI locked, quering for items");
+                //get items, lock n, release the SBOI
+                Iterator<? extends Item> items = eventTrigger
                         .getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
-                while (batches.hasNext()) {
-                    Batch batch = batches.next();
+                while (items.hasNext()) {
+                    Item item = items.next();
 
-                    log.info("Found batch {}", batch.getFullID());
+                    log.info("Found item {}", item.getFullID());
                     //attempt to lock
                     InterProcessLock batchlock = new InterProcessSemaphoreMutex(
-                            lockClient, getBatchLockPath(runnable, batch));
+                            lockClient, getBatchLockPath(runnable, item));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
-                        log.info("Batch {} locked, creating a worker", batch.getFullID());
+                        log.info("Batch {} locked, creating a worker", item.getFullID());
                         if (maxResults != null) {
                             log.debug("Worker will report a maximum of {} results.", maxResults);
                         }
-                        BatchWorker worker = new BatchWorker(
+                        AutonomousWorker worker = new AutonomousWorker(
                                 runnable,
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
-                                batch, eventStorer);
+                                item, eventStorer);
                         workers.put(worker, batchlock);
                         if (workers.size() >= simultaneousProcesses) {
-                            log.info("We now have sufficient workers, look for no more batches");
+                            log.info("We now have sufficient workers, look for no more items");
                             break;
                         }
                     }
@@ -210,10 +209,10 @@ public class AutonomousComponent implements Callable<CallResult> {
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
             try {
                 ArrayList<Future<?>> futures = new ArrayList<>();
-                for (BatchWorker batchWorker : workers.keySet()) {
-                    log.info("Submitting worker for batch {}", batchWorker.getBatch().getBatchID());
-                    concurrencyConnectionStateListener.add(batchWorker);
-                    Future<?> future = pool.submit(batchWorker);
+                for (AutonomousWorker autonomousWorker : workers.keySet()) {
+                    log.info("Submitting worker for batch {}", autonomousWorker.getItem().getFullID());
+                    concurrencyConnectionStateListener.add(autonomousWorker);
+                    Future<?> future = pool.submit(autonomousWorker);
                     futures.add(future);
                 }
                 log.info("Shutting down the pool, and waiting for the workers to terminate");
@@ -242,8 +241,8 @@ public class AutonomousComponent implements Callable<CallResult> {
                     }
                 }
                 log.info("All is now done, all workers have completed");
-                for (BatchWorker batchWorker : workers.keySet()) {
-                    result.addResult(batchWorker.getBatch(), batchWorker.getResultCollector());
+                for (AutonomousWorker autonomousWorker : workers.keySet()) {
+                    result.addResult(autonomousWorker.getItem(), autonomousWorker.getResultCollector());
                 }
             } finally {
                 //clean up pool?

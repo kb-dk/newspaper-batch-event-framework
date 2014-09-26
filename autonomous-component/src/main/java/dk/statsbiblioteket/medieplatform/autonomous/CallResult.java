@@ -5,7 +5,7 @@ import java.util.Map;
 
 /** Container for the result information for a result of invoking the call method on a autonomous components. */
 public class CallResult {
-    private final Map<Batch, ResultCollector> results = new HashMap<>();
+    private final Map<Item, ResultCollector> results = new HashMap<>();
     private final String errorMessage;
 
     /**
@@ -22,8 +22,8 @@ public class CallResult {
         errorMessage = null;
     }
 
-    public void addResult(Batch batch, ResultCollector resultCollector) {
-        results.put(batch, resultCollector);
+    public void addResult(Item item, ResultCollector resultCollector) {
+        results.put(item, resultCollector);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CallResult {
         if (getErrorMessage() != null) {
             resultString.append(getErrorMessage()).append("\n");
         }
-        for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
+        for (Map.Entry<Item, ResultCollector> result : results.entrySet()) {
             if (result.getValue().isSuccess()) {
                 resultString.append("Worked on ").append(
                         result.getKey().getFullID()).append(" successfully\n");
@@ -56,7 +56,7 @@ public class CallResult {
         if (fatalErrorEncountered()) {
             return 2;
         }
-        for (Map.Entry<Batch, ResultCollector> result : results.entrySet()) {
+        for (Map.Entry<Item, ResultCollector> result : results.entrySet()) {
             if (!result.getValue().isSuccess()) {
                 return 1;
             }

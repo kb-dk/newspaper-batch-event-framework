@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
- * Access to DOMS batch and event storageusing the Central Webservice library to communicate with DOMS.
+ * Access to DOMS batch and event storage using the Central Webservice library to communicate with DOMS.
  * Implements the {@link EventStorer} interface.
  */
 public class DomsEventStorage implements EventStorer {
@@ -63,6 +63,39 @@ public class DomsEventStorage implements EventStorer {
             try {
                 return fedora.modifyDatastreamByValue(
                         roundTripObjectPid,
+                        eventsDatastream,
+                        null,
+                        null,
+                        premisObject.toXML().getBytes(),
+                        null,
+                        "text/xml",
+                        addEventToBatchComment,
+                        null);
+            } catch (BackendInvalidResourceException e1) {
+                //But I just created the object, it must be there
+                throw new CommunicationException(e1);
+            }
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
+            throw new CommunicationException(e);
+        }
+    }
+
+    @Override
+    public Date addEventToItem(String itemID, String agent, Date timestamp, String details, String eventType,
+                               boolean outcome) throws CommunicationException {
+        try {
+            PremisManipulator premisObject;
+            try {
+                String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
+
+                premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            } catch (BackendInvalidResourceException e) {
+                //okay, no EVENTS datastream
+                premisObject = premisFactory.createInitialPremisBlob(itemID);
+            }
+            premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
+            try {
+                return fedora.modifyDatastreamByValue(itemID,
                         eventsDatastream,
                         null,
                         null,

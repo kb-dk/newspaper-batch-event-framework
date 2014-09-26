@@ -18,7 +18,7 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
     private static Logger log = org.slf4j.LoggerFactory.getLogger(ConcurrencyConnectionStateListener.class);
 
     private AutonomousComponent autonomousComponent;
-    private List<BatchWorker> batchWorkerList = new ArrayList<>();
+    private List<AutonomousWorker> autonomousWorkerList = new ArrayList<>();
 
     /**
      * Constructs a new state listener
@@ -53,31 +53,31 @@ public class ConcurrencyConnectionStateListener implements ConnectionStateListen
 
     /** Unpause all workers */
     private void unpauseWorkers() {
-        for (BatchWorker batchWorker : batchWorkerList) {
-            batchWorker.setPause(false);
+        for (AutonomousWorker autonomousWorker : autonomousWorkerList) {
+            autonomousWorker.setPause(false);
         }
     }
 
     /** Pause all workers */
     private void pauseWorkers() {
-        for (BatchWorker batchWorker : batchWorkerList) {
-            batchWorker.setPause(true);
+        for (AutonomousWorker autonomousWorker : autonomousWorkerList) {
+            autonomousWorker.setPause(true);
         }
     }
 
     /** Stop all workers */
     private void stopWorkers() {
-        for (BatchWorker batchWorker : batchWorkerList) {
-            batchWorker.setStop(true);
+        for (AutonomousWorker autonomousWorker : autonomousWorkerList) {
+            autonomousWorker.setStop(true);
         }
     }
 
     /**
      * Add a batch worker to the list of executions to stop or suspend
      *
-     * @param batchWorker the batch worker
+     * @param autonomousWorker the batch worker
      */
-    public void add(BatchWorker batchWorker) {
-        batchWorkerList.add(batchWorker);
+    public void add(AutonomousWorker autonomousWorker) {
+        autonomousWorkerList.add(autonomousWorker);
     }
 }

@@ -23,6 +23,22 @@ public interface EventStorer {
                          String eventType, boolean outcome) throws CommunicationException;
 
     /**
+     * Add an event to a batch in doms. Will create the batch if it does not currently exist
+     *
+     * @param itemID          the unique identifier of the item
+     * @param agent           the agent of the event
+     * @param timestamp       the timestamp of the event
+     * @param details         details about the OUTCOME of the event
+     * @param eventType       the type of event, from a controlled list
+     * @param outcome         true if the event was a success, false otherwise
+     *
+     * @throws CommunicationException if communication with doms failed
+     */
+    Date addEventToItem(String itemID, String agent, Date timestamp, String details,
+                         String eventType, boolean outcome) throws CommunicationException;
+
+
+    /**
      * This method
      * i) reads the EVENTS datastream
      * ii) Calculates the number of events to be removed from the EVENTS datastream starting with the

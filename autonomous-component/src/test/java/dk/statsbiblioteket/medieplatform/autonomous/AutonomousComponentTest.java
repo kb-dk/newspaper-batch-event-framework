@@ -74,7 +74,7 @@ public class AutonomousComponentTest {
     @Test
     public void testPollAndWork() throws Exception {
 
-        Batch batch = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Item batch = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
@@ -86,7 +86,7 @@ public class AutonomousComponentTest {
 
         autonoumous.call();
 
-        Batch batchAfter = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Item batchAfter = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {

@@ -27,11 +27,11 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Batch> batches = summa.findBatches(false, Arrays.asList("Data_Received"), new ArrayList<String>(),
+        Iterator<? extends Item> batches = summa.findBatches(false, Arrays.asList("Data_Received"), new ArrayList<String>(),
                                                     Arrays.asList("Roundtrip_Approved"));
         int count = 0;
         while (batches.hasNext()) {
-            Batch next = batches.next();
+            Item next = batches.next();
 
             count++;
         }
@@ -44,10 +44,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Batch> batches = summa.findBatches(
+        Iterator<? extends Item> batches = summa.findBatches(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
-        Batch first = batches.next();
-        Iterator<Batch> batches2 = summa.search(
+        Item first = batches.next();
+        Iterator<? extends Item> batches2 = summa.search(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
 
         assertEquals(
@@ -61,15 +61,15 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Batch> batches = summa.findBatches(
+        Iterator<? extends Item> batches = summa.findBatches(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
-        Batch first = batches.next();
-        Batch second = batches.next();
+        Item first = batches.next();
+        Item second = batches.next();
 
-        Iterator<Batch> batches2 = summa.search(
+        Iterator<? extends Item> batches2 = summa.search(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
 
-        HashSet<Batch> results = new HashSet<Batch>();
+        HashSet<Item> results = new HashSet<>();
         results.add(first);
         results.add(second);
         assertTrue(results.contains(batches2.next()));

@@ -7,6 +7,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
+import dk.statsbiblioteket.medieplatform.autonomous.Item;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
@@ -65,7 +66,7 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<Batch> batches = getEventExplorer().findBatches(includeDetails, Arrays.asList("Data_Received"),
+            Iterator<? extends Item> batches = getEventExplorer().findBatches(includeDetails, Arrays.asList("Data_Received"),
                                                                      new ArrayList<String>(), new ArrayList<String>());
             return iteratorToList(batches);
         } catch (CommunicationException e) {
@@ -74,11 +75,14 @@ public class SBOIDatasource implements DataSource {
 
     }
 
-    private List<Batch> iteratorToList(Iterator<Batch> batches) {
+    private List<Batch> iteratorToList(Iterator<? extends Item> batches) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
-            Batch next = batches.next();
-            result.add(next);
+            Item next = batches.next();
+            if (next instanceof Batch) {
+                Batch batch = (Batch) next;
+                result.add(batch);
+            }
         }
         return result;
     }

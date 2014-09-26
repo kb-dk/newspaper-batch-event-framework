@@ -1,15 +1,10 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.util.List;
-
 /** This class represents a batch, a specific thing on which work will be done */
-public class Batch {
+public class Batch extends Item{
 
     private String batchID;
     private Integer roundTripNumber = 1;
-    private List<Event> eventList;
-
-    private String domsID;
 
     /** Constructor */
     public Batch() {
@@ -58,46 +53,23 @@ public class Batch {
         this.batchID = batchID;
     }
 
-    /**
-     * Get the List of events that this batch have experienced. Order is not important
-     *
-     * @return the list of events
-     */
-    public List<Event> getEventList() {
-        return eventList;
-    }
-
-    /**
-     * Set the events.
-     *
-     * @param eventList the event list
-     */
-    public void setEventList(List<Event> eventList) {
-        this.eventList = eventList;
-    }
 
     /**
      * Get the full ID in the form B<batchID>-RT<roundTripNumber>
      *
      * @return the full ID
      */
+    @Override
     public String getFullID() {
-        return "B" + batchID + "-RT" + roundTripNumber;
+          return formatFullID(batchID,roundTripNumber);
     }
 
-    public String getDomsID() {
-        return domsID;
-    }
-
-    public void setDomsID(String domsID) {
-        this.domsID = domsID;
-    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Batch: " + getFullID());
-        if (eventList != null && !eventList.isEmpty()) {
-            sb.append(", eventList=" + eventList);
+        if (getEventList() != null && !getEventList().isEmpty()) {
+            sb.append(", eventList=" + getEventList());
         }
         return sb.toString();
     }
@@ -128,5 +100,9 @@ public class Batch {
         int result = batchID.hashCode();
         result = 31 * result + roundTripNumber.hashCode();
         return result;
+    }
+
+    public static String formatFullID(String batchID, int roundTripNumber){
+        return "B" + batchID + "-RT" + roundTripNumber;
     }
 }

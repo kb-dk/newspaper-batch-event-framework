@@ -63,14 +63,14 @@ public class PremisManipulator {
         return temp;
     }
 
-    public PremisManipulator(String batchID, int roundTripNumber, IDFormatter format, String type, JAXBContext context) throws
+    public PremisManipulator(String itemID, IDFormatter format, String type, JAXBContext context) throws
                                                                                                                         JAXBException {
         this.marshaller = createMarshaller(context);
         premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
         this.idFormat = format;
         this.type = type;
-        addObjectIfNessesary(premis.getObject(), new Batch(batchID, roundTripNumber).getFullID());
+        addObjectIfNessesary(premis.getObject(), itemID);
     }
 
     /**
