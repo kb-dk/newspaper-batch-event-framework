@@ -90,14 +90,16 @@ public class AutonomousComponentUtils {
                 //This call will return when the work is done
                 return autonoumous.call();
             } catch (CouldNotGetLockException e) {
-                log.error("Could not get lock on SBOI", e);
-                return new CallResult("Could not get lock on SBOI");
+                log.info(e.getMessage());
+                return new CallResult(e.getMessage());
             } catch (LockingException e) {
-                log.error("Failed to communicate with zookeeper", e);
-                return new CallResult("Failed to communicate with zookeeper");
+                final String msg = "Failed to communicate with zookeeper";
+                log.error(msg, e);
+                return new CallResult(msg);
             } catch (CommunicationException e) {
-                log.error("Commmunication exception when invoking backend services", e);
-                return new CallResult("Commmunication exception when invoking backend services");
+                final String msg = "Commmunication exception when invoking backend services";
+                log.error(msg, e);
+                return new CallResult(msg);
             }
         } finally {
             lockClient.close();
