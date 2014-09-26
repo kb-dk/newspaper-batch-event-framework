@@ -45,4 +45,27 @@ public class Item {
     public void setEventList(List<Event> eventList) {
         this.eventList = eventList;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Item)) {
+            return false;
+        }
+
+        Item item = (Item) o;
+
+        if (domsID != null ? !domsID.equals(item.domsID) : item.domsID != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return domsID != null ? domsID.hashCode() : 0;
+    }
 }

@@ -86,7 +86,7 @@ public class AutonomousWorker implements Runnable {
                 log.warn("The worker is stopped, so the result will not be preserved");
                 return;
             }
-            eventStorer.addEventToItem(item.getDomsID(),
+            eventStorer.addEventToItem(item,
                     getComponentFormattedName(),
                     result.getTimestamp(),
                     result.toReport(),

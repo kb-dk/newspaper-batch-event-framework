@@ -81,9 +81,10 @@ public class DomsEventStorage implements EventStorer {
     }
 
     @Override
-    public Date addEventToItem(String itemID, String agent, Date timestamp, String details, String eventType,
+    public Date addEventToItem(Item item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
         try {
+            String itemID = item.getDomsID();
             PremisManipulator premisObject;
             try {
                 String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);

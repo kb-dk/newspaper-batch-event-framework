@@ -26,7 +26,7 @@ public class AutonomousComponentTest {
     @BeforeMethod
     public void setUp() throws Exception {
         testingServer = new TestingServer();
-        component = new TestingComponent();
+        component = new TestingComponent(null);
 
         Batch testBatch = new Batch(BATCHID);
         testBatch.setRoundTripNumber(ROUNDTRIPNUMBER);
@@ -90,6 +90,7 @@ public class AutonomousComponentTest {
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {
+            System.out.println(event.getEventID());
             if (event.getEventID().equals("Data_Archived")) {
                 testEventFound = true;
             }

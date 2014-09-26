@@ -219,14 +219,23 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
             batchesString.append(" ( ");
 
             boolean first = true;
-            for (Item batch : batches) {
+            for (Item item : batches) {
                 if (first){
                     first = false;
                 }  else {
                     batchesString.append(" OR ");
                 }
                 batchesString.append(" ( ");
-                batchesString.append(BATCH_ID).append(":").append(batch.getFullID());
+                if (item instanceof Batch) {
+                    Batch batch = (Batch) item;
+                    batchesString.append(BATCH_ID).append(":B").append(batch.getBatchID());
+                    if (batch.getRoundTripNumber() > 0) {
+                        batchesString.append(" ");
+                        batchesString.append(ROUND_TRIP_NO).append(":RT").append(batch.getRoundTripNumber());
+                    }
+                } else {
+                    batchesString.append(UUID).append(":").append(item.getDomsID());
+                }
                 batchesString.append(" ) ");
 
             }

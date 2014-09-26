@@ -4,35 +4,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Properties;
 
-public class TestingComponent implements RunnableComponent {
+public class TestingComponent extends AbstractRunnableComponent {
 
     private ArrayList<? extends Item> batches;
 
-    @Override
-    public String getComponentName() {
-        return "TestingComponent";
-
+    protected TestingComponent(Properties properties) {
+        super(properties);
     }
 
-    @Override
-    public String getComponentVersion() {
-        return "0.1-SNAPSHOT";
-    }
 
     @Override
     public String getEventID() {
         return "Data_Archived";
     }
 
-    @Override
-    public void doWorkOnItem(Item batch, ResultCollector resultCollector) throws Exception {
-        System.out.println("working");
-    }
 
     @Override
     public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
-        doWorkOnItem(batch,resultCollector);
+        System.out.println("working");
     }
 
     public EventTrigger getEventTrigger() {
@@ -61,8 +52,13 @@ public class TestingComponent implements RunnableComponent {
             public Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp,
                                         String details, String eventType, boolean outcome)
                     throws CommunicationException {
+                return addEvent(Batch.formatFullID(batchId,roundTripNumber), timestamp, details, eventType, outcome);
+            }
+
+            private Date addEvent(String fullId, Date timestamp, String details, String eventType,
+                                  boolean outcome) {
                 for (Item batch : batches) {
-                    if (batch.getFullID().equals(Batch.formatFullID(batchId,roundTripNumber))) {
+                    if (batch.getFullID().equals(fullId)) {
                         Event event = new Event();
                         event.setDate(timestamp);
                         event.setEventID(eventType);
@@ -75,10 +71,9 @@ public class TestingComponent implements RunnableComponent {
             }
 
             @Override
-            public Date addEventToItem(String itemID, String agent, Date timestamp, String details, String eventType,
+            public Date addEventToItem(Item item, String agent, Date timestamp, String details, String eventType,
                                        boolean outcome) throws CommunicationException {
-                //TODO
-                return null;
+                return addEvent(item.getFullID(), timestamp, details, eventType, outcome);
             }
 
             @Override
