@@ -26,18 +26,5 @@ public abstract class AbstractRunnableComponent implements RunnableComponent {
         return getClass().getPackage().getImplementationVersion();
     }
 
-    @Override
-    public void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception {
-        if (item instanceof Batch) {
-            Batch batch = (Batch) item;
-            doWorkOnBatch(batch,resultCollector);
-        } else {
-            throw new IllegalArgumentException("Item must be a batch");
-        }
-    }
 
-    @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
-
-    }
 }

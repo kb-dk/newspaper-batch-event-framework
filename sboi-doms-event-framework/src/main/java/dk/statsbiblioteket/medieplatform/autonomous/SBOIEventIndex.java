@@ -51,32 +51,33 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Iterator<? extends Item> findBatches(boolean details, List<String> pastSuccessfulEvents,
-                                       List<String> pastFailedEvents, List<String> futureEvents) throws
+    public Iterator<Item> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+                                    List<String> futureEvents) throws
                                                                                                  CommunicationException {
 
         return search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents,null);
     }
 
     @Override
-    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
+    public Item getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         return domsEventStorage.getBatch(batchId, roundTripNumber);
     }
 
     @Override
-    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents) throws CommunicationException {
-        return getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
+    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents) throws CommunicationException {
+        return getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
     }
 
     @Override
-    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents, Collection<? extends Item> batches) throws CommunicationException {
-        Iterator<? extends Item> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
-        ArrayList<Batch> result = new ArrayList<>();
+    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents,
+                                            Collection<Item> batches) throws CommunicationException {
+        Iterator<Item> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
+        ArrayList<Item> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             Item next = sboiBatches.next();
-            Batch instead = domsEventStorage.getBatch(next.getDomsID());
+            Item instead = domsEventStorage.getItem(next.getDomsID());
             if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                 result.add(instead);
             }
@@ -86,20 +87,20 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     /**
-     * Check that the batch matches the requirements expressed in the three lists
+     * Check that the item matches the requirements expressed in the three lists
      *
-     * @param batch                the batch to check
+     * @param item                the item to check
      * @param pastSuccessfulEvents events that must be success
      * @param pastFailedEvents     events that must be failed
      * @param futureEvents         events that must not be there
      *
-     * @return true if the batch match all requirements
+     * @return true if the item match all requirements
      */
-    private boolean match(Batch batch, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+    private boolean match(Item item, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
                           Collection<String> futureEvents) {
         Set<String> successEvents = new HashSet<>();
         Set<String> failEvents = new HashSet<>();
-        for (Event event : batch.getEventList()) {
+        for (Event event : item.getEventList()) {
             if (event.isSuccess()) {
                 successEvents.add(event.getEventID());
             } else {
@@ -125,13 +126,13 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      * @return An iterator over the found batches
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<? extends Item> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+    public Iterator<Item> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
                                   Collection<String> futureEvents, Collection<? extends Item> batches) throws CommunicationException {
 
         try {
             if (batches != null && batches.isEmpty()){
                 //If the batches constraint is set to no result, give no result.
-                return new ArrayList<Batch>().iterator();
+                return new ArrayList<Item>().iterator();
             }
             JSONObject jsonQuery = new JSONObject();
             jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
@@ -155,19 +156,19 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
             NodeList nodeList = xPath.selectNodeList(
                     searchResultDOM, "/responsecollection/response/documentresult/record");
 
-            List<Batch> results = new ArrayList<>(nodeList.getLength());
+            List<Item> results = new ArrayList<>(nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
                 String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
-                Batch result = null;
+                Item result = null;
                 if (!details) { //no details, so we can retrieve everything from Summa
                     String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
                     result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
-                                                     .toBatch();
+                                                     .toItem();
                     result.setDomsID(uuid);
 
                 } else {//Details requested so go to DOMS
-                    result = domsEventStorage.getBatch(uuid);
+                    result = domsEventStorage.getItem(uuid);
                 }
 
                 results.add(result);

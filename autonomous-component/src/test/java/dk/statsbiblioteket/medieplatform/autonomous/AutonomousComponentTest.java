@@ -38,7 +38,7 @@ public class AutonomousComponentTest {
 
         testBatch.setEventList(new ArrayList<>(Arrays.asList(testEvent)));
 
-        component.setBatches(new ArrayList<>(Arrays.asList(testBatch)));
+        component.setBatches(new ArrayList<Item>(Arrays.asList(testBatch)));
 
         lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
@@ -90,7 +90,7 @@ public class AutonomousComponentTest {
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {
-            System.out.println(event.getEventID());
+            //System.out.println(event.getEventID());
             if (event.getEventID().equals("Data_Archived")) {
                 testEventFound = true;
             }

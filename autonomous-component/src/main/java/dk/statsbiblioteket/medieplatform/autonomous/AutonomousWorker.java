@@ -3,6 +3,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 import org.slf4j.Logger;
 
 import dk.statsbiblioteket.util.Strings;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 public class AutonomousWorker implements Runnable {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousWorker.class);
+    private static Logger log = LoggerFactory.getLogger(AutonomousWorker.class);
 
 
     RunnableComponent component;

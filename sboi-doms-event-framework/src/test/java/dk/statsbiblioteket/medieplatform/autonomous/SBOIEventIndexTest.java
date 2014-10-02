@@ -27,8 +27,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<? extends Item> batches = summa.findBatches(false, Arrays.asList("Data_Received"), new ArrayList<String>(),
-                                                    Arrays.asList("Roundtrip_Approved"));
+        Iterator<? extends Item> batches = summa.findItems(false,
+                                                                  Arrays.asList("Data_Received"),
+                                                                  new ArrayList<String>(),
+                                                                  Arrays.asList("Roundtrip_Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Item next = batches.next();
@@ -44,8 +46,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<? extends Item> batches = summa.findBatches(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
+        Iterator<? extends Item> batches = summa.findItems(false,
+                                                                  Arrays.asList("Data_Received"),
+                                                                  new ArrayList<String>(),
+                                                                  Arrays.asList("Roundtrip_Approved"));
         Item first = batches.next();
         Iterator<? extends Item> batches2 = summa.search(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
@@ -61,8 +65,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex summa = getSboiClient(props);
-        Iterator<? extends Item> batches = summa.findBatches(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"));
+        Iterator<? extends Item> batches = summa.findItems(false,
+                                                                  Arrays.asList("Data_Received"),
+                                                                  new ArrayList<String>(),
+                                                                  Arrays.asList("Roundtrip_Approved"));
         Item first = batches.next();
         Item second = batches.next();
 

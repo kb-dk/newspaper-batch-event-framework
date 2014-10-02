@@ -25,12 +25,10 @@ public interface IDFormatter {
     /**
      * Format a full id
      *
-     * @param batchID         the batchID
-     * @param roundTripNumber the round trip number
      *
      * @return as a String
      */
-    String formatFullID(String batchID, int roundTripNumber);
+    String formatFullID(String roundTripID);
 
     /**
      * Undo formatFullID
@@ -38,7 +36,7 @@ public interface IDFormatter {
      * @param fullID the full ID
      *
      * @return as a SplitID because java does not have Pairs
-     * @see #formatFullID(String, int)
+     * @see #formatFullID(String)
      */
     SplitID unformatFullID(String fullID);
 

@@ -66,8 +66,10 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<? extends Item> batches = getEventExplorer().findBatches(includeDetails, Arrays.asList("Data_Received"),
-                                                                     new ArrayList<String>(), new ArrayList<String>());
+            Iterator<? extends Item> batches = getEventExplorer().findItems(includeDetails,
+                                                                                   Arrays.asList("Data_Received"),
+                                                                                   new ArrayList<String>(),
+                                                                                   new ArrayList<String>());
             return iteratorToList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
@@ -78,9 +80,9 @@ public class SBOIDatasource implements DataSource {
     private List<Batch> iteratorToList(Iterator<? extends Item> batches) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
-            Item next = batches.next();
-            if (next instanceof Batch) {
-                Batch batch = (Batch) next;
+            Item item = batches.next();
+            if (item instanceof Batch) {
+                Batch batch = (Batch) item;
                 result.add(batch);
             }
         }
@@ -98,8 +100,8 @@ public class SBOIDatasource implements DataSource {
     private List<Batch> stripDetails(Iterator<Batch> batches, boolean includeDetails) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
-            Batch next = batches.next();
-            result.add(stripDetails(next, includeDetails));
+            Batch batch = batches.next();
+            result.add(stripDetails(batch, includeDetails));
         }
         return result;
     }
@@ -127,7 +129,8 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            return getDomsEventStorage().getBatch(batchID, roundTripNumber);
+            //TODO look into this cast
+            return (Batch) getDomsEventStorage().getBatch(batchID, roundTripNumber);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }

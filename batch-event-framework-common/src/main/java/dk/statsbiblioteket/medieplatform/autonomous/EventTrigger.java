@@ -18,8 +18,8 @@ public interface EventTrigger {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents) throws
+    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents) throws
                                                                                             CommunicationException;
 
     /**
@@ -34,7 +34,8 @@ public interface EventTrigger {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<? extends Item> getTriggeredBatches(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                               Collection<String> futureEvents, Collection<? extends Item> batches) throws
+    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents,
+                                            Collection<Item> batches) throws
                                                                                                   CommunicationException;
 }

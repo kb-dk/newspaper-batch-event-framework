@@ -15,8 +15,8 @@ public class NewspaperIDFormatter implements IDFormatter {
     }
 
     @Override
-    public String formatFullID(String batchID, int roundTripNumber) {
-        return String.format("path:B%s-RT%d", batchID, roundTripNumber);
+    public String formatFullID(String roundTripID) {
+        return String.format("path:%s", roundTripID);
     }
 
     @Override

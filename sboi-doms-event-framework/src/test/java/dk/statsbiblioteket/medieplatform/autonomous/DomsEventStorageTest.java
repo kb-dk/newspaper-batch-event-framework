@@ -44,8 +44,14 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
 
-        doms.addEventToBatch(
-                BATCH_ID, ROUND_TRIP_NUMBER + 1, "agent", new Date(0), "Details here", "Data_Received", true);
+        doms.addEventToItem(new Batch(
+                                   BATCH_ID,
+                                   ROUND_TRIP_NUMBER + 1),
+                                   "agent",
+                                   new Date(0),
+                                   "Details here",
+                                   "Data_Received",
+                                   true);
 
         Assert.assertEquals(8, log.size());
         for (String s : log) {
@@ -69,7 +75,13 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
+        doms.addEventToItem(new Batch(BATCH_ID,
+                                   ROUND_TRIP_NUMBER),
+                                   "agent",
+                                   new Date(0),
+                                   "Details here",
+                                   "Data_Received",
+                                   true);
 
         Assert.assertEquals(8, log.size());
         for (String s : log) {
@@ -92,7 +104,12 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
 
-        doms.addEventToBatch(BATCH_ID, ROUND_TRIP_NUMBER, "agent", new Date(0), "Details here", "Data_Received", true);
+        doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
+                                   "agent",
+                                   new Date(0),
+                                   "Details here",
+                                   "Data_Received",
+                                   true);
 
         Assert.assertEquals(log.size(), 3);
         for (String s : log) {
@@ -114,7 +131,7 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
-        doms.createBatchRoundTrip(BATCH_ID, ROUND_TRIP_NUMBER);
+        doms.createBatchRoundTrip(new Batch(BATCH_ID, ROUND_TRIP_NUMBER).getFullID());
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
             Assert.assertNotSame(s, AbstractFedoraMockup.UNEXPECTED_METHOD);
@@ -164,7 +181,7 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L);
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L);
         assertEquals(eventsRemoved, 6);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
@@ -235,7 +252,7 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.HAS_PART,
                 DomsEventStorageFactory.EVENTS);
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, 10, 10L, "e5");
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L, "e5");
         assertEquals(eventsRemoved, 4);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
@@ -307,7 +324,7 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.EVENTS);
         final int MAX_ATTEMPTS = 10;
         try {
-            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure("foo", 3, MAX_ATTEMPTS, 10L);
+            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), MAX_ATTEMPTS, 10L);
             fail("Should have thrown a " + CommunicationException.class.getSimpleName());
         } catch (CommunicationException e) {
             //expected

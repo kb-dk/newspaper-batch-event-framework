@@ -37,7 +37,14 @@ public class SampleRunnableComponent extends TreeProcessorAbstractRunnableCompon
     }
 
     @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
+    public void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception {
+
+        Batch batch = null;
+        if (item instanceof Batch) {
+            batch = (Batch) item;
+        } else {
+            throw new IllegalArgumentException("Only works on batches");
+        }
         //This is the working method of the component
 
         //IT REALLY MUST BE THREAD SAFE. Multiple threads can invoke this concurrently. Do not use instance variables!

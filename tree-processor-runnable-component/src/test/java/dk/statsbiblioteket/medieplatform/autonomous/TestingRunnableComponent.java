@@ -14,7 +14,7 @@ public class TestingRunnableComponent extends TreeProcessorAbstractRunnableCompo
     }
 
     @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception {
+
     }
 }

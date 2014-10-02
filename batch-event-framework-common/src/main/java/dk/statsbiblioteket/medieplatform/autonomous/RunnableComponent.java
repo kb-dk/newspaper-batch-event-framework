@@ -36,17 +36,4 @@ public interface RunnableComponent {
      * @throws Exception if something failed
      */
     void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception;
-
-    /**
-     * This is the worker method for the component. Once a item have been found that match the criteria and this item
-     * have been properly locked, this method is called.
-     * The results of the work should be collected in the resultCollector. These will be added to the event system
-     * afterwards
-     *
-     * @param batch           the batch to work on
-     * @param resultCollector the result collector
-     *
-     * @throws Exception if something failed
-     */
-    void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception;
 }

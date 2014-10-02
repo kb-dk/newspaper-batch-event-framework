@@ -172,7 +172,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                 log.info("SBOI locked, quering for items");
                 //get items, lock n, release the SBOI
                 Iterator<? extends Item> items = eventTrigger
-                        .getTriggeredBatches(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                        .getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (items.hasNext()) {
                     Item item = items.next();

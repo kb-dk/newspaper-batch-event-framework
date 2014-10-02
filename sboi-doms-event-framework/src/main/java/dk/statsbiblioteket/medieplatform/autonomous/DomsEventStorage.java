@@ -44,47 +44,16 @@ public class DomsEventStorage implements EventStorer {
         premisFactory = new PremisManipulatorFactory(idFormatter, type);
     }
 
-    @Override
-    public Date addEventToBatch(String batchId, int roundTripNumber, String agent, Date timestamp, String details,
-                                String eventType, boolean outcome) throws CommunicationException {
-        String roundTripObjectPid = createBatchRoundTrip(batchId, roundTripNumber);
 
-        try {
-            PremisManipulator premisObject;
-            try {
-                String premisPreBlob = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
-
-                premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
-            } catch (BackendInvalidResourceException e) {
-                //okay, no EVENTS datastream
-                premisObject = premisFactory.createInitialPremisBlob(batchId, roundTripNumber);
-            }
-            premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
-            try {
-                return fedora.modifyDatastreamByValue(
-                        roundTripObjectPid,
-                        eventsDatastream,
-                        null,
-                        null,
-                        premisObject.toXML().getBytes(),
-                        null,
-                        "text/xml",
-                        addEventToBatchComment,
-                        null);
-            } catch (BackendInvalidResourceException e1) {
-                //But I just created the object, it must be there
-                throw new CommunicationException(e1);
-            }
-        } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
-            throw new CommunicationException(e);
-        }
-    }
 
     @Override
     public Date addEventToItem(Item item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
         try {
             String itemID = item.getDomsID();
+            if (itemID == null && item instanceof Batch){
+                itemID = createBatchRoundTrip(item.getFullID());
+            }
             PremisManipulator premisObject;
             try {
                 String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
@@ -123,12 +92,11 @@ public class DomsEventStorage implements EventStorer {
      * @return the pid of the doms object corresponding to the round trip
      * @throws CommunicationException if communication with doms failed
      */
-    public String createBatchRoundTrip(String batchId, int roundTripNumber) throws CommunicationException {
-        String id = idFormatter.formatFullID(batchId, roundTripNumber);
+    public String createBatchRoundTrip(String fullItemID) throws CommunicationException {
         try {
             try {
                 //find the roundTrip Object
-                return getRoundTripID(batchId, roundTripNumber);
+                return getRoundTripID(fullItemID);
             } catch (BackendInvalidResourceException e) {
                 //no roundTripObject, so sad
                 //but alas, we can continue
@@ -136,19 +104,19 @@ public class DomsEventStorage implements EventStorer {
 
             //find the batch object
             String batchObject;
-
-            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatBatchID(batchId));
+            IDFormatter.SplitID fullIDSplits = idFormatter.unformatFullID(fullItemID);
+            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatBatchID(fullIDSplits.getBatchID()));
             if (founds.size() > 0) {
                 batchObject = founds.get(0);
             } else {
                 //no batch object either, more sad
                 //create it, then
                 batchObject = fedora.cloneTemplate(
-                        batchTemplate, Arrays.asList(idFormatter.formatBatchID(batchId)), createBatchRoundTripComment);
+                        batchTemplate, Arrays.asList(idFormatter.formatBatchID(fullIDSplits.getBatchID())), createBatchRoundTripComment);
             }
             String roundTripObject;
 
-            roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(id), createBatchRoundTripComment);
+            roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(idFormatter.formatFullID(fullItemID)), createBatchRoundTripComment);
 
             //connect batch object to round trip object
             fedora.addRelation(
@@ -161,7 +129,7 @@ public class DomsEventStorage implements EventStorer {
 
             //create the initial EVENTS datastream
 
-            String premisBlob = premisFactory.createInitialPremisBlob(batchId, roundTripNumber).toXML();
+            String premisBlob = premisFactory.createInitialPremisBlob(fullItemID).toXML();
             fedora.modifyDatastreamByValue(
                     roundTripObject, eventsDatastream, null,null,premisBlob.getBytes(), null, "text/xml",createBatchRoundTripComment,null);
 
@@ -175,14 +143,14 @@ public class DomsEventStorage implements EventStorer {
 
     }
 
-    public Batch getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
+    public Item getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
         String roundTripID;
         if (roundTripNumber == null) {
             roundTripNumber = 0;
         }
         try {
-            roundTripID = getRoundTripID(batchId, roundTripNumber);
-            return getBatch(roundTripID);
+            roundTripID = getRoundTripID(Batch.formatFullID(batchId, roundTripNumber));
+            return getItem(roundTripID);
         } catch (BackendInvalidResourceException e) {
             throw new NotFoundException(e);
         }
@@ -194,11 +162,12 @@ public class DomsEventStorage implements EventStorer {
      * @param batchId the batchId.
      * @return the sorted list of roundtrip objects.
      */
-    public List<Batch> getAllRoundTrips(String batchId) throws CommunicationException {
-        Comparator<Batch> roundtripComparator = new Comparator<Batch>() {
+    public List<Item> getAllRoundTrips(String batchId) throws CommunicationException {
+        Comparator<Item> roundtripComparator = new Comparator<Item>() {
             @Override
-            public int compare(Batch o1, Batch o2) {
-                return o1.getRoundTripNumber() - o2.getRoundTripNumber();
+            public int compare(Item o1, Item o2) {
+                //TODO roundtrips with 2 digits
+                return o1.getFullID().compareTo(o2.getFullID());
             }
         };
         try {
@@ -208,9 +177,9 @@ public class DomsEventStorage implements EventStorer {
             }
             String batchObjectPid = founds.get(0);
             List<FedoraRelation> roundtripRelations = fedora.getNamedRelations(batchObjectPid, hasPart_relation, null);
-            List<Batch> roundtrips = new ArrayList<Batch>();
+            List<Item> roundtrips = new ArrayList<>();
             for (FedoraRelation roundtripRelation: roundtripRelations) {
-                roundtrips.add(getBatch(roundtripRelation.getObject()));
+                roundtrips.add(getItem(roundtripRelation.getObject()));
             }
             Collections.sort(roundtrips, roundtripComparator);
             return roundtrips;
@@ -228,14 +197,14 @@ public class DomsEventStorage implements EventStorer {
      * @throws NotFoundException      if the batch is not found
      * @throws CommunicationException if communication with doms failed
      */
-    public Batch getBatch(String domsId) throws CommunicationException {
+    public Item getItem(String domsId) throws CommunicationException {
         try {
             String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
             PremisManipulator premisObject
                     = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
-            Batch batch = premisObject.toBatch();
-            batch.setDomsID(domsId);
-            return batch;
+            Item item = premisObject.toItem();
+            item.setDomsID(domsId);
+            return item;
         } catch (BackendInvalidResourceException | BackendMethodFailedException | JAXBException |
                 BackendInvalidCredsException e) {
             throw new CommunicationException(e);
@@ -245,17 +214,16 @@ public class DomsEventStorage implements EventStorer {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxAttempts,
+    public int triggerWorkflowRestartFromFirstFailure(Item item, int maxAttempts,
                                                       long waitTime, String eventId) throws
                                                                                      CommunicationException,
                                                                                      NotFoundException {
         int attempts = 0;
         int eventsRemoved = -1;
-        while ((eventsRemoved = attemptWorkflowRestart(batchId, roundTripNumber, eventId)) < 0) {
+        while ((eventsRemoved = attemptWorkflowRestart(item, eventId)) < 0) {
             attempts++;
             if (attempts == maxAttempts) {
-                String msg = "Failed to trigger restart of batch round-trip " + getFullBatchId(
-                        batchId, roundTripNumber) +
+                String msg = "Failed to trigger restart of batch round-trip " + item.getFullID()+
                              " after " + maxAttempts + " attempts. Giving up.";
                 log.error(msg);
                 throw new CommunicationException(msg);
@@ -270,35 +238,35 @@ public class DomsEventStorage implements EventStorer {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(String batchId, int roundTripNumber, int maxTries,
+    public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
                                                       long waitTime) throws CommunicationException, NotFoundException {
-        return triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, maxTries, waitTime, null);
+        return triggerWorkflowRestartFromFirstFailure(item, maxTries, waitTime, null);
     }
 
     /**
      * This method carries out a single attempt to restart the workflow from where it first failed.
      *
-     * @param batchId         the batchId.
-     * @param roundTripNumber the round-trip number.
      * @param eventId         the first event to remove or null if all events after the first failure are to be
      *                        removed.
      *
      * @return the number of events removed or -1 of there was a ConcurrentModificationException thrown.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    private int attemptWorkflowRestart(String batchId, int roundTripNumber, String eventId) throws
+    private int attemptWorkflowRestart(Item item, String eventId) throws
                                                                                             CommunicationException,
                                                                                             NotFoundException {
-        String roundTripObjectPid = null;
-        try {
-            roundTripObjectPid = getRoundTripID(batchId, roundTripNumber);
-        } catch (BackendInvalidResourceException e) {
-            throw new NotFoundException(
-                    "Could not find DOMS object for " + getFullBatchId(batchId, roundTripNumber), e);
+        String itemPid = item.getDomsID();
+        if (itemPid == null) {
+            try {
+                itemPid = getRoundTripID(item.getFullID());
+            } catch (BackendInvalidResourceException e) {
+                throw new NotFoundException("Could not find DOMS object for " + item.getFullID(),
+                                                   e);
+            }
         }
         try {
-            Date lastModifiedDate = fedora.getObjectProfile(roundTripObjectPid, null).getObjectLastModifiedDate();
-            String premisPreBlob = fedora.getXMLDatastreamContents(roundTripObjectPid, eventsDatastream, null);
+            Date lastModifiedDate = fedora.getObjectProfile(itemPid, null).getObjectLastModifiedDate();
+            String premisPreBlob = fedora.getXMLDatastreamContents(itemPid, eventsDatastream, null);
             PremisManipulator premisObject
                     = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             int eventsRemoved = premisObject.removeEventsFromFailureOrEvent(eventId);
@@ -306,7 +274,7 @@ public class DomsEventStorage implements EventStorer {
                 //backupEventsForBatch(batchId, roundTripNumber);
                 try {
                     fedora.modifyDatastreamByValue(
-                            roundTripObjectPid,
+                            itemPid,
                             eventsDatastream,
                             null,
                             null,
@@ -317,10 +285,8 @@ public class DomsEventStorage implements EventStorer {
                             lastModifiedDate.getTime());
                 } catch (ConcurrentModificationException e) {
                     log.warn(
-                            "Failed to trigger restart of batch round trip for " +
-                            getFullBatchId(
-                                    batchId,
-                                    roundTripNumber) + " on this attempt. Another process modified the object concurrently."
+                            "Failed to trigger restart of batch round trip for " + item.getFullID() +
+                            " on this attempt. Another process modified the object concurrently."
                             );
                     return -1;
                 } catch (UnsupportedEncodingException e) {
@@ -344,13 +310,13 @@ public class DomsEventStorage implements EventStorer {
      * @throws CommunicationException          failed to communicate
      * @throws BackendInvalidResourceException object not found
      */
-    String getRoundTripID(String batchId, int roundTripNumber) throws
+    String getRoundTripID(String roundTripID) throws
                                                                CommunicationException,
                                                                BackendInvalidResourceException {
 
         try {
             //find the Round Trip object
-            final String dcIdentifier = idFormatter.formatFullID(batchId, roundTripNumber);
+            final String dcIdentifier = idFormatter.formatFullID(roundTripID);
             List<String> founds = fedora.findObjectFromDCIdentifier(dcIdentifier);
             if (founds.size() > 0) {
                 return founds.get(0);

@@ -102,6 +102,12 @@ public class Batch extends Item{
         return result;
     }
 
+    /**
+     * Format the batchid and roundtripnumber as a proper batch id
+     * @param batchID the batch id
+     * @param roundTripNumber the roundtrip number
+     * @return a string of the format B{batchID}-RT{roundTripNumber}
+     */
     public static String formatFullID(String batchID, int roundTripNumber){
         return "B" + batchID + "-RT" + roundTripNumber;
     }

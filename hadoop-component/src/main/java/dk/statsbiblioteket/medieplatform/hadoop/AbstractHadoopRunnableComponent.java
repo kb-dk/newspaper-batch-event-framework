@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.medieplatform.hadoop;
 
+import dk.statsbiblioteket.medieplatform.autonomous.Item;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -55,8 +56,12 @@ public abstract class AbstractHadoopRunnableComponent extends TreeProcessorAbstr
     protected abstract Tool getTool();
 
     @Override
-    public void doWorkOnBatch(Batch batch, ResultCollector resultCollector) throws Exception {
-        runTool(getTool(), batch, resultCollector);
+    public void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception {
+        if (item instanceof Batch) {
+            Batch batch = (Batch) item;
+            runTool(getTool(), batch, resultCollector);
+        }
+
     }
 
     private void runTool(Tool tool, Batch batch, ResultCollector resultCollector) throws

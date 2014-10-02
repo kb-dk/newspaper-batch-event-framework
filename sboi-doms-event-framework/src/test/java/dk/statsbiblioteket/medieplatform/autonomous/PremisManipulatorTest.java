@@ -75,8 +75,8 @@ public class PremisManipulatorTest {
         PremisManipulatorFactory factory = new PremisManipulatorFactory(
                 new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
         PremisManipulator premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
-        Batch batch = premisBlob.toBatch();
-        Assert.assertEquals(BATCH_ID, batch.getBatchID());
+        Item batch = premisBlob.toItem();
+        Assert.assertEquals(Batch.formatFullID(BATCH_ID,ROUND_TRIP_NUMBER), batch.getFullID());
         List<Event> events = batch.getEventList();
         for (Event event : events) {
             Assert.assertTrue(event.isSuccess());

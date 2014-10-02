@@ -5,6 +5,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
+import dk.statsbiblioteket.medieplatform.autonomous.Item;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.util.Pair;
 
@@ -45,7 +46,7 @@ public class SBOIDatasourceTest extends TCKTestSuite {
                 throw new RuntimeException(e);
             }
             try {
-                Batch testBatch = domsClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
+                Item testBatch = domsClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
             } catch (CommunicationException e) {
                 throw new RuntimeException(e);
             } catch (NotFoundException e) {

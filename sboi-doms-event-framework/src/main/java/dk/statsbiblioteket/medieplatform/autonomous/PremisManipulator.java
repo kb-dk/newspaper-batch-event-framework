@@ -79,7 +79,7 @@ public class PremisManipulator {
      *
      * @return the blob as a Batch
      */
-    public Batch toBatch() {
+    public Item toItem() {
 
         String fullID = getObjectID();
         IDFormatter.SplitID splits = idFormat.unformatFullID(fullID);

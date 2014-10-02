@@ -58,14 +58,19 @@ public class DomsEventStorageIntegrationTest {
 
 
         try {
-            domsEventStorage.addEventToBatch(batchId, roundTripNumber, "agent", timestamp, details, eventID, true);
+            domsEventStorage.addEventToItem(new Batch(batchId,
+                                                   roundTripNumber),
+                                                   "agent",
+                                                   timestamp,
+                                                   details,
+                                                   eventID,
+                                                   true);
 
-            Batch batch = domsEventStorage.getBatch(batchId, roundTripNumber);
-            Assert.assertEquals(batch.getBatchID(), batchId);
-            Assert.assertEquals(batch.getRoundTripNumber(), roundTripNumber);
+            Item item = domsEventStorage.getBatch(batchId, roundTripNumber);
+            Assert.assertEquals(item.getFullID(),Batch.formatFullID(batchId,roundTripNumber));
 
             boolean found = false;
-            for (Event event : batch.getEventList()) {
+            for (Event event : item.getEventList()) {
                 if (event.getEventID().equals(eventID)) {
                     found = true;
                     Assert.assertEquals(event.getDate(), timestamp);
@@ -77,14 +82,13 @@ public class DomsEventStorageIntegrationTest {
 
 
             Integer newRoundTripNumber = roundTripNumber + 5;
-            domsEventStorage.addEventToBatch(batchId, newRoundTripNumber, "agent", timestamp, details, eventID, true);
+            domsEventStorage.addEventToItem(new Batch(batchId,newRoundTripNumber), "agent", timestamp, details, eventID, true);
 
-            batch = domsEventStorage.getBatch(batchId, newRoundTripNumber);
-            Assert.assertEquals(batch.getBatchID(), batchId);
-            Assert.assertEquals(batch.getRoundTripNumber(), newRoundTripNumber);
+            item = domsEventStorage.getBatch(batchId, newRoundTripNumber);
+            Assert.assertEquals(item.getFullID(), Batch.formatFullID(batchId, newRoundTripNumber));
 
             found = false;
-            for (Event event : batch.getEventList()) {
+            for (Event event : item.getEventList()) {
                 if (event.getEventID().equals(eventID)) {
                     found = true;
                     Assert.assertEquals(event.getDate(), timestamp);
@@ -99,7 +103,7 @@ public class DomsEventStorageIntegrationTest {
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
-            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId,roundTripNumber))).get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
@@ -125,7 +129,7 @@ public class DomsEventStorageIntegrationTest {
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
         String details = "Details here";
-        final List<Batch> allRoundTrips = domsEventStorage.getAllRoundTrips(batchId);
+        final List<Item> allRoundTrips = domsEventStorage.getAllRoundTrips(batchId);
         int n;
         if (allRoundTrips != null) {
             n = allRoundTrips.size();
@@ -133,15 +137,18 @@ public class DomsEventStorageIntegrationTest {
         } else {
             n = 0;
         }
-        domsEventStorage.addEventToBatch(batchId, 1, "agent", timestamp, details, eventID, true);
-        domsEventStorage.addEventToBatch(batchId, 4, "agent", timestamp, details, eventID, true);
-        domsEventStorage.addEventToBatch(batchId, 2, "agent", timestamp, details, eventID, true);
-        List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
+        final Batch item1 = new Batch(batchId, 1);
+        domsEventStorage.addEventToItem(item1, "agent", timestamp, details, eventID, true);
+        final Batch item4 = new Batch(batchId, 4);
+        domsEventStorage.addEventToItem(item4, "agent", timestamp, details, eventID, true);
+        final Batch item2 = new Batch(batchId, 2);
+        domsEventStorage.addEventToItem(item2, "agent", timestamp, details, eventID, true);
+        List<Item> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
         assertEquals(roundtrips.size(), 3+n);
         //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
         //because the roundtrips are returned in the order created.
-        assertEquals((int) roundtrips.get(0+n).getRoundTripNumber(), 1);
-        assertEquals((int) roundtrips.get(2+n).getRoundTripNumber(), 4);
+        assertEquals(roundtrips.get(0+n).getFullID(), item1.getFullID());
+        assertEquals(roundtrips.get(2+n).getFullID(), item4.getFullID());
     }
 
     /**
@@ -184,35 +191,35 @@ public class DomsEventStorageIntegrationTest {
 
         try {
             List<String> pidsBefore = fedora.findObjectFromDCIdentifier(
-                    formatter.formatFullID(batchId, roundTripNumber));
+                    formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber)));
             for (String pid : pidsBefore) {
                 fedora.deleteObject(pid, "cleaning up before test");
 
             }
-            Date beforeUpdate = eventStorer.addEventToBatch(batchId,
-                    roundTripNumber,
-                    "agent",
-                    first,
-                    "initial event",
-                    "InitialEvent",
-                    true);
+            Date beforeUpdate = eventStorer.addEventToItem(new Batch(batchId,
+                                                                  roundTripNumber),
+                                                                  "agent",
+                                                                  first,
+                                                                  "initial event",
+                                                                  "InitialEvent",
+                                                                  true);
             Thread.sleep(2000);
-            Date afterUpdate = eventStorer.addEventToBatch(batchId,
-                    roundTripNumber,
-                    "agent",
-                    timestamp,
-                    details,
-                    eventID,
-                    true);
+            Date afterUpdate = eventStorer.addEventToItem(new Batch(batchId,
+                                                                 roundTripNumber),
+                                                                 "agent",
+                                                                 timestamp,
+                                                                 details,
+                                                                 eventID,
+                                                                 true);
             Thread.sleep(1000);
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId,
-                    roundTripNumber,
+            eventStorer.triggerWorkflowRestartFromFirstFailure(new Batch(batchId,
+                    roundTripNumber),
                     3,
                     10000,
                     eventID);
             Thread.sleep(1000);
 
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber))).get(0);
             String originalEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", beforeUpdate.getTime());
             String updatedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS", afterUpdate.getTime());
             String revertedEvents = fedora.getXMLDatastreamContents(pid, "EVENTS");
@@ -232,7 +239,7 @@ public class DomsEventStorageIntegrationTest {
             for (String pid : pids) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
-            pids = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber));
+            pids = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber)));
             for (String pid : pids) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
@@ -275,17 +282,18 @@ public class DomsEventStorageIntegrationTest {
         NewspaperIDFormatter formatter = new NewspaperIDFormatter();
 
         try {
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(100), details, "e1", true);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(200), details, "e2", true);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(300), details, "e3", true);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(400), details, "e4", false);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(500), details, "e5", true);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(600), details, "e6", false);
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(700), details, "e7", true);
+            final Batch batch = new Batch(batchId, roundTripNumber);
+            eventStorer.addEventToItem(batch, "agent", new Date(100), details, "e1", true);
+            eventStorer.addEventToItem(batch, "agent", new Date(200), details, "e2", true);
+            eventStorer.addEventToItem(batch, "agent", new Date(300), details, "e3", true);
+            eventStorer.addEventToItem(batch, "agent", new Date(400), details, "e4", false);
+            eventStorer.addEventToItem(batch, "agent", new Date(500), details, "e5", true);
+            eventStorer.addEventToItem(batch, "agent", new Date(600), details, "e6", false);
+            eventStorer.addEventToItem(batch, "agent", new Date(700), details, "e7", true);
 
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
 
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batch.getFullID())).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertTrue(events.contains("e1"));
             assertTrue(events.contains("e2"));
@@ -299,7 +307,7 @@ public class DomsEventStorageIntegrationTest {
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
-            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber))).get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
@@ -343,21 +351,22 @@ public class DomsEventStorageIntegrationTest {
         try {
             String details = "Details here";
 
-            eventStorer.addEventToBatch(batchId, roundTripNumber, "agent", new Date(-1000L), details, "e1", false);
+            final Batch batch = new Batch(batchId, roundTripNumber);
+            eventStorer.addEventToItem(batch, "agent", new Date(-1000L), details, "e1", false);
 
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
 
 
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batch.getFullID())).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(events.contains("event"), events);
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batchId, roundTripNumber, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
         } finally {
             String pid = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId)).get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
-            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batchId, roundTripNumber)).get(0);
+            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber))).get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
