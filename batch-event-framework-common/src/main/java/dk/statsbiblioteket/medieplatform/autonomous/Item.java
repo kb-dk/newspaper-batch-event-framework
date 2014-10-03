@@ -68,4 +68,13 @@ public class Item {
     public int hashCode() {
         return domsID != null ? domsID.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Item: " + getDomsID());
+        if (getEventList() != null && !getEventList().isEmpty()) {
+            sb.append(", eventList=" + getEventList());
+        }
+        return sb.toString();
+    }
 }

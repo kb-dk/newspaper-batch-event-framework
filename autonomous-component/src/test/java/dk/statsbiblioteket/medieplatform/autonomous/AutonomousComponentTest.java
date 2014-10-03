@@ -38,7 +38,7 @@ public class AutonomousComponentTest {
 
         testBatch.setEventList(new ArrayList<>(Arrays.asList(testEvent)));
 
-        component.setBatches(new ArrayList<Item>(Arrays.asList(testBatch)));
+        component.setItems(new ArrayList<Item>(Arrays.asList(testBatch)));
 
         lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
@@ -74,7 +74,7 @@ public class AutonomousComponentTest {
     @Test
     public void testPollAndWork() throws Exception {
 
-        Item batch = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Item batch = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
@@ -86,7 +86,7 @@ public class AutonomousComponentTest {
 
         autonoumous.call();
 
-        Item batchAfter = component.getBatch(BATCHID, ROUNDTRIPNUMBER);
+        Item batchAfter = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {

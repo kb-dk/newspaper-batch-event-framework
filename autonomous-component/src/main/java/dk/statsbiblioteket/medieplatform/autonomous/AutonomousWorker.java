@@ -38,11 +38,12 @@ public class AutonomousWorker implements Runnable {
 
     @Override
     public void run() {
-        final Date before = new Date();
+
         try {
             //do work
-            resultCollector.setTimestamp(before);
+            resultCollector.setTimestamp(new Date());
             component.doWorkOnItem(item, resultCollector);
+            resultCollector.setDuration(new Date().getTime() - resultCollector.getTimestamp().getTime());
         } catch (Throwable e) {
             log.warn("Component threw exception", e);
             //the work failed
@@ -53,8 +54,6 @@ public class AutonomousWorker implements Runnable {
                     "Component threw exception: " + e.toString(),
                     Strings.getStackTrace(e));
         }
-        final Date after = new Date();
-        resultCollector.setDuration(after.getTime() - before.getTime());
 
         if (resultCollector.isPreservable()) {
             preserveResult(item, resultCollector);
@@ -84,7 +83,7 @@ public class AutonomousWorker implements Runnable {
                 }
             }
             if (stop) {
-                log.warn("The worker is stopped, so the result will not be preserved");
+                log.warn("The worker is stopped, so the result will not be preserved. The result was '{}'",result.toReport());
                 return;
             }
             eventStorer.addEventToItem(item,

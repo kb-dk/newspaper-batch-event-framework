@@ -115,23 +115,23 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
 
     /**
-     * Perform a search for batches matching the given criteria
+     * Perform a search for items matching the given criteria
      *
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
      * @param pastFailedEvents     Events that the batch must have experienced, but which failed
      * @param futureEvents         Events that the batch must not have experienced
-     * @param batches              if not null, the resulting iterator will only contain batches from this set. If the
-     *                             batches is empty, the result will be empty.
+     * @param items              if not null, the resulting iterator will only contain items from this set. If the
+     *                             items is empty, the result will be empty.
      *
-     * @return An iterator over the found batches
+     * @return An iterator over the found items
      * @throws CommunicationException if the communication failed
      */
     public Iterator<Item> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                  Collection<String> futureEvents, Collection<? extends Item> batches) throws CommunicationException {
+                                  Collection<String> futureEvents, Collection<Item> items) throws CommunicationException {
 
         try {
-            if (batches != null && batches.isEmpty()){
-                //If the batches constraint is set to no result, give no result.
+            if (items != null && items.isEmpty()){
+                //If the items constraint is set to no result, give no result.
                 return new ArrayList<Item>().iterator();
             }
             JSONObject jsonQuery = new JSONObject();
@@ -139,7 +139,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
 
             jsonQuery.put(
                     "search.document.query",
-                    toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,batches));
+                    toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,items));
             jsonQuery.put("search.document.startindex", 0);
             //TODO fix this static maxrecords  (we can order on creation date)
             jsonQuery.put("search.document.maxrecords", 1000);
@@ -212,7 +212,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
 
-    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<? extends Item> batches) {
+    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<Item> batches) {
         String base = spaced(RECORD_BASE);
 
         StringBuilder batchesString = new StringBuilder();

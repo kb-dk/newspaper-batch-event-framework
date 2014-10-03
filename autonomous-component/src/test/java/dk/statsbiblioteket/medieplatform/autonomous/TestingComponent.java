@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class TestingComponent extends AbstractRunnableComponent {
 
-    private ArrayList<Item> batches;
+    private ArrayList<Item> items;
 
     protected TestingComponent(Properties properties) {
         super(properties);
@@ -33,16 +33,16 @@ public class TestingComponent extends AbstractRunnableComponent {
                                                               Collection<String> pastFailedEvents,
                                                               Collection<String> futureEvents)
                     throws CommunicationException {
-                return batches.iterator();
+                return items.iterator();
             }
 
             @Override
             public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                                               Collection<String> pastFailedEvents,
                                                               Collection<String> futureEvents,
-                                                              Collection<Item> batches) throws
+                                                              Collection<Item> itemCollection) throws
                                                                                                     CommunicationException {
-                return batches.iterator();
+                return itemCollection.iterator();
             }
         };
     }
@@ -58,14 +58,14 @@ public class TestingComponent extends AbstractRunnableComponent {
 
             private Date addEvent(String fullId, Date timestamp, String details, String eventType,
                                   boolean outcome) {
-                for (Item batch : batches) {
-                    if (batch.getFullID().equals(fullId)) {
+                for (Item item : items) {
+                    if (item.getFullID().equals(fullId)) {
                         Event event = new Event();
                         event.setDate(timestamp);
                         event.setEventID(eventType);
                         event.setSuccess(outcome);
                         event.setDetails(details);
-                        batch.getEventList().add(event);
+                        item.getEventList().add(event);
                     }
                 }
                 return new Date();
@@ -88,17 +88,17 @@ public class TestingComponent extends AbstractRunnableComponent {
         };
     }
 
-    public void setBatches(ArrayList<Item> batches) {
-        this.batches = batches;
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
     }
 
-    public ArrayList<? extends Item> getBatches() {
-        return batches;
+    public ArrayList<Item> getItems() {
+        return items;
     }
 
-    public Item getBatch(String batchid, int roundtripnumber) {
-        for (Item batch : batches) {
-            if (batch.getFullID().equals(Batch.formatFullID(batchid,roundtripnumber))){
+    public Item getItem(String itemFullID) {
+        for (Item batch : items) {
+            if (batch.getFullID().equals(itemFullID)){
                 return batch;
             }
         }

@@ -66,18 +66,18 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<? extends Item> batches = getEventExplorer().findItems(includeDetails,
+            Iterator<Item> batches = getEventExplorer().findItems(includeDetails,
                                                                                    Arrays.asList("Data_Received"),
                                                                                    new ArrayList<String>(),
                                                                                    new ArrayList<String>());
-            return iteratorToList(batches);
+            return iteratorToBatchList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);
         }
 
     }
 
-    private List<Batch> iteratorToList(Iterator<? extends Item> batches) {
+    private List<Batch> iteratorToBatchList(Iterator<Item> batches) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
             Item item = batches.next();

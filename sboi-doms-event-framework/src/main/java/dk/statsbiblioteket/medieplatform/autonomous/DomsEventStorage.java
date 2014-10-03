@@ -53,6 +53,8 @@ public class DomsEventStorage implements EventStorer {
             String itemID = item.getDomsID();
             if (itemID == null && item instanceof Batch){
                 itemID = createBatchRoundTrip(item.getFullID());
+            } else {
+                throw new IllegalArgumentException("Trying to add an event to a non-existing item '" +item.toString()+"'");
             }
             PremisManipulator premisObject;
             try {
@@ -223,7 +225,7 @@ public class DomsEventStorage implements EventStorer {
         while ((eventsRemoved = attemptWorkflowRestart(item, eventId)) < 0) {
             attempts++;
             if (attempts == maxAttempts) {
-                String msg = "Failed to trigger restart of batch round-trip " + item.getFullID()+
+                String msg = "Failed to trigger restart of item " + item.getFullID()+
                              " after " + maxAttempts + " attempts. Giving up.";
                 log.error(msg);
                 throw new CommunicationException(msg);
@@ -297,10 +299,6 @@ public class DomsEventStorage implements EventStorer {
         } catch (BackendInvalidResourceException | JAXBException | BackendInvalidCredsException | BackendMethodFailedException e) {
             throw new CommunicationException(e);
         }
-    }
-
-    private String getFullBatchId(String batchId, int roundTripNumber) {
-        return "B" + batchId + "-RT" + roundTripNumber;
     }
 
     /**
