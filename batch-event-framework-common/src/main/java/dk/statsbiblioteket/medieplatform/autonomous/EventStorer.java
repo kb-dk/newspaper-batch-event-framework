@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Interface for storing result of an event.
  */
-public interface EventStorer {
+public interface EventStorer<T extends Item> {
 
     /**
      * Add an event to a batch in doms. Will create the batch if it does not currently exist
@@ -19,7 +19,7 @@ public interface EventStorer {
      *
      * @throws CommunicationException if communication with doms failed
      */
-    Date addEventToItem(Item item, String agent, Date timestamp, String details,
+    Date addEventToItem(T item, String agent, Date timestamp, String details,
                          String eventType, boolean outcome) throws CommunicationException;
 
 
@@ -43,7 +43,7 @@ public interface EventStorer {
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries, long waitTime,
+    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime,
                                                String eventId) throws CommunicationException, NotFoundException;
 
     /**
@@ -65,7 +65,7 @@ public interface EventStorer {
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries, long waitTime) throws
+    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime) throws
                                                                                                                  CommunicationException,
                                                                                                                  NotFoundException;
 }

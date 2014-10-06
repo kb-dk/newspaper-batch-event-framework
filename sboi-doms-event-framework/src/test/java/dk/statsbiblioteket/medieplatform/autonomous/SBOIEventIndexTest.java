@@ -89,20 +89,21 @@ public class SBOIEventIndexTest {
     }
 
 
-    private SBOIEventIndex getSboiClient(Properties props) throws
+    private SBOIEventIndex<Batch> getSboiClient(Properties props) throws
                                                            MalformedURLException,
                                                            JAXBException,
                                                            PIDGeneratorException {
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
-        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
-        return new SBOIEventIndex(
-                props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE), domsEventStorage);
+        return new SBOIEventIndex<>(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
+                                           new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
+                                                                                 new BatchItemFactory()),
+                                           domsEventStorage);
     }
 
     private Properties getProperties() throws IOException {

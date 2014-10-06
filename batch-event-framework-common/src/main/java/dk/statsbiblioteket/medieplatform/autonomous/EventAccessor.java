@@ -6,18 +6,17 @@ import java.util.List;
 /**
  * Interface for accessing details about events.
  */
-public interface EventAccessor {
+public interface EventAccessor<T extends Item> {
     /**
      * Retrieve a batch
      *
-     * @param batchId         the batch id
-     * @param roundTripNumber the round trip number
+
      *
      * @return the batch
      * @throws NotFoundException      if the batch is not found
      * @throws CommunicationException if communication with doms failed
      */
-    Item getBatch(String batchId, Integer roundTripNumber) throws NotFoundException, CommunicationException;
+    T getItem(String itemFullID) throws NotFoundException, CommunicationException;
 
     /**
      * Perform a search for batches matching the given criteria
@@ -29,7 +28,7 @@ public interface EventAccessor {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Item> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<T> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                     List<String> futureEvents) throws CommunicationException;
 
 }

@@ -44,8 +44,9 @@ public class AutonomousComponentUtils {
      *
      */
 
-    public static CallResult startAutonomousComponent(Properties properties, RunnableComponent component,
-                                                      EventTrigger eventTrigger, EventStorer eventStorer) {
+    public static <T extends Item> CallResult<T> startAutonomousComponent(Properties properties, RunnableComponent<T> component,
+                                                                          EventTrigger<T> eventTrigger,
+                                                                          EventStorer<T> eventStorer) {
         //Make a client for the lock framework, and start it
         CuratorFramework lockClient
                 = CuratorFrameworkFactory.newClient(properties.getProperty(ConfigConstants.AUTONOMOUS_LOCKSERVER_URL),
@@ -74,7 +75,7 @@ public class AutonomousComponentUtils {
                 throw new IllegalArgumentException("eventStorer null");
             }
             //Use all the above to make the autonomous component
-            AutonomousComponent autonoumous = new AutonomousComponent(component,
+            AutonomousComponent<T> autonoumous = new AutonomousComponent<>(component,
                     lockClient,
                     simultaneousProcesses,
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
@@ -91,13 +92,13 @@ public class AutonomousComponentUtils {
                 return autonoumous.call();
             } catch (CouldNotGetLockException e) {
                 log.error("Could not get lock on SBOI", e);
-                return new CallResult("Could not get lock on SBOI");
+                return new CallResult<>("Could not get lock on SBOI");
             } catch (LockingException e) {
                 log.error("Failed to communicate with zookeeper", e);
-                return new CallResult("Failed to communicate with zookeeper");
+                return new CallResult<>("Failed to communicate with zookeeper");
             } catch (CommunicationException e) {
                 log.error("Commmunication exception when invoking backend services", e);
-                return new CallResult("Commmunication exception when invoking backend services");
+                return new CallResult<>("Commmunication exception when invoking backend services");
             }
         } finally {
             lockClient.close();

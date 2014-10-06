@@ -12,20 +12,20 @@ import java.util.Date;
  * Unless the component specifically requests it (by settting presevable=false on the result collector) the
  * result will be written back to DOMS
  */
-public class AutonomousWorker implements Runnable {
+public class AutonomousWorker<T extends Item> implements Runnable {
 
     private static Logger log = LoggerFactory.getLogger(AutonomousWorker.class);
 
 
-    RunnableComponent component;
+    private RunnableComponent<T> component;
     private ResultCollector resultCollector;
-    private Item item;
-    private EventStorer eventStorer;
+    private T item;
+    private EventStorer<T> eventStorer;
     private boolean pause = false;
     private boolean stop = false;
 
-    public AutonomousWorker(RunnableComponent component, ResultCollector resultCollector, Item item,
-                            EventStorer eventStorer) {
+    public AutonomousWorker(RunnableComponent<T> component, ResultCollector resultCollector, T item,
+                            EventStorer<T> eventStorer) {
         this.component = component;
         this.resultCollector = resultCollector;
         this.item = item;
@@ -73,7 +73,7 @@ public class AutonomousWorker implements Runnable {
      * @param item  the item worked on
      * @param result the result of the work
      */
-    private void preserveResult(Item item, ResultCollector result) {
+    private void preserveResult(T item, ResultCollector result) {
         try {
             while (pause && !stop) {
                 try {
@@ -103,7 +103,7 @@ public class AutonomousWorker implements Runnable {
         }
     }
 
-    public Item getItem() {
+    public T getItem() {
         return item;
     }
 

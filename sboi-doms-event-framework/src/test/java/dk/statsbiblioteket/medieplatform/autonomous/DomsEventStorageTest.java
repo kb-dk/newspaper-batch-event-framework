@@ -42,7 +42,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
 
         doms.addEventToItem(new Batch(
                                    BATCH_ID,
@@ -73,7 +74,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
 
         doms.addEventToItem(new Batch(BATCH_ID,
                                    ROUND_TRIP_NUMBER),
@@ -102,7 +104,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
@@ -130,7 +133,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
         doms.createBatchRoundTrip(new Batch(BATCH_ID, ROUND_TRIP_NUMBER).getFullID());
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
@@ -179,7 +183,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L);
         assertEquals(eventsRemoved, 6);
@@ -250,7 +255,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L, "e5");
         assertEquals(eventsRemoved, 4);
@@ -321,7 +327,8 @@ public class DomsEventStorageTest {
                 DomsEventStorageFactory.BATCH_TEMPLATE,
                 DomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                 DomsEventStorageFactory.HAS_PART,
-                DomsEventStorageFactory.EVENTS);
+                DomsEventStorageFactory.EVENTS,
+                                                            new BatchItemFactory());
         final int MAX_ATTEMPTS = 10;
         try {
             int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), MAX_ATTEMPTS, 10L);
@@ -348,8 +355,7 @@ public class DomsEventStorageTest {
      * @throws JAXBException
      */
     private PremisManipulator getPremisManipulator() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);

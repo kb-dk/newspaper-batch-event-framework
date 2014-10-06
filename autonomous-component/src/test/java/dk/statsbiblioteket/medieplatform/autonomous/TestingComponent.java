@@ -1,14 +1,16 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import org.omg.CORBA.BAD_CONTEXT;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 
-public class TestingComponent extends AbstractRunnableComponent {
+public class TestingComponent extends AbstractRunnableComponent<Batch> {
 
-    private ArrayList<Item> items;
+    private ArrayList<Batch> items;
 
     protected TestingComponent(Properties properties) {
         super(properties);
@@ -22,14 +24,14 @@ public class TestingComponent extends AbstractRunnableComponent {
 
 
     @Override
-    public void doWorkOnItem(Item batch, ResultCollector resultCollector) throws Exception {
+    public void doWorkOnItem(Batch batch, ResultCollector resultCollector) throws Exception {
         System.out.println("working");
     }
 
-    public EventTrigger getEventTrigger() {
-        return new EventTrigger() {
+    public EventTrigger<Batch> getEventTrigger() {
+        return new EventTrigger<Batch>() {
             @Override
-            public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+            public Iterator<Batch> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                                               Collection<String> pastFailedEvents,
                                                               Collection<String> futureEvents)
                     throws CommunicationException {
@@ -37,20 +39,20 @@ public class TestingComponent extends AbstractRunnableComponent {
             }
 
             @Override
-            public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+            public Iterator<Batch> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                                               Collection<String> pastFailedEvents,
                                                               Collection<String> futureEvents,
-                                                              Collection<Item> itemCollection) throws
+                                                              Collection<Batch> itemCollection) throws
                                                                                                     CommunicationException {
                 return itemCollection.iterator();
             }
         };
     }
 
-    public EventStorer getEventStorer() {
-        return new EventStorer() {
+    public EventStorer<Batch> getEventStorer() {
+        return new EventStorer<Batch>() {
             @Override
-            public Date addEventToItem(Item item, String agent, Date timestamp,
+            public Date addEventToItem(Batch item, String agent, Date timestamp,
                                         String details, String eventType, boolean outcome)
                     throws CommunicationException {
                 return addEvent(item.getFullID(), timestamp, details, eventType, outcome);
@@ -58,7 +60,7 @@ public class TestingComponent extends AbstractRunnableComponent {
 
             private Date addEvent(String fullId, Date timestamp, String details, String eventType,
                                   boolean outcome) {
-                for (Item item : items) {
+                for (Batch item : items) {
                     if (item.getFullID().equals(fullId)) {
                         Event event = new Event();
                         event.setDate(timestamp);
@@ -73,14 +75,14 @@ public class TestingComponent extends AbstractRunnableComponent {
 
 
             @Override
-            public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
+            public int triggerWorkflowRestartFromFirstFailure(Batch item, int maxTries,
                                                               long waitTime, String eventId)
                     throws CommunicationException, NotFoundException {
                 return 0;
             }
 
             @Override
-            public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
+            public int triggerWorkflowRestartFromFirstFailure(Batch item, int maxTries,
                                                               long waitTime)
                     throws CommunicationException, NotFoundException {
                 return 0;
@@ -88,16 +90,16 @@ public class TestingComponent extends AbstractRunnableComponent {
         };
     }
 
-    public void setItems(ArrayList<Item> items) {
+    public void setItems(ArrayList<Batch> items) {
         this.items = items;
     }
 
-    public ArrayList<Item> getItems() {
+    public ArrayList<Batch> getItems() {
         return items;
     }
 
-    public Item getItem(String itemFullID) {
-        for (Item batch : items) {
+    public Batch getItem(String itemFullID) {
+        for (Batch batch : items) {
             if (batch.getFullID().equals(itemFullID)){
                 return batch;
             }

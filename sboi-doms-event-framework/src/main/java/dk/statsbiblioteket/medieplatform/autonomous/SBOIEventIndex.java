@@ -25,7 +25,7 @@ import java.util.Set;
  * Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
  * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS.
  */
-public class SBOIEventIndex implements EventTrigger, EventAccessor {
+public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAccessor<T> {
 
     private static final String SUCCESSEVENT = "success_event";
     private static final String FAILEVENT = "fail_event";
@@ -36,12 +36,12 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     private static final String PREMIS_NO_DETAILS = "premis_no_details";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
-    private final PremisManipulatorFactory premisManipulatorFactory;
-    private DomsEventStorage domsEventStorage;
+    private final PremisManipulatorFactory<T> premisManipulatorFactory;
+    private DomsEventStorage<T> domsEventStorage;
     private final SearchWS summaSearch;
 
-    public SBOIEventIndex(String summaLocation, PremisManipulatorFactory premisManipulatorFactory,
-                          DomsEventStorage domsEventStorage) throws MalformedURLException {
+    public SBOIEventIndex(String summaLocation, PremisManipulatorFactory<T> premisManipulatorFactory,
+                          DomsEventStorage<T> domsEventStorage) throws MalformedURLException {
         this.premisManipulatorFactory = premisManipulatorFactory;
         this.domsEventStorage = domsEventStorage;
         summaSearch = new SearchWSService(
@@ -51,7 +51,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Iterator<Item> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
+    public Iterator<T> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                     List<String> futureEvents) throws
                                                                                                  CommunicationException {
 
@@ -59,25 +59,25 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
     @Override
-    public Item getBatch(String batchId, Integer roundTripNumber) throws CommunicationException, NotFoundException {
-        return domsEventStorage.getBatch(batchId, roundTripNumber);
+    public T getItem(String itemFullID) throws CommunicationException, NotFoundException {
+        return domsEventStorage.getItemFromFullID(itemFullID);
     }
 
     @Override
-    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                             Collection<String> pastFailedEvents, Collection<String> futureEvents) throws CommunicationException {
         return getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
     }
 
     @Override
-    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                             Collection<String> pastFailedEvents, Collection<String> futureEvents,
-                                            Collection<Item> batches) throws CommunicationException {
-        Iterator<Item> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
-        ArrayList<Item> result = new ArrayList<>();
+                                            Collection<T> batches) throws CommunicationException {
+        Iterator<T> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
+        ArrayList<T> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
-            Item next = sboiBatches.next();
-            Item instead = domsEventStorage.getItem(next.getDomsID());
+            T next = sboiBatches.next();
+            T instead = domsEventStorage.getItemFromDomsID(next.getDomsID());
             if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                 result.add(instead);
             }
@@ -126,13 +126,13 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
      * @return An iterator over the found items
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<Item> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                  Collection<String> futureEvents, Collection<Item> items) throws CommunicationException {
+    public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                  Collection<String> futureEvents, Collection<T> items) throws CommunicationException {
 
         try {
             if (items != null && items.isEmpty()){
                 //If the items constraint is set to no result, give no result.
-                return new ArrayList<Item>().iterator();
+                return new ArrayList<T>().iterator();
             }
             JSONObject jsonQuery = new JSONObject();
             jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
@@ -156,11 +156,11 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
             NodeList nodeList = xPath.selectNodeList(
                     searchResultDOM, "/responsecollection/response/documentresult/record");
 
-            List<Item> results = new ArrayList<>(nodeList.getLength());
+            List<T> results = new ArrayList<>(nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
                 String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
-                Item result = null;
+                T result = null;
                 if (!details) { //no details, so we can retrieve everything from Summa
                     String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
                     result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
@@ -168,7 +168,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
                     result.setDomsID(uuid);
 
                 } else {//Details requested so go to DOMS
-                    result = domsEventStorage.getItem(uuid);
+                    result = domsEventStorage.getItemFromDomsID(uuid);
                 }
 
                 results.add(result);
@@ -212,7 +212,7 @@ public class SBOIEventIndex implements EventTrigger, EventAccessor {
     }
 
 
-    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<Item> batches) {
+    private String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<T> batches) {
         String base = spaced(RECORD_BASE);
 
         StringBuilder batchesString = new StringBuilder();

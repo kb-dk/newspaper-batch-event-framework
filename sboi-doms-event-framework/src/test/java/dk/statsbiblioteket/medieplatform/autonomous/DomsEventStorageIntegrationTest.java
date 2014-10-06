@@ -33,13 +33,14 @@ public class DomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+        factory.setItemFactory(new BatchItemFactory());
 
-        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -66,7 +67,7 @@ public class DomsEventStorageIntegrationTest {
                                                    eventID,
                                                    true);
 
-            Item item = domsEventStorage.getBatch(batchId, roundTripNumber);
+            Item item = domsEventStorage.getItemFromFullID(Batch.formatFullID(batchId, roundTripNumber));
             Assert.assertEquals(item.getFullID(),Batch.formatFullID(batchId,roundTripNumber));
 
             boolean found = false;
@@ -84,7 +85,7 @@ public class DomsEventStorageIntegrationTest {
             Integer newRoundTripNumber = roundTripNumber + 5;
             domsEventStorage.addEventToItem(new Batch(batchId,newRoundTripNumber), "agent", timestamp, details, eventID, true);
 
-            item = domsEventStorage.getBatch(batchId, newRoundTripNumber);
+            item = domsEventStorage.getItemFromFullID(Batch.formatFullID(batchId, newRoundTripNumber));
             Assert.assertEquals(item.getFullID(), Batch.formatFullID(batchId, newRoundTripNumber));
 
             found = false;
@@ -117,19 +118,20 @@ public class DomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+        factory.setItemFactory(new BatchItemFactory());
 
-        DomsEventStorage domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Date timestamp = new Date(0);
         String eventID = "Data_Received";
         String details = "Details here";
-        final List<Item> allRoundTrips = domsEventStorage.getAllRoundTrips(batchId);
+        final List<Batch> allRoundTrips = domsEventStorage.getAllRoundTrips(batchId);
         int n;
         if (allRoundTrips != null) {
             n = allRoundTrips.size();
@@ -143,7 +145,7 @@ public class DomsEventStorageIntegrationTest {
         domsEventStorage.addEventToItem(item4, "agent", timestamp, details, eventID, true);
         final Batch item2 = new Batch(batchId, 2);
         domsEventStorage.addEventToItem(item2, "agent", timestamp, details, eventID, true);
-        List<Item> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
+        List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
         assertEquals(roundtrips.size(), 3+n);
         //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
         //because the roundtrips are returned in the order created.
@@ -163,13 +165,13 @@ public class DomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        EventStorer eventStorer = factory.createDomsEventStorage();
+        EventStorer<Batch> eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -260,13 +262,13 @@ public class DomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        EventStorer eventStorer = factory.createDomsEventStorage();
+        EventStorer<Batch> eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -329,13 +331,13 @@ public class DomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        EventStorer eventStorer = factory.createDomsEventStorage();
+        EventStorer<Batch> eventStorer = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;

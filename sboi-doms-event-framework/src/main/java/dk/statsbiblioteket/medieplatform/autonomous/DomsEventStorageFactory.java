@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
  *   Create a new factory object. Use the setters to set properties.
  *   When done, call {@link #createDomsEventStorage}, and a doms event storage will be constructed.
  */
-public class DomsEventStorageFactory {
+public class DomsEventStorageFactory<T extends Item> {
 
 
     //Default values
@@ -32,12 +32,13 @@ public class DomsEventStorageFactory {
     private String password = PASSWORD;
     private String fedoraLocation = FEDORA_LOCATION;
     private String pidGeneratorLocation = PIDGENERATOR_LOCATION;
-    private IDFormatter idFormatter = NEWSPAPER_ID_FORMATTER;
+    private NewspaperIDFormatter idFormatter = NEWSPAPER_ID_FORMATTER;
     private String premisIdentifierType = PremisManipulatorFactory.TYPE;
     private String batchTemplate = BATCH_TEMPLATE;
     private String roundTripTemplate = ROUND_TRIP_TEMPLATE;
     private String hasPartRelation = HAS_PART;
     private String eventsDatastream = EVENTS;
+    private ItemFactory<T> itemFactory;
 
     /**
      * Create the doms event storage from the properties
@@ -47,18 +48,19 @@ public class DomsEventStorageFactory {
      * @throws PIDGeneratorException Failure to communicate with the pid generator
      * @throws MalformedURLException if any of the urls were broken
      */
-    public DomsEventStorage createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
+    public DomsEventStorage<T> createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                 creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null);
-        return new DomsEventStorage(
+        return new DomsEventStorage<>(
                 fedora,
                 idFormatter,
                 premisIdentifierType,
                 batchTemplate,
                 roundTripTemplate,
                 hasPartRelation,
-                eventsDatastream);
+                eventsDatastream,
+                itemFactory);
     }
 
     public String getUsername() {
@@ -115,19 +117,12 @@ public class DomsEventStorageFactory {
         this.pidGeneratorLocation = pidGeneratorLocation;
     }
 
-    public IDFormatter getIdFormatter() {
-        return idFormatter;
+    public ItemFactory<T> getItemFactory() {
+        return itemFactory;
     }
 
-    /**
-     * Set the id formatter used to format batch ids to strings. Default new NewspaperIDFormatter()
-     *
-     * @param idFormatter the formatter
-     *
-     * @see NewspaperIDFormatter
-     */
-    public void setIdFormatter(IDFormatter idFormatter) {
-        this.idFormatter = idFormatter;
+    public void setItemFactory(ItemFactory<T> itemFactory) {
+        this.itemFactory = itemFactory;
     }
 
     public String getPremisIdentifierType() {

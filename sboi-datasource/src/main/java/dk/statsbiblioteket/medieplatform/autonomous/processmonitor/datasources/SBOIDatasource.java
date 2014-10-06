@@ -2,13 +2,12 @@ package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.BatchItemFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
-import dk.statsbiblioteket.medieplatform.autonomous.Item;
-import dk.statsbiblioteket.medieplatform.autonomous.NewspaperIDFormatter;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.SBOIEventIndex;
@@ -25,18 +24,20 @@ import java.util.Map;
 public class SBOIDatasource implements DataSource {
 
     private SBOIDatasourceConfiguration configuration;
-    private EventAccessor client = null;
+    private EventAccessor<Batch> client = null;
+    private BatchItemFactory itemFactory;
 
     public SBOIDatasource(SBOIDatasourceConfiguration configuration) {
         this.configuration = configuration;
+        itemFactory = new BatchItemFactory();
     }
 
-    private synchronized EventAccessor getEventExplorer() {
+    private synchronized EventAccessor<Batch> getEventExplorer() {
         try {
             if (client == null) {
-                client = new SBOIEventIndex(
+                client = new SBOIEventIndex<>(
                         configuration.getSummaLocation(),
-                        new PremisManipulatorFactory(new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE),
+                        new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,itemFactory),
                         getDomsEventStorage());
             }
             return client;
@@ -45,13 +46,14 @@ public class SBOIDatasource implements DataSource {
         }
     }
 
-    private DomsEventStorage getDomsEventStorage() {
-        DomsEventStorageFactory factory = new DomsEventStorageFactory();
+    private DomsEventStorage<Batch> getDomsEventStorage() {
+        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
 
         factory.setFedoraLocation(configuration.getDomsLocation());
         factory.setUsername(configuration.getDomsUser());
         factory.setPassword(configuration.getDomsPassword());
-        DomsEventStorage domsEventStorage;
+        factory.setItemFactory(itemFactory);
+        DomsEventStorage<Batch> domsEventStorage;
         try {
             domsEventStorage = factory.createDomsEventStorage();
         } catch (JAXBException | MalformedURLException | PIDGeneratorException e) {
@@ -66,7 +68,7 @@ public class SBOIDatasource implements DataSource {
     public List<Batch> getBatches(boolean includeDetails, Map<String, String> filters) throws
                                                                                        NotWorkingProperlyException {
         try {
-            Iterator<Item> batches = getEventExplorer().findItems(includeDetails,
+            Iterator<Batch> batches = getEventExplorer().findItems(includeDetails,
                                                                                    Arrays.asList("Data_Received"),
                                                                                    new ArrayList<String>(),
                                                                                    new ArrayList<String>());
@@ -77,14 +79,11 @@ public class SBOIDatasource implements DataSource {
 
     }
 
-    private List<Batch> iteratorToBatchList(Iterator<Item> batches) {
+    private List<Batch> iteratorToBatchList(Iterator<Batch> batches) {
         ArrayList<Batch> result = new ArrayList<>();
         while (batches.hasNext()) {
-            Item item = batches.next();
-            if (item instanceof Batch) {
-                Batch batch = (Batch) item;
-                result.add(batch);
-            }
+            Batch item = batches.next();
+            result.add(item);
         }
         return result;
     }
@@ -129,8 +128,7 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            //TODO look into this cast
-            return (Batch) getDomsEventStorage().getBatch(batchID, roundTripNumber);
+            return getDomsEventStorage().getItemFromFullID(Batch.formatFullID(batchID, roundTripNumber));
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }

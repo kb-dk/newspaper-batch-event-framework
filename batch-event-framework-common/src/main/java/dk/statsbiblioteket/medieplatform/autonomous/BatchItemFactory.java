@@ -1,8 +1,13 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-/** This class formats batchs IDs to the form B324o0893404-RT1 */
-public class NewspaperIDFormatter {
-
+public class BatchItemFactory implements ItemFactory<Batch> {
+    @Override
+    public Batch createItem(String fullID) {
+        SplitID splits = unformatFullID(fullID);
+        Batch result = new Batch(splits.getBatchID());
+        result.setRoundTripNumber(splits.getRoundTripNumber());
+        return result;
+    }
 
     public String formatBatchID(String batchID) {
         return "path:B" + batchID;
@@ -19,8 +24,7 @@ public class NewspaperIDFormatter {
     public SplitID unformatFullID(String fullID) {
         String[] splits = fullID.split("-RT");
 
-        return new SplitID(
-                splits[0].replaceFirst("(path:)?B", ""), Integer.parseInt(splits[1]));
+        return new SplitID(splits[0].replaceFirst("(path:)?B", ""), Integer.parseInt(splits[1]));
     }
 
     public static class SplitID {

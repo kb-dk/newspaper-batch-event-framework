@@ -1,11 +1,11 @@
 package dk.statsbiblioteket.medieplatform.autonomous.processmonitor.datasources;
 
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
+import dk.statsbiblioteket.medieplatform.autonomous.BatchItemFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
 import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
-import dk.statsbiblioteket.medieplatform.autonomous.Item;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.util.Pair;
 
@@ -34,22 +34,22 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
             conf.setDomsPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
             dataSource = new SBOIDatasource(conf);
-            DomsEventStorageFactory domsEventStorageFactory = new DomsEventStorageFactory();
+            DomsEventStorageFactory<Batch> domsEventStorageFactory = new DomsEventStorageFactory<>();
             domsEventStorageFactory.setFedoraLocation(conf.getDomsLocation());
             domsEventStorageFactory.setUsername(conf.getDomsUser());
             domsEventStorageFactory.setPassword(conf.getDomsPassword());
             domsEventStorageFactory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
-            DomsEventStorage domsClient;
+            domsEventStorageFactory.setItemFactory(new BatchItemFactory());
+            DomsEventStorage<Batch> domsClient;
             try {
                 domsClient = domsEventStorageFactory.createDomsEventStorage();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             try {
-                Item testBatch = domsClient.getBatch(getValidBatchID().getLeft(), getValidBatchID().getRight());
-            } catch (CommunicationException e) {
-                throw new RuntimeException(e);
-            } catch (NotFoundException e) {
+                Batch testBatch = domsClient.getItemFromFullID(Batch.formatFullID(getValidBatchID().getLeft(),
+                                                                      getValidBatchID().getRight()));
+            } catch (CommunicationException | NotFoundException e) {
                 throw new RuntimeException(e);
             }
         }

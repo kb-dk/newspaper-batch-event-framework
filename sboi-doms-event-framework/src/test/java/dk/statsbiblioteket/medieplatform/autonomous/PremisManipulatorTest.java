@@ -28,8 +28,7 @@ public class PremisManipulatorTest {
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
@@ -46,8 +45,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testAddEvent() throws Exception {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         Date date = new Date(0);
 
@@ -72,8 +70,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testGetAsBatch() throws Exception {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
         Item batch = premisBlob.toItem();
         Assert.assertEquals(Batch.formatFullID(BATCH_ID,ROUND_TRIP_NUMBER), batch.getFullID());
@@ -95,8 +92,7 @@ public class PremisManipulatorTest {
      */
     @Test
     public void testRemoveEventsAfterFailure() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
@@ -132,8 +128,7 @@ public class PremisManipulatorTest {
      */
     @Test
     public void testRemoveEventsAfterNamedEvent() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
@@ -164,8 +159,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testNoDetails() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(
-                new NewspaperIDFormatter(), PremisManipulatorFactory.TYPE);
+        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         try {
             PremisManipulator premisBlob = factory.createFromBlob(getFile("EventNoDetails.xml"));
         } catch (Exception e) {

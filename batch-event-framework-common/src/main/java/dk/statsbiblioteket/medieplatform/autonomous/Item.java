@@ -73,7 +73,7 @@ public class Item {
     public String toString() {
         StringBuilder sb = new StringBuilder("Item: " + getDomsID());
         if (getEventList() != null && !getEventList().isEmpty()) {
-            sb.append(", eventList=" + getEventList());
+            sb.append(", eventList=").append(getEventList());
         }
         return sb.toString();
     }

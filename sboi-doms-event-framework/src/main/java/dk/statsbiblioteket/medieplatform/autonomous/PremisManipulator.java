@@ -34,7 +34,7 @@ import java.util.List;
  * events.
  * The class is not thread safe, so do not use it as such
  */
-public class PremisManipulator {
+public class PremisManipulator<T extends Item> {
 
     private final static QName _EventOutcome_QNAME = new QName("info:lc/xmlns/premis-v2", "eventOutcome");
     private final static QName _EventOutcomeDetailNote_QNAME = new QName(
@@ -47,12 +47,12 @@ public class PremisManipulator {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     private final SimpleDateFormat legacyDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ");
     private final String type;
-    private final IDFormatter idFormat;
+    private final ItemFactory<T> itemFactory;
 
 
-    public PremisManipulator(InputStream premis, IDFormatter format, String type, JAXBContext context) throws JAXBException {
-        this.idFormat = format;
+    public  PremisManipulator(InputStream premis, String type, JAXBContext context, ItemFactory<T> itemFactory) throws JAXBException {
         this.type = type;
+        this.itemFactory = itemFactory;
         this.marshaller = createMarshaller(context);
         this.premis = ((JAXBElement<PremisComplexType>) context.createUnmarshaller().unmarshal(premis)).getValue();
     }
@@ -63,12 +63,12 @@ public class PremisManipulator {
         return temp;
     }
 
-    public PremisManipulator(String itemID, IDFormatter format, String type, JAXBContext context) throws
+    public PremisManipulator(String itemID, String type, JAXBContext context, ItemFactory<T> itemFactory) throws
                                                                                                                         JAXBException {
+        this.itemFactory = itemFactory;
         this.marshaller = createMarshaller(context);
         premis = new ObjectFactory().createPremisComplexType();
         premis.setVersion("2.2");
-        this.idFormat = format;
         this.type = type;
         addObjectIfNessesary(premis.getObject(), itemID);
     }
@@ -79,14 +79,10 @@ public class PremisManipulator {
      *
      * @return the blob as a Batch
      */
-    public Item toItem() {
-
-        String fullID = getObjectID();
-        IDFormatter.SplitID splits = idFormat.unformatFullID(fullID);
-        Batch result = new Batch(splits.getBatchID());
-        result.setRoundTripNumber(splits.getRoundTripNumber());
-        result.setEventList(getEvents());
-        return result;
+    public T toItem() {
+        T item = itemFactory.createItem(getObjectID());
+        item.setEventList(getEvents());
+        return item;
     }
 
     /**
@@ -165,7 +161,7 @@ public class PremisManipulator {
      *
      * @return the premis with the event added.
      */
-    public PremisManipulator addEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
+    public PremisManipulator<T> addEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
 
         String eventID = getEventID(timestamp);
         if (eventExists(eventID)) {

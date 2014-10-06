@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
  * This is the Autonomous Component main class. It should contain all the harnessing stuff that allows a system to work
  * in the autonomous mindset
  */
-public class AutonomousComponent implements Callable<CallResult> {
+public class AutonomousComponent<T extends Item> implements Callable<CallResult<T>> {
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
     private final long timeoutSBOI;
     private final long timeoutBatch;
-    private final RunnableComponent runnable;
+    private final RunnableComponent<T> runnable;
     private final long pollTime = 1000;
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private final long workerTimout;
@@ -39,19 +39,19 @@ public class AutonomousComponent implements Callable<CallResult> {
     private boolean paused = false;
     private boolean stopped = false;
     private Integer maxResults;
-    private EventTrigger eventTrigger;
-    private EventStorer eventStorer;
+    private EventTrigger<T> eventTrigger;
+    private EventStorer<T> eventStorer;
 
-    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
+    public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
                                List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
-                               EventTrigger eventTrigger, EventStorer eventStorer) {
+                               EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
         this(runnable, lockClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
                 futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null, eventTrigger, eventStorer);
     }
 
-    public AutonomousComponent(RunnableComponent runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
+    public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
                                List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
-                               Integer maxResults, EventTrigger eventTrigger, EventStorer eventStorer) {
+                               Integer maxResults, EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
 
         this.lockClient = lockClient;
         this.timeoutSBOI = timeoutSBOI;
@@ -103,7 +103,7 @@ public class AutonomousComponent implements Callable<CallResult> {
      *
      * @return the lock path
      */
-    private static String getSBOILockpath(RunnableComponent runnable) {
+    private static <T extends Item> String getSBOILockpath(RunnableComponent<T> runnable) {
         return "/SBOI/" + runnable.getComponentName();
     }
 
@@ -114,7 +114,7 @@ public class AutonomousComponent implements Callable<CallResult> {
      *
      * @return the zookeepr lock path
      */
-    private static String getBatchLockPath(RunnableComponent runnable, Item item) {
+    private static <T extends Item> String getBatchLockPath(RunnableComponent<T> runnable, T item) {
         return "/" + runnable.getComponentName() + "/" + item.getFullID();
     }
 
@@ -155,11 +155,11 @@ public class AutonomousComponent implements Callable<CallResult> {
      * @throws CommunicationException   if communication with SBOI fails
      */
     @Override
-    public CallResult call() throws LockingException, CouldNotGetLockException, CommunicationException {
+    public CallResult<T> call() throws LockingException, CouldNotGetLockException, CommunicationException {
 
         InterProcessLock SBOILock = null;
-        CallResult result = new CallResult();
-        Map<AutonomousWorker, InterProcessLock> workers = new HashMap<>();
+        CallResult<T> result = new CallResult<>();
+        Map<AutonomousWorker<T>, InterProcessLock> workers = new HashMap<>();
         try {
             //lock SBOI for this component name
             SBOILock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
@@ -171,11 +171,11 @@ public class AutonomousComponent implements Callable<CallResult> {
 
                 log.info("SBOI locked, quering for items");
                 //get items, lock n, release the SBOI
-                Iterator<Item> items = eventTrigger
+                Iterator<T> items = eventTrigger
                         .getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents);
                 //for each batch
                 while (items.hasNext()) {
-                    Item item = items.next();
+                    T item = items.next();
 
                     log.info("Found item {}", item.getFullID());
                     //attempt to lock
@@ -187,7 +187,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                         if (maxResults != null) {
                             log.debug("Worker will report a maximum of {} results.", maxResults);
                         }
-                        AutonomousWorker worker = new AutonomousWorker(
+                        AutonomousWorker<T> worker = new AutonomousWorker<>(
                                 runnable,
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
                                 item, eventStorer);
@@ -209,7 +209,7 @@ public class AutonomousComponent implements Callable<CallResult> {
             ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
             try {
                 ArrayList<Future<?>> futures = new ArrayList<>();
-                for (AutonomousWorker autonomousWorker : workers.keySet()) {
+                for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
                     log.info("Submitting worker for batch {}", autonomousWorker.getItem().getFullID());
                     concurrencyConnectionStateListener.add(autonomousWorker);
                     Future<?> future = pool.submit(autonomousWorker);
@@ -241,7 +241,7 @@ public class AutonomousComponent implements Callable<CallResult> {
                     }
                 }
                 log.info("All is now done, all workers have completed");
-                for (AutonomousWorker autonomousWorker : workers.keySet()) {
+                for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
                     result.addResult(autonomousWorker.getItem(), autonomousWorker.getResultCollector());
                 }
             } finally {

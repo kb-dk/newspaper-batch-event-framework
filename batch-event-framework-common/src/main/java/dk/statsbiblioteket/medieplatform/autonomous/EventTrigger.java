@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /** The interface to the Summa Batch Object Index */
-public interface EventTrigger {
+public interface EventTrigger<T extends Item> {
 
 
     /**
@@ -18,7 +18,7 @@ public interface EventTrigger {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                             Collection<String> pastFailedEvents, Collection<String> futureEvents) throws
                                                                                             CommunicationException;
 
@@ -34,8 +34,8 @@ public interface EventTrigger {
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                             Collection<String> pastFailedEvents, Collection<String> futureEvents,
-                                            Collection<Item> batches) throws
+                                            Collection<T> batches) throws
                                                                                                   CommunicationException;
 }

@@ -19,7 +19,7 @@ public class AutonomousComponentTest {
     private static final long DEFAULT_TIMEOUT = 3600000;
     private static final int ROUNDTRIPNUMBER = 1;
     TestingServer testingServer;
-    AutonomousComponent autonoumous;
+    AutonomousComponent<Batch> autonoumous;
     private TestingComponent component;
     private CuratorFramework lockClient;
 
@@ -38,13 +38,13 @@ public class AutonomousComponentTest {
 
         testBatch.setEventList(new ArrayList<>(Arrays.asList(testEvent)));
 
-        component.setItems(new ArrayList<Item>(Arrays.asList(testBatch)));
+        component.setItems(new ArrayList<>(Arrays.asList(testBatch)));
 
         lockClient = CuratorFrameworkFactory.newClient(
                 testingServer.getConnectString(), new ExponentialBackoffRetry(1000, 3));
 
             lockClient.start();
-            autonoumous = new AutonomousComponent(component,
+            autonoumous = new AutonomousComponent<>(component,
                     lockClient,
                     1,
                     Arrays.asList("Data_Received"),
@@ -74,7 +74,7 @@ public class AutonomousComponentTest {
     @Test
     public void testPollAndWork() throws Exception {
 
-        Item batch = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
+        Batch batch = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
         List<Event> events = batch.getEventList();
         boolean testEventFound = false;
         for (Event event : events) {
@@ -86,7 +86,7 @@ public class AutonomousComponentTest {
 
         autonoumous.call();
 
-        Item batchAfter = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
+        Batch batchAfter = component.getItem(Batch.formatFullID(BATCHID, ROUNDTRIPNUMBER));
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {

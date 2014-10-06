@@ -25,9 +25,11 @@ public class SampleComponent {
         Properties properties = AutonomousComponentUtils.parseArgs(args);
 
         //make a new runnable component from the properties
-        RunnableComponent component = new SampleRunnableComponent(properties);
+        RunnableComponent<Batch> component = new SampleRunnableComponent(properties);
 
-        CallResult result = SBOIDomsAutonomousComponentUtils.startAutonomousComponent(properties, component);
+        CallResult<Batch> result = SBOIDomsAutonomousComponentUtils.startAutonomousComponent(properties,
+                                                                                             component,
+                                                                                             new BatchItemFactory());
         System.out.print(result);
         System.exit(result.containsFailures());
     }

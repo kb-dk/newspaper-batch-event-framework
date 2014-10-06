@@ -1,7 +1,7 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 /** This is the interface a component implementer must use. */
-public interface RunnableComponent {
+public interface RunnableComponent<T extends Item> {
     /**
      * Get the name of the component. Used as part of the event/failure message, and for locking batches
      * to components
@@ -35,5 +35,5 @@ public interface RunnableComponent {
      *
      * @throws Exception if something failed
      */
-    void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception;
+    void doWorkOnItem(T item, ResultCollector resultCollector) throws Exception;
 }

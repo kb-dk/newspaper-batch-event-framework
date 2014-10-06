@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * An abstract runnable component that uses SBOI for event triggers and DOMS for event storage,
  * and provides access to a tree iterator.
  */
-public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRunnableComponent {
+public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRunnableComponent<Batch> {
     private static final String BATCH_STRUCTURE = "BATCHSTRUCTURE";
     private EnhancedFedora fedora;
     private Logger log = LoggerFactory.getLogger(getClass());

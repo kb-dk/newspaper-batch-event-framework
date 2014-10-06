@@ -14,7 +14,7 @@ public class TestingRunnableComponent extends TreeProcessorAbstractRunnableCompo
     }
 
     @Override
-    public void doWorkOnItem(Item item, ResultCollector resultCollector) throws Exception {
+    public void doWorkOnItem(Batch batch, ResultCollector resultCollector) throws Exception {
 
     }
 }
