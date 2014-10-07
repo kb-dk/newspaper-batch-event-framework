@@ -160,12 +160,11 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @param batchId the batchId.
      * @return the sorted list of roundtrip objects.
      */
-    public List<T> getAllRoundTrips(String batchId) throws CommunicationException {
-        Comparator<T> roundtripComparator = new Comparator<T>() {
+    public List<Batch> getAllRoundTrips(String batchId) throws CommunicationException {
+        Comparator<Batch> roundtripComparator = new Comparator<Batch>() {
             @Override
-            public int compare(T o1, T o2) {
-                //TODO roundtrips with 2 digits
-                return o1.getFullID().compareTo(o2.getFullID());
+            public int compare(Batch o1, Batch o2) {
+                return o1.getRoundTripNumber().compareTo(o2.getRoundTripNumber());
             }
         };
         try {
@@ -175,10 +174,14 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             }
             String batchObjectPid = founds.get(0);
             List<FedoraRelation> roundtripRelations = fedora.getNamedRelations(batchObjectPid, hasPart_relation, null);
-            List<T> roundtrips = new ArrayList<>();
+            List<Batch> roundtrips = new ArrayList<>();
             for (FedoraRelation roundtripRelation: roundtripRelations) {
                 try {
-                    roundtrips.add(getItemFromDomsID(roundtripRelation.getObject()));
+                    final T itemFromDomsID = getItemFromDomsID(roundtripRelation.getObject());
+                    if (itemFromDomsID instanceof Batch) {
+                        Batch fromDomsID = (Batch) itemFromDomsID;
+                        roundtrips.add(fromDomsID);
+                    }
                 } catch (NotFoundException ignored) {
 
                 }
