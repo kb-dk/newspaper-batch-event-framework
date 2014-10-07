@@ -33,6 +33,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private final long workerTimout;
     private int simultaneousProcesses;
+    private int workQueueMaxLength;
     private List<String> pastSuccessfulEvents;
     private List<String> pastFailedEvents;
     private List<String> futureEvents;
@@ -42,14 +43,8 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
     private EventTrigger<T> eventTrigger;
     private EventStorer<T> eventStorer;
 
-    public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
-                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
-                               EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
-        this(runnable, lockClient, simultaneousProcesses, pastSuccessfulEvents, pastFailedEvents,
-                futureEvents, timeoutSBOI, timeoutBatch, workerTimout, null, eventTrigger, eventStorer);
-    }
 
-    public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, List<String> pastSuccessfulEvents,
+    public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, Integer workQueueMaxLength, List<String> pastSuccessfulEvents,
                                List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
                                Integer maxResults, EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
 
@@ -59,6 +54,11 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
         this.runnable = runnable;
         this.workerTimout = workerTimout;
         this.simultaneousProcesses = simultaneousProcesses;
+        if (workQueueMaxLength == null){
+            this.workQueueMaxLength = simultaneousProcesses;
+        } else {
+            this.workQueueMaxLength = workQueueMaxLength;
+        }
         this.pastSuccessfulEvents = pastSuccessfulEvents;
         this.pastFailedEvents = pastFailedEvents;
         this.futureEvents = futureEvents;
@@ -192,7 +192,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
                                 new ResultCollector(runnable.getComponentName(), runnable.getComponentVersion(), maxResults),
                                 item, eventStorer);
                         workers.put(worker, batchlock);
-                        if (workers.size() >= simultaneousProcesses) {
+                        if (workers.size() >= workQueueMaxLength) {
                             log.info("We now have sufficient workers, look for no more items");
                             break;
                         }
