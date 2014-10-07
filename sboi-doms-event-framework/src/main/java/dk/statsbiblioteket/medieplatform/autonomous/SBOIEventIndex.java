@@ -77,7 +77,12 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
         ArrayList<T> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             T next = sboiBatches.next();
-            T instead = domsEventStorage.getItemFromDomsID(next.getDomsID());
+            T instead = null;
+            try {
+                instead = domsEventStorage.getItemFromDomsID(next.getDomsID());
+            } catch (NotFoundException ignored) {
+                continue;
+            }
             if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
                 result.add(instead);
             }
@@ -228,6 +233,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
                 }
                 batchesString.append(" ( ");
                 if (item instanceof Batch) {
+                    //TODO: Can this be replaced with just checking the UUID instead?
                     Batch batch = (Batch) item;
                     batchesString.append(BATCH_ID).append(":B").append(batch.getBatchID());
                     if (batch.getRoundTripNumber() > 0) {
