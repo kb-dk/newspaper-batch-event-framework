@@ -355,7 +355,7 @@ public class DomsEventStorageTest {
      * @throws JAXBException
      */
     private PremisManipulator getPremisManipulator() throws JAXBException {
-        PremisManipulatorFactory factory = new PremisManipulatorFactory(PremisManipulatorFactory.TYPE, new BatchItemFactory());
+        PremisManipulatorFactory<Batch> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(BATCH_ID, ROUND_TRIP_NUMBER);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
