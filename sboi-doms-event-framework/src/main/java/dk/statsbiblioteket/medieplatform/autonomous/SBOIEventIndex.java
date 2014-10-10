@@ -77,7 +77,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
         ArrayList<T> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             T next = sboiBatches.next();
-            T instead = null;
+            T instead;
             try {
                 instead = domsEventStorage.getItemFromDomsID(next.getDomsID());
             } catch (NotFoundException ignored) {

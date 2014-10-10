@@ -13,7 +13,13 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Access to DOMS batch and event storage using the Central Webservice library to communicate with DOMS.
@@ -144,6 +150,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
 
     }
 
+    //TODO this does not do what it seems to do. What is roundtrips doing here...
     public T getItemFromFullID(String itemFullID) throws CommunicationException, NotFoundException {
         String roundTripID;
         try {
@@ -313,6 +320,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @throws CommunicationException          failed to communicate
      * @throws BackendInvalidResourceException object not found
      */
+    //TODO what have this to do with roundtrips?
     String getRoundTripID(String roundTripID) throws
                                                                CommunicationException,
                                                                BackendInvalidResourceException {

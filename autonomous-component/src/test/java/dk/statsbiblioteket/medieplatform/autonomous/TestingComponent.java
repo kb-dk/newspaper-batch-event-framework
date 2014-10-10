@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import org.omg.CORBA.BAD_CONTEXT;
 
 import java.util.ArrayList;
 import java.util.Collection;

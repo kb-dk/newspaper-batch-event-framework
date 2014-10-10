@@ -78,6 +78,7 @@ public class AutonomousComponentUtils {
             AutonomousComponent<T> autonoumous = new AutonomousComponent<>(component,
                     lockClient,
                     simultaneousProcesses,
+                    simultaneousProcesses,
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),

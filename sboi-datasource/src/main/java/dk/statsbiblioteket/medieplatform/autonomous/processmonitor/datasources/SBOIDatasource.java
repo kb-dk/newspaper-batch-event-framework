@@ -24,7 +24,7 @@ import java.util.Map;
 public class SBOIDatasource implements DataSource {
 
     private SBOIDatasourceConfiguration configuration;
-    private EventAccessor<Batch> client = null;
+    private EventAccessor<Batch> eventAccessor = null;
     private BatchItemFactory itemFactory;
 
     public SBOIDatasource(SBOIDatasourceConfiguration configuration) {
@@ -34,13 +34,13 @@ public class SBOIDatasource implements DataSource {
 
     private synchronized EventAccessor<Batch> getEventExplorer() {
         try {
-            if (client == null) {
-                client = new SBOIEventIndex<>(
+            if (eventAccessor == null) {
+                eventAccessor = new SBOIEventIndex<>(
                         configuration.getSummaLocation(),
                         new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,itemFactory),
                         getDomsEventStorage());
             }
-            return client;
+            return eventAccessor;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

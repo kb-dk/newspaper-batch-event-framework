@@ -47,12 +47,14 @@ public class AutonomousComponentTest {
             autonoumous = new AutonomousComponent<>(component,
                     lockClient,
                     1,
+                                                           1,
                     Arrays.asList("Data_Received"),
                     null,
                     null,
                     DEFAULT_TIMEOUT,
                     DEFAULT_TIMEOUT,
                     DEFAULT_TIMEOUT,
+                                                           100,
                     component.getEventTrigger(),
                     component.getEventStorer());
 

@@ -40,27 +40,37 @@ public class AutonomousWorker<T extends Item> implements Runnable {
     public void run() {
 
         try {
-            //do work
-            resultCollector.setTimestamp(new Date());
-            component.doWorkOnItem(item, resultCollector);
+            try {
+                //do work
+                resultCollector.setTimestamp(new Date());
+                component.doWorkOnItem(item, resultCollector);
+            } catch (Throwable e) {
+                log.warn("Component threw exception", e);
+                //the work failed
+                resultCollector.addFailure(item.getFullID(),
+                                                  "exception",
+                                                  component.getClass().getSimpleName(),
+                                                  "Component threw exception: " + e.toString(),
+                                                  Strings.getStackTrace(e));
+            }
+        } finally {
             resultCollector.setDuration(new Date().getTime() - resultCollector.getTimestamp().getTime());
-        } catch (Throwable e) {
-            log.warn("Component threw exception", e);
-            //the work failed
-            resultCollector.addFailure(
-                    item.getFullID(),
-                    "exception",
-                    component.getClass().getSimpleName(),
-                    "Component threw exception: " + e.toString(),
-                    Strings.getStackTrace(e));
+            if (resultCollector.isPreservable()) {
+                try {
+                    preserveResult(item, resultCollector);
+                } catch (Throwable t){
+                    log.error("Caught exception while attempting to preserve result for item", t);
+                    resultCollector.addFailure(item.getFullID(),
+                                                      "exception",
+                                                      component.getClass().getSimpleName(),
+                                                      "Autonomous component system threw exception: " + t.toString(),
+                                                      Strings.getStackTrace(t));
+                }
+            } else {
+                log.info("The result collector is not marked as preservable, so it is not preserved in DOMS, but embedded here instead: {}",
+                                resultCollector.toReport());
+            }
         }
-
-        if (resultCollector.isPreservable()) {
-            preserveResult(item, resultCollector);
-        } else {
-            log.info("The result collector is not marked as preservable, so it is not preserved in DOMS");
-        }
-
     }
 
     public ResultCollector getResultCollector() {
@@ -73,34 +83,26 @@ public class AutonomousWorker<T extends Item> implements Runnable {
      * @param item  the item worked on
      * @param result the result of the work
      */
-    private void preserveResult(T item, ResultCollector result) {
-        try {
-            while (pause && !stop) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    //just keep sleeping
-                }
+    private void preserveResult(T item, ResultCollector result) throws CommunicationException {
+
+        while (pause && !stop) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //just keep sleeping
             }
-            if (stop) {
-                log.warn("The worker is stopped, so the result will not be preserved. The result was '{}'",result.toReport());
-                return;
-            }
-            eventStorer.addEventToItem(item,
-                    getComponentFormattedName(),
-                    result.getTimestamp(),
-                    result.toReport(),
-                    component.getEventID(),
-                    result.isSuccess());
-        } catch (Throwable e) {
-            log.error("Caught exception while attempting to preserve result for item", e);
-            resultCollector.addFailure(
-                    item.getFullID(),
-                    "exception",
-                    component.getClass().getSimpleName(),
-                    "Autonomous component system threw exception: " + e.toString(),
-                    Strings.getStackTrace(e));
         }
+        if (stop) {
+            log.warn("The worker is stopped, so the result will not be preserved. The result was '{}'",
+                            result.toReport());
+            return;
+        }
+        eventStorer.addEventToItem(item,
+                                          getComponentFormattedName(),
+                                          result.getTimestamp(),
+                                          result.toReport(),
+                                          component.getEventID(),
+                                          result.isSuccess());
     }
 
     public T getItem() {
