@@ -7,25 +7,15 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>newspaper-batch-event-framework</artifactId>
+    <artifactId>autonomous-components-framework</artifactId>
     <version>1.12-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
     <modules>
-        <module>sboi-doms-event-framework</module>
-        <module>process-monitor-datasource</module>
-        <module>autonomous-component</module>
-        <module>tree-processor</module>
-        <module>tree-processor-runnable-component</module>
-        <module>sboi-doms-autonomous-component</module>
-        <module>sample-autonomous-component</module>
-        <module>sboi-datasource</module>
-        <module>batch-event-framework-common</module>
-        <module>hadoop-component</module>
-        <module>hadoop-helpers</module>
-        <module>batch-iterator</module>
-
+        <module>item-event-framework</module>
+        <module>process-monitor</module>
+        <module>newspaper-batch-event-framework</module>
     </modules>
     <dependencyManagement>
         <dependencies>
