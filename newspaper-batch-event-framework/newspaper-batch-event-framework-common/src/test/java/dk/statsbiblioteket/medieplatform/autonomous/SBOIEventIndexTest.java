@@ -45,13 +45,13 @@ public class SBOIEventIndexTest {
     public void testGetBatchFromList() throws Exception {
         Properties props = getProperties();
 
-        SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Item> batches = summa.findItems(false,
+        SBOIEventIndex<Batch> summa = getSboiClient(props);
+        Iterator<Batch> batches = summa.findItems(false,
                                                                   Arrays.asList("Data_Received"),
                                                                   new ArrayList<String>(),
                                                                   Arrays.asList("Roundtrip_Approved"));
-        Item first = batches.next();
-        Iterator< Item> batches2 = summa.search(
+        Batch first = batches.next();
+        Iterator< Batch> batches2 = summa.search(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
 
         assertEquals(
@@ -64,18 +64,18 @@ public class SBOIEventIndexTest {
     public void testGetBatchesFromList() throws Exception {
         Properties props = getProperties();
 
-        SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Item> batches = summa.findItems(false,
+        SBOIEventIndex<Batch> summa = getSboiClient(props);
+        Iterator<Batch> batches = summa.findItems(false,
                                                                   Arrays.asList("Data_Received"),
                                                                   new ArrayList<String>(),
                                                                   Arrays.asList("Roundtrip_Approved"));
-        Item first = batches.next();
-        Item second = batches.next();
+        Batch first = batches.next();
+        Batch second = batches.next();
 
-        Iterator<Item> batches2 = summa.search(
+        Iterator<Batch> batches2 = summa.search(
                 false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
 
-        HashSet<Item> results = new HashSet<>();
+        HashSet<Batch> results = new HashSet<>();
         results.add(first);
         results.add(second);
         assertTrue(results.contains(batches2.next()));
@@ -94,13 +94,13 @@ public class SBOIEventIndexTest {
                                                            JAXBException,
                                                            PIDGeneratorException {
 
-        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
+        DomsEventStorageFactory<Batch> factory = new NewspaperDomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
-        return new SBOIEventIndex<>(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
+        return new NewspaperSBOIEventStorage(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
                                            new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
                                                                                  new BatchItemFactory()),
                                            domsEventStorage);

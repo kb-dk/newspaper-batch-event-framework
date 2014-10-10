@@ -140,7 +140,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
                 return new ArrayList<T>().iterator();
             }
             JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", commaSeparate(UUID, getPremisFieldName(details)));
+            jsonQuery.put("search.document.resultfields", commaSeparate(UUID, BATCH_ID, ROUND_TRIP_NO, getPremisFieldName(details)));
 
             jsonQuery.put(
                     "search.document.query",
@@ -161,8 +161,13 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
             NodeList nodeList = xPath.selectNodeList(
                     searchResultDOM, "/responsecollection/response/documentresult/record");
 
-            List<T> results = new ArrayList<>(nodeList.getLength());
-            for (int i = 0; i < nodeList.getLength(); ++i) {
+            int hits = nodeList.getLength();
+            if (items != null && hits > items.size()){
+                hits = items.size();
+            }
+            List<T> results = new ArrayList<>(hits);
+
+            for (int i = 0; i <hits; ++i) {
                 Node node = nodeList.item(i);
                 String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
                 T result = null;

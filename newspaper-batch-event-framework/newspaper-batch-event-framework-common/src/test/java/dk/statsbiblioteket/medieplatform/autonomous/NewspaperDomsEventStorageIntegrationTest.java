@@ -22,14 +22,14 @@ public class NewspaperDomsEventStorageIntegrationTest {
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProperties));
 
-        DomsEventStorageFactory<Item> factory = new DomsEventStorageFactory<>();
+        DomsEventStorageFactory<Batch> factory = new NewspaperDomsEventStorageFactory();
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
-        factory.setItemFactory(new DomsItemFactory());
+        factory.setItemFactory(new BatchItemFactory());
 
-        DomsEventStorage<Item> domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -91,14 +91,19 @@ public class NewspaperDomsEventStorageIntegrationTest {
             }
             Assert.assertTrue(found);
         } finally {
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId)).get(0);
-            if (pid != null) {
-                fedora.deleteObject(pid, "cleaning up after test");
-            }
-            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber)))
-                        .get(0);
-            if (pid != null) {
-                fedora.deleteObject(pid, "cleaning up after test");
+            final List<String> strings
+                    = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId));
+            if (strings.size() > 0) {
+                String pid = strings.get(0);
+                if (pid != null) {
+                    fedora.deleteObject(pid, "cleaning up after test");
+                }
+                pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId,
+                                                                                                         roundTripNumber)))
+                            .get(0);
+                if (pid != null) {
+                    fedora.deleteObject(pid, "cleaning up after test");
+                }
             }
         }
     }
