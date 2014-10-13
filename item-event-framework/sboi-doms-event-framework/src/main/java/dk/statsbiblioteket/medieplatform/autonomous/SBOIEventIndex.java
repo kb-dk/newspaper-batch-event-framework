@@ -1,13 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +24,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     public static final String ROUND_TRIP_NO = "round_trip_no";
     public static final String BATCH_ID = "batch_id";
     public static final String UUID = "round_trip_uuid";
+    public static final String SORT_DATE = "initial_date";
     public static final String PREMIS_NO_DETAILS = "premis_no_details";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
@@ -122,64 +118,9 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents,
                               Collection<String> pastFailedEvents, Collection<String> futureEvents,
                               Collection<T> items) throws CommunicationException {
-        try {
-
-            SolrQuery query = new SolrQuery();
-            query.setQuery(toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents, items));
-            query.setRows(1000); //Fetch size. Do not go over 1000 unless you specify fields to fetch which does not include content_text
-            //IMPORTANT!Only use facets if needed.
-            query.set("facet", "false"); //very important. Must overwrite to false. Facets are very slow and expensive.
-            if (details) {
-                query.setFields(UUID);
-            } else {
-                query.setFields(UUID, PREMIS_NO_DETAILS);
-            }
-
-            QueryResponse response = summaSearch.query(query);
-            SolrDocumentList results = response.getResults();
-            List<T> hits = new ArrayList<>();
-            for (SolrDocument result : results) {
-                T hit;
-                String uuid = result.getFirstValue(UUID).toString();
-                if (!details) { //no details, so we can retrieve everything from Summa
-                    final ByteArrayInputStream inputStream
-                            = new ByteArrayInputStream(result.getFirstValue(PREMIS_NO_DETAILS).toString().getBytes());
-                    hit = premisManipulatorFactory.createFromBlob(inputStream).toItem();
-                    hit.setDomsID(uuid);
-                } else {//Details requested so go to DOMS
-                    hit = domsEventStorage.getItemFromDomsID(uuid);
-                }
-
-                hits.add(hit);
-            }
-            return hits.iterator();
-        } catch (Exception e){
-            log.warn("Caught Unknown Exception", e);
-            throw new CommunicationException(e);
-        }
+       return new SolrProxyIterator<>(toQueryString(pastSuccessfulEvents,pastFailedEvents,futureEvents,items),details,summaSearch,premisManipulatorFactory,domsEventStorage);
     }
 
-    protected static String commaSeparate(String... elements) {
-        StringBuilder result = new StringBuilder();
-        for (String element : elements) {
-            if (element == null) {
-                continue;
-            }
-            if (result.length() != 0) {
-                result.append(",");
-            }
-            result.append(element);
-        }
-        return result.toString();
-    }
-
-    protected String getPremisFieldName(boolean details) {
-        if (details) {
-            return "";
-        } else {
-            return PREMIS_NO_DETAILS;
-        }
-    }
 
     protected static String spaced(String string) {
         return " " + string.trim() + " ";
