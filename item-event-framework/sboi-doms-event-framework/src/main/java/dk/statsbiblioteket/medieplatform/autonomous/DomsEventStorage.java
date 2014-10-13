@@ -23,15 +23,12 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     private static Logger log = LoggerFactory.getLogger(DomsEventStorage.class);
 
     protected final EnhancedFedora fedora;
-    protected final NewspaperIDFormatter idFormatter;
     protected final String eventsDatastream;
     protected final PremisManipulatorFactory<T> premisFactory;
     private String addEventToItemComment = "TODO";
 
-    DomsEventStorage(EnhancedFedora fedora, NewspaperIDFormatter idFormatter, String type, String eventsDatastream,
-                     ItemFactory<T> itemFactory) throws JAXBException {
+    DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
-        this.idFormatter = idFormatter;
         this.eventsDatastream = eventsDatastream;
         premisFactory = new PremisManipulatorFactory<>(type, itemFactory);
     }
@@ -76,7 +73,6 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
 
-    //TODO this does not do what it seems to do. What is roundtrips doing here...
     public T getItemFromFullID(String itemFullID) throws CommunicationException, NotFoundException {
         String roundTripID;
         try {
@@ -223,7 +219,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         }
     }
 
-    private String toDCIdentifier(String fullID) {
+    public static String toDCIdentifier(String fullID) {
         if (!fullID.startsWith("path:")) {
             return String.format("path:%s", fullID);
         }

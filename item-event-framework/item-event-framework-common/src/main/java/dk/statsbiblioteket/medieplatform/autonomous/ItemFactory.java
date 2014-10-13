@@ -14,5 +14,5 @@ public interface  ItemFactory<T extends Item> {
      *            that the item actually exist
      * @return a newly created Item object, or an existing object, if this factory does pooling.
      */
-    public T createItem(String id);
+    public T create(String id);
 }

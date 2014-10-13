@@ -26,8 +26,8 @@ public class SBOIEventIndexTest {
     public void testGetBatches() throws Exception {
         Properties props = getProperties();
 
-        SBOIEventIndex summa = getSboiClient(props);
-        Iterator<Item> batches = summa.findItems(false,
+        NewspaperSBOIEventStorage summa = getSboiClient(props);
+        Iterator<Batch> batches = summa.findItems(false,
                                                                   Arrays.asList("Data_Received"),
                                                                   new ArrayList<String>(),
                                                                   Arrays.asList("Roundtrip_Approved"));
@@ -45,7 +45,7 @@ public class SBOIEventIndexTest {
     public void testGetBatchFromList() throws Exception {
         Properties props = getProperties();
 
-        SBOIEventIndex<Batch> summa = getSboiClient(props);
+        NewspaperSBOIEventStorage summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findItems(false,
                                                                   Arrays.asList("Data_Received"),
                                                                   new ArrayList<String>(),
@@ -64,7 +64,7 @@ public class SBOIEventIndexTest {
     public void testGetBatchesFromList() throws Exception {
         Properties props = getProperties();
 
-        SBOIEventIndex<Batch> summa = getSboiClient(props);
+        NewspaperSBOIEventStorage summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findItems(false,
                                                                   Arrays.asList("Data_Received"),
                                                                   new ArrayList<String>(),
@@ -89,7 +89,7 @@ public class SBOIEventIndexTest {
     }
 
 
-    private SBOIEventIndex<Batch> getSboiClient(Properties props) throws
+    private NewspaperSBOIEventStorage getSboiClient(Properties props) throws
                                                            MalformedURLException,
                                                            JAXBException,
                                                            PIDGeneratorException {

@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
  *   Create a new factory object. Use the setters to set properties.
  *   When done, call {@link #createDomsEventStorage}, and a doms event storage will be constructed.
  */
+@SuppressWarnings("deprecation")//Credentials
 public class DomsEventStorageFactory<T extends Item> {
 
 
@@ -23,13 +24,11 @@ public class DomsEventStorageFactory<T extends Item> {
     public static final String PASSWORD = "fedoraAdminPass";
     public static final String FEDORA_LOCATION = "http://localhost:8080/fedora";
     public static final String PIDGENERATOR_LOCATION = "http://localhost:8080/pidgenerator-service";
-    public static final NewspaperIDFormatter NEWSPAPER_ID_FORMATTER = new NewspaperIDFormatter();
     //The initial values of the properties
     protected String username = USERNAME;
     protected String password = PASSWORD;
     protected String fedoraLocation = FEDORA_LOCATION;
     protected String pidGeneratorLocation = PIDGENERATOR_LOCATION;
-    protected NewspaperIDFormatter idFormatter = NEWSPAPER_ID_FORMATTER;
     protected String premisIdentifierType = PremisManipulatorFactory.TYPE;
     protected String eventsDatastream = EVENTS;
     protected ItemFactory<T> itemFactory;
@@ -42,14 +41,13 @@ public class DomsEventStorageFactory<T extends Item> {
      * @throws PIDGeneratorException Failure to communicate with the pid generator
      * @throws MalformedURLException if any of the urls were broken
      */
+    @SuppressWarnings("deprecation")//Credentials
     public DomsEventStorage<T> createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                 creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null);
         return new DomsEventStorage<>(
-                fedora,
-                idFormatter,
-                premisIdentifierType, eventsDatastream,
+                fedora, premisIdentifierType, eventsDatastream,
                 itemFactory);
     }
 

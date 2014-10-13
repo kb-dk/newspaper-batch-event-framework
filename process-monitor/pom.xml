@@ -12,7 +12,6 @@
 
 
     <artifactId>process-monitor</artifactId>
-    <version>1.12-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 

@@ -14,14 +14,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -38,7 +30,6 @@ public class NewspaperDomsEventStorageTest {
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
         DomsEventStorage<Batch> doms = new NewspaperDomsEventStorage(fedora,
-                                                                            new NewspaperIDFormatter(),
                                                                             PremisManipulatorFactory.TYPE,
                                                                             NewspaperDomsEventStorageFactory.BATCH_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
@@ -66,7 +57,6 @@ public class NewspaperDomsEventStorageTest {
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
 
         DomsEventStorage<Batch> doms = new NewspaperDomsEventStorage(fedora,
-                                                                            new NewspaperIDFormatter(),
                                                                             PremisManipulatorFactory.TYPE,
                                                                             NewspaperDomsEventStorageFactory.BATCH_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
@@ -92,8 +82,7 @@ public class NewspaperDomsEventStorageTest {
     public void testAddEventToBatch2() throws Exception {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupBatchNoRoundTripObject(log);
-        DomsEventStorage doms = new NewspaperDomsEventStorage(fedora,
-                                                                     new NewspaperIDFormatter(),
+        DomsEventStorage<Batch> doms = new NewspaperDomsEventStorage(fedora,
                                                                      PremisManipulatorFactory.TYPE,
                                                                      NewspaperDomsEventStorageFactory.BATCH_TEMPLATE,
                                                                      NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
@@ -120,7 +109,6 @@ public class NewspaperDomsEventStorageTest {
         ArrayList<String> log = new ArrayList<>();
         FedoraMockupEmpty fedora = new FedoraMockupEmpty(log);
         NewspaperDomsEventStorage doms = new NewspaperDomsEventStorage(fedora,
-                                                                              new NewspaperIDFormatter(),
                                                                               PremisManipulatorFactory.TYPE,
                                                                               NewspaperDomsEventStorageFactory.BATCH_TEMPLATE,
                                                                               NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
@@ -166,14 +154,12 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                Matchers.any(byte[].class),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
 
-        DomsEventStorage doms = new DomsEventStorage(enhancedFedora,
-                                                            new NewspaperIDFormatter(),
-                                                            PremisManipulatorFactory.TYPE,
+        DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
         //Make the call
@@ -190,7 +176,7 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                captor.capture(),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
@@ -238,14 +224,12 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                Matchers.any(byte[].class),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
 
-        DomsEventStorage doms = new DomsEventStorage(enhancedFedora,
-                                                            new NewspaperIDFormatter(),
-                                                            PremisManipulatorFactory.TYPE,
+        DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
         //Make the call
@@ -262,7 +246,7 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                captor.capture(),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
@@ -309,14 +293,12 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                Matchers.any(byte[].class),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
 
-        DomsEventStorage doms = new DomsEventStorage(enhancedFedora,
-                                                            new NewspaperIDFormatter(),
-                                                            PremisManipulatorFactory.TYPE,
+        DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
         final int MAX_ATTEMPTS = 10;
@@ -332,7 +314,7 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.any(ChecksumType.class),
                                                Matchers.anyString(),
                                                Matchers.any(byte[].class),
-                                               Matchers.any((new ArrayList<String>()).getClass()),
+                                               Matchers.anyListOf(String.class),
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
@@ -341,7 +323,6 @@ public class NewspaperDomsEventStorageTest {
     /**
      * Get a Premis object with some successful and some failed events.
      *
-     * @return
      * @throws JAXBException
      */
     private PremisManipulator getPremisManipulator() throws JAXBException {

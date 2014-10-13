@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -41,9 +42,9 @@ public class DomsSaverReducerTest {
         final EnhancedFedora mockFedora = mock(EnhancedFedora.class);
         when(mockFedora.findObjectFromDCIdentifier(anyString())).thenReturn(Arrays.asList(testPid));
         doThrow(new IllegalArgumentException()).when(mockFedora).modifyDatastreamByValue(
-                anyString(), anyString(), anyString(), anyList(), anyString());
+                anyString(), anyString(), anyString(), anyListOf(String.class), anyString());
         doReturn(new Date()).when(mockFedora).modifyDatastreamByValue(
-                eq(testPid), eq(jpylyzer), anyString(), anyList(), anyString());
+                eq(testPid), eq(jpylyzer), anyString(), anyListOf(String.class), anyString());
         try {
             mockFedora.modifyDatastreamByValue(null, null, null, null, null);
             fail();

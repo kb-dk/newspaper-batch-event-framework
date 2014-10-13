@@ -7,6 +7,7 @@ import dk.statsbiblioteket.doms.webservices.authentication.Credentials;
 import javax.xml.bind.JAXBException;
 import java.net.MalformedURLException;
 
+@SuppressWarnings("deprecation")//Credentials
 public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Batch> {
 
     public static final String BATCH_TEMPLATE = "doms:Template_Batch";
@@ -18,6 +19,7 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
     protected String hasPartRelation = HAS_PART;
 
     @Override
+    @SuppressWarnings("deprecation")  //Credentials
     public NewspaperDomsEventStorage createDomsEventStorage() throws
                                                             JAXBException,
                                                             PIDGeneratorException,
@@ -27,7 +29,8 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
                                                                   fedoraLocation.replaceFirst("/(objects)?/?$", ""),
                                                                   pidGeneratorLocation,
                                                                   null);
-        return new NewspaperDomsEventStorage(fedora, idFormatter, premisIdentifierType, batchTemplate,roundTripTemplate,hasPartRelation,eventsDatastream, itemFactory);
+        return new NewspaperDomsEventStorage(fedora,
+                                                    premisIdentifierType, batchTemplate,roundTripTemplate,hasPartRelation,eventsDatastream, itemFactory);
     }
 
     public String getBatchTemplate() {

@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-
+@SuppressWarnings("deprecation")//Credentials
 public class IteratorForFedora3TestWireMocked extends AbstractTests {
 
     private static final String PATH_B400022028241_RT1 = "path:B400022028241-RT1";

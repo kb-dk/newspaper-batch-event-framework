@@ -5,7 +5,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
  */
 public class DomsItemFactory implements ItemFactory<Item> {
     @Override
-    public Item createItem(String pid) {
+    public Item create(String pid) {
         return new Item(pid);
     }
 }

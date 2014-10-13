@@ -9,7 +9,7 @@ public class SampleRunnableComponentTest {
         SampleRunnableComponent runnableComponent = new MockupIteratorSuper(System.getProperties());
 
         ResultCollector result = new ResultCollector(
-                runnableComponent.getComponentName(), runnableComponent.getComponentVersion());
+                runnableComponent.getComponentName(), runnableComponent.getComponentVersion(),100);
         Batch batch = new Batch("60000");
         runnableComponent.doWorkOnItem(batch, result);
         Assert.assertTrue(result.isSuccess());

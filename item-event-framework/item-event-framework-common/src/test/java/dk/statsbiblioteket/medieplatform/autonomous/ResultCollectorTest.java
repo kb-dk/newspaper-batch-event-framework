@@ -31,26 +31,26 @@ public class ResultCollectorTest {
     /** Test the merging of resultCollectors */
     @Test()
     public void testMerger() {
-        ResultCollector resultCollector = new ResultCollector("check1", "0.1");
+        ResultCollector resultCollector = new ResultCollector("check1", "0.1",100);
         String reference = "reference";
         String type = "type";
         resultCollector.addFailure(reference, type, "check1", "description", "details1\n", "details2\n");
 
 
-        ResultCollector resultCollector2 = new ResultCollector("check2", "0.2");
+        ResultCollector resultCollector2 = new ResultCollector("check2", "0.2",100);
 
         String type2 = "type2";
         resultCollector2.addFailure(reference, type2, "check2", "description2", "details1\n", "details2\n");
 
         //test identity
-        ResultCollector resultCollectorIdentity = new ResultCollector("check1", "0.1");
+        ResultCollector resultCollectorIdentity = new ResultCollector("check1", "0.1",100);
         resultCollector.mergeInto(resultCollectorIdentity);
         Date now = new Date();
         resultCollector.setTimestamp(now);
         resultCollectorIdentity.setTimestamp(now);
         assertEquals(resultCollectorIdentity.toReport(), resultCollector.toReport(),"The two reports are not identical");
 
-        ResultCollector result = new ResultCollector("batch", "0.1");
+        ResultCollector result = new ResultCollector("batch", "0.1",100);
 
         assertTrue(result.isSuccess(),"A new report is not succesful");
 

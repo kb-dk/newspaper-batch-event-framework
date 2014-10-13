@@ -10,8 +10,6 @@ public interface EventAccessor<T extends Item> {
     /**
      * Retrieve a batch
      *
-
-     *
      * @return the batch
      * @throws NotFoundException      if the batch is not found
      * @throws CommunicationException if communication with doms failed

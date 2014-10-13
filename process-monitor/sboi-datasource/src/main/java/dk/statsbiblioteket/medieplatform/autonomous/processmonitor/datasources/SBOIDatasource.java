@@ -8,6 +8,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
+import dk.statsbiblioteket.medieplatform.autonomous.NewspaperSBOIEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.SBOIEventIndex;
@@ -35,7 +36,7 @@ public class SBOIDatasource implements DataSource {
     private synchronized EventAccessor<Batch> getEventExplorer() {
         try {
             if (eventAccessor == null) {
-                eventAccessor = new SBOIEventIndex<>(
+                eventAccessor = new NewspaperSBOIEventStorage(
                         configuration.getSummaLocation(),
                         new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,itemFactory),
                         getDomsEventStorage());

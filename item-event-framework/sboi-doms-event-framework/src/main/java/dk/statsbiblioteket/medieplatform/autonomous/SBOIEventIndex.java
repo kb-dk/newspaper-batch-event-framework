@@ -25,7 +25,7 @@ import java.util.Set;
  * Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
  * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS.
  */
-public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAccessor<T> {
+public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
     public static final String SUCCESSEVENT = "success_event";
     public static final String FAILEVENT = "fail_event";
@@ -50,18 +50,14 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
 
     }
 
-    @Override
-    public Iterator<T> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                    List<String> futureEvents) throws
-                                                                                                 CommunicationException {
-
-        return search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents,null);
+    public static String anded(List<String> events) {
+        StringBuilder result = new StringBuilder();
+        for (String event : events) {
+            result.append(" AND ").append(event);
+        }
+        return result.toString();
     }
 
-    @Override
-    public T getItem(String itemFullID) throws CommunicationException, NotFoundException {
-        return domsEventStorage.getItemFromFullID(itemFullID);
-    }
 
     @Override
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
@@ -221,53 +217,59 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T>, EventAcc
         return "\"" + string + "\"";
     }
 
-
-    protected String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents, Collection<String> futureEvents, Collection<T> items) {
+    protected String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
+                                   Collection<String> futureEvents, Collection<T> items) {
         String base = spaced(RECORD_BASE);
 
-        StringBuilder batchesString = new StringBuilder();
-        if (items != null ){
-            batchesString.append(" ( ");
+        String itemsString = "";
 
-            boolean first = true;
-            for (Item item : items) {
-                if (first){
-                    first = false;
-                }  else {
-                    batchesString.append(" OR ");
-                }
-                batchesString.append(" ( ");
-
-                batchesString.append(UUID).append(":").append(item.getDomsID());
-
-                batchesString.append(" ) ");
-
-            }
-            batchesString.append(" ) ");
-
-
+        if (items != null) {
+            itemsString = getResultRestrictions(items);
         }
 
-        StringBuilder events = new StringBuilder();
+        List<String> events = new ArrayList<>();
+
         if (pastSuccessfulEvents != null) {
             for (String successfulPastEvent : pastSuccessfulEvents) {
-                events.append(spaced("+"+SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
+                events.add(spaced("+" + SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
             }
         }
         if (pastFailedEvents != null) {
             for (String failedPastEvent : pastFailedEvents) {
-                events.append(spaced("+"+FAILEVENT + ":" + quoted(failedPastEvent)));
+                events.add(spaced("+" + FAILEVENT + ":" + quoted(failedPastEvent)));
             }
         }
         if (futureEvents != null) {
             for (String futureEvent : futureEvents) {
-                events.append(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
-                events.append(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
+                events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
+                events.add(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
             }
         }
-        return base + batchesString.toString() + events.toString();
 
+        return base + itemsString + anded(events);
     }
 
+    protected String getResultRestrictions(Collection<T> items) {
+        String itemsString;
+        StringBuilder batchesString = new StringBuilder();
+        batchesString.append(" ( ");
 
+        boolean first = true;
+        for (Item item : items) {
+            if (first) {
+                first = false;
+            } else {
+                batchesString.append(" OR ");
+            }
+            batchesString.append(" ( ");
+
+            batchesString.append(UUID).append(":").append(item.getDomsID());
+
+            batchesString.append(" ) ");
+        }
+        batchesString.append(" ) ");
+
+        itemsString = batchesString.toString();
+        return itemsString;
+    }
 }

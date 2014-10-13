@@ -17,6 +17,7 @@ import static org.testng.Assert.assertFalse;
 public class NewspaperDomsEventStorageIntegrationTest {
 
     @Test(groups = {"externalTest"})
+    @SuppressWarnings("deprecation")//Credentials
     public void testAddEventToBatch1() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -43,7 +44,6 @@ public class NewspaperDomsEventStorageIntegrationTest {
                                                                        .replaceFirst("/(objects)?/?$", ""),
                                                                   props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL),
                                                                   null);
-        NewspaperIDFormatter formatter = new NewspaperIDFormatter();
 
 
         try {
@@ -92,14 +92,13 @@ public class NewspaperDomsEventStorageIntegrationTest {
             Assert.assertTrue(found);
         } finally {
             final List<String> strings
-                    = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId));
+                    = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,0).batchDCIdentifier());
             if (strings.size() > 0) {
                 String pid = strings.get(0);
                 if (pid != null) {
                     fedora.deleteObject(pid, "cleaning up after test");
                 }
-                pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId,
-                                                                                                         roundTripNumber)))
+                pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,roundTripNumber).roundTripDCIdentifier())
                             .get(0);
                 if (pid != null) {
                     fedora.deleteObject(pid, "cleaning up after test");
@@ -159,6 +158,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
      * @throws Exception
      */
     @Test(groups = {"externalTest"})
+    @SuppressWarnings("deprecation")//Credentials
     public void testTriggerWorkflowRestartEmptyEventList() throws Exception {
         String pathToProperties = System.getProperty("integration.test.newspaper.properties");
         Properties props = new Properties();
@@ -180,7 +180,6 @@ public class NewspaperDomsEventStorageIntegrationTest {
                                                                        .replaceFirst("/(objects)?/?$", ""),
                                                                   props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL),
                                                                   null);
-        NewspaperIDFormatter formatter = new NewspaperIDFormatter();
 
         try {
             String details = "Details here";
@@ -191,16 +190,17 @@ public class NewspaperDomsEventStorageIntegrationTest {
             eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
 
 
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(batch.getFullID())).get(0);
+            String pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batch.getFullID()
+            ).roundTripDCIdentifier()).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(events.contains("event"), events);
             eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
         } finally {
-            String pid = fedora.findObjectFromDCIdentifier(formatter.formatBatchID(batchId)).get(0);
+            String pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,0).batchDCIdentifier()).get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");
             }
-            pid = fedora.findObjectFromDCIdentifier(formatter.formatFullID(Batch.formatFullID(batchId, roundTripNumber)))
+            pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,roundTripNumber).roundTripDCIdentifier())
                         .get(0);
             if (pid != null) {
                 fedora.deleteObject(pid, "cleaning up after test");

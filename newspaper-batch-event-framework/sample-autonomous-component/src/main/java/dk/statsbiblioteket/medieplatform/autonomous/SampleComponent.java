@@ -19,7 +19,7 @@ public class SampleComponent {
      * @see AutonomousComponentUtils#parseArgs(String[])
      */
     public static void main(String[] args) throws Exception {
-        log.info("Starting with args {}", args);
+        log.info("Starting with args {}", new Object[]{args});
 
         //Parse the args to a properties construct
         Properties properties = AutonomousComponentUtils.parseArgs(args);
@@ -27,9 +27,9 @@ public class SampleComponent {
         //make a new runnable component from the properties
         RunnableComponent<Batch> component = new SampleRunnableComponent(properties);
 
-        CallResult<Batch> result = SBOIDomsAutonomousComponentUtils.startAutonomousComponent(properties,
-                                                                                             component,
-                                                                                             new BatchItemFactory());
+        CallResult<Batch> result = NewspaperBatchAutonomousComponentUtils.startAutonomousComponent(properties,
+                                                                                             component
+                                                                                             );
         System.out.print(result);
         System.exit(result.containsFailures());
     }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 
+@SuppressWarnings("deprecation")//Credentials
 public class IteratorForFedora3Test extends AbstractTests {
 
     private TreeIterator iterator;

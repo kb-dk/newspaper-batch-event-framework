@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Generic hadoop reduce job which has access to a DOMS instance.
  */
+@SuppressWarnings("deprecation")//Credentials
 public abstract class AbstractDomsReducer extends Reducer<Text, Text, Text, Text>  {
     public static final String HADOOP_SAVER_DATASTREAM = "hadoop.saver.doms.datastream";
 
@@ -43,6 +44,7 @@ public abstract class AbstractDomsReducer extends Reducer<Text, Text, Text, Text
      * @return the fedora client
      * @throws java.io.IOException
      */
+    @SuppressWarnings("deprecation")//Credentials
     protected EnhancedFedora createFedoraClient(Context context) throws IOException {
         try {
             Configuration conf = context.getConfiguration();

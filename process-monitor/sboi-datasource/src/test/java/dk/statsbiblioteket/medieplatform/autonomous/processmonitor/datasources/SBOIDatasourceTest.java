@@ -34,6 +34,7 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
             conf.setDomsPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
             dataSource = new SBOIDatasource(conf);
+
             DomsEventStorageFactory<Batch> domsEventStorageFactory = new DomsEventStorageFactory<>();
             domsEventStorageFactory.setFedoraLocation(conf.getDomsLocation());
             domsEventStorageFactory.setUsername(conf.getDomsUser());

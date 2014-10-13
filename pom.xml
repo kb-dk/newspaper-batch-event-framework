@@ -12,6 +12,8 @@
     <packaging>pom</packaging>
 
 
+
+
     <modules>
         <module>item-event-framework</module>
         <module>process-monitor</module>
@@ -224,6 +226,20 @@
         <url>https://github.com/statsbiblioteket/newspaper-batch-event-framework</url>
         <tag>HEAD</tag>
     </scm>
+
+ <!--   <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <showWarnings>true</showWarnings>
+                    <failOnWarning>true</failOnWarning>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>-->
 </project>
 
 

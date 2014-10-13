@@ -43,7 +43,7 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
         return startAutonomousComponent(properties, component, getEventTrigger(properties, itemFactory), getEventStorer(properties,itemFactory));
     }
 
-    private static synchronized <T extends Item> SBOIEventIndex<T> getEventTrigger(Properties properties,
+    protected static synchronized <T extends Item> SBOIEventIndex<T> getEventTrigger(Properties properties,
                                                                ItemFactory<T> itemFactory) {
         try {
             return new SBOIEventIndex<>(
@@ -54,7 +54,7 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
         }
     }
 
-    private static synchronized <T extends Item> DomsEventStorage<T> getEventStorer(Properties properties,
+    protected static synchronized <T extends Item> DomsEventStorage<T> getEventStorer(Properties properties,
                                                                 ItemFactory<T> itemFactory) {
         DomsEventStorageFactory<T> domsEventStorageFactory = new DomsEventStorageFactory<>();
         domsEventStorageFactory.setFedoraLocation(properties.getProperty(ConfigConstants.DOMS_URL));

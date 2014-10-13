@@ -34,12 +34,9 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
     private final String createBatchRoundTripComment = "Creating batch round trip";
     private final String addEventToBatchComment = "Adding event to natch round trip";
 
-    public NewspaperDomsEventStorage(EnhancedFedora fedora, NewspaperIDFormatter idFormatter, String type,
-                                     String batchTemplate, String roundTripTemplate, String hasPart_relation,
-                                     String eventsDatastream, ItemFactory<Batch> itemFactory) throws JAXBException {
-        super(fedora,
-                     idFormatter,
-                     type, eventsDatastream,
+    public NewspaperDomsEventStorage(EnhancedFedora fedora, String type, String batchTemplate, String roundTripTemplate,
+                                     String hasPart_relation, String eventsDatastream, ItemFactory<Batch> itemFactory) throws JAXBException {
+        super(fedora, type, eventsDatastream,
                      itemFactory);
         this.batchTemplate = batchTemplate;
         this.roundTripTemplate = roundTripTemplate;
@@ -79,19 +76,19 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
 
             //find the batch object
             String batchObject;
-            NewspaperIDFormatter.SplitID fullIDSplits = idFormatter.unformatFullID(fullItemID);
-            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatBatchID(fullIDSplits.getBatchID()));
+            Batch.BatchRoundtripID fullIDSplits = new Batch.BatchRoundtripID(fullItemID);
+            List<String> founds = fedora.findObjectFromDCIdentifier(fullIDSplits.batchDCIdentifier());
             if (founds.size() > 0) {
                 batchObject = founds.get(0);
             } else {
                 //no batch object either, more sad
                 //create it, then
                 batchObject = fedora.cloneTemplate(
-                        batchTemplate, Arrays.asList(idFormatter.formatBatchID(fullIDSplits.getBatchID())), createBatchRoundTripComment);
+                        batchTemplate, Arrays.asList(fullIDSplits.batchDCIdentifier()), createBatchRoundTripComment);
             }
             String roundTripObject;
 
-            roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(idFormatter.formatFullID(fullItemID)), createBatchRoundTripComment);
+            roundTripObject = fedora.cloneTemplate(roundTripTemplate, Arrays.asList(fullIDSplits.roundTripDCIdentifier()), createBatchRoundTripComment);
 
             //connect batch object to round trip object
             fedora.addRelation(
@@ -133,7 +130,7 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             }
         };
         try {
-            List<String> founds = fedora.findObjectFromDCIdentifier(idFormatter.formatBatchID(batchId));
+            List<String> founds = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,0).batchDCIdentifier());
             if (founds == null || founds.size() == 0) {
                 return null;
             }
@@ -158,30 +155,7 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
     }
 
 
-    /**
-     * Retrieve the corresponding doms pid of the round trip object
-     *
-     * @return the doms round trip pid
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException          failed to communicate
-     * @throws BackendInvalidResourceException object not found
-     */
-    //TODO what have this to do with roundtrips?
-    String getPidFromDCIdentifier(String fullID) throws
-                                                               CommunicationException,
-                                                               BackendInvalidResourceException {
 
-        try {
-            //find the Round Trip object
-            final String dcIdentifier = idFormatter.formatFullID(fullID);
-            List<String> founds = fedora.findObjectFromDCIdentifier(dcIdentifier);
-            if (founds.size() > 0) {
-                return founds.get(0);
-            }
-            throw new BackendInvalidResourceException("Round Trip object not found for dc identifier " + dcIdentifier);
-        } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
-            throw new CommunicationException(e);
-        }
-    }
 
 
 }

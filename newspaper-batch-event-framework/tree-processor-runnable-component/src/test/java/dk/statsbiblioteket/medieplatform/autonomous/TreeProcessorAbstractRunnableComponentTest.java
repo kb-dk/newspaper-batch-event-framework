@@ -104,7 +104,7 @@ public class TreeProcessorAbstractRunnableComponentTest {
 
         String batchStructure = "<test>hej, this is test data</test>";
 
-        WireMock.givenThat(WireMock.post(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid)
+        WireMock.givenThat(WireMock.post(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid,"UTF-8")
                                                                     + "/datastreams/BATCHSTRUCTURE?logMessage=Updating+batch+structure&mimeType=text/xml&controlGroup=M"))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .withRequestBody(WireMock.equalTo(batchStructure))
@@ -112,7 +112,7 @@ public class TreeProcessorAbstractRunnableComponentTest {
                                                        .withHeader("Content-Type", "text/xml")
                                                        .withBody("<datastreamProfile  xmlns=\"http://www.fedora.info/definitions/1/0/management/\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.fedora.info/definitions/1/0/management/ http://www.fedora.info/definitions/1/0/datastreamProfile.xsd\" pid=\"fedora-system:FedoraObject-3.0\" dsID=\"ONTOLOGY\" ><dsLabel>Class declaration for this content model</dsLabel><dsVersionID>ONTOLOGY1.0</dsVersionID><dsCreateDate>2014-08-13T09:30:16.794Z</dsCreateDate><dsState>A</dsState><dsMIME>application/rdf+xml</dsMIME><dsFormatURI>info:fedora/fedora-system:FedoraOntology-1.0</dsFormatURI><dsControlGroup>X</dsControlGroup><dsSize>1492</dsSize><dsVersionable>false</dsVersionable><dsInfoType></dsInfoType><dsLocation>fedora-system:FedoraObject-3.0+ONTOLOGY+ONTOLOGY1.0</dsLocation><dsLocationType></dsLocationType><dsChecksumType>DISABLED</dsChecksumType><dsChecksum>none</dsChecksum></datastreamProfile>")));
 
-        WireMock.givenThat(WireMock.get(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid) + "/datastreams/BATCHSTRUCTURE/content?asOfDateTime="))
+        WireMock.givenThat(WireMock.get(WireMock.urlEqualTo("/fedora/objects/" + URLEncoder.encode(pid,"UTF-8") + "/datastreams/BATCHSTRUCTURE/content?asOfDateTime="))
                                    .withHeader("Authorization", WireMock.equalTo(encode(username, password.getBytes())))
                                    .willReturn(WireMock.aResponse().withBody(batchStructure)));
 
@@ -135,6 +135,7 @@ public class TreeProcessorAbstractRunnableComponentTest {
      * @throws PIDGeneratorException          if the pid generator webservice choked again. Should not be possible
      * @throws javax.xml.bind.JAXBException   if jaxb fails to understand the wsdl
      */
+    @SuppressWarnings("deprecation")//Credentials
     private EnhancedFedora getEnhancedFedora(Properties properties) throws
                                                                     MalformedURLException,
                                                                     PIDGeneratorException,

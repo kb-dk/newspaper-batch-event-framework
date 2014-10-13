@@ -80,7 +80,7 @@ public class PremisManipulator<T extends Item> {
      * @return the blob as a Batch
      */
     public T toItem() {
-        T item = itemFactory.createItem(getObjectID());
+        T item = itemFactory.create(getObjectID());
         item.setEventList(getEvents());
         return item;
     }

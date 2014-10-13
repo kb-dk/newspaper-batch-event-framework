@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
  * An abstract runnable component that uses SBOI for event triggers and DOMS for event storage,
  * and provides access to a tree iterator.
  */
+@SuppressWarnings("deprecation")//Credentials
 public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRunnableComponent<Batch> {
     private static final String BATCH_STRUCTURE = "BATCHSTRUCTURE";
     private EnhancedFedora fedora;
@@ -217,6 +218,7 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
      * @throws PIDGeneratorException if the pid generator webservice choked again. Should not be possible
      * @throws JAXBException         if jaxb fails to understand the wsdl
      */
+    @SuppressWarnings("deprecation")//Credentials
     private synchronized EnhancedFedora getEnhancedFedora() throws
                                                             MalformedURLException,
                                                             PIDGeneratorException,
