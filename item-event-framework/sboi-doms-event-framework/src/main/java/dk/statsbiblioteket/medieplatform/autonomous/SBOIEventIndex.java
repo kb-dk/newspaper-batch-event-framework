@@ -119,8 +119,9 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * @return An iterator over the found items
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                              Collection<String> futureEvents, Collection<T> items) throws CommunicationException {
+    public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents,
+                              Collection<String> pastFailedEvents, Collection<String> futureEvents,
+                              Collection<T> items) throws CommunicationException {
         try {
 
             SolrQuery query = new SolrQuery();
@@ -128,19 +129,22 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             query.setRows(1000); //Fetch size. Do not go over 1000 unless you specify fields to fetch which does not include content_text
             //IMPORTANT!Only use facets if needed.
             query.set("facet", "false"); //very important. Must overwrite to false. Facets are very slow and expensive.
-            query.setFields(UUID,PREMIS_NO_DETAILS);
+            if (details) {
+                query.setFields(UUID);
+            } else {
+                query.setFields(UUID, PREMIS_NO_DETAILS);
+            }
+
             QueryResponse response = summaSearch.query(query);
             SolrDocumentList results = response.getResults();
             List<T> hits = new ArrayList<>();
             for (SolrDocument result : results) {
                 T hit;
-                String uuid = result.getFieldValue(UUID).toString();
+                String uuid = result.getFirstValue(UUID).toString();
                 if (!details) { //no details, so we can retrieve everything from Summa
-                    hit
-                            = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(result.getFirstValue(PREMIS_NO_DETAILS)
-                                                                                                     .toString()
-                                                                                                     .getBytes()))
-                                                      .toItem();
+                    final ByteArrayInputStream inputStream
+                            = new ByteArrayInputStream(result.getFirstValue(PREMIS_NO_DETAILS).toString().getBytes());
+                    hit = premisManipulatorFactory.createFromBlob(inputStream).toItem();
                     hit.setDomsID(uuid);
                 } else {//Details requested so go to DOMS
                     hit = domsEventStorage.getItemFromDomsID(uuid);
