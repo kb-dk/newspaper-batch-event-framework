@@ -1,16 +1,12 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import dk.statsbiblioteket.doms.central.summasearch.SearchWS;
-import dk.statsbiblioteket.doms.central.summasearch.SearchWSService;
-import dk.statsbiblioteket.util.xml.DOM;
-import dk.statsbiblioteket.util.xml.XPathSelector;
-import net.sf.json.JSONObject;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -22,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Implementation of the {@link EventAccessor} and {@link EventTrigger} interface using SBOI summa index and DOMS.
+ * Implementation of the {@link EventTrigger} interface using SBOI summa index and DOMS.
  * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS.
  */
 public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
@@ -38,15 +34,13 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
     private final PremisManipulatorFactory<T> premisManipulatorFactory;
     private DomsEventStorage<T> domsEventStorage;
-    private final SearchWS summaSearch;
+    private final HttpSolrServer summaSearch;
 
     public SBOIEventIndex(String summaLocation, PremisManipulatorFactory<T> premisManipulatorFactory,
                           DomsEventStorage<T> domsEventStorage) throws MalformedURLException {
         this.premisManipulatorFactory = premisManipulatorFactory;
         this.domsEventStorage = domsEventStorage;
-        summaSearch = new SearchWSService(
-                new java.net.URL(summaLocation),
-                new QName("http://statsbiblioteket.dk/summa/search", "SearchWSService")).getSearchWS();
+        summaSearch = new SolrJConnector(summaLocation).getSolrServer();
 
     }
 
@@ -113,75 +107,49 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     }
 
 
-
-
     /**
      * Perform a search for items matching the given criteria
      *
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
      * @param pastFailedEvents     Events that the batch must have experienced, but which failed
      * @param futureEvents         Events that the batch must not have experienced
-     * @param items              if not null, the resulting iterator will only contain items from this set. If the
+     * @param items                if not null, the resulting iterator will only contain items from this set. If the
      *                             items is empty, the result will be empty.
      *
      * @return An iterator over the found items
      * @throws CommunicationException if the communication failed
      */
     public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                  Collection<String> futureEvents, Collection<T> items) throws CommunicationException {
-
+                              Collection<String> futureEvents, Collection<T> items) throws CommunicationException {
         try {
-            if (items != null && items.isEmpty()){
-                //If the items constraint is set to no result, give no result.
-                return new ArrayList<T>().iterator();
-            }
-            JSONObject jsonQuery = new JSONObject();
-            jsonQuery.put("search.document.resultfields", commaSeparate(UUID, BATCH_ID, ROUND_TRIP_NO, getPremisFieldName(details)));
 
-            jsonQuery.put(
-                    "search.document.query",
-                    toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents,items));
-            jsonQuery.put("search.document.startindex", 0);
-            //TODO fix this static maxrecords  (we can order on creation date)
-            jsonQuery.put("search.document.maxrecords", 1000);
-
-            String searchResultString;
-            synchronized (summaSearch) {//TODO is this nessesary?
-                searchResultString = summaSearch.directJSON(jsonQuery.toString());
-            }
-
-            Document searchResultDOM = DOM.stringToDOM(searchResultString);
-            XPathSelector xPath = DOM.createXPathSelector();
-
-
-            NodeList nodeList = xPath.selectNodeList(
-                    searchResultDOM, "/responsecollection/response/documentresult/record");
-
-            int hits = nodeList.getLength();
-            if (items != null && hits > items.size()){
-                hits = items.size();
-            }
-            List<T> results = new ArrayList<>(hits);
-
-            for (int i = 0; i <hits; ++i) {
-                Node node = nodeList.item(i);
-                String uuid = DOM.selectString(node, "field[@name='" + UUID + "']");
-                T result = null;
+            SolrQuery query = new SolrQuery();
+            query.setQuery(toQueryString(pastSuccessfulEvents, pastFailedEvents, futureEvents, items));
+            query.setRows(1000); //Fetch size. Do not go over 1000 unless you specify fields to fetch which does not include content_text
+            //IMPORTANT!Only use facets if needed.
+            query.set("facet", "false"); //very important. Must overwrite to false. Facets are very slow and expensive.
+            query.setFields(UUID,PREMIS_NO_DETAILS);
+            QueryResponse response = summaSearch.query(query);
+            SolrDocumentList results = response.getResults();
+            List<T> hits = new ArrayList<>();
+            for (SolrDocument result : results) {
+                T hit;
+                String uuid = result.getFieldValue(UUID).toString();
                 if (!details) { //no details, so we can retrieve everything from Summa
-                    String premis = DOM.selectString(node, "field[@name='" + PREMIS_NO_DETAILS + "']");
-                    result = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(premis.getBytes()))
-                                                     .toItem();
-                    result.setDomsID(uuid);
-
+                    hit
+                            = premisManipulatorFactory.createFromBlob(new ByteArrayInputStream(result.getFirstValue(PREMIS_NO_DETAILS)
+                                                                                                     .toString()
+                                                                                                     .getBytes()))
+                                                      .toItem();
+                    hit.setDomsID(uuid);
                 } else {//Details requested so go to DOMS
-                    result = domsEventStorage.getItemFromDomsID(uuid);
+                    hit = domsEventStorage.getItemFromDomsID(uuid);
                 }
 
-                results.add(result);
-
+                hits.add(hit);
             }
-            return results.iterator();
-        } catch (Exception e) {
+            return hits.iterator();
+        } catch (Exception e){
             log.warn("Caught Unknown Exception", e);
             throw new CommunicationException(e);
         }
