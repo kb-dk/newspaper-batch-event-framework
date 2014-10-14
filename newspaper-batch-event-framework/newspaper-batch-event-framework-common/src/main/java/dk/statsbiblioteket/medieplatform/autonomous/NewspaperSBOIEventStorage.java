@@ -31,7 +31,6 @@ public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements 
 
     @Override
     protected String getResultRestrictions(Collection<Batch> items) {
-        //TODO apparently this does not work
         String itemsString;
         StringBuilder batchesString = new StringBuilder();
         batchesString.append(" ( ");

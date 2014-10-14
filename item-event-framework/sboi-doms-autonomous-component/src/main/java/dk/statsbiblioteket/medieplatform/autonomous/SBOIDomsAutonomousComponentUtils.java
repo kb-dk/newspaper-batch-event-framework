@@ -39,15 +39,22 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
      *     experienced in order to be eligible to be worked on by this component
      * @see AutonomousComponentUtils#startAutonomousComponent(java.util.Properties, RunnableComponent, EventTrigger, EventStorer)
      */
-    public static <T extends Item> CallResult<T> startAutonomousComponent(Properties properties, RunnableComponent<T> component, ItemFactory<T> itemFactory) {
-        return startAutonomousComponent(properties, component, getEventTrigger(properties, itemFactory), getEventStorer(properties,itemFactory));
+    public static <T extends Item> CallResult<T> startAutonomousComponent(Properties properties,
+                                                                          RunnableComponent<T> component,
+                                                                          ItemFactory<T> itemFactory) {
+        return startAutonomousComponent(properties,
+                                               component,
+                                               getEventTrigger(properties, itemFactory),
+                                               getEventStorer(properties, itemFactory));
     }
 
     protected static synchronized <T extends Item> SBOIEventIndex<T> getEventTrigger(Properties properties,
-                                                               ItemFactory<T> itemFactory) {
+                                                                                     ItemFactory<T> itemFactory) {
         try {
-            return new SBOIEventIndex<>(
-                    properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL), new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, itemFactory), getEventStorer(properties,itemFactory));
+            return new SBOIEventIndex<>(properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
+                                               new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
+                                                                                     itemFactory),
+                                               getEventStorer(properties, itemFactory));
         } catch (Exception e) {
             log.error("Unable to initialize event trigger", e);
             throw new InitialisationException("Unable to initialize event trigger", e);
@@ -55,7 +62,7 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
     }
 
     protected static synchronized <T extends Item> DomsEventStorage<T> getEventStorer(Properties properties,
-                                                                ItemFactory<T> itemFactory) {
+                                                                                      ItemFactory<T> itemFactory) {
         DomsEventStorageFactory<T> domsEventStorageFactory = new DomsEventStorageFactory<>();
         domsEventStorageFactory.setFedoraLocation(properties.getProperty(ConfigConstants.DOMS_URL));
         domsEventStorageFactory.setPidGeneratorLocation(properties.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));

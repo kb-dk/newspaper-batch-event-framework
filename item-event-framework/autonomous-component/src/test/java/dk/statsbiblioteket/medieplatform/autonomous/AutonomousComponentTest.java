@@ -91,16 +91,11 @@ public class AutonomousComponentTest {
         List<Event> eventsAfter = batchAfter.getEventList();
 
         for (Event event : eventsAfter) {
-            //System.out.println(event.getEventID());
             if (event.getEventID().equals("Data_Archived")) {
                 testEventFound = true;
             }
         }
         Assert.assertTrue("Test event not found after test", testEventFound);
 
-    }
-
-    private List<String> stringList() {
-        return new ArrayList<>();
     }
 }
