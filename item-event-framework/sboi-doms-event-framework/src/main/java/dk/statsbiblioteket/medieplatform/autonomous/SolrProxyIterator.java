@@ -104,4 +104,9 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
             throw new NoSuchElementException();
         }
     }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -111,7 +111,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(Item item, int maxAttempts,
+    public int triggerWorkflowRestartFromFirstFailure(T item, int maxAttempts,
                                                       long waitTime, String eventId) throws
                                                                                      CommunicationException,
                                                                                      NotFoundException {
@@ -135,7 +135,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
+    public int triggerWorkflowRestartFromFirstFailure(T item, int maxTries,
                                                       long waitTime) throws CommunicationException, NotFoundException {
         return triggerWorkflowRestartFromFirstFailure(item, maxTries, waitTime, null);
     }
@@ -149,7 +149,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @return the number of events removed or -1 of there was a ConcurrentModificationException thrown.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    private int attemptWorkflowRestart(Item item, String eventId) throws
+    private int attemptWorkflowRestart(T item, String eventId) throws
                                                                                             CommunicationException,
                                                                                             NotFoundException {
         String itemPid = item.getDomsID();

@@ -29,6 +29,9 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
                                                                   fedoraLocation.replaceFirst("/(objects)?/?$", ""),
                                                                   pidGeneratorLocation,
                                                                   null);
+        if (itemFactory == null){
+            itemFactory = new BatchItemFactory();
+        }
         return new NewspaperDomsEventStorage(fedora,
                                                     premisIdentifierType, batchTemplate,roundTripTemplate,hasPartRelation,eventsDatastream, itemFactory);
     }

@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>batch-event-framework-common</artifactId>
+            <artifactId>item-event-framework-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 public class SampleRunnableComponentTest {
     @Test
-    public void testDoWorkOnBatch() throws Exception {
+    public void testdoWorkOnItem() throws Exception {
         SampleRunnableComponent runnableComponent = new MockupIteratorSuper(System.getProperties());
 
         ResultCollector result = new ResultCollector(

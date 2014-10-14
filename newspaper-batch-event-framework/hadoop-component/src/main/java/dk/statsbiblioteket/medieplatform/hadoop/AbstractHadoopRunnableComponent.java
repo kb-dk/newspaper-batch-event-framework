@@ -30,7 +30,7 @@ import java.util.Properties;
  * This is the abstract hadoop runnable component. It is meant for the more common hadoop tasks that the
  * autonomous components must do.
  *
- * The doWorkOnBatch method have been implemented, and a abstract getTool()
+ * The doWorkOnItem method have been implemented, and a abstract getTool()
  */
 public abstract class AbstractHadoopRunnableComponent extends TreeProcessorAbstractRunnableComponent {
 
