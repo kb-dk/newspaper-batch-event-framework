@@ -21,9 +21,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     public static final String SUCCESSEVENT = "success_event";
     public static final String FAILEVENT = "fail_event";
     public static final String RECORD_BASE = "recordBase:doms_sboiCollection";
-    public static final String ROUND_TRIP_NO = "round_trip_no";
-    public static final String BATCH_ID = "batch_id";
-    public static final String UUID = "round_trip_uuid";
+    public static final String UUID = "item_uuid";
     public static final String SORT_DATE = "initial_date";
     public static final String PREMIS_NO_DETAILS = "premis_no_details";
 

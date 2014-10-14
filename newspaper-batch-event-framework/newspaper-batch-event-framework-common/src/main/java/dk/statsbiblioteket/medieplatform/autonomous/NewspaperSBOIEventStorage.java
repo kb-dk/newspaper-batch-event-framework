@@ -1,13 +1,14 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements EventAccessor<Batch> {
 
+    public static final String ROUND_TRIP_NO = "newspapr_round_trip_no";
+    public static final String BATCH_ID = "newspapr_batch_id";
     private final DomsEventStorage<Batch> domsEventStorage;
 
     public NewspaperSBOIEventStorage(String summaLocation, PremisManipulatorFactory<Batch> premisManipulatorFactory,
