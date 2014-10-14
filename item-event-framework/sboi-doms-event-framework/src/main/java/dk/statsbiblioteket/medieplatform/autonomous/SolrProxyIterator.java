@@ -51,6 +51,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
 
     private void search() {
         try {
+            searched = true;
             SolrQuery query = new SolrQuery();
             query.setQuery(queryString);
             query.setRows(rows); //Fetch size. Do not go over 1000 unless you specify fields to fetch which does not include content_text

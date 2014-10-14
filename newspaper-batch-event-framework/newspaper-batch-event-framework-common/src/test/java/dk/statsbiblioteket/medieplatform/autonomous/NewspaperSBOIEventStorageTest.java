@@ -20,7 +20,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public class SBOIEventIndexTest {
+public class NewspaperSBOIEventStorageTest {
 
     @Test(groups = {"externalTest"}, enabled = true)
     public void testGetBatches() throws Exception {

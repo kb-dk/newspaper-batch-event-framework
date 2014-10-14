@@ -165,7 +165,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     protected String getResultRestrictions(Collection<T> items) {
         String itemsString;
         StringBuilder batchesString = new StringBuilder();
-        batchesString.append(" ( ");
+        batchesString.append(" AND ( ");
 
         boolean first = true;
         for (Item item : items) {
@@ -176,7 +176,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             }
             batchesString.append(" ( ");
 
-            batchesString.append(UUID).append(":").append(item.getDomsID());
+            batchesString.append("+").append(UUID).append(":\"").append(item.getDomsID()).append("\"");
 
             batchesString.append(" ) ");
         }
