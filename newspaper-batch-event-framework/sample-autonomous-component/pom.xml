@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>sboi-doms-autonomous-component</artifactId>
+            <artifactId>newspaper-batch-event-framework-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
