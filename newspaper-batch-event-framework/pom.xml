@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dk.statsbiblioteket.newspaper</groupId>
+        <artifactId>autonomous-components-framework</artifactId>
+        <version>1.12-SNAPSHOT</version>
+    </parent>
+
+
+    <artifactId>newspaper-batch-event-framework</artifactId>
+    <packaging>pom</packaging>
+
+
+    <modules>
+        <module>newspaper-batch-event-framework-common</module>
+        <module>batch-iterator</module>
+        <module>hadoop-component</module>
+        <module>hadoop-helpers</module>
+        <module>sample-autonomous-component</module>
+        <module>tree-processor</module>
+        <module>tree-processor-runnable-component</module>
+    </modules>
+</project>
