@@ -50,8 +50,6 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
         if (itemID == null) {
             itemID = createBatchRoundTrip(item.getFullID());
             item.setDomsID(itemID);
-        } else {
-            throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
         }
         return super.addEventToItem(item, agent, timestamp, details, eventType, outcome);
     }
