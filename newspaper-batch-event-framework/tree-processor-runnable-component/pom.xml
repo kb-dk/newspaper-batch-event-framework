@@ -27,7 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>tree-processor</artifactId>
+            <artifactId>batch-iterator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

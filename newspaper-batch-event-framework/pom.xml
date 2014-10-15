@@ -17,6 +17,7 @@
 
     <modules>
         <module>newspaper-batch-event-framework-common</module>
+        <module>newspaper-autonomous-component</module>
         <module>batch-iterator</module>
         <module>hadoop-component</module>
         <module>hadoop-helpers</module>

@@ -65,7 +65,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>sboi-doms-event-framework</artifactId>
+            <artifactId>newspaper-autonomous-component</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

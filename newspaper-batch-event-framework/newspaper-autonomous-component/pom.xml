@@ -10,14 +10,25 @@
         <version>1.12-SNAPSHOT</version>
     </parent>
 
-    <artifactId>newspaper-batch-event-framework-common</artifactId>
+    <artifactId>newspaper-autonomous-component</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>item-event-framework-common</artifactId>
+            <artifactId>newspaper-batch-event-framework-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>sboi-doms-autonomous-component</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     
 </project>

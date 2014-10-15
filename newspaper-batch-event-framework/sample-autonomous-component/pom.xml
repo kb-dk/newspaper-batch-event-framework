@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
-            <artifactId>newspaper-batch-event-framework-common</artifactId>
+            <artifactId>newspaper-autonomous-component</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
