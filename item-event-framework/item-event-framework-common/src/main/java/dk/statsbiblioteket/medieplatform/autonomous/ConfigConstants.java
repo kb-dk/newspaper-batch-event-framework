@@ -62,9 +62,21 @@ public class ConfigConstants {
     public static final String AUTONOMOUS_PAST_SUCCESSFUL_EVENTS = "autonomous.pastSuccessfulEvents";
     /** Events that a batch must have experienced unsuccessfully to qualify for this component to work on it */
     public static final String AUTONOMOUS_PAST_FAILED_EVENTS = "autonomous.pastFailedEvents";
+    /**
+     * Events that an item must have experienced, after any other updates to the item
+     */
     public static final java.lang.String AUTONOMOUS_UP2DATE_EVENTS = "autonomous.up2DateEvents";
+    /**
+     * Events that an item must have experienced, but which came before the last update to the item
+     */
     public static final java.lang.String AUTONOMOUS_OUTDATED_EVENTS = "autonomous.outdatedEvents";
+    /**
+     * Events that are either missing from an item, or which are outdated
+     */
     public static final java.lang.String AUTONOMOUS_OUTDATED_OR_MISSING_EVENTS = "autonomous.outdatedOrMissingEvents";
+    /**
+     * Types of Items.
+     */
     public static final java.lang.String AUTONOMOUS_ITEM_TYPES = "autonomous.itemTypes";
 
 
