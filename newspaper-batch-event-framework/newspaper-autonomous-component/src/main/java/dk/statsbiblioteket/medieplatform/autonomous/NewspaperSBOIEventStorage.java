@@ -20,8 +20,17 @@ public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements 
     @Override
     public Iterator<Batch> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
                                  List<String> futureEvents) throws CommunicationException {
-
-        return super.search(details, pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
+        Query<Batch> query = new Query<Batch>();
+        if (futureEvents != null) {
+            query.getFutureEvents().addAll(futureEvents);
+        }
+        if (pastSuccessfulEvents != null) {
+            query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
+        }
+        if (pastFailedEvents != null) {
+            query.getPastFailedEvents().addAll(pastFailedEvents);
+        }
+        return super.search(details,query);
     }
 
     @Override

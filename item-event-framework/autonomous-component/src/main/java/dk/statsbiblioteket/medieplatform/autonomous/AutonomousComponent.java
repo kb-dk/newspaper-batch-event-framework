@@ -26,17 +26,21 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
+    private final List<String> up2dateEvents;
+    private final List<String> outdatedEvents;
+    private final List<String> outdatedOrMissingEvents;
+    private final List<String> itemTypes;
     private final long timeoutSBOI;
     private final long timeoutBatch;
     private final RunnableComponent<T> runnable;
     private final long pollTime = 1000;
     private final ConcurrencyConnectionStateListener concurrencyConnectionStateListener;
     private final long workerTimout;
-    private int simultaneousProcesses;
-    private int workQueueMaxLength;
-    private List<String> pastSuccessfulEvents;
-    private List<String> pastFailedEvents;
-    private List<String> futureEvents;
+    private final int simultaneousProcesses;
+    private final int workQueueMaxLength;
+    private final List<String> pastSuccessfulEvents;
+    private final List<String> pastFailedEvents;
+    private final List<String> futureEvents;
     private boolean paused = false;
     private boolean stopped = false;
     private Integer maxResults;
@@ -45,10 +49,14 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
 
     public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, Integer workQueueMaxLength, List<String> pastSuccessfulEvents,
-                               List<String> pastFailedEvents, List<String> futureEvents, long timeoutSBOI, long timeoutBatch, long workerTimout,
+                               List<String> pastFailedEvents, List<String> futureEvents, List<String> up2dateEvents, List<String> outdatedEvents, List<String> outdatedOrMissingEvents, List<String> itemTypes,long timeoutSBOI, long timeoutBatch, long workerTimout,
                                Integer maxResults, EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
 
         this.lockClient = lockClient;
+        this.up2dateEvents = up2dateEvents;
+        this.outdatedEvents = outdatedEvents;
+        this.outdatedOrMissingEvents = outdatedOrMissingEvents;
+        this.itemTypes = itemTypes;
         this.timeoutSBOI = timeoutSBOI;
         this.timeoutBatch = timeoutBatch;
         this.runnable = runnable;
@@ -171,8 +179,15 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
                 log.info("SBOI locked, quering for items");
                 //get items, lock n, release the SBOI
-                Iterator<T> items = eventTrigger
-                        .getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents);
+                EventTrigger.Query<T> query = new EventTrigger.Query<T>();
+                query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
+                query.getPastFailedEvents().addAll(pastFailedEvents);
+                query.getFutureEvents().addAll(futureEvents);
+                query.getUp2dateEvents().addAll(up2dateEvents);
+                query.getOutdatedEvents().addAll(outdatedEvents);
+                query.getOutdatedOrMissingEvents().addAll(outdatedOrMissingEvents);
+                query.getTypes().addAll(itemTypes);
+                Iterator<T> items = eventTrigger.getTriggeredItems(query);
                 //for each batch
                 while (items.hasNext()) {
                     T item = items.next();

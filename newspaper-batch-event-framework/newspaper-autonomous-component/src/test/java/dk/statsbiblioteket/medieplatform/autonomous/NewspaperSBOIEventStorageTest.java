@@ -51,8 +51,7 @@ public class NewspaperSBOIEventStorageTest {
                                                                   new ArrayList<String>(),
                                                                   Arrays.asList("Roundtrip_Approved"));
         Batch first = batches.next();
-        Iterator< Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
+        Iterator< Batch> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
 
         assertEquals(
                 batches2.next(),first);
@@ -72,8 +71,7 @@ public class NewspaperSBOIEventStorageTest {
         Batch first = batches.next();
         Batch second = batches.next();
 
-        Iterator<Batch> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
+        Iterator<Batch> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
 
         HashSet<Batch> results = new HashSet<>();
         results.add(first);

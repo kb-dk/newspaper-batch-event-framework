@@ -48,8 +48,7 @@ public class SBOIEventIndexTest {
                                                                 new ArrayList<String>(),
                                                                 Arrays.asList("Roundtrip_Approved"));
         Item first = batches.next();
-        Iterator<Item> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
+        Iterator<Item> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
 
         Assert.assertEquals(batches2.next(), first);
 
@@ -67,8 +66,7 @@ public class SBOIEventIndexTest {
         Item first = batches.next();
         Item second = batches.next();
 
-        Iterator<Item> batches2 = summa.search(
-                false, Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
+        Iterator<Item> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
 
         HashSet<Item> results = new HashSet<>();
         results.add(first);
@@ -89,7 +87,7 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex<Item> summa = getSboiClient(props);
-        Iterator<Item> batches = summa.search(false,
+        Iterator<Item> batches = summa.getTriggeredItems(
                                                      Arrays.asList("Data_Received"),
                                                      new ArrayList<String>(),
                                                      Arrays.asList("Roundtrip_Approved"),

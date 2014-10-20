@@ -30,6 +30,11 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
     public EventTrigger<Item> getEventTrigger() {
         return new EventTrigger<Item>() {
             @Override
+            public Iterator<Item> getTriggeredItems(Query<Item> query) throws CommunicationException {
+                return items.iterator();
+            }
+
+            @Override
             public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                                               Collection<String> pastFailedEvents,
                                                               Collection<String> futureEvents)

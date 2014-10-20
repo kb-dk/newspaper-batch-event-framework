@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -24,6 +25,9 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     public static final String UUID = "item_uuid";
     public static final String SORT_DATE = "initial_date";
     public static final String PREMIS_NO_DETAILS = "premis_no_details";
+    private static final String OUTDATEDEVENT = "outdated_event";
+    private static final String UP2DATEEVENT = "up2date_event";
+    private static final String ITEMTYPE = "item_models";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
     private final PremisManipulatorFactory<T> premisManipulatorFactory;
@@ -48,16 +52,8 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
 
     @Override
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> pastFailedEvents, Collection<String> futureEvents) throws CommunicationException {
-        return getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents, null);
-    }
-
-    @Override
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> pastFailedEvents, Collection<String> futureEvents,
-                                            Collection<T> batches) throws CommunicationException {
-        Iterator<T> sboiBatches = search(false, pastSuccessfulEvents, pastFailedEvents, futureEvents,batches);
+    public Iterator<T> getTriggeredItems(Query<T> query) throws CommunicationException {
+        Iterator<T> sboiBatches = search(false, query);
         ArrayList<T> result = new ArrayList<>();
         while (sboiBatches.hasNext()) {
             T next = sboiBatches.next();
@@ -67,12 +63,37 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             } catch (NotFoundException ignored) {
                 continue;
             }
-            if (match(instead, pastSuccessfulEvents, pastFailedEvents, futureEvents)) {
+            if (match(instead, query.getPastSuccessfulEvents(), query.getPastFailedEvents(), query.getFutureEvents())) {
                 result.add(instead);
             }
         }
         return result.iterator();
+    }
 
+    @Override
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents) throws CommunicationException {
+        return getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents, new ArrayList<T>());
+    }
+
+    @Override
+    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
+                                            Collection<String> pastFailedEvents, Collection<String> futureEvents,
+                                            Collection<T> batches) throws CommunicationException {
+        Query<T> query = new Query<T>();
+        if (futureEvents != null) {
+            query.getFutureEvents().addAll(futureEvents);
+        }
+        if (pastSuccessfulEvents != null) {
+            query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
+        }
+        if (pastFailedEvents != null) {
+            query.getPastFailedEvents().addAll(pastFailedEvents);
+        }
+        if (batches != null) {
+            query.getItems().addAll(batches);
+        }
+        return getTriggeredItems(query);
     }
 
     /**
@@ -104,19 +125,11 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     /**
      * Perform a search for items matching the given criteria
      *
-     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
-     * @param futureEvents         Events that the batch must not have experienced
-     * @param items                if not null, the resulting iterator will only contain items from this set. If the
-     *                             items is empty, the result will be empty.
-     *
      * @return An iterator over the found items
      * @throws CommunicationException if the communication failed
      */
-    public Iterator<T> search(boolean details, Collection<String> pastSuccessfulEvents,
-                              Collection<String> pastFailedEvents, Collection<String> futureEvents,
-                              Collection<T> items) throws CommunicationException {
-       return new SolrProxyIterator<>(toQueryString(pastSuccessfulEvents,pastFailedEvents,futureEvents,items),details,summaSearch,premisManipulatorFactory,domsEventStorage);
+    public Iterator<T> search(boolean details, Query<T> query) throws CommunicationException {
+       return new SolrProxyIterator<>(toQueryString(query),details,summaSearch,premisManipulatorFactory,domsEventStorage);
     }
 
 
@@ -128,33 +141,46 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         return "\"" + string + "\"";
     }
 
-    protected String toQueryString(Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                                   Collection<String> futureEvents, Collection<T> items) {
+    protected String toQueryString(Query<T> query) {
         String base = spaced(RECORD_BASE);
 
         String itemsString = "";
 
-        if (items != null) {
-            itemsString = getResultRestrictions(items);
+        if (!query.getItems().isEmpty()) {
+            itemsString = getResultRestrictions(query.getItems());
         }
 
         List<String> events = new ArrayList<>();
 
-        if (pastSuccessfulEvents != null) {
-            for (String successfulPastEvent : pastSuccessfulEvents) {
-                events.add(spaced("+" + SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
-            }
+
+        for (String successfulPastEvent : query.getPastSuccessfulEvents()) {
+            events.add(spaced("+" + SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
         }
-        if (pastFailedEvents != null) {
-            for (String failedPastEvent : pastFailedEvents) {
-                events.add(spaced("+" + FAILEVENT + ":" + quoted(failedPastEvent)));
-            }
+
+        for (String failedPastEvent : query.getPastFailedEvents()) {
+            events.add(spaced("+" + FAILEVENT + ":" + quoted(failedPastEvent)));
         }
-        if (futureEvents != null) {
-            for (String futureEvent : futureEvents) {
-                events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
-                events.add(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
-            }
+        for (String futureEvent : query.getFutureEvents()) {
+            events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
+            events.add(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
+        }
+
+        for (String outdatedEvent : query.getOutdatedEvents()) {
+            events.add(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedEvent)));
+        }
+        for (String up2dateEvent : query.getUp2dateEvents()) {
+            events.add(spaced("+" + UP2DATEEVENT + ":" + quoted(up2dateEvent)));
+        }
+        for (String outdatedOrMissing : query.getOutdatedOrMissingEvents()) {
+            events.add(" +( ( ");
+            events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(outdatedOrMissing)));
+            events.add(spaced("-" + FAILEVENT + ":" + quoted(outdatedOrMissing)));
+            events.add(" ) OR ");
+            events.add(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedOrMissing)));
+            events.add(" ) ");
+        }
+        for (String type : query.getTypes()) {
+            events.add(spaced("+" + ITEMTYPE + ":" + quoted(type)));
         }
 
         return base + itemsString + anded(events);
