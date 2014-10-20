@@ -179,14 +179,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
                 log.info("SBOI locked, quering for items");
                 //get items, lock n, release the SBOI
-                EventTrigger.Query<T> query = new EventTrigger.Query<T>();
-                query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
-                query.getPastFailedEvents().addAll(pastFailedEvents);
-                query.getFutureEvents().addAll(futureEvents);
-                query.getUp2dateEvents().addAll(up2dateEvents);
-                query.getOutdatedEvents().addAll(outdatedEvents);
-                query.getOutdatedOrMissingEvents().addAll(outdatedOrMissingEvents);
-                query.getTypes().addAll(itemTypes);
+                EventTrigger.Query<T> query = makeQuery();
                 Iterator<T> items = eventTrigger.getTriggeredItems(query);
                 //for each batch
                 while (items.hasNext()) {
@@ -271,6 +264,31 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
         return result;
     }
 
+    private EventTrigger.Query<T> makeQuery() {
+        EventTrigger.Query<T> query = new EventTrigger.Query<T>();
+        if (pastSuccessfulEvents != null) {
+            query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
+        }
+        if (pastFailedEvents != null) {
+            query.getPastFailedEvents().addAll(pastFailedEvents);
+        }
+        if (futureEvents != null) {
+            query.getFutureEvents().addAll(futureEvents);
+        }
+        if (up2dateEvents != null) {
+            query.getUp2dateEvents().addAll(up2dateEvents);
+        }
+        if (outdatedEvents != null) {
+            query.getOutdatedEvents().addAll(outdatedEvents);
+        }
+        if (outdatedOrMissingEvents != null) {
+            query.getOutdatedOrMissingEvents().addAll(outdatedOrMissingEvents);
+        }
+        if (itemTypes != null) {
+            query.getTypes().addAll(itemTypes);
+        }
+        return query;
+    }
 
 
     /**

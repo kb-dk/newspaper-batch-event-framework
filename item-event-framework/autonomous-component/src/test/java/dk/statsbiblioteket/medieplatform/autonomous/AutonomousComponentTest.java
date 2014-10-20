@@ -50,6 +50,7 @@ public class AutonomousComponentTest {
                     Arrays.asList("Data_Received"),
                     null,
                     null,
+                    null,null,null,null,
                     DEFAULT_TIMEOUT,
                     DEFAULT_TIMEOUT,
                     DEFAULT_TIMEOUT,
