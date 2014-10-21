@@ -30,6 +30,7 @@ public interface EventTrigger<T extends Item> {
      *
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
+     * @deprecated use getTriggeredItems(Query) instead
      */
     @Deprecated
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
@@ -47,6 +48,7 @@ public interface EventTrigger<T extends Item> {
      *
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
+     * @deprecated use getTriggeredItems(Query) instead
      */
     @Deprecated
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
