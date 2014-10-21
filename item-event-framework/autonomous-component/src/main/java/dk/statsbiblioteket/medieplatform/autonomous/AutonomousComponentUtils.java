@@ -56,6 +56,10 @@ public class AutonomousComponentUtils {
             //This is the number of batches that will be worked on in parallel per invocation
             int simultaneousProcesses = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_MAXTHREADS,
                             "1"));
+            //This is the number of batches that will be worked on in parallel per invocation
+            int queueLength = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_QUEUELENGTH,
+                                                                                       "1"));
+
             //This is the timeout when attempting to lock SBOI
             long timeoutWaitingToLockSBOI = 5000l;
             //This is the timeout when attempting to lock a batch before working on it
@@ -78,7 +82,7 @@ public class AutonomousComponentUtils {
             AutonomousComponent<T> autonoumous = new AutonomousComponent<>(component,
                     lockClient,
                     simultaneousProcesses,
-                    simultaneousProcesses,
+                    queueLength,
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_FAILED_EVENTS)),
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
