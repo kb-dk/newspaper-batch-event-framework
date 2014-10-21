@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * Implementation of the {@link EventTrigger} interface using SBOI summa index and DOMS.
- * Uses soap, json and xml to query the summa instance for batches, and REST to get batch details from DOMS.
+ * Uses the SolrJConnector to query the summa instance for items, and REST to get batch details from DOMS.
  */
 public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
@@ -28,6 +28,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     private static final String OUTDATEDEVENT = "outdated_event";
     private static final String UP2DATEEVENT = "up2date_event";
     private static final String ITEMTYPE = "item_models";
+    public static final String LAST_MODIFIED = "lastmodified_date";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
     private final PremisManipulatorFactory<T> premisManipulatorFactory;
@@ -53,18 +54,12 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
     @Override
     public Iterator<T> getTriggeredItems(Query<T> query) throws CommunicationException {
-        Iterator<T> sboiBatches = search(false, query);
+        Iterator<T> sboiItems = search(true, query);
         ArrayList<T> result = new ArrayList<>();
-        while (sboiBatches.hasNext()) {
-            T next = sboiBatches.next();
-            T instead;
-            try {
-                instead = domsEventStorage.getItemFromDomsID(next.getDomsID());
-            } catch (NotFoundException ignored) {
-                continue;
-            }
-            if (match(instead, query.getPastSuccessfulEvents(), query.getPastFailedEvents(), query.getFutureEvents())) {
-                result.add(instead);
+        while (sboiItems.hasNext()) {
+            T next = sboiItems.next();
+            if (match(next, query)) {
+                result.add(next);
             }
         }
         return result.iterator();
@@ -79,7 +74,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     @Override
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
                                             Collection<String> pastFailedEvents, Collection<String> futureEvents,
-                                            Collection<T> batches) throws CommunicationException {
+                                            Collection<T> items) throws CommunicationException {
         Query<T> query = new Query<T>();
         if (futureEvents != null) {
             query.getFutureEvents().addAll(futureEvents);
@@ -90,8 +85,8 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         if (pastFailedEvents != null) {
             query.getPastFailedEvents().addAll(pastFailedEvents);
         }
-        if (batches != null) {
-            query.getItems().addAll(batches);
+        if (items != null) {
+            query.getItems().addAll(items);
         }
         return getTriggeredItems(query);
     }
@@ -100,25 +95,46 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * Check that the item matches the requirements expressed in the three lists
      *
      * @param item                the item to check
-     * @param pastSuccessfulEvents events that must be success
-     * @param pastFailedEvents     events that must be failed
-     * @param futureEvents         events that must not be there
+     * @param query query that must be fulfilled
      *
      * @return true if the item match all requirements
      */
-    private boolean match(Item item, Collection<String> pastSuccessfulEvents, Collection<String> pastFailedEvents,
-                          Collection<String> futureEvents) {
+    private boolean match(Item item, Query<T> query) {
+        Set<String> existingEvents = new HashSet<>();
         Set<String> successEvents = new HashSet<>();
         Set<String> failEvents = new HashSet<>();
+        Set<String> outdatedEvents = new HashSet<>();
+        Set<String> up2dateEvents = new HashSet<>();
         for (Event event : item.getEventList()) {
+            existingEvents.add(event.getEventID());
             if (event.isSuccess()) {
                 successEvents.add(event.getEventID());
             } else {
                 failEvents.add(event.getEventID());
             }
+            if (item.getLastModified() != null) {
+                if (event.getDate().after(item.getLastModified())) {
+                    up2dateEvents.add(event.getEventID());
+                } else {
+                    outdatedEvents.add(event.getEventID());
+                }
+            }
         }
-        return successEvents.containsAll(pastSuccessfulEvents) && failEvents.containsAll(pastFailedEvents) && Collections
-                .disjoint(futureEvents, successEvents) && Collections.disjoint(futureEvents, failEvents);
+        final boolean successEventsGood = successEvents.containsAll(query.getPastSuccessfulEvents());
+
+        final boolean failEventsGood = failEvents.containsAll(query.getPastFailedEvents());
+        final boolean futureSuccessEventsGood = Collections.disjoint(query.getFutureEvents(), successEvents);
+        final boolean futureFailEventsGood = Collections.disjoint(query.getFutureEvents(), failEvents);
+        final boolean up2dateEventsGood = up2dateEvents.containsAll(query.getUp2dateEvents());
+        final boolean outdatedEventsGood = outdatedEvents.containsAll(query.getOutdatedEvents());
+
+        boolean outdatedOrMissingGood = true;
+        for (String outdatedOrMissing : query.getOutdatedOrMissingEvents()) {
+            outdatedOrMissingGood =  outdatedOrMissingGood && outdatedEvents.contains(outdatedOrMissing) || !existingEvents.contains(outdatedOrMissing);
+        }
+
+        //TODO we do not check for items or types for now
+        return successEventsGood && failEventsGood && futureSuccessEventsGood && futureFailEventsGood && up2dateEventsGood && outdatedEventsGood && outdatedOrMissingGood;
     }
 
 
@@ -141,6 +157,33 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         return "\"" + string + "\"";
     }
 
+    /**
+     * Converts the query to a solr query string.
+     * <ul>
+     *
+     * <li>The first part of the query is the Items, ie. the set of items which constrain the result set
+     *</li><li>
+     * The next part is the success events. Items must have these events with outcome success
+     *</li><li>
+     * The next part is the fail events. Items must have these events with the outcome failure
+     *</li><li>
+     * The next part is the future events. Items must not have these events in with any outcome.
+     *</li><li>
+     * The next part is the outdated events. Items must have these events (outcome not important) and must have received an update since this event was registered
+     *</li><li>
+     * The next part is the up2date events. Items must have these events (outcome not important) and must not have
+     * received an update since this event was registered
+     *</li><li>
+     * The next part is the outdatedOrMissing events. This is a combined thingy. Items must have these events as outdated events, or not at all.
+     *</li><li>
+     * The next part is the item types. These are the content models that the items must have. This is not about the
+     * events at all, but about the types of items that can be returned.
+     * </li>
+     *</ul>
+     *
+     * @param query the query
+     * @return the query string
+     */
     protected String toQueryString(Query<T> query) {
         String base = spaced(RECORD_BASE);
 
@@ -187,26 +230,24 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     }
 
     protected String getResultRestrictions(Collection<T> items) {
-        String itemsString;
-        StringBuilder batchesString = new StringBuilder();
-        batchesString.append(" AND ( ");
+        StringBuilder itemsString = new StringBuilder();
+        itemsString.append(" AND ( ");
 
         boolean first = true;
         for (Item item : items) {
             if (first) {
                 first = false;
             } else {
-                batchesString.append(" OR ");
+                itemsString.append(" OR ");
             }
-            batchesString.append(" ( ");
+            itemsString.append(" ( ");
 
-            batchesString.append("+").append(UUID).append(":\"").append(item.getDomsID()).append("\"");
+            itemsString.append("+").append(UUID).append(":\"").append(item.getDomsID()).append("\"");
 
-            batchesString.append(" ) ");
+            itemsString.append(" ) ");
         }
-        batchesString.append(" ) ");
+        itemsString.append(" ) ");
 
-        itemsString = batchesString.toString();
-        return itemsString;
+        return itemsString.toString();
     }
 }

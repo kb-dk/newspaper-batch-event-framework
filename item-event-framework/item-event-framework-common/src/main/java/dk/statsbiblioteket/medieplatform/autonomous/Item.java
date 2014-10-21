@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import java.util.Date;
 import java.util.List;
 
 /** This class represents an Item, a specific thing on which work will be done */
@@ -7,6 +8,7 @@ public class Item {
 
     private String domsID;
     private List<Event> eventList;
+    private Date lastModified;
 
 
     public Item() {
@@ -69,6 +71,14 @@ public class Item {
         }
 
         return true;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 
     @Override

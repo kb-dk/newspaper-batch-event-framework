@@ -5,16 +5,20 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class SolrProxyIterator<T extends Item> implements Iterator<T> {
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(SolrProxyIterator.class);
 
-    private boolean searched = false;
 
     Iterator<T> items = null;
 
@@ -24,7 +28,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
     private HttpSolrServer summaSearch;
     private PremisManipulatorFactory<T> premisManipulatorFactory;
     private DomsEventStorage<T> domsEventStorage;
-    private final int rows = 10;
+    private final int rows = 100;
     private int start = 0;
     private int position = 0;
 
@@ -51,17 +55,15 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
 
     private void search() {
         try {
-            searched = true;
             SolrQuery query = new SolrQuery();
             query.setQuery(queryString);
             query.setRows(rows); //Fetch size. Do not go over 1000 unless you specify fields to fetch which does not include content_text
             query.setStart(start);
             //IMPORTANT!Only use facets if needed.
             query.set("facet", "false"); //very important. Must overwrite to false. Facets are very slow and expensive.
-            if (details) {
-                query.setFields(SBOIEventIndex.UUID);
-            } else {
-                query.setFields(SBOIEventIndex.UUID, SBOIEventIndex.PREMIS_NO_DETAILS);
+            query.setFields(SBOIEventIndex.UUID, SBOIEventIndex.LAST_MODIFIED);
+            if (!details) {
+                query.addField(SBOIEventIndex.PREMIS_NO_DETAILS);
             }
 
             query.addSort(SBOIEventIndex.SORT_DATE, SolrQuery.ORDER.asc);
@@ -72,6 +74,8 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
             for (SolrDocument result : results) {
                 T hit;
                 String uuid = result.getFirstValue(SBOIEventIndex.UUID).toString();
+                String lastModified = result.getFirstValue(SBOIEventIndex.LAST_MODIFIED).toString();
+
                 if (!details) { //no details, so we can retrieve everything from Summa
                     final String blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
                     hit= premisManipulatorFactory.createFromStringBlob(blob).toItem();
@@ -79,7 +83,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
                 } else {//Details requested so go to DOMS
                     hit = domsEventStorage.getItemFromDomsID(uuid);
                 }
-
+                hit.setLastModified(parseDate(lastModified));
                 hits.add(hit);
             }
             items = hits.iterator();
@@ -89,6 +93,15 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
         }
     }
 
+    private Date parseDate(String lastModified) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            return format.parse(lastModified);
+        } catch (ParseException e) {
+            log.warn("Failed to parse date {}",lastModified,e);
+            return null;
+        }
+    }
 
 
     @Override
