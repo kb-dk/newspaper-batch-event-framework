@@ -5,6 +5,9 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A simplified solr j connector
+ */
 public class SolrJConnector {
 
     private HttpSolrServer solrServer;
