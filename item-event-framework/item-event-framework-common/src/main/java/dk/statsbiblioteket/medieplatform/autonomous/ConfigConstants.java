@@ -88,7 +88,7 @@ public class ConfigConstants {
     /** The number of batches a component can work on concurrently */
     public static final String AUTONOMOUS_MAXTHREADS = "autonomous.maxThreads";
     /** The number of items a component should lock in it's work queue. Default 1*/
-    public static final java.lang.String AUTONOMOUS_QUEUELENGTH = "autonomous.component.workQueueSize";
+    public static final java.lang.String AUTONOMOUS_QUEUELENGTH = "autonomous.workQueueSize";
     /** The max time a component can work on a batch before being forcibly stopped */
     public static final String AUTONOMOUS_MAX_RUNTIME = "autonomous.maxRuntimeForWorkers";
     /**
