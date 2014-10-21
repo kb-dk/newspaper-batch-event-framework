@@ -2,6 +2,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
@@ -39,6 +40,21 @@ public class PremisManipulatorFactory<T extends Item> {
     public PremisManipulator<T> createFromBlob(InputStream blob) throws JAXBException {
         return new PremisManipulator<>(blob, type, context, itemFactory);
     }
+
+    /**
+     * Create a new premisManipulator from an String of premis. We assume that the premis have a Object.
+     *
+     * @param blob the blob to read from
+     *
+     * @return a premis manipulator
+     * @throws JAXBException if the parsing failed
+     */
+    public PremisManipulator<T> createFromStringBlob(String blob) throws JAXBException {
+        final ByteArrayInputStream inputStream
+                = new ByteArrayInputStream(blob.getBytes());
+        return new PremisManipulator<>(inputStream, type, context, itemFactory);
+    }
+
 
     /**
      * Create a new premisManipulator from the id's of a batch. The premis will be initialised with an Object with

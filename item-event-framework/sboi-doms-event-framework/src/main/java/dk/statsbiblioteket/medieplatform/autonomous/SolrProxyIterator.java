@@ -73,11 +73,8 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
                 T hit;
                 String uuid = result.getFirstValue(SBOIEventIndex.UUID).toString();
                 if (!details) { //no details, so we can retrieve everything from Summa
-                    final ByteArrayInputStream inputStream
-                            = new ByteArrayInputStream(result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS)
-                                                             .toString()
-                                                             .getBytes());
-                    hit = premisManipulatorFactory.createFromBlob(inputStream).toItem();
+                    final String blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
+                    hit= premisManipulatorFactory.createFromStringBlob(blob).toItem();
                     hit.setDomsID(uuid);
                 } else {//Details requested so go to DOMS
                     hit = domsEventStorage.getItemFromDomsID(uuid);
