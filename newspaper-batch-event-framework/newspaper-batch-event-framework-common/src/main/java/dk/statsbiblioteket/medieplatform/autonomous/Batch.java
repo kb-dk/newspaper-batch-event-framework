@@ -22,7 +22,10 @@ public class Batch extends Item{
     }
 
     /** Constructor */
-    public Batch(String batchID, int roundTripNumber) {
+    public Batch(String batchID, Integer roundTripNumber) {
+        if (roundTripNumber == null) {
+            roundTripNumber = 0;
+        }
         setBatchID(batchID);
         setRoundTripNumber(roundTripNumber);
     }
@@ -113,7 +116,10 @@ public class Batch extends Item{
      * @param roundTripNumber the roundtrip number
      * @return a string of the format B{batchID}-RT{roundTripNumber}
      */
-    public static String formatFullID(String batchID, int roundTripNumber){
+    public static String formatFullID(String batchID, Integer roundTripNumber){
+        if (roundTripNumber == null){
+            roundTripNumber = 0;
+        }
         return "B" + batchID + "-RT" + roundTripNumber;
     }
 
