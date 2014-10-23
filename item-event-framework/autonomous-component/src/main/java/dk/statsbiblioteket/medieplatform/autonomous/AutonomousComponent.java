@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AutonomousComponent<T extends Item> implements Callable<CallResult<T>> {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
     private final List<String> up2dateEvents;
     private final List<String> outdatedEvents;
@@ -43,9 +43,9 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
     private final List<String> futureEvents;
     private boolean paused = false;
     private boolean stopped = false;
-    private Integer maxResults;
-    private EventTrigger<T> eventTrigger;
-    private EventStorer<T> eventStorer;
+    private final Integer maxResults;
+    private final EventTrigger<T> eventTrigger;
+    private final EventStorer<T> eventStorer;
 
 
     public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses, Integer workQueueMaxLength, List<String> pastSuccessfulEvents,
@@ -149,10 +149,10 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
      * <li> Locks the SBOI</li>
      * <li> gets the batches in the right state</li>
      * <li> attempts to lock it</li>
-     * <li> when #simultanousProcesses is locked or no more batches in the list</li>
-     * <li> unlock SBOI</li>
+     * <li> when sufficient batches are locked</li>
      * <li> do the work on the batches and store the results for each</li>
      * <li> when all work is completed, unlock all the batches</li>
+     * <li> unlock sboi</li>
      * </ul>
      *
      * @return true if a batch was succesfully worked on. False if no batch was ready

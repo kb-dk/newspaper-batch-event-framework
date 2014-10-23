@@ -56,7 +56,7 @@ public class AutonomousComponentUtils {
             //This is the number of batches that will be worked on in parallel per invocation
             int simultaneousProcesses = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_MAXTHREADS,
                             "1"));
-            //This is the number of batches that will be worked on in parallel per invocation
+            //This is the number of batches that will be worked on in total per invocation
             int queueLength = Integer.parseInt(properties.getProperty(ConfigConstants.AUTONOMOUS_QUEUELENGTH,
                                                                                        "1"));
 
