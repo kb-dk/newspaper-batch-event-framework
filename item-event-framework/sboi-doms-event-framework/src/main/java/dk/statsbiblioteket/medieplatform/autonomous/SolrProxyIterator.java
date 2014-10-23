@@ -34,7 +34,8 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
 
 
     public SolrProxyIterator(String queryString, boolean details, HttpSolrServer summaSearch,
-                             PremisManipulatorFactory<T> premisManipulatorFactory, DomsEventStorage<T> domsEventStorage) {
+                             PremisManipulatorFactory<T> premisManipulatorFactory,
+                             DomsEventStorage<T> domsEventStorage) {
         this.queryString = queryString;
         this.details = details;
         this.summaSearch = summaSearch;
@@ -77,8 +78,11 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
                 String lastModified = result.getFirstValue(SBOIEventIndex.LAST_MODIFIED).toString();
 
                 if (!details) { //no details, so we can retrieve everything from Summa
+                    if (result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS) == null) {
+                        continue;
+                    }
                     final String blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
-                    hit= premisManipulatorFactory.createFromStringBlob(blob).toItem();
+                    hit = premisManipulatorFactory.createFromStringBlob(blob).toItem();
                     hit.setDomsID(uuid);
                 } else {//Details requested so go to DOMS
                     hit = domsEventStorage.getItemFromDomsID(uuid);
@@ -88,7 +92,6 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
             }
             items = hits.iterator();
         } catch (Exception e) {
-
             throw new RuntimeException(e);
         }
     }
@@ -98,7 +101,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
         try {
             return format.parse(lastModified);
         } catch (ParseException e) {
-            log.warn("Failed to parse date {}",lastModified,e);
+            log.warn("Failed to parse date {}", lastModified, e);
             return null;
         }
     }
