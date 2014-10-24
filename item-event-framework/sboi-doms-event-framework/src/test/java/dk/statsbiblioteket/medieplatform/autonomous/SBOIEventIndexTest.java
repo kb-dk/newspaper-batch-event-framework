@@ -120,7 +120,8 @@ public class SBOIEventIndexTest {
         return new SBOIEventIndex<>(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
                                            new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
                                                                                  new DomsItemFactory()),
-                                           domsEventStorage);
+                                           domsEventStorage,
+                                           Integer.parseInt(props.getProperty(ConfigConstants.SBOI_PAGESIZE, "100")));
     }
 
     private Properties getProperties() throws IOException {

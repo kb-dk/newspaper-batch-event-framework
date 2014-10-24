@@ -16,6 +16,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * This is the solr proxy iterator. This is the thing that handles paged solr searched, without
+ * exposing this behaivour. It implements Iterator and should be treatable as just a normal iterator.
+ * When a fixed number of hits have been retrieved from solr, it performs a search to get the
+ * next set of hits. It will continue to do so while there are hits in solr.
+ *
+ * All hits are sorted by item creation time. This way, the sorting is stable, and any changes or additions
+ * will always happen in the end of the list. Thus, we can use offset in the list to do paging.
+ * @param <T> the type of items
+ */
 public class SolrProxyIterator<T extends Item> implements Iterator<T> {
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SolrProxyIterator.class);
 
@@ -28,23 +38,36 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
     private final HttpSolrServer summaSearch;
     private final PremisManipulatorFactory<T> premisManipulatorFactory;
     private final DomsEventStorage<T> domsEventStorage;
-    private final int rows = 100;
+    private final int rows;
     private int start = 0;
     private int position = 0;
 
 
+    /**
+     * Create a new solr proxy iterator
+     * @param queryString the query string for solr
+     * @param details should details be fetched from DOMS or Solr. True means that details are fetched from doms. False means use only what is in the sboi index, which lacks certain fields
+     * @param summaSearch the http solr server to query
+     * @param premisManipulatorFactory the premis factory to parse the premis into items
+     * @param domsEventStorage the doms event storage to use, if details is true. Can be null if details are false
+     */
     public SolrProxyIterator(String queryString, boolean details, HttpSolrServer summaSearch,
                              PremisManipulatorFactory<T> premisManipulatorFactory,
-                             DomsEventStorage<T> domsEventStorage) {
+                             DomsEventStorage<T> domsEventStorage, int pageSize) {
         this.queryString = queryString;
         this.details = details;
         this.summaSearch = summaSearch;
         this.premisManipulatorFactory = premisManipulatorFactory;
         this.domsEventStorage = domsEventStorage;
+        rows = pageSize;
         search();
     }
 
     @Override
+    /**
+     * If at least one item remains in the cache, return true. Otherwise, do a search in sboi for more hits.
+     * If any more hits are found return true and put them in cache. Otherwise return false.
+     */
     public synchronized boolean hasNext() {
         if (position >= rows) {
             start += rows;
@@ -54,6 +77,10 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
         return items.hasNext();
     }
 
+    /**
+     * Perform a search in sboi and replace the field items with the result of this search
+     * @see #items
+     */
     private void search() {
         try {
             SolrQuery query = new SolrQuery();
@@ -96,6 +123,11 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
         }
     }
 
+    /**
+     * Parse a annoying fedora date
+     * @param lastModified the date
+     * @return as a date
+     */
     private Date parseDate(String lastModified) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         try {
@@ -107,6 +139,12 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
     }
 
 
+    /**
+     * Get the next hit. If there is no next hit, perform a search for more hits. If no more hits throw
+     * NoSuchElementOperation, otherwise return next hit.
+     * @return next hit
+     * @throws java.util.NoSuchElementException if no more cached hits and no more hits in sboi.
+     */
     @Override
     public synchronized T next() {
 
@@ -118,6 +156,10 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
         }
     }
 
+    /**
+     * Unsupported Exception
+     * @throws java.lang.UnsupportedOperationException when called
+     */
     @Override
     public void remove() {
         throw new UnsupportedOperationException();

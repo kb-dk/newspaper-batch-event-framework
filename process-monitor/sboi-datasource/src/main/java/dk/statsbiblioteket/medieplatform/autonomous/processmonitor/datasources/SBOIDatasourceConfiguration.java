@@ -7,6 +7,7 @@ public class SBOIDatasourceConfiguration {
     private String domsLocation;
     private String domsUser;
     private String domsPassword;
+    private int sboiPageSize = 100;
 
     public String getSummaLocation() {
         return summaLocation;
@@ -38,5 +39,13 @@ public class SBOIDatasourceConfiguration {
 
     public void setDomsPassword(String domsPassword) {
         this.domsPassword = domsPassword;
+    }
+
+    public int getSboiPageSize() {
+        return sboiPageSize;
+    }
+
+    public void setSboiPageSize(int sboiPageSize) {
+        this.sboiPageSize = sboiPageSize;
     }
 }

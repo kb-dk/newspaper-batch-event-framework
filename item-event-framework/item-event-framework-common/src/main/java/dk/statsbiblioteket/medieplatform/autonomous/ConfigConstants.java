@@ -78,6 +78,10 @@ public class ConfigConstants {
      * Types of Items.
      */
     public static final java.lang.String AUTONOMOUS_ITEM_TYPES = "autonomous.itemTypes";
+    /**
+     * The number of results to retrieve from SBOI for each search. Default 100
+     */
+    public static final java.lang.String SBOI_PAGESIZE = "autonomous.sboi.pageSize";
 
 
     /**
@@ -142,5 +146,6 @@ public class ConfigConstants {
      * The number of times a component should retry operations on fedora, where supported.
      */
     public static final String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
+
 
 }

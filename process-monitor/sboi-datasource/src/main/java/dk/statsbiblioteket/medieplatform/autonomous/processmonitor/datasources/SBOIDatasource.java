@@ -39,7 +39,7 @@ public class SBOIDatasource implements DataSource {
                 eventAccessor = new NewspaperSBOIEventStorage(
                         configuration.getSummaLocation(),
                         new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,itemFactory),
-                        getDomsEventStorage());
+                        getDomsEventStorage(),configuration.getSboiPageSize());
             }
             return eventAccessor;
         } catch (Exception e) {

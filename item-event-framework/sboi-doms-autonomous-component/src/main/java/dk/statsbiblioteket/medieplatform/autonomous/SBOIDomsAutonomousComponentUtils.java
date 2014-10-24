@@ -54,7 +54,7 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
             return new SBOIEventIndex<>(properties.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
                                                new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
                                                                                      itemFactory),
-                                               getEventStorer(properties, itemFactory));
+                                               getEventStorer(properties, itemFactory),Integer.parseInt(properties.getProperty(ConfigConstants.SBOI_PAGESIZE,"100")));
         } catch (Exception e) {
             log.error("Unable to initialize event trigger", e);
             throw new InitialisationException("Unable to initialize event trigger", e);

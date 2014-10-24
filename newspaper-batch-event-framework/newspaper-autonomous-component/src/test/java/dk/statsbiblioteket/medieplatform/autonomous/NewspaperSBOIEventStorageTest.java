@@ -99,9 +99,11 @@ public class NewspaperSBOIEventStorageTest {
         DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
 
         return new NewspaperSBOIEventStorage(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
-                                           new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
-                                                                                 new BatchItemFactory()),
-                                           domsEventStorage);
+                                                    new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
+                                                                                          new BatchItemFactory()),
+                                                    domsEventStorage,
+                                                    Integer.parseInt(props.getProperty(ConfigConstants.SBOI_PAGESIZE,
+                                                                                              "100")));
     }
 
     private Properties getProperties() throws IOException {

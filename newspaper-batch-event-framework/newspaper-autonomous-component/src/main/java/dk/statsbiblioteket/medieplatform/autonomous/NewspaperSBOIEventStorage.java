@@ -12,8 +12,8 @@ public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements 
     private final DomsEventStorage<Batch> domsEventStorage;
 
     public NewspaperSBOIEventStorage(String summaLocation, PremisManipulatorFactory<Batch> premisManipulatorFactory,
-                                     DomsEventStorage<Batch> domsEventStorage) throws MalformedURLException {
-        super(summaLocation, premisManipulatorFactory, domsEventStorage);
+                                     DomsEventStorage<Batch> domsEventStorage, int pageSize) throws MalformedURLException {
+        super(summaLocation, premisManipulatorFactory, domsEventStorage,pageSize);
         this.domsEventStorage = domsEventStorage;
     }
 

@@ -34,13 +34,14 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     private final PremisManipulatorFactory<T> premisManipulatorFactory;
     private DomsEventStorage<T> domsEventStorage;
     private final HttpSolrServer summaSearch;
+    private final int pageSize;
 
     public SBOIEventIndex(String summaLocation, PremisManipulatorFactory<T> premisManipulatorFactory,
-                          DomsEventStorage<T> domsEventStorage) throws MalformedURLException {
+                          DomsEventStorage<T> domsEventStorage, int pageSize) throws MalformedURLException {
         this.premisManipulatorFactory = premisManipulatorFactory;
         this.domsEventStorage = domsEventStorage;
+        this.pageSize = pageSize;
         summaSearch = new SolrJConnector(summaLocation).getSolrServer();
-
     }
 
     public static String anded(List<String> events) {
@@ -145,7 +146,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * @throws CommunicationException if the communication failed
      */
     public Iterator<T> search(boolean details, Query<T> query) throws CommunicationException {
-       return new SolrProxyIterator<>(toQueryString(query),details,summaSearch,premisManipulatorFactory,domsEventStorage);
+       return new SolrProxyIterator<>(toQueryString(query),details,summaSearch,premisManipulatorFactory,domsEventStorage,pageSize);
     }
 
 
