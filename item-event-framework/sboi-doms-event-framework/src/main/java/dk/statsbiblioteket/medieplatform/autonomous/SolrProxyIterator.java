@@ -20,14 +20,14 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SolrProxyIterator.class);
 
 
-    Iterator<T> items = null;
+    private Iterator<T> items = null;
 
 
-    private String queryString;
-    private boolean details;
-    private HttpSolrServer summaSearch;
-    private PremisManipulatorFactory<T> premisManipulatorFactory;
-    private DomsEventStorage<T> domsEventStorage;
+    private final String queryString;
+    private final boolean details;
+    private final HttpSolrServer summaSearch;
+    private final PremisManipulatorFactory<T> premisManipulatorFactory;
+    private final DomsEventStorage<T> domsEventStorage;
     private final int rows = 100;
     private int start = 0;
     private int position = 0;
