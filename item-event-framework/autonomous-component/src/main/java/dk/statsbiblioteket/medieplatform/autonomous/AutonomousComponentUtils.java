@@ -125,8 +125,11 @@ public class AutonomousComponentUtils {
      * @return as a list
      */
     private static List<String> toEvents(String events) {
-        String[] eventSplits = events.split(",");
         List<String> result = new ArrayList<>();
+        if (events == null){
+            return result;
+        }
+        String[] eventSplits = events.split(",");
         for (String eventSplit : eventSplits) {
             if (!eventSplit.trim().isEmpty()) {
                 result.add(eventSplit.trim());
