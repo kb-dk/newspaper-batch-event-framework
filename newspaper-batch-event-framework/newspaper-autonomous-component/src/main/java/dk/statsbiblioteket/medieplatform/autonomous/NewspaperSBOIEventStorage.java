@@ -27,9 +27,6 @@ public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements 
         if (pastSuccessfulEvents != null) {
             query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
         }
-        if (pastFailedEvents != null) {
-            query.getPastFailedEvents().addAll(pastFailedEvents);
-        }
         return super.search(details,query);
     }
 

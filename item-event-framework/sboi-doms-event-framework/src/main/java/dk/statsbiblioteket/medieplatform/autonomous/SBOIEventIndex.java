@@ -20,13 +20,12 @@ import java.util.Set;
 public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
     public static final String SUCCESSEVENT = "success_event";
-    public static final String FAILEVENT = "fail_event";
+    public static final String EVENT = "event";
     public static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     public static final String UUID = "item_uuid";
     public static final String SORT_DATE = "initial_date";
     public static final String PREMIS_NO_DETAILS = "premis_no_details";
     private static final String OUTDATEDEVENT = "outdated_event";
-    private static final String UP2DATEEVENT = "up2date_event";
     private static final String ITEMTYPE = "item_models";
     public static final String LAST_MODIFIED = "lastmodified_date";
 
@@ -68,13 +67,13 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
     @Override
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> pastFailedEvents, Collection<String> futureEvents) throws CommunicationException {
-        return getTriggeredItems(pastSuccessfulEvents, pastFailedEvents, futureEvents, new ArrayList<T>());
+                                            Collection<String> outdatedEvents, Collection<String> futureEvents) throws CommunicationException {
+        return getTriggeredItems(pastSuccessfulEvents, outdatedEvents, futureEvents, new ArrayList<T>());
     }
 
     @Override
     public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> pastFailedEvents, Collection<String> futureEvents,
+                                            Collection<String> outdatedEvents, Collection<String> futureEvents,
                                             Collection<T> items) throws CommunicationException {
         Query<T> query = new Query<T>();
         if (futureEvents != null) {
@@ -83,8 +82,8 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         if (pastSuccessfulEvents != null) {
             query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
         }
-        if (pastFailedEvents != null) {
-            query.getPastFailedEvents().addAll(pastFailedEvents);
+        if (outdatedEvents != null){
+            query.getOutdatedEvents().addAll(outdatedEvents);
         }
         if (items != null) {
             query.getItems().addAll(items);
@@ -105,7 +104,6 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         Set<String> successEvents = new HashSet<>();
         Set<String> failEvents = new HashSet<>();
         Set<String> outdatedEvents = new HashSet<>();
-        Set<String> up2dateEvents = new HashSet<>();
         for (Event event : item.getEventList()) {
             existingEvents.add(event.getEventID());
             if (event.isSuccess()) {
@@ -114,28 +112,23 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
                 failEvents.add(event.getEventID());
             }
             if (item.getLastModified() != null) {
-                if (event.getDate().after(item.getLastModified())) {
-                    up2dateEvents.add(event.getEventID());
-                } else {
+                if (!event.getDate().after(item.getLastModified())) {
                     outdatedEvents.add(event.getEventID());
                 }
             }
         }
         final boolean successEventsGood = successEvents.containsAll(query.getPastSuccessfulEvents());
 
-        final boolean failEventsGood = failEvents.containsAll(query.getPastFailedEvents());
-        final boolean futureSuccessEventsGood = Collections.disjoint(query.getFutureEvents(), successEvents);
-        final boolean futureFailEventsGood = Collections.disjoint(query.getFutureEvents(), failEvents);
-        final boolean up2dateEventsGood = up2dateEvents.containsAll(query.getUp2dateEvents());
-        final boolean outdatedEventsGood = outdatedEvents.containsAll(query.getOutdatedEvents());
 
-        boolean outdatedOrMissingGood = true;
-        for (String outdatedOrMissing : query.getOutdatedOrMissingEvents()) {
-            outdatedOrMissingGood =  outdatedOrMissingGood && outdatedEvents.contains(outdatedOrMissing) || !existingEvents.contains(outdatedOrMissing);
+        boolean outdatedEventsGood = true;
+        for (String outdatedEvent : query.getOutdatedEvents()) {
+            outdatedEventsGood = outdatedEventsGood && (outdatedEvents.contains(outdatedEvent) || !existingEvents.contains(outdatedEvent));
         }
+        boolean futureEventsGood = Collections.disjoint(existingEvents, query.getFutureEvents());
+
 
         //TODO we do not check for items or types for now
-        return successEventsGood && failEventsGood && futureSuccessEventsGood && futureFailEventsGood && up2dateEventsGood && outdatedEventsGood && outdatedOrMissingGood;
+        return successEventsGood  && outdatedEventsGood && futureEventsGood;
     }
 
 
@@ -201,28 +194,22 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             events.add(spaced("+" + SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
         }
 
-        for (String failedPastEvent : query.getPastFailedEvents()) {
-            events.add(spaced("+" + FAILEVENT + ":" + quoted(failedPastEvent)));
-        }
-        for (String futureEvent : query.getFutureEvents()) {
-            events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(futureEvent)));
-            events.add(spaced("-" + FAILEVENT + ":" + quoted(futureEvent)));
-        }
 
         for (String outdatedEvent : query.getOutdatedEvents()) {
-            events.add(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedEvent)));
+            StringBuilder f = new StringBuilder();
+            f.append(" ( ");
+            f.append(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedEvent)));
+            f.append(" OR ( ");
+            f.append(spaced("-" + EVENT + ":" + quoted(outdatedEvent)));
+            f.append(" ) )");
+            events.add(f.toString());
         }
-        for (String up2dateEvent : query.getUp2dateEvents()) {
-            events.add(spaced("+" + UP2DATEEVENT + ":" + quoted(up2dateEvent)));
+
+        for (String futureEvent : query.getFutureEvents()) {
+            events.add(spaced("-" + EVENT + ":" + quoted(futureEvent)));
         }
-        for (String outdatedOrMissing : query.getOutdatedOrMissingEvents()) {
-            events.add(" +( ( ");
-            events.add(spaced("-" + SUCCESSEVENT + ":" + quoted(outdatedOrMissing)));
-            events.add(spaced("-" + FAILEVENT + ":" + quoted(outdatedOrMissing)));
-            events.add(" ) OR ");
-            events.add(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedOrMissing)));
-            events.add(" ) ");
-        }
+
+
         for (String type : query.getTypes()) {
             events.add(spaced("+" + ITEMTYPE + ":" + quoted(type)));
         }

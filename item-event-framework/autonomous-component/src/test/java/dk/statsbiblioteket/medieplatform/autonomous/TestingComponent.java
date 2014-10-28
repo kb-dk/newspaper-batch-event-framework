@@ -36,7 +36,7 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
 
             @Override
             public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                                              Collection<String> pastFailedEvents,
+                                                              Collection<String> outdatedEvents,
                                                               Collection<String> futureEvents)
                     throws CommunicationException {
                 return items.iterator();
@@ -44,7 +44,7 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
 
             @Override
             public Iterator<Item> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                                              Collection<String> pastFailedEvents,
+                                                              Collection<String> outdatedEvents,
                                                               Collection<String> futureEvents,
                                                               Collection<Item> itemCollection) throws
                                                                                                     CommunicationException {
