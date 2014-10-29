@@ -27,9 +27,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex<Item> summa = getSboiClient(props);
-        Iterator<Item> batches = summa.getTriggeredItems(Arrays.asList("Data_Received"),
-                                                                new ArrayList<String>(),
-                                                                Arrays.asList("Roundtrip_Approved"));
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        Iterator<Item> batches = summa.getTriggeredItems(query);
         int count = 0;
         while (batches.hasNext()) {
             Item next = batches.next();
@@ -44,11 +45,13 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex<Item> summa = getSboiClient(props);
-        Iterator<Item> batches = summa.getTriggeredItems(Arrays.asList("Data_Received"),
-                                                                new ArrayList<String>(),
-                                                                Arrays.asList("Roundtrip_Approved"));
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        Iterator<Item> batches = summa.getTriggeredItems(query);
         Item first = batches.next();
-        Iterator<Item> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
+        query.getItems().add(first);
+        Iterator<Item> batches2 = summa.getTriggeredItems(query);
 
         Assert.assertEquals(batches2.next(), first);
 
@@ -60,13 +63,16 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex<Item> summa = getSboiClient(props);
-        Iterator<Item> batches = summa.getTriggeredItems(Arrays.asList("Data_Received"),
-                                                                new ArrayList<String>(),
-                                                                Arrays.asList("Roundtrip_Approved"));
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        Iterator<Item> batches = summa.getTriggeredItems(query);
         Item first = batches.next();
         Item second = batches.next();
+        query.getItems().add(first);
+        query.getItems().add(second);
 
-        Iterator<Item> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
+        Iterator<Item> batches2 = summa.getTriggeredItems(query);
 
         HashSet<Item> results = new HashSet<>();
         results.add(first);
@@ -87,11 +93,10 @@ public class SBOIEventIndexTest {
         Properties props = getProperties();
 
         SBOIEventIndex<Item> summa = getSboiClient(props);
-        Iterator<Item> batches = summa.getTriggeredItems(
-                                                     Arrays.asList("Data_Received"),
-                                                     new ArrayList<String>(),
-                                                     Arrays.asList("Roundtrip_Approved"),
-                                                     null);
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        Iterator<Item> batches = summa.getTriggeredItems(query);
         List<Item> list = new ArrayList<>();
         Set<Item> set = new HashSet<>();
         while (batches.hasNext()) {

@@ -18,8 +18,7 @@ public class NewspaperSBOIEventStorage extends SBOIEventIndex<Batch> implements 
     }
 
     @Override
-    public Iterator<Batch> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                 List<String> futureEvents) throws CommunicationException {
+    public Iterator<Batch> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> futureEvents) throws CommunicationException {
         Query<Batch> query = new Query<Batch>();
         if (futureEvents != null) {
             query.getFutureEvents().addAll(futureEvents);

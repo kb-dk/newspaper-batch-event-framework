@@ -20,13 +20,11 @@ public interface EventAccessor<T extends Item> {
      * Perform a search for batches matching the given criteria
      *
      * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param pastFailedEvents     Events that the batch must have experienced, but which failed
      * @param futureEvents         Events that the batch must not have experienced
      *
      * @return An iterator over the found batches
      * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
      */
-    public Iterator<T> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> pastFailedEvents,
-                                    List<String> futureEvents) throws CommunicationException;
+    public Iterator<T> findItems(boolean details, List<String> pastSuccessfulEvents, List<String> futureEvents) throws CommunicationException;
 
 }

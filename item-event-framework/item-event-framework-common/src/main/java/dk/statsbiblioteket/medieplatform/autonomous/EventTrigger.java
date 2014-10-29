@@ -21,41 +21,11 @@ public interface EventTrigger<T extends Item> {
 
 
     /**
-     * Perform a search for batches matching the given criteria. All results are checked against DOMS
-     * as we do not trust that the SBOI have the most current edition.
-     *
-     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param outdatedEvents     Events that the batch must have experienced, but which failed
-     * @param futureEvents         Events that the batch must not have experienced
-     *
-     * @return An iterator over the found batches
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
-     * @deprecated use getTriggeredItems(Query) instead
+     * This is the query object for a SBOI query.
+     * For all the fields, if the field is not set, it does not constrain the search. If several
+     * fields are set, the constraints are ANDed.
+     * @param <T> the type of items
      */
-    @Deprecated
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> outdatedEvents, Collection<String> futureEvents) throws
-                                                                                            CommunicationException;
-
-    /**
-     * Perform a search for batches matching the given criteria. All results are checked against DOMS
-     * as we do not trust that the SBOI have the most current edition.
-     *
-     * @param pastSuccessfulEvents Events that the batch must have sucessfully experienced
-     * @param outdatedEvents     Events that the batch must have experienced, but which failed
-     * @param futureEvents         Events that the batch must not have experienced
-     * @param batches              The resulting iterator will only contain hits from this collection.
-     *
-     * @return An iterator over the found batches
-     * @throws dk.statsbiblioteket.medieplatform.autonomous.CommunicationException if the communication failed
-     * @deprecated use getTriggeredItems(Query) instead
-     */
-    @Deprecated
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> outdatedEvents, Collection<String> futureEvents,
-                                            Collection<T> batches) throws
-                                                                                                  CommunicationException;
-
     public class Query<T extends Item> {
         private final Collection<String> pastSuccessfulEvents = new HashSet<>();
         private final Collection<String> futureEvents = new HashSet<>();
@@ -64,22 +34,44 @@ public interface EventTrigger<T extends Item> {
         private final Collection<T> items = new HashSet<>();
 
 
+        /**
+         * Get the Past Successful Events. These are the events that the item must have experienced, and which
+         * have a successful outcome
+         * @return a modifiable collection, never null
+         */
         public Collection<String> getPastSuccessfulEvents() {
             return pastSuccessfulEvents;
         }
 
+        /**
+         * Get the Future Events. These are the events that the item must not have experienced.
+         * @return a modifiable collection, never null
+         */
         public Collection<String> getFutureEvents() {
             return futureEvents;
         }
 
+        /**
+         * These are the types of objects, ie. content models, that the items must have
+         * @return a modifiable collection, never null
+         */
         public Collection<String> getTypes() {
             return types;
         }
 
+        /**
+         * Get the outdated Events. These are the events that the item must not have experienced OR for which
+         * the item have been modified since it experienced the event
+         * @return a modifiable collection, never null
+         */
         public Collection<String> getOutdatedEvents() {
             return outdatedEvents;
         }
 
+        /**
+         * These are the items that can appear in the result set.
+         * @return a modifiable collection, never null
+         */
         public Collection<T> getItems() {
             return items;
         }

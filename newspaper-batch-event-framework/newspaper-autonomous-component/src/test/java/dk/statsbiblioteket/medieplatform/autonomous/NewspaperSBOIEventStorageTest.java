@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,9 +27,7 @@ public class NewspaperSBOIEventStorageTest {
 
         NewspaperSBOIEventStorage summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findItems(false,
-                                                                  Arrays.asList("Data_Received"),
-                                                                  new ArrayList<String>(),
-                                                                  Arrays.asList("Roundtrip_Approved"));
+                                                                  Arrays.asList("Data_Received"), Arrays.asList("Roundtrip_Approved"));
         int count = 0;
         while (batches.hasNext()) {
             Item next = batches.next();
@@ -47,11 +44,13 @@ public class NewspaperSBOIEventStorageTest {
 
         NewspaperSBOIEventStorage summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findItems(false,
-                                                                  Arrays.asList("Data_Received"),
-                                                                  new ArrayList<String>(),
-                                                                  Arrays.asList("Roundtrip_Approved"));
+                                                                  Arrays.asList("Data_Received"), Arrays.asList("Roundtrip_Approved"));
         Batch first = batches.next();
-        Iterator< Batch> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first));
+        EventTrigger.Query<Batch> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        query.getItems().add(first);
+        Iterator<Batch> batches2 = summa.getTriggeredItems(query);
 
         assertEquals(
                 batches2.next(),first);
@@ -65,13 +64,16 @@ public class NewspaperSBOIEventStorageTest {
 
         NewspaperSBOIEventStorage summa = getSboiClient(props);
         Iterator<Batch> batches = summa.findItems(false,
-                                                                  Arrays.asList("Data_Received"),
-                                                                  new ArrayList<String>(),
-                                                                  Arrays.asList("Roundtrip_Approved"));
+                                                                  Arrays.asList("Data_Received"), Arrays.asList("Roundtrip_Approved"));
         Batch first = batches.next();
         Batch second = batches.next();
 
-        Iterator<Batch> batches2 = summa.getTriggeredItems(Arrays.asList("Data_Received"), new ArrayList<String>(), Arrays.asList("Roundtrip_Approved"), Arrays.asList(first,second));
+        EventTrigger.Query<Batch> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getFutureEvents().add("Roundtrip_Approved");
+        query.getItems().add(first);
+        query.getItems().add(second);
+        Iterator<Batch> batches2 = summa.getTriggeredItems(query);
 
         HashSet<Batch> results = new HashSet<>();
         results.add(first);

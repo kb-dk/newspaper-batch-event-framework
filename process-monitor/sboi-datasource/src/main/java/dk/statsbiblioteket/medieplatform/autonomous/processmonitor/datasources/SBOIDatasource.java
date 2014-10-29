@@ -11,7 +11,6 @@ import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperSBOIEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
-import dk.statsbiblioteket.medieplatform.autonomous.SBOIEventIndex;
 
 import javax.xml.bind.JAXBException;
 import java.net.MalformedURLException;
@@ -70,9 +69,7 @@ public class SBOIDatasource implements DataSource {
                                                                                        NotWorkingProperlyException {
         try {
             Iterator<Batch> batches = getEventExplorer().findItems(includeDetails,
-                                                                                   Arrays.asList("Data_Received"),
-                                                                                   new ArrayList<String>(),
-                                                                                   new ArrayList<String>());
+                                                                                   Arrays.asList("Data_Received"), new ArrayList<String>());
             return iteratorToBatchList(batches);
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException("Failed to communicate with SBOI", e);

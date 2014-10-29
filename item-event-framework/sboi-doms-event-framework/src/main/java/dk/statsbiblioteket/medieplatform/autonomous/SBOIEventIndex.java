@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -19,14 +18,10 @@ import java.util.Set;
  */
 public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
-    public static final String SUCCESSEVENT = "success_event";
-    public static final String EVENT = "event";
     public static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     public static final String UUID = "item_uuid";
     public static final String SORT_DATE = "initial_date";
     public static final String PREMIS_NO_DETAILS = "premis_no_details";
-    private static final String OUTDATEDEVENT = "outdated_event";
-    private static final String ITEMTYPE = "item_models";
     public static final String LAST_MODIFIED = "lastmodified_date";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
@@ -43,13 +38,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         summaSearch = new SolrJConnector(summaLocation).getSolrServer();
     }
 
-    public static String anded(List<String> events) {
-        StringBuilder result = new StringBuilder();
-        for (String event : events) {
-            result.append(" AND ").append(event);
-        }
-        return result.toString();
-    }
+
 
 
     @Override
@@ -65,32 +54,6 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         return result.iterator();
     }
 
-    @Override
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> outdatedEvents, Collection<String> futureEvents) throws CommunicationException {
-        return getTriggeredItems(pastSuccessfulEvents, outdatedEvents, futureEvents, new ArrayList<T>());
-    }
-
-    @Override
-    public Iterator<T> getTriggeredItems(Collection<String> pastSuccessfulEvents,
-                                            Collection<String> outdatedEvents, Collection<String> futureEvents,
-                                            Collection<T> items) throws CommunicationException {
-        Query<T> query = new Query<T>();
-        if (futureEvents != null) {
-            query.getFutureEvents().addAll(futureEvents);
-        }
-        if (pastSuccessfulEvents != null) {
-            query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
-        }
-        if (outdatedEvents != null){
-            query.getOutdatedEvents().addAll(outdatedEvents);
-        }
-        if (items != null) {
-            query.getItems().addAll(items);
-        }
-        return getTriggeredItems(query);
-    }
-
     /**
      * Check that the item matches the requirements expressed in the three lists
      *
@@ -102,14 +65,11 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     private boolean match(Item item, Query<T> query) {
         Set<String> existingEvents = new HashSet<>();
         Set<String> successEvents = new HashSet<>();
-        Set<String> failEvents = new HashSet<>();
         Set<String> outdatedEvents = new HashSet<>();
         for (Event event : item.getEventList()) {
             existingEvents.add(event.getEventID());
             if (event.isSuccess()) {
                 successEvents.add(event.getEventID());
-            } else {
-                failEvents.add(event.getEventID());
             }
             if (item.getLastModified() != null) {
                 if (!event.getDate().after(item.getLastModified())) {
@@ -127,8 +87,9 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         boolean futureEventsGood = Collections.disjoint(existingEvents, query.getFutureEvents());
 
 
+
         //TODO we do not check for items or types for now
-        return successEventsGood  && outdatedEventsGood && futureEventsGood;
+        return successEventsGood  && outdatedEventsGood && futureEventsGood && query.getItems().contains(item);
     }
 
 
@@ -148,7 +109,15 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
     }
 
     protected static String quoted(String string) {
-        return "\"" + string + "\"";
+        return "\"" + string.replaceAll("\"","\\\"") + "\"";
+    }
+
+    public static String anded(List<String> events) {
+        StringBuilder result = new StringBuilder();
+        for (String event : events) {
+            result.append(" AND ").append(event);
+        }
+        return result.toString();
     }
 
     /**
@@ -159,16 +128,9 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      *</li><li>
      * The next part is the success events. Items must have these events with outcome success
      *</li><li>
-     * The next part is the fail events. Items must have these events with the outcome failure
-     *</li><li>
      * The next part is the future events. Items must not have these events in with any outcome.
      *</li><li>
-     * The next part is the outdated events. Items must have these events (outcome not important) and must have received an update since this event was registered
-     *</li><li>
-     * The next part is the up2date events. Items must have these events (outcome not important) and must not have
-     * received an update since this event was registered
-     *</li><li>
-     * The next part is the outdatedOrMissing events. This is a combined thingy. Items must have these events as outdated events, or not at all.
+     * The next part is the outdated events. Items must either not have these events, or must have these events and must have received an update since this event was registered
      *</li><li>
      * The next part is the item types. These are the content models that the items must have. This is not about the
      * events at all, but about the types of items that can be returned.
@@ -191,27 +153,20 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
 
         for (String successfulPastEvent : query.getPastSuccessfulEvents()) {
-            events.add(spaced("+" + SUCCESSEVENT + ":" + quoted(successfulPastEvent)));
+            events.add(String.format(" +success_event:%1$s ", quoted(successfulPastEvent)));
         }
 
 
         for (String outdatedEvent : query.getOutdatedEvents()) {
-            StringBuilder f = new StringBuilder();
-            f.append(" ( ");
-            f.append(spaced("+" + OUTDATEDEVENT + ":" + quoted(outdatedEvent)));
-            f.append(" OR ( ");
-            f.append(spaced("-" + EVENT + ":" + quoted(outdatedEvent)));
-            f.append(" ) )");
-            events.add(f.toString());
+            events.add(String.format(" ( +outdated_event:%1$s OR ( -event:%1$s ) ) ", quoted(outdatedEvent)));
         }
 
         for (String futureEvent : query.getFutureEvents()) {
-            events.add(spaced("-" + EVENT + ":" + quoted(futureEvent)));
+            events.add(String.format(" -event:%1$s ", quoted(futureEvent)));
         }
 
-
         for (String type : query.getTypes()) {
-            events.add(spaced("+" + ITEMTYPE + ":" + quoted(type)));
+            events.add(String.format(" -item_models:%1$s ", quoted(type)));
         }
 
         return base + itemsString + anded(events);
@@ -228,11 +183,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             } else {
                 itemsString.append(" OR ");
             }
-            itemsString.append(" ( ");
-
-            itemsString.append("+").append(UUID).append(":\"").append(item.getDomsID()).append("\"");
-
-            itemsString.append(" ) ");
+            itemsString.append(String.format(" ( +"+UUID+":%1$s ) ",quoted(item.getDomsID())));
         }
         itemsString.append(" ) ");
 
