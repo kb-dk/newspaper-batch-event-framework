@@ -5,6 +5,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transfor
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,8 @@ public class MockupIteratorSuper extends SampleRunnableComponent {
             throw new RuntimeException("Failed to find datafiles", e);
         }
 
-        return new TransformingIteratorForFileSystems(dataDir, Pattern.quote("-"), ".*\\.jp2$", ".md5");
+        return new TransformingIteratorForFileSystems(dataDir, Pattern.quote("-"), ".*\\.jp2$", ".md5",
+                                                      Arrays.asList("transfer_complete", "transfer_acknowledged"));
 
     }
 }

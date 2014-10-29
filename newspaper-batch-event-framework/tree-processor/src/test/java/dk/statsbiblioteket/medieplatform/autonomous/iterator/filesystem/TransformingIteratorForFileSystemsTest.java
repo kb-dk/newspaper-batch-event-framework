@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
-
+import java.util.Arrays;
 
 public class TransformingIteratorForFileSystemsTest extends AbstractTests {
 
@@ -18,7 +18,9 @@ public class TransformingIteratorForFileSystemsTest extends AbstractTests {
         if (iterator == null) {
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new TransformingIteratorForFileSystems(file, "\\.", ".*\\.jp2", ".md5");
+            iterator = new TransformingIteratorForFileSystems(file, "\\.", ".*\\.jp2", ".md5",
+                                                              Arrays.asList("transfer_complete",
+                                                                            "transfer_acknowledged"));
         }
         return iterator;
 

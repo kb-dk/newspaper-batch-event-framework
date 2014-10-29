@@ -27,7 +27,8 @@ public class TreeNodesStructurePrint {
         EventRunner eventRunner = new EventRunner(new TransformingIteratorForFileSystems(new File(pathToTestBatch),
                                                                                          "\\.",
                                                                                          ".*\\.jp2",
-                                                                                         ".md5"),
+                                                                                         ".md5",
+                                                                                         Arrays.asList("transfer_complete", "transfer_acknowledged")),
                 Arrays.asList(handler),
                 null);
 

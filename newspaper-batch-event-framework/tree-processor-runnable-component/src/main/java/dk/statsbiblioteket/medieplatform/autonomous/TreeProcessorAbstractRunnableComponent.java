@@ -77,7 +77,8 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
 
             String checksumPostFix = getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX,
                                                                  ".md5");
-            return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix);
+            return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix,
+                                                          Arrays.asList(getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_IGNOREDFILES, "transfer_complete,transfer_acknowledged,delete_ok").split(",")));
 
         } else {
             Client client = Client.create();

@@ -4,6 +4,7 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.filesystem.transfor
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class InvalidDirTest {
 
@@ -11,7 +12,8 @@ public class InvalidDirTest {
 
     public void testInvalidDir() {
         TransformingIteratorForFileSystems iterator = new TransformingIteratorForFileSystems(
-                new File("/invalid"), "\\.", ".*\\.jp2", ".md5");
+                new File("/invalid"), "\\.", ".*\\.jp2", ".md5",
+                Arrays.asList("transfer_complete", "transfer_acknowledged"));
         iterator.next();
         iterator.next();
         iterator.next();
