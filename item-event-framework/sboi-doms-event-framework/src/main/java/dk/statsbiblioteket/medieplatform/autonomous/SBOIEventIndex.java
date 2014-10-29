@@ -88,8 +88,10 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
 
 
-        //TODO we do not check for items or types for now
-        return successEventsGood  && oldEventsGood && futureEventsGood && query.getItems().contains(item);
+        //TODONT we do not check for types for now
+        return successEventsGood  && oldEventsGood && futureEventsGood && (query.getItems()
+                                                                                .isEmpty() || query.getItems()
+                                                                                                   .contains(item));
     }
 
 
