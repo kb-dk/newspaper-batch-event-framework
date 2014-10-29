@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,7 +28,7 @@ public interface EventTrigger<T extends Item> {
     public class Query<T extends Item> {
         private final Collection<String> pastSuccessfulEvents = new HashSet<>();
         private final Collection<String> futureEvents = new HashSet<>();
-        private final Collection<String> outdatedEvents = new HashSet<>();
+        private final Collection<String> oldEvents = new HashSet<>();
         private final Collection<String> types = new HashSet<>();
         private final Collection<T> items = new HashSet<>();
 
@@ -60,12 +59,12 @@ public interface EventTrigger<T extends Item> {
         }
 
         /**
-         * Get the outdated Events. These are the events that the item must not have experienced OR for which
+         * Get the old Events. These are the events that the item must not have experienced OR for which
          * the item have been modified since it experienced the event
          * @return a modifiable collection, never null
          */
-        public Collection<String> getOutdatedEvents() {
-            return outdatedEvents;
+        public Collection<String> getOldEvents() {
+            return oldEvents;
         }
 
         /**

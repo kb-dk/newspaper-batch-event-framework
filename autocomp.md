@@ -18,7 +18,7 @@ To poll for work, a robot queries the SBOI. This query consists of a number of f
  * The first part of the query is the Items, ie. the set of items which constrain the result set
  * The next part is the success events. Items must have these events with outcome success
  * The next part is the future events. Items must not have these events in with any outcome.
- * The next part is the outdated events. Items must either not have these events or must have received a change since this event was registered
+ * The next part is the old events. Items must either not have these events or must have received a change since this event was registered
  * The next part is the item types. These are the content models that the items must have. This is not about the events at all, but about the types of items that can be returned.
  
 Autonomous Component Life Cycle

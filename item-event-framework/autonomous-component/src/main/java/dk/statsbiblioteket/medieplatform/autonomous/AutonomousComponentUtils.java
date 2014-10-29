@@ -85,7 +85,7 @@ public class AutonomousComponentUtils {
                     queueLength,
                     toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_PAST_SUCCESSFUL_EVENTS)),
                                                                                   toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_FUTURE_EVENTS)),
-                                                                                  toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_OUTDATED_EVENTS)),
+                                                                                  toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_OLD_EVENTS)),
                                                                                   toEvents(properties.getProperty(ConfigConstants.AUTONOMOUS_ITEM_TYPES)),
                     timeoutWaitingToLockSBOI,
                     timeoutWaitingToLockBatch,

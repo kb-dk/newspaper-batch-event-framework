@@ -62,10 +62,10 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      *
      * @return true if the item match all requirements
      */
-    private boolean match(Item item, Query<T> query) {
+    private boolean match(T item, Query<T> query) {
         Set<String> existingEvents = new HashSet<>();
         Set<String> successEvents = new HashSet<>();
-        Set<String> outdatedEvents = new HashSet<>();
+        Set<String> oldEvents = new HashSet<>();
         for (Event event : item.getEventList()) {
             existingEvents.add(event.getEventID());
             if (event.isSuccess()) {
@@ -73,23 +73,23 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
             }
             if (item.getLastModified() != null) {
                 if (!event.getDate().after(item.getLastModified())) {
-                    outdatedEvents.add(event.getEventID());
+                    oldEvents.add(event.getEventID());
                 }
             }
         }
         final boolean successEventsGood = successEvents.containsAll(query.getPastSuccessfulEvents());
 
 
-        boolean outdatedEventsGood = true;
-        for (String outdatedEvent : query.getOutdatedEvents()) {
-            outdatedEventsGood = outdatedEventsGood && (outdatedEvents.contains(outdatedEvent) || !existingEvents.contains(outdatedEvent));
+        boolean oldEventsGood = true;
+        for (String oldEvent : query.getOldEvents()) {
+            oldEventsGood = oldEventsGood && (oldEvents.contains(oldEvent) || !existingEvents.contains(oldEvent));
         }
         boolean futureEventsGood = Collections.disjoint(existingEvents, query.getFutureEvents());
 
 
 
         //TODO we do not check for items or types for now
-        return successEventsGood  && outdatedEventsGood && futureEventsGood && query.getItems().contains(item);
+        return successEventsGood  && oldEventsGood && futureEventsGood && query.getItems().contains(item);
     }
 
 
@@ -130,7 +130,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      *</li><li>
      * The next part is the future events. Items must not have these events in with any outcome.
      *</li><li>
-     * The next part is the outdated events. Items must either not have these events, or must have these events and must have received an update since this event was registered
+     * The next part is the old events. Items must either not have these events, or must have these events and must have received an update since this event was registered
      *</li><li>
      * The next part is the item types. These are the content models that the items must have. This is not about the
      * events at all, but about the types of items that can be returned.
@@ -157,8 +157,8 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         }
 
 
-        for (String outdatedEvent : query.getOutdatedEvents()) {
-            events.add(String.format(" ( +outdated_event:%1$s OR ( -event:%1$s ) ) ", quoted(outdatedEvent)));
+        for (String oldEvents : query.getOldEvents()) {
+            events.add(String.format(" ( +old_event:%1$s OR ( -event:%1$s ) ) ", quoted(oldEvents)));
         }
 
         for (String futureEvent : query.getFutureEvents()) {

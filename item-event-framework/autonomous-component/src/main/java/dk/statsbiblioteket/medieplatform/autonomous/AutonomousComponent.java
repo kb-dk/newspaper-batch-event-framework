@@ -7,11 +7,9 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,7 +24,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AutonomousComponent.class);
     private final CuratorFramework lockClient;
-    private final List<String> outdatedEvents;
+    private final List<String> oldEvents;
     private final List<String> itemTypes;
     private final long timeoutSBOI;
     private final long timeoutBatch;
@@ -47,12 +45,12 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
 
     public AutonomousComponent(RunnableComponent<T> runnable, CuratorFramework lockClient, int simultaneousProcesses,
                                Integer workQueueMaxLength, List<String> pastSuccessfulEvents, List<String> futureEvents,
-                               List<String> outdatedEvents, List<String> itemTypes, long timeoutSBOI, long timeoutBatch,
+                               List<String> oldEvents, List<String> itemTypes, long timeoutSBOI, long timeoutBatch,
                                long workerTimout, Integer maxResults, EventTrigger<T> eventTrigger, EventStorer<T> eventStorer) {
 
         this.lockClient = lockClient;
 
-        this.outdatedEvents = outdatedEvents;
+        this.oldEvents = oldEvents;
 
         this.itemTypes = itemTypes;
         this.timeoutSBOI = timeoutSBOI;
@@ -271,8 +269,8 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
             query.getFutureEvents().addAll(futureEvents);
         }
 
-        if (outdatedEvents != null) {
-            query.getOutdatedEvents().addAll(outdatedEvents);
+        if (oldEvents != null) {
+            query.getOldEvents().addAll(oldEvents);
         }
 
         if (itemTypes != null) {
