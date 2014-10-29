@@ -18,9 +18,13 @@ public class TransformingIteratorForFileSystemsTest extends AbstractTests {
         if (iterator == null) {
             File file = new File(Thread.currentThread().getContextClassLoader().getResource("batch").toURI());
             System.out.println(file);
-            iterator = new TransformingIteratorForFileSystems(file, "\\.", ".*\\.jp2", ".md5",
-                                                              Arrays.asList("transfer_complete",
-                                                                            "transfer_acknowledged"));
+            iterator = new TransformingIteratorForFileSystems(file,
+                                                              TransformingIteratorForFileSystems.GROUPING_PATTERN_DEFAULT_VALUE,
+                                                              TransformingIteratorForFileSystems.DATA_FILE_PATTERN_JP2_VALUE,
+                                                              TransformingIteratorForFileSystems.CHECKSUM_POSTFIX_DEFAULT_VALUE,
+                                                              Arrays.asList(
+                                                                      TransformingIteratorForFileSystems.IGNORED_FILES_DEFAULT_VALUE
+                                                                              .split(",")));
         }
         return iterator;
 

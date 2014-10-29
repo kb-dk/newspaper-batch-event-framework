@@ -25,10 +25,10 @@ public class TreeNodesStructurePrint {
         final TreeNodeState nodeState = new TreeNodeState();
         final TreeEventHandler handler = new PrintingTreeEventHandler(nodeState);
         EventRunner eventRunner = new EventRunner(new TransformingIteratorForFileSystems(new File(pathToTestBatch),
-                                                                                         "\\.",
-                                                                                         ".*\\.jp2",
-                                                                                         ".md5",
-                                                                                         Arrays.asList("transfer_complete", "transfer_acknowledged")),
+                                                                                         TransformingIteratorForFileSystems.GROUPING_PATTERN_DEFAULT_VALUE,
+                                                                                         TransformingIteratorForFileSystems.DATA_FILE_PATTERN_JP2_VALUE,
+                                                                                         TransformingIteratorForFileSystems.CHECKSUM_POSTFIX_DEFAULT_VALUE,
+                                                                                         Arrays.asList(TransformingIteratorForFileSystems.IGNORED_FILES_DEFAULT_VALUE.split(","))),
                 Arrays.asList(handler),
                 null);
 

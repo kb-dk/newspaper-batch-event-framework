@@ -36,7 +36,10 @@ import java.util.Map;
  */
 public class TransformingIteratorForFileSystems extends CommonTransformingIterator {
 
-
+    public static final String CHECKSUM_POSTFIX_DEFAULT_VALUE = ".md5";
+    public static final String IGNORED_FILES_DEFAULT_VALUE = "transfer_complete,transfer_acknowledged,delete_ok";
+    public static final String DATA_FILE_PATTERN_JP2_VALUE = ".*\\.jp2$";
+    public static final String GROUPING_PATTERN_DEFAULT_VALUE = "\\.";
     private final List<String> ignoredFiles;
     protected List<DelegatingTreeIterator> virtualChildren;
 
@@ -84,7 +87,7 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
             result.add(
                     new TransformingIteratorForFileSystems(
                             child, getBatchFolder(), getGroupingChar(), getDataFilePattern(), getChecksumPostfix(),
-                            Arrays.asList("transfer_complete", "transfer_acknowledged")));
+                            ignoredFiles));
         }
         for (DelegatingTreeIterator virtualChild : virtualChildren) {
             result.add(virtualChild);
