@@ -65,7 +65,7 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
      * @return a tree iterator
      */
     protected TreeIterator createIterator(Batch batch) {
-        String dataFilePattern = getProperties().getProperty(ConfigConstants.ITERATOR_DATAFILEPATTERN, ".*\\.jp2$");
+        String dataFilePattern = getProperties().getProperty(ConfigConstants.ITERATOR_DATAFILEPATTERN, TransformingIteratorForFileSystems.DATA_FILE_PATTERN_JP2_VALUE);
         boolean useFileSystem = Boolean.parseBoolean(
                 getProperties().getProperty(ConfigConstants.ITERATOR_USE_FILESYSTEM, "true"));
 
@@ -76,8 +76,15 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
                     .quote(getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_GROUPINGCHAR, "."));
 
             String checksumPostFix = getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX,
-                                                                 ".md5");
-            return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix);
+                                                                 TransformingIteratorForFileSystems.CHECKSUM_POSTFIX_DEFAULT_VALUE);
+            String[] ignoredFiles = getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_IGNOREDFILES,
+                                                                TransformingIteratorForFileSystems.IGNORED_FILES_DEFAULT_VALUE)
+                    .split(",");
+            for (int i = 0; i < ignoredFiles.length; i++) {
+                ignoredFiles[i] = ignoredFiles[i].trim();
+            }
+            return new TransformingIteratorForFileSystems(batchDir, groupingChar, dataFilePattern, checksumPostFix,
+                                                          Arrays.asList(ignoredFiles));
 
         } else {
             Client client = Client.create();

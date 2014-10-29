@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,9 +36,11 @@ import java.util.Map;
  */
 public class TransformingIteratorForFileSystems extends CommonTransformingIterator {
 
-
-    private static final String TRANSFER_COMPLETE = "transfer_complete";
-    private static final String TRANSFER_ACKNOWLEDGED = "transfer_acknowledged";
+    public static final String CHECKSUM_POSTFIX_DEFAULT_VALUE = ".md5";
+    public static final String IGNORED_FILES_DEFAULT_VALUE = "transfer_complete,transfer_acknowledged,delete_ok";
+    public static final String DATA_FILE_PATTERN_JP2_VALUE = ".*\\.jp2$";
+    public static final String GROUPING_PATTERN_DEFAULT_VALUE = "\\.";
+    private final List<String> ignoredFiles;
     protected List<DelegatingTreeIterator> virtualChildren;
 
 
@@ -45,30 +48,35 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
      * Create the transforming Iterator for file systems
      *
      * @param id              The root folder
-     * @param groupingPattern the grouping regular expression, ie. the char used as separator between prefix and
+     * @param groupingPattern The grouping regular expression, ie. the char used as separator between prefix and
      *                        postfix.
      *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
      * @param checksumPostfix this is the postfix for the checksum files. Note, THIS IS NOT A PATTERN
+     * @param ignoredFiles    Files to ignore during transformation.
      */
     public TransformingIteratorForFileSystems(File id, String groupingPattern, String dataFilePattern,
-                                              String checksumPostfix) {
-        this(id, id.getParentFile(), groupingPattern, dataFilePattern, checksumPostfix);
+                                              String checksumPostfix, List<String> ignoredFiles) {
+        this(id, id.getParentFile(), groupingPattern, dataFilePattern, checksumPostfix, ignoredFiles);
     }
 
     /**
      * Create the transforming Iterator for file systems
      *
      * @param id              The root folder
-     * @param groupingChar    the grouping regular expression, ie. the char used as separator between prefix and
+     * @param prefix          The prefix folder
+     * @param groupingPattern The grouping regular expression, ie. the char used as separator between prefix and
      *                        postfix.
      *                        Should be "\\."
      * @param dataFilePattern a regular expression that should match the names of all datafiles
+     * @param checksumPostfix this is the postfix for the checksum files. Note, THIS IS NOT A PATTERN
+     * @param ignoredFiles    Files to ignore during transformation.
      */
-    protected TransformingIteratorForFileSystems(File id, File prefix, String groupingChar, String dataFilePattern,
-                                                 String checksumPostfix) {
-        super(id, prefix, dataFilePattern, checksumPostfix, groupingChar);
+    protected TransformingIteratorForFileSystems(File id, File prefix, String groupingPattern, String dataFilePattern,
+                                                 String checksumPostfix, List<String> ignoredFiles) {
+        super(id, prefix, dataFilePattern, checksumPostfix, groupingPattern);
         virtualChildren = new ArrayList<>();
+        this.ignoredFiles = ignoredFiles;
     }
 
     @Override
@@ -78,7 +86,8 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
         for (File child : children) {
             result.add(
                     new TransformingIteratorForFileSystems(
-                            child, getBatchFolder(), getGroupingChar(), getDataFilePattern(), getChecksumPostfix()));
+                            child, getBatchFolder(), getGroupingChar(), getDataFilePattern(), getChecksumPostfix(),
+                            ignoredFiles));
         }
         for (DelegatingTreeIterator virtualChild : virtualChildren) {
             result.add(virtualChild);
@@ -97,9 +106,8 @@ public class TransformingIteratorForFileSystems extends CommonTransformingIterat
             public boolean accept(File file) {
                 boolean isFile = file.isFile();
                 boolean isNotChecksum = !file.getName().endsWith(getChecksumPostfix());
-                boolean isNotTransferComplete = !file.getName().equals(TRANSFER_COMPLETE);
-                boolean isNotTransfer_acknowledged = !file.getName().equals(TRANSFER_ACKNOWLEDGED);
-                return isFile && isNotChecksum && isNotTransferComplete && isNotTransfer_acknowledged;
+                boolean isNotIgnored = !ignoredFiles.contains(file.getName());
+                return isFile && isNotChecksum && isNotIgnored;
             }
         }, null);
 

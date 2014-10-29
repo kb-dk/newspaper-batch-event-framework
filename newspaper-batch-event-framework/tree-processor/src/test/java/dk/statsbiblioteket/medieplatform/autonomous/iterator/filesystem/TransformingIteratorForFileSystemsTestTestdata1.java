@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import static org.testng.Assert.assertTrue;
 
@@ -21,7 +22,13 @@ public class TransformingIteratorForFileSystemsTestTestdata1 extends AbstractTes
             File rootTestdataDir = new File(System.getProperty("integration.test.newspaper.testdata"));
             File testRoot = new File(rootTestdataDir, "small-test-batch/B400022028241-RT1");
             assertTrue(testRoot.exists(), testRoot.getAbsolutePath() + " does not exist.");
-            iterator = new TransformingIteratorForFileSystems(testRoot, "\\.", ".*\\.jp2", ".md5");
+            iterator = new TransformingIteratorForFileSystems(testRoot,
+                                                              TransformingIteratorForFileSystems.GROUPING_PATTERN_DEFAULT_VALUE,
+                                                              TransformingIteratorForFileSystems.DATA_FILE_PATTERN_JP2_VALUE,
+                                                              TransformingIteratorForFileSystems.CHECKSUM_POSTFIX_DEFAULT_VALUE,
+                                                              Arrays.asList(
+                                                                      TransformingIteratorForFileSystems.IGNORED_FILES_DEFAULT_VALUE
+                                                                              .split(",")));
         }
         return iterator;
     }

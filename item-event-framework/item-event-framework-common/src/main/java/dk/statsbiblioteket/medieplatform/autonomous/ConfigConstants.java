@@ -48,6 +48,8 @@ public class ConfigConstants {
     public static final String ITERATOR_FILESYSTEM_GROUPINGCHAR = "iterator.filesystem.groupingChar";
     /** The postfix to add to a file to get the checksum file */
     public static final String ITERATOR_FILESYSTEM_CHECKSUMPOSTFIX = "iterator.filesystem.checksumPostfix";
+    /** Files to ignore in the file system, separated by comma */
+    public static final String ITERATOR_FILESYSTEM_IGNOREDFILES = "iterator.filesystem.ignoredFiles";
     /** The names of datastreams that should be made into attributes in the iterator */
     public static final String ITERATOR_DOMS_ATTRIBUTENAMES = "iterator.doms.attributenames";
     /** The names of relations that denote a children in the iterator */
@@ -136,6 +138,4 @@ public class ConfigConstants {
      * The number of times a component should retry operations on fedora, where supported.
      */
     public static final String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
-
-
 }
