@@ -29,14 +29,16 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
      * mfpak.postgres.password: string: Password to MFPAK postgres database.
      * doms.pidgenerator.url: String: url to the pidgenerator service
      * autonomous.maxThreads: Integer: The number of batches to work on concurrently. Default 1
-     * autonomous.maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcibly killing worker threads.
-     *     Default one hour
+     * autonomous.maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcibly killing worker
+     * threads.
+     * Default one hour
      * autonomous.pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
-     *     experienced successfully in order to be eligible to be worked on by this component
-     * autonomous.pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
-     *     experienced without success in order to be eligible to be worked on by this component
+     * experienced successfully in order to be eligible to be worked on by this component
      * autonomous.futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
-     *     experienced in order to be eligible to be worked on by this component
+     * experienced in order to be eligible to be worked on by this component
+     * autonomous.oldEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced AFTER last update to the object or not at all
+     * autonomous.itemTypes: String list, comma separated: The list of event types (content models) to consider.
      * @see AutonomousComponentUtils#startAutonomousComponent(java.util.Properties, RunnableComponent, EventTrigger, EventStorer)
      */
     public static <T extends Item> CallResult<T> startAutonomousComponent(Properties properties,

@@ -26,22 +26,26 @@ public class AutonomousComponentUtils {
      * @return the result of the invocation. A map from batch Full IDs to results. If the execution failed, a message
      * will be printed to the log and the result map will be empty
      *
-     * lockserver: string: url to the zookeeper server
-     * summa: string, url to the summa webservice
-     * domsUrl: string, url to the fedora doms instance
-     * domsUser: string; username when writing events to the doms batch objects
-     * domsPass: string: password when writing events to the doms batch objects
-     * pidGenerator: String: url to the pidgenerator service
-     * maxThreads: Integer: The number of batches to work on concurrently. Default 1
-     * maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcebly killing worker threads.
+     * autonomous.lockserver.url: string: url to the zookeeper server
+     * autonomous.sboi.url: string, url to the summa webservice
+     * doms.url: string, url to the fedora doms instance
+     * doms.username: string; username when writing events to the doms batch objects
+     * doms.password: string: password when writing events to the doms batch objects
+     * mfpak.postgres.url: string: URL to MFPAK postgres database.
+     * mfpak.postgres.user: string: Username to MFPAK postgres database.
+     * mfpak.postgres.password: string: Password to MFPAK postgres database.
+     * doms.pidgenerator.url: String: url to the pidgenerator service
+     * autonomous.maxThreads: Integer: The number of batches to work on concurrently. Default 1
+     * autonomous.maxRuntimeForWorkers: Long: The number of milliseconds to wait before forcibly killing worker
+     * threads.
      * Default one hour
-     * pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
-     * experienced successfully in order to be eligble to be worked on by this component
-     * pastFailedEvents: String list, comma separated: The list of event IDs that the batch must have
-     * experienced without success in order to be eligble to be worked on by this component
-     * futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
-     * experienced in order to be eligble to be worked on by this component
-     *
+     * autonomous.pastSuccessfulEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced successfully in order to be eligible to be worked on by this component
+     * autonomous.futureEvents: String list, comma separated: The list of event IDs that the batch must NOT have
+     * experienced in order to be eligible to be worked on by this component
+     * autonomous.oldEvents: String list, comma separated: The list of event IDs that the batch must have
+     * experienced AFTER last update to the object or not at all
+     * autonomous.itemTypes: String list, comma separated: The list of event types (content models) to consider.
      */
 
     public static <T extends Item> CallResult<T> startAutonomousComponent(Properties properties, RunnableComponent<T> component,
