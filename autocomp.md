@@ -51,12 +51,9 @@ The default event trigger is the SBOI Event trigger
   * We make a search in Summa triggering on the following:
   * List all item objects, where 
     * the type of the item is of a specific kind (the ContentModel)
-    * a set of specific events have either never been registered the object has changed since that event was last registered (repeating events)
+    * a set of specific events have either never been registered or the object has changed since that event was last registered (repeating events)
     * a set of specific events have been registered on this item and were successful (prerequisites)
     * a set of specific events have NOT been registered on this item (blocking events)
-    
-Note, lastModified is the timestamp of the latest audit entry in the AUDIT datastream, which does NOT concern the EVENTS
-datastream. This is to guard against a deadlock between to components which both update the component indefinately.
 
 Event storer
 ------------
