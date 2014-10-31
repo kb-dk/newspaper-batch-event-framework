@@ -105,15 +105,21 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
                 String lastModified = result.getFirstValue(SBOIEventIndex.LAST_MODIFIED).toString();
 
                 if (!details) { //no details, so we can retrieve everything from Summa
+                    String blob;
                     if (result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS) == null) {
-                        continue;
+                        hit = premisManipulatorFactory.createInitialPremisBlob(uuid).toItem();
+                    } else {
+                        blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
+                        hit = premisManipulatorFactory.createFromStringBlob(blob).toItem();
                     }
-                    final String blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
-                    hit = premisManipulatorFactory.createFromStringBlob(blob).toItem();
-                    hit.setDomsID(uuid);
                 } else {//Details requested so go to DOMS
-                    hit = domsEventStorage.getItemFromDomsID(uuid);
+                    try {
+                        hit = domsEventStorage.getItemFromDomsID(uuid);
+                    } catch (NotFoundException e) {
+                        hit = premisManipulatorFactory.createInitialPremisBlob(uuid).toItem();
+                    }
                 }
+                hit.setDomsID(uuid);
                 hit.setLastModified(parseDate(lastModified));
                 hits.add(hit);
             }
@@ -129,7 +135,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
      * @return as a date
      */
     private Date parseDate(String lastModified) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         try {
             return format.parse(lastModified);
         } catch (ParseException e) {

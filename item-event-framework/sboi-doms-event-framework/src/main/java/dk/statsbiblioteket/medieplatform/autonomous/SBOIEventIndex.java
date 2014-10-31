@@ -160,7 +160,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
 
         for (String oldEvents : query.getOldEvents()) {
-            events.add(String.format(" ( +old_event:%1$s OR ( -event:%1$s ) ) ", quoted(oldEvents)));
+            events.add(String.format(" ( ( +old_event:%1$s ) OR ( -event:%1$s ) ) ", quoted(oldEvents)));
         }
 
         for (String futureEvent : query.getFutureEvents()) {
@@ -168,7 +168,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         }
 
         for (String type : query.getTypes()) {
-            events.add(String.format(" -item_models:%1$s ", quoted(type)));
+            events.add(String.format(" +item_model:%1$s ", quoted(type)));
         }
 
         return base + itemsString + anded(events);

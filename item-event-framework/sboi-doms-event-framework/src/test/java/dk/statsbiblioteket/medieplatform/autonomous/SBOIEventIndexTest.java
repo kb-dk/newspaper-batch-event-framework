@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,10 +18,87 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 public class SBOIEventIndexTest {
+
+    @Test(groups = {"externalTest"}, enabled = true)
+    public void testOutdatedOldItemsFromSumma() throws Exception {
+        Properties props = getProperties();
+
+        SBOIEventIndex<Item> summa = getSboiClient(props);
+
+        // Search for items
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getPastSuccessfulEvents().add("Data_Received");
+        query.getTypes().add("doms:ContentModel_Roundtrip");
+        Iterator<Item> items = summa.search(false, query);
+
+        // Find an item with at least one current event, and at least one outdated event
+        Event upToDateEvent = null;
+        Event oldEvent = null;
+        Item item = null;
+        while (items.hasNext()) {
+            Item it = items.next();
+            upToDateEvent = null;
+            oldEvent = null;
+            for (Event event : it.getEventList()) {
+                if (event.isSuccess() && event.getDate().after(it.getLastModified())) {
+                    upToDateEvent = event;
+                }
+                if (event.isSuccess() && event.getDate().before(it.getLastModified())) {
+                    oldEvent = event;
+                }
+            }
+            if (upToDateEvent != null && oldEvent != null) {
+                item = it;
+                break;
+            }
+        }
+        assertNotNull(item, "No item found with both old and current events");
+
+        // Test1: Old event found
+        EventTrigger.Query<Item> query2 = new EventTrigger.Query<>();
+        query2.getOldEvents().add(oldEvent.getEventID());
+        query2.getItems().add(item);
+        query2.getTypes().add("doms:ContentModel_Roundtrip");
+        Iterator<Item> items2 = summa.search(false, query2);
+        Assert.assertTrue(items2.hasNext(), "No items Found");
+
+        // Test2: Current event not found
+        EventTrigger.Query<Item> query3 = new EventTrigger.Query<>();
+        query3.getOldEvents().add(upToDateEvent.getEventID());
+        query3.getItems().add(item);
+        query3.getTypes().add("doms:ContentModel_Roundtrip");
+        Iterator<Item> items3 = summa.search(false, query3);
+        Assert.assertFalse(items3.hasNext(), "Unexpected item found");
+    }
+
+    @Test(groups = {"externalTest"}, enabled = true)
+    public void testGetItemsFromSumma() throws Exception {
+        Properties props = getProperties();
+
+        SBOIEventIndex<Item> summa = getSboiClient(props);
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getOldEvents().add("Test_Event");
+        query.getTypes().add("doms:ContentModel_Item");
+        Iterator<Item> items = summa.search(false, query);
+        Assert.assertTrue(items.hasNext(), "No items Found");
+    }
+
+    @Test(groups = {"externalTest"}, enabled = true)
+    public void testGetItemsFromDoms() throws Exception {
+        Properties props = getProperties();
+
+        SBOIEventIndex<Item> summa = getSboiClient(props);
+        EventTrigger.Query<Item> query = new EventTrigger.Query<>();
+        query.getOldEvents().add("Test_Event");
+        query.getTypes().add("doms:ContentModel_Item");
+        Iterator<Item> items = summa.search(true, query);
+        Assert.assertTrue(items.hasNext(), "No items Found");
+    }
 
     @Test(groups = {"externalTest"}, enabled = true)
     public void testGetBatches() throws Exception {

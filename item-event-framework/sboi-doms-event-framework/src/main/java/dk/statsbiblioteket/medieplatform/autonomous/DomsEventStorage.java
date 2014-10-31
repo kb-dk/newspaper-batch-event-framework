@@ -72,17 +72,6 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         }
     }
 
-
-    public T getItemFromFullID(String itemFullID) throws CommunicationException, NotFoundException {
-        String roundTripID;
-        try {
-            roundTripID = getPidFromDCIdentifier(itemFullID);
-            return getItemFromDomsID(roundTripID);
-        } catch (BackendInvalidResourceException e) {
-            throw new NotFoundException(e);
-        }
-    }
-
     /**
      * Retrieve a batch
      *
