@@ -1,3 +1,12 @@
+1.12
+* Make list of ignored files in file iterator configurable
+* SBOI is now based on Solr
+* SBOI is reworked and generalised to work on broader Items than just Batch Roundtrip objects
+* Support for rerunning events, if objects have changed
+* Support for working on a list of items in one run
+* Configurable pageSize when requesting items to work on
+
+
 1.11
 * Add autonomous.component.fedoraRetries configuration option to ConfigConstants
 
