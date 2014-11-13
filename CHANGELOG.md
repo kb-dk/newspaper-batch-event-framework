@@ -1,4 +1,4 @@
-1.12
+2.0
 * Make list of ignored files in file iterator configurable
 * SBOI is now based on Solr
 * SBOI is reworked and generalised to work on broader Items than just Batch Roundtrip objects
