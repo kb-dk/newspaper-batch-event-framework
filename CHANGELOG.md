@@ -5,7 +5,7 @@
 * Support for rerunning events, if objects have changed
 * Support for working on a list of items in one run
 * Configurable pageSize when requesting items to work on
-
+* Configuration has been extended and changed and example config has been updated. Please update your configuration files.
 
 1.11
 * Add autonomous.component.fedoraRetries configuration option to ConfigConstants
