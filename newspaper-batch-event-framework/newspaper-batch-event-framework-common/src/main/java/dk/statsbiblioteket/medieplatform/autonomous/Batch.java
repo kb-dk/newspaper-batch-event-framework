@@ -178,14 +178,4 @@ public class Batch extends Item{
             return "path:B" + batchID + "-RT" + roundTripNumber;
         }
     }
-
-    @Override
-    public boolean equivalent(Item otherItem) {
-        if (otherItem instanceof Batch) {
-            Batch otherBatch = (Batch) otherItem;
-            return super.equivalent(otherItem) || batchID.equals(otherBatch.getBatchID()) && (roundTripNumber == 0 || otherBatch.getRoundTripNumber() == 0);
-        } else {
-            return super.equivalent(otherItem);
-        }
-    }
 }
