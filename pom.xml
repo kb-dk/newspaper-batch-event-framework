@@ -84,7 +84,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>1.6-SNAPSHOT</version>
+                <version>1.6</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
@@ -107,7 +107,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>summaSearch-interface</artifactId>
-                <version>1.6-SNAPSHOT</version><!--This should match central-lib above-->
+                <version>1.6</version><!--This should match central-lib above-->
                 <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
