@@ -86,12 +86,15 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         }
         boolean futureEventsGood = Collections.disjoint(existingEvents, query.getFutureEvents());
 
-
+        boolean itemsGood = query.getItems().isEmpty();
+        for (T queryItem : query.getItems()) {
+            if (item.equals(queryItem) || item.equivalent(queryItem)) {
+                itemsGood = true;
+            }
+        }
 
         //TODONT we do not check for types for now
-        return successEventsGood  && oldEventsGood && futureEventsGood && (query.getItems()
-                                                                                .isEmpty() || query.getItems()
-                                                                                                   .contains(item));
+        return successEventsGood  && oldEventsGood && futureEventsGood && itemsGood;
     }
 
 

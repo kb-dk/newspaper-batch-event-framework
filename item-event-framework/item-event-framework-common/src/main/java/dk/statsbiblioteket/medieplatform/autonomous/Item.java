@@ -94,4 +94,14 @@ public class Item {
         }
         return sb.toString();
     }
+
+    /**
+     * A method that defines whether two items should be considered to be the same item, when
+     * considered by the EventTrigger for items to work on.
+     * @param otherItem The item to compare with.
+     * @return Whether these items are equivalent.
+     */
+    public boolean equivalent(Item otherItem) {
+        return equals(otherItem);
+    }
 }
