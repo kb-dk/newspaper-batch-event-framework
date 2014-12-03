@@ -25,7 +25,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     protected final EnhancedFedora fedora;
     protected final String eventsDatastream;
     protected final PremisManipulatorFactory<T> premisFactory;
-    private String addEventToItemComment = "TODO";
+    private String addEventToItemComment = "Adding event to Item";
 
     DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
