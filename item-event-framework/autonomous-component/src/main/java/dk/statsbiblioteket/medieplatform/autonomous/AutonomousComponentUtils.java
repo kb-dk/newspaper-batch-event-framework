@@ -101,7 +101,7 @@ public class AutonomousComponentUtils {
                 //This call will return when the work is done
                 return autonoumous.call();
             } catch (CouldNotGetLockException e) {
-                log.info(e.getMessage());
+                log.debug(e.getMessage());
                 return new CallResult<>(e.getMessage());
             } catch (LockingException e) {
                 final String msg = "Failed to communicate with zookeeper";

@@ -164,6 +164,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
         CallResult<T> result = new CallResult<>();
         Map<AutonomousWorker<T>, InterProcessLock> workers = new HashMap<>();
         try {
+            log.info("Starting {}",runnable.getComponentName());
             //lock SBOI for this component name
             SBOILock = new InterProcessSemaphoreMutex(lockClient, getSBOILockpath(runnable));
             try {
@@ -172,7 +173,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
                     throw new CouldNotGetLockException("Could not get lock of SBOI, so returning");
                 }
 
-                log.info("SBOI locked, quering for items");
+                log.debug("SBOI locked, quering for items");
                 //get items, lock n, release the SBOI
                 EventTrigger.Query<T> query = makeQuery();
                 Iterator<T> items = eventTrigger.getTriggeredItems(query);
@@ -186,7 +187,7 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
                             lockClient, getBatchLockPath(runnable, item));
                     boolean success = acquireQuietly(batchlock, timeoutBatch);
                     if (success) {//if lock gotten
-                        log.info("Batch {} locked, creating a worker", item.getFullID());
+                        log.info("Item {} locked, creating a worker", item.getFullID());
                         if (maxResults != null) {
                             log.debug("Worker will report a maximum of {} results.", maxResults);
                         }
@@ -196,9 +197,11 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
                                 item, eventStorer);
                         workers.put(worker, batchlock);
                         if (workers.size() >= workQueueMaxLength) {
-                            log.info("We now have sufficient workers, look for no more items");
+                            log.debug("We now have sufficient workers, look for no more items");
                             break;
                         }
+                    } else {
+                        log.info("Item {} already locked, so ignoring.", item.getFullID());
                     }
                 }
             } catch (RuntimeException runtimeException) {
@@ -208,47 +211,52 @@ public class AutonomousComponent<T extends Item> implements Callable<CallResult<
                 throw runtimeException;
             }
 
-            checkLockServerConnectionState();
-            ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
-            try {
-                ArrayList<Future<?>> futures = new ArrayList<>();
-                for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
-                    log.info("Submitting worker for batch {}", autonomousWorker.getItem().getFullID());
-                    concurrencyConnectionStateListener.add(autonomousWorker);
-                    Future<?> future = pool.submit(autonomousWorker);
-                    futures.add(future);
-                }
-                log.info("Shutting down the pool, and waiting for the workers to terminate");
-                pool.shutdown();
-                //The wait loop for the running threads
-                long start = System.currentTimeMillis();
-                boolean allDone = false;
-                while (!allDone) {
-                    log.trace("Waiting to terminate");
-                    allDone = true;
-                    for (Future<?> future : futures) {
-                        allDone = allDone && future.isDone();
+            if (workers.isEmpty()){ //Nothing more to do
+                log.info("No Items locked, so nothing further to do");
+                return result;
+            } else {
+                checkLockServerConnectionState();
+                ExecutorService pool = Executors.newFixedThreadPool(simultaneousProcesses);
+                try {
+                    ArrayList<Future<?>> futures = new ArrayList<>();
+                    for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
+                        log.info("Submitting worker for Item {}", autonomousWorker.getItem().getFullID());
+                        concurrencyConnectionStateListener.add(autonomousWorker);
+                        Future<?> future = pool.submit(autonomousWorker);
+                        futures.add(future);
                     }
-                    checkLockServerConnectionState(pool);
-                    try {
-                        Thread.sleep(pollTime);
-                    } catch (InterruptedException e) {
-                        //okay, continue
-                    }
-                    if (System.currentTimeMillis() - start > workerTimout) {
-                        log.error("Worker timeout exceeded (" + workerTimout + "ms), shutting down all threads. We still need to wait for them" + " to terminate, however.");
-                        pool.shutdownNow();
+                    log.debug("Shutting down the pool, and waiting for the workers to terminate");
+                    pool.shutdown();
+                    //The wait loop for the running threads
+                    long start = System.currentTimeMillis();
+                    boolean allDone = false;
+                    while (!allDone) {
+                        log.trace("Waiting to terminate");
+                        allDone = true;
                         for (Future<?> future : futures) {
-                            future.cancel(true);
+                            allDone = allDone && future.isDone();
+                        }
+                        checkLockServerConnectionState(pool);
+                        try {
+                            Thread.sleep(pollTime);
+                        } catch (InterruptedException e) {
+                            //okay, continue
+                        }
+                        if (System.currentTimeMillis() - start > workerTimout) {
+                            log.error("Worker timeout exceeded (" + workerTimout + "ms), shutting down all threads. We still need to wait for them" + " to terminate, however.");
+                            pool.shutdownNow();
+                            for (Future<?> future : futures) {
+                                future.cancel(true);
+                            }
                         }
                     }
+                    log.info("All is now done, all workers have completed");
+                    for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
+                        result.addResult(autonomousWorker.getItem(), autonomousWorker.getResultCollector());
+                    }
+                } finally {
+                    //clean up pool?
                 }
-                log.info("All is now done, all workers have completed");
-                for (AutonomousWorker<T> autonomousWorker : workers.keySet()) {
-                    result.addResult(autonomousWorker.getItem(), autonomousWorker.getResultCollector());
-                }
-            } finally {
-                //clean up pool?
             }
         } finally {
             for (InterProcessLock interProcessLock : workers.values()) {
