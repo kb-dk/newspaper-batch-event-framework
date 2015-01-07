@@ -2,8 +2,7 @@
     <!-- LOGBACK logging config file, see http://logback.qos.ch/manual/joran.html -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <!-- http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout -->
-            <Pattern>%-5level %msg [%logger{16} %d{HH:mm:ss}]%n</Pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </layout>
     </appender>
 
