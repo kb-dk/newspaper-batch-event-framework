@@ -30,8 +30,6 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
                                                                   pidGeneratorLocation,
                                                                   null,
                                                                   retries,
-                                                                  retries,
-                                                                  retries,
                                                                   delayBetweenRetries);
         if (itemFactory == null){
             itemFactory = new BatchItemFactory();

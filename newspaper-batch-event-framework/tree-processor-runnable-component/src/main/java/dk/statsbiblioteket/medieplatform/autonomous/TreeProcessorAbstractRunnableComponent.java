@@ -240,7 +240,7 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
                     getProperties().getProperty(ConfigConstants.DOMS_URL),
                     null,
                     null,
-                    fedoraRetries, fedoraRetries, fedoraRetries, fedoraDelayBetweenRetries);
+                    fedoraRetries, fedoraDelayBetweenRetries);
         }
         return fedora;
     }

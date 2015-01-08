@@ -47,8 +47,7 @@ public class DomsEventStorageFactory<T extends Item> {
     public DomsEventStorage<T> createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
-                creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null, retries, retries,
-                retries, delayBetweenRetries);
+                creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null, retries, delayBetweenRetries);
         return new DomsEventStorage<>(
                 fedora, premisIdentifierType, eventsDatastream,
                 itemFactory);
