@@ -1,3 +1,7 @@
+2.1
+* Retry on Fedora 409 errors
+* Some cleanup in logging
+
 2.0
 * Make list of ignored files in file iterator configurable
 * SBOI is now based on Solr
