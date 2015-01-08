@@ -52,8 +52,10 @@ public abstract class AbstractDomsReducer extends Reducer<Text, Text, Text, Text
             String username = conf.get(ConfigConstants.DOMS_USERNAME);
             String password = conf.get(ConfigConstants.DOMS_PASSWORD);
             String domsUrl = conf.get(ConfigConstants.DOMS_URL);
+            int retries = Integer.parseInt(conf.get(ConfigConstants.FEDORA_RETRIES, "1"));
+            int retryDelay = Integer.parseInt(conf.get(ConfigConstants.FEDORA_DELAY_BETWEEN_RETRIES, "100"));
             return new EnhancedFedoraImpl(
-                    new Credentials(username, password), domsUrl, null, null);
+                    new Credentials(username, password), domsUrl, null, null, retries, retries, retries, retryDelay);
         } catch (JAXBException e) {
             throw new IOException(e);
         } catch (PIDGeneratorException e) {

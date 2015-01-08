@@ -230,6 +230,8 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
                                                             MalformedURLException,
                                                             PIDGeneratorException,
                                                             JAXBException {
+        int fedoraRetries = Integer.parseInt(getProperties().getProperty(ConfigConstants.FEDORA_RETRIES, "1"));
+        int fedoraDelayBetweenRetries = Integer.parseInt(getProperties().getProperty(ConfigConstants.FEDORA_DELAY_BETWEEN_RETRIES, "100"));
         if (fedora == null) {
             fedora = new EnhancedFedoraImpl(
                     new Credentials(
@@ -237,7 +239,8 @@ public abstract class TreeProcessorAbstractRunnableComponent extends AbstractRun
                             getProperties().getProperty(ConfigConstants.DOMS_PASSWORD)),
                     getProperties().getProperty(ConfigConstants.DOMS_URL),
                     null,
-                    null);
+                    null,
+                    fedoraRetries, fedoraRetries, fedoraRetries, fedoraDelayBetweenRetries);
         }
         return fedora;
     }
