@@ -5,7 +5,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>hadoop-helpers</artifactId>
-        <version>2.1</version>
+        <version>2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-file-converters</artifactId>
