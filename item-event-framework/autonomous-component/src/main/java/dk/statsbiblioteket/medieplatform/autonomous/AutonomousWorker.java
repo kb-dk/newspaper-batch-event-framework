@@ -41,34 +41,39 @@ public class AutonomousWorker<T extends Item> implements Runnable {
 
         try {
             try {
-                //do work
-                resultCollector.setTimestamp(new Date());
-                component.doWorkOnItem(item, resultCollector);
-            } catch (Throwable e) {
-                log.warn("Component threw exception", e);
-                //the work failed
-                resultCollector.addFailure(item.getFullID(),
-                                                  "exception",
-                                                  component.getClass().getSimpleName(),
-                                                  "Component threw exception: " + e.toString(),
-                                                  Strings.getStackTrace(e));
-            }
-        } finally {
-            resultCollector.setDuration(new Date().getTime() - resultCollector.getTimestamp().getTime());
-            if (resultCollector.isPreservable()) {
                 try {
-                    preserveResult(item, resultCollector);
-                } catch (Throwable t){
-                    log.error("Caught exception while attempting to preserve result for item", t);
+                    //do work
+                    resultCollector.setTimestamp(new Date());
+                    component.doWorkOnItem(item, resultCollector);
+                } catch (Throwable e) {
+                    log.warn("Component threw exception", e);
+                    //the work failed
                     resultCollector.addFailure(item.getFullID(),
                                                       "exception",
                                                       component.getClass().getSimpleName(),
-                                                      "Autonomous component system threw exception: " + t.toString(),
-                                                      Strings.getStackTrace(t));
+                                                      "Component threw exception: " + e.toString(),
+                                                      Strings.getStackTrace(e));
                 }
-            } else {
-                log.info("The result collector is not marked as preservable, so it is not preserved in DOMS, but embedded here instead: {}",
-                                resultCollector.toReport());
+            } finally {
+                resultCollector.setDuration(new Date().getTime() - resultCollector.getTimestamp().getTime());
+                if (resultCollector.isPreservable()) {
+                    try {
+                        preserveResult(item, resultCollector);
+                    } catch (Throwable t) {
+                        resultCollector.addFailure(item.getFullID(),
+                                                          "exception",
+                                                          component.getClass().getSimpleName(),
+                                                          "Caught exception '" + t.toString() + "'while attempting to preserve result for item " + item.getFullID(),
+                                                          Strings.getStackTrace(t));
+                    }
+                } else {
+                    log.info("The result collector is not marked as preservable, so it is not preserved in DOMS, but embedded here instead: {}",
+                                    resultCollector.toReport());
+                }
+            }
+        } finally {
+            if (!resultCollector.isSuccess()) {
+                log.error("Failed for item {}. The report was {}", item.getFullID(), resultCollector.toReport());
             }
         }
     }
