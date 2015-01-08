@@ -29,6 +29,8 @@ public class DomsEventStorageFactory<T extends Item> {
     protected String password = PASSWORD;
     protected String fedoraLocation = FEDORA_LOCATION;
     protected String pidGeneratorLocation = PIDGENERATOR_LOCATION;
+    protected int retries = 1;
+    protected int delayBetweenRetries = 100;
     protected String premisIdentifierType = PremisManipulatorFactory.TYPE;
     protected String eventsDatastream = EVENTS;
     protected ItemFactory<T> itemFactory;
@@ -45,7 +47,7 @@ public class DomsEventStorageFactory<T extends Item> {
     public DomsEventStorage<T> createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
-                creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null);
+                creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null, retries, delayBetweenRetries);
         return new DomsEventStorage<>(
                 fedora, premisIdentifierType, eventsDatastream,
                 itemFactory);
@@ -140,5 +142,21 @@ public class DomsEventStorageFactory<T extends Item> {
      */
     public void setEventsDatastream(String eventsDatastream) {
         this.eventsDatastream = eventsDatastream;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public int getDelayBetweenRetries() {
+        return delayBetweenRetries;
+    }
+
+    public void setDelayBetweenRetries(int delayBetweenRetries) {
+        this.delayBetweenRetries = delayBetweenRetries;
     }
 }

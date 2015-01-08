@@ -138,4 +138,9 @@ public class ConfigConstants {
      * The number of times a component should retry operations on fedora, where supported.
      */
     public static final String FEDORA_RETRIES = "autonomous.component.fedoraRetries";
+
+    /**
+     * The time in milliseconds between retry operations on fedora, where supported (with exponential backoff).
+     */
+    public static final java.lang.String FEDORA_DELAY_BETWEEN_RETRIES = "autonomous.component.fedoraDelayBetweenRetries";
 }
