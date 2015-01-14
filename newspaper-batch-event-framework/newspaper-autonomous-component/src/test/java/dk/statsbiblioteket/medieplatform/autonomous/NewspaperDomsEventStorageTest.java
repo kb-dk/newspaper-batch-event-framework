@@ -35,7 +35,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.HAS_PART,
                                                                             DomsEventStorageFactory.EVENTS,
-                                                                            new BatchItemFactory());
+                                                                            new BatchItemFactory(),1,100);
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER + 1),
                                    "agent",
@@ -62,7 +62,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.HAS_PART,
                                                                             DomsEventStorageFactory.EVENTS,
-                                                                            new BatchItemFactory());
+                                                                            new BatchItemFactory(),1,100);
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
@@ -88,7 +88,7 @@ public class NewspaperDomsEventStorageTest {
                                                                      NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                      NewspaperDomsEventStorageFactory.HAS_PART,
                                                                      DomsEventStorageFactory.EVENTS,
-                                                                     new BatchItemFactory());
+                                                                     new BatchItemFactory(),1,100);
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
@@ -114,7 +114,7 @@ public class NewspaperDomsEventStorageTest {
                                                                               NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                               NewspaperDomsEventStorageFactory.HAS_PART,
                                                                               DomsEventStorageFactory.EVENTS,
-                                                                              new BatchItemFactory());
+                                                                              new BatchItemFactory(),1,100);
         doms.createBatchRoundTrip(new Batch(BATCH_ID, ROUND_TRIP_NUMBER).getFullID());
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
@@ -161,9 +161,9 @@ public class NewspaperDomsEventStorageTest {
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory());
+                                                            new BatchItemFactory(), 3,100);
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L);
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
         assertEquals(eventsRemoved, 6);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
@@ -231,9 +231,9 @@ public class NewspaperDomsEventStorageTest {
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory());
+                                                            new BatchItemFactory(), 3,100);
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L, "e5");
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), "e5");
         assertEquals(eventsRemoved, 4);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
@@ -297,13 +297,13 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
+        final int MAX_ATTEMPTS = 10;
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory());
-        final int MAX_ATTEMPTS = 10;
+                                                            new BatchItemFactory(), MAX_ATTEMPTS,100);
         try {
-            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), MAX_ATTEMPTS, 10L);
+            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
             fail("Should have thrown a " + CommunicationException.class.getSimpleName());
         } catch (CommunicationException e) {
             //expected

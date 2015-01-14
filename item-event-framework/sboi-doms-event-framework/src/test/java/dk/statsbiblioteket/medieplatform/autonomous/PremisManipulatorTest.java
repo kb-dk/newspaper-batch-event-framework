@@ -179,6 +179,7 @@ public class PremisManipulatorTest {
         int eventsRemoved = manipulator.removeEvents("e1");
         assertEquals(eventsRemoved, 2);
         String newXml = manipulator.toXML();
+        assertFalse(newXml.contains("e1"));
         assertTrue(newXml.contains("e2"));
         assertTrue(newXml.contains("e3"));
         assertTrue(newXml.contains("e4"));
@@ -187,6 +188,7 @@ public class PremisManipulatorTest {
         assertEquals(eventsRemoved, 1);
 
         newXml = manipulator.toXML();
+        assertFalse(newXml.contains("e4"));
         eventsRemoved = manipulator.removeEvents("e5");
         assertEquals(eventsRemoved, 0);
         String evenNewerXml = manipulator.toXML();

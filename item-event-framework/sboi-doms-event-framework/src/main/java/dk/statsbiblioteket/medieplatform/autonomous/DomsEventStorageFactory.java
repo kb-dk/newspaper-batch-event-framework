@@ -50,7 +50,7 @@ public class DomsEventStorageFactory<T extends Item> {
                 creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null, retries, delayBetweenRetries);
         return new DomsEventStorage<>(
                 fedora, premisIdentifierType, eventsDatastream,
-                itemFactory);
+                itemFactory, retries, delayBetweenRetries);
     }
 
     public String getUsername() {

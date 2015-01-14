@@ -48,7 +48,7 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
             }
 
             @Override
-            public int removeEventFromItem(Item item, int maxAttempts, long waitTime, String eventType) throws
+            public int removeEventFromItem(Item item, String eventType) throws
                                                                                                         CommunicationException,
                                                                                                         NotFoundException {
                 return 0;
@@ -71,15 +71,13 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
 
 
             @Override
-            public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
-                                                              long waitTime, String eventId)
+            public int triggerWorkflowRestartFromFirstFailure(Item item, String eventId)
                     throws CommunicationException, NotFoundException {
                 return 0;
             }
 
             @Override
-            public int triggerWorkflowRestartFromFirstFailure(Item item, int maxTries,
-                                                              long waitTime)
+            public int triggerWorkflowRestartFromFirstFailure(Item item)
                     throws CommunicationException, NotFoundException {
                 return 0;
             }

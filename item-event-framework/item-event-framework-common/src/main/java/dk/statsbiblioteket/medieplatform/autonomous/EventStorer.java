@@ -32,7 +32,7 @@ public interface EventStorer<T extends Item> {
      * @return the number of events removed
      * @throws CommunicationException if communication with doms failed
      */
-    int removeEventFromItem(T item, int maxAttempts, long waitTime, String eventType) throws CommunicationException, NotFoundException;
+    int removeEventFromItem(T item, String eventType) throws CommunicationException, NotFoundException;
 
 
 
@@ -49,14 +49,12 @@ public interface EventStorer<T extends Item> {
      * modification ie. that the datastream may have changed again between being read and being written. (In which case
      * one should return to step i).
      *
-     * @param maxTries        the maximum number of attempts.
-     * @param waitTime        the time in milliseconds to wait between attempts.
      * @param eventId         The eventId of the of the earliest event to be removed
      *
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime,
+    int triggerWorkflowRestartFromFirstFailure(T item,
                                                String eventId) throws CommunicationException, NotFoundException;
 
     /**
@@ -72,13 +70,10 @@ public interface EventStorer<T extends Item> {
      * modification ie. that the datastream may have changed again between being read and being written. (In which case
      * one should return to step i).
      *
-     * @param maxTries        the maximum number of attempts.
-     * @param waitTime        the time in milliseconds to wait between attempts.
-     *
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime) throws
+    int triggerWorkflowRestartFromFirstFailure(T item) throws
                                                                                                                  CommunicationException,
                                                                                                                  NotFoundException;
 }

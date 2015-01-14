@@ -187,14 +187,14 @@ public class NewspaperDomsEventStorageIntegrationTest {
             final Batch batch = new Batch(batchId, roundTripNumber);
             eventStorer.addEventToItem(batch, "agent", new Date(-1000L), details, "e1", false);
 
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batch);
 
 
             String pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batch.getFullID()
             ).roundTripDCIdentifier()).get(0);
             String events = fedora.getXMLDatastreamContents(pid, "EVENTS");
             assertFalse(events.contains("event"), events);
-            eventStorer.triggerWorkflowRestartFromFirstFailure(batch, 10, 1000L);
+            eventStorer.triggerWorkflowRestartFromFirstFailure(batch);
         } finally {
             String pid = fedora.findObjectFromDCIdentifier(new Batch.BatchRoundtripID(batchId,0).batchDCIdentifier()).get(0);
             if (pid != null) {
