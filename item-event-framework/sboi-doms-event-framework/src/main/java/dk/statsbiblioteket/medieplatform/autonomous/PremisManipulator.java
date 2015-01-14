@@ -218,7 +218,7 @@ public class PremisManipulator<T extends Item> {
      */
     public int removeEventsFromFailureOrEvent(String eventId) {
         List<EventComplexType> premisEvents = premis.getEvent();
-        List<EventComplexType> eventsToRemove = findEventsToRemove(premisEvents, eventId);
+        List<EventComplexType> eventsToRemove = findEventsAfterThisEvent(premisEvents, eventId);
         premisEvents.removeAll(eventsToRemove);
         return eventsToRemove.size();
     }
@@ -231,7 +231,7 @@ public class PremisManipulator<T extends Item> {
      *
      * @return the list of events to remove.
      */
-    private List<EventComplexType> findEventsToRemove(List<EventComplexType> premisEvents, String eventId) {
+    private List<EventComplexType> findEventsAfterThisEvent(List<EventComplexType> premisEvents, String eventId) {
         Date earliestEventToRemove = null;
         if (eventId == null) {
             earliestEventToRemove = findDateOfEarliestFailure(premisEvents);
@@ -353,5 +353,32 @@ public class PremisManipulator<T extends Item> {
         AgentComplexType agentCreated = factory.createAgentComplexType();
         agentCreated.getAgentIdentifier().add(identifier);
         agentList.add(agentCreated);
+    }
+
+    public int removeEvents(String eventId) {
+        List<EventComplexType> premisEvents = premis.getEvent();
+        List<EventComplexType> eventsToRemove = findEventsWithThisID(premisEvents, eventId);
+        premisEvents.removeAll(eventsToRemove);
+        return eventsToRemove.size();
+    }
+
+    /**
+     * Find events to remove.
+     *
+     * @param premisEvents the complete events list.
+     * @param eventType      the earliest event to remove. If null, find the earliest failure instead.
+     *
+     * @return the list of events to remove.
+     */
+    private List<EventComplexType> findEventsWithThisID(List<EventComplexType> premisEvents, String eventType) {
+
+        List<EventComplexType> eventsToRemove = new ArrayList<>();
+            for (EventComplexType premisEvent : premisEvents) {
+                if (eventType.equals(premisEvent.getEventType())){
+                    eventsToRemove.add(premisEvent);
+                }
+            }
+
+        return eventsToRemove;
     }
 }

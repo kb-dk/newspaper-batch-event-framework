@@ -8,7 +8,7 @@ import java.util.Date;
 public interface EventStorer<T extends Item> {
 
     /**
-     * Add an event to a batch in doms. Will create the batch if it does not currently exist
+     * Add an event to a item in doms.
      *
      * @param item            the item
      * @param agent           the agent of the event
@@ -21,6 +21,19 @@ public interface EventStorer<T extends Item> {
      */
     Date addEventToItem(T item, String agent, Date timestamp, String details,
                          String eventType, boolean outcome) throws CommunicationException;
+
+
+    /**
+     * Remove one or more events from an item. If an event with a given type exists more than once in the item's eventList, remove all entries
+     *
+     * @param item      the item
+     * @param eventType the type of event, from a controlled list
+     *
+     * @return the number of events removed
+     * @throws CommunicationException if communication with doms failed
+     */
+    int removeEventFromItem(T item, int maxAttempts, long waitTime, String eventType) throws CommunicationException, NotFoundException;
+
 
 
     /**

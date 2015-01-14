@@ -26,6 +26,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     protected final String eventsDatastream;
     protected final PremisManipulatorFactory<T> premisFactory;
     private String addEventToItemComment = "Adding event to Item";
+    private String removeEventToItemComment = "Removing event from item: ";
 
     DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
@@ -41,7 +42,11 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         try {
             String itemID = item.getDomsID();
             if (itemID == null){
-                throw new IllegalArgumentException("Trying to add an event to a non-existing item '" +item.toString()+"'");
+                try {
+                    itemID = getPidFromDCIdentifier(item.getFullID());
+                } catch (BackendInvalidResourceException e) {
+                    throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
+                }
             }
             PremisManipulator premisObject;
             try {
@@ -69,6 +74,51 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             }
         } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
             throw new CommunicationException(e);
+        }
+    }
+
+    /**
+     * Removes all instances of events with the given type from the item
+     * @param item        The item to remove events from
+     * @param maxAttempts max number of attempts. Ignored for now
+     * @param waitTime    the time in milliseconds to wait between attempts. Ignored for now
+     * @param eventType     The eventType to remove
+     *
+     * @return the number of events removed
+     * @throws CommunicationException
+     * @throws NotFoundException
+     */
+    @Override
+    public int removeEventFromItem(T item, int maxAttempts, long waitTime, String eventType) throws
+                                                             CommunicationException,
+                                                             NotFoundException {
+        try {
+            String itemID = item.getDomsID();
+            if (itemID == null) {
+                itemID = getPidFromDCIdentifier(item.getFullID());
+            }
+            PremisManipulator premisObject;
+            String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
+            premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+
+            int removed = premisObject.removeEvents(eventType);
+            if (removed > 0) {
+                fedora.modifyDatastreamByValue(itemID,
+                                                      eventsDatastream,
+                                                      null,
+                                                      null,
+                                                      premisObject.toXML().getBytes(),
+                                                      null,
+                                                      "text/xml",
+                                                      removeEventToItemComment + eventType,
+                                                      null);
+
+            }
+            return removed;
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
+            throw new CommunicationException(e);
+        } catch (BackendInvalidResourceException e){
+            throw new NotFoundException(e);
         }
     }
 

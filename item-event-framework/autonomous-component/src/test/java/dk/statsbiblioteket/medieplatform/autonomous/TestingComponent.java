@@ -47,6 +47,13 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
                 return addEvent(item.getFullID(), timestamp, details, eventType, outcome);
             }
 
+            @Override
+            public int removeEventFromItem(Item item, int maxAttempts, long waitTime, String eventType) throws
+                                                                                                        CommunicationException,
+                                                                                                        NotFoundException {
+                return 0;
+            }
+
             private Date addEvent(String fullId, Date timestamp, String details, String eventType,
                                   boolean outcome) {
                 for (Item item : items) {
