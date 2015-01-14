@@ -144,10 +144,7 @@ public class NewspaperDomsEventStorageTest {
         pids.add("uuid:thepid");
         Mockito.when(enhancedFedora.findObjectFromDCIdentifier(Matchers.anyString())).thenReturn(pids);
 
-        //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
-        //is successful
-        Mockito.doThrow(new ConcurrentModificationException())
-               .doReturn(new Date())
+        Mockito.doReturn(new Date())
                .when(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
@@ -163,14 +160,14 @@ public class NewspaperDomsEventStorageTest {
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L);
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
         assertEquals(eventsRemoved, 6);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        Mockito.verify(enhancedFedora, Mockito.times(2))
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),
@@ -214,10 +211,7 @@ public class NewspaperDomsEventStorageTest {
         pids.add("uuid:thepid");
         Mockito.when(enhancedFedora.findObjectFromDCIdentifier(Matchers.anyString())).thenReturn(pids);
 
-        //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
-        //is successful
-        Mockito.doThrow(new ConcurrentModificationException())
-               .doReturn(new Date())
+        Mockito.doReturn(new Date())
                .when(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
@@ -233,14 +227,14 @@ public class NewspaperDomsEventStorageTest {
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
         //Make the call
-        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), 10, 10L, "e5");
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), "e5");
         assertEquals(eventsRemoved, 4);
         //The captor is used to capture the modified datastream so it can be examined to see if it has been
         //correctly modfied
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        Mockito.verify(enhancedFedora, Mockito.times(2))
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),
@@ -301,14 +295,9 @@ public class NewspaperDomsEventStorageTest {
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
                                                             new BatchItemFactory());
-        final int MAX_ATTEMPTS = 10;
-        try {
-            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), MAX_ATTEMPTS, 10L);
-            fail("Should have thrown a " + CommunicationException.class.getSimpleName());
-        } catch (CommunicationException e) {
-            //expected
-        }
-        Mockito.verify(enhancedFedora, Mockito.times(MAX_ATTEMPTS))
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
+        assertEquals(-1,eventsRemoved);
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),

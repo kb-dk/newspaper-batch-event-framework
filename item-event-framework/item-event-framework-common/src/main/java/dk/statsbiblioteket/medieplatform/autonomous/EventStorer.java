@@ -8,7 +8,7 @@ import java.util.Date;
 public interface EventStorer<T extends Item> {
 
     /**
-     * Add an event to a batch in doms. Will create the batch if it does not currently exist
+     * Add an event to a item in doms.
      *
      * @param item            the item
      * @param agent           the agent of the event
@@ -24,6 +24,19 @@ public interface EventStorer<T extends Item> {
 
 
     /**
+     * Remove one or more events from an item. If an event with a given type exists more than once in the item's eventList, remove all entries
+     *
+     * @param item      the item
+     * @param eventType the type of event, from a controlled list
+     *
+     * @return the number of events removed
+     * @throws CommunicationException if communication with doms failed
+     */
+    int removeEventFromItem(T item, String eventType) throws CommunicationException, NotFoundException;
+
+
+
+    /**
      * This method
      * i) reads the EVENTS datastream
      * ii) Calculates the number of events to be removed from the EVENTS datastream starting with the
@@ -36,15 +49,12 @@ public interface EventStorer<T extends Item> {
      * modification ie. that the datastream may have changed again between being read and being written. (In which case
      * one should return to step i).
      *
-     * @param maxTries        the maximum number of attempts.
-     * @param waitTime        the time in milliseconds to wait between attempts.
      * @param eventId         The eventId of the of the earliest event to be removed
      *
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime,
-                                               String eventId) throws CommunicationException, NotFoundException;
+    int triggerWorkflowRestartFromFirstFailure(T item, String eventId) throws CommunicationException, NotFoundException;
 
     /**
      * This method
@@ -59,13 +69,8 @@ public interface EventStorer<T extends Item> {
      * modification ie. that the datastream may have changed again between being read and being written. (In which case
      * one should return to step i).
      *
-     * @param maxTries        the maximum number of attempts.
-     * @param waitTime        the time in milliseconds to wait between attempts.
-     *
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item, int maxTries, long waitTime) throws
-                                                                                                                 CommunicationException,
-                                                                                                                 NotFoundException;
+    int triggerWorkflowRestartFromFirstFailure(T item) throws CommunicationException, NotFoundException;
 }

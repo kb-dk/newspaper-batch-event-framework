@@ -156,6 +156,46 @@ public class PremisManipulatorTest {
         assertEquals(newXml, evenNewerXml);
     }
 
+    /**
+     * Adds a bunch of events to a PREMIS blob. Remove all events after the first failure and check that they are
+     * actually removed. Also check (somewhat redundantly) that the resultant blob can still be parsed as Premis.
+     * Finally there is an idempotence test that a further call to remove failures has no effect.
+     *
+     * @throws JAXBException
+     */
+    @Test
+    public void testRemoveNamedEvent() throws JAXBException {
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e2", false);
+        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e2", true);
+        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e3", false);
+        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e3", true);
+        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e1", true);
+        assertTrue(manipulator.toXML().contains("e1"));
+        int eventsRemoved = manipulator.removeEvents("e1");
+        assertEquals(eventsRemoved, 2);
+        String newXml = manipulator.toXML();
+        assertFalse(newXml.contains("e1"));
+        assertTrue(newXml.contains("e2"));
+        assertTrue(newXml.contains("e3"));
+        assertTrue(newXml.contains("e4"));
+        factory.createFromBlob(new ByteArrayInputStream(newXml.getBytes()));
+        eventsRemoved = manipulator.removeEvents("e4");
+        assertEquals(eventsRemoved, 1);
+
+        newXml = manipulator.toXML();
+        assertFalse(newXml.contains("e4"));
+        eventsRemoved = manipulator.removeEvents("e5");
+        assertEquals(eventsRemoved, 0);
+        String evenNewerXml = manipulator.toXML();
+        assertEquals(newXml, evenNewerXml);
+    }
+
+
     @Test
     public void testNoDetails() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());

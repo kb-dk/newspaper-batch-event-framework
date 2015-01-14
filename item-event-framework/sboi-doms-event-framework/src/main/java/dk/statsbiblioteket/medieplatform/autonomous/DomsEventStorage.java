@@ -26,6 +26,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     protected final String eventsDatastream;
     protected final PremisManipulatorFactory<T> premisFactory;
     private String addEventToItemComment = "Adding event to Item";
+    private String removeEventToItemComment = "Removing event from item: ";
 
     DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
@@ -41,7 +42,11 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         try {
             String itemID = item.getDomsID();
             if (itemID == null){
-                throw new IllegalArgumentException("Trying to add an event to a non-existing item '" +item.toString()+"'");
+                try {
+                    itemID = getPidFromDCIdentifier(item.getFullID());
+                } catch (BackendInvalidResourceException e) {
+                    throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
+                }
             }
             PremisManipulator premisObject;
             try {
@@ -69,6 +74,49 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             }
         } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
             throw new CommunicationException(e);
+        }
+    }
+
+    /**
+     * Removes all instances of events with the given type from the item
+     * @param item        The item to remove events from
+     * @param eventType     The eventType to remove
+     *
+     * @return the number of events removed
+     * @throws CommunicationException
+     * @throws NotFoundException
+     */
+    @Override
+    public int removeEventFromItem(T item,  String eventType) throws
+                                                             CommunicationException,
+                                                             NotFoundException {
+        try {
+            String itemID = item.getDomsID();
+            if (itemID == null) {
+                itemID = getPidFromDCIdentifier(item.getFullID());
+            }
+            PremisManipulator premisObject;
+            String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
+            premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+
+            int removed = premisObject.removeEvents(eventType);
+            if (removed > 0) {
+                fedora.modifyDatastreamByValue(itemID,
+                                                      eventsDatastream,
+                                                      null,
+                                                      null,
+                                                      premisObject.toXML().getBytes(),
+                                                      null,
+                                                      "text/xml",
+                                                      removeEventToItemComment + eventType,
+                                                      null);
+
+            }
+            return removed;
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
+            throw new CommunicationException(e);
+        } catch (BackendInvalidResourceException e){
+            throw new NotFoundException(e);
         }
     }
 
@@ -111,33 +159,8 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(T item, int maxAttempts,
-                                                      long waitTime, String eventId) throws
-                                                                                     CommunicationException,
-                                                                                     NotFoundException {
-        int attempts = 0;
-        int eventsRemoved = -1;
-        while ((eventsRemoved = attemptWorkflowRestart(item, eventId)) < 0) {
-            attempts++;
-            if (attempts == maxAttempts) {
-                String msg = "Failed to trigger restart of item " + item.getFullID()+
-                             " after " + maxAttempts + " attempts. Giving up.";
-                log.error(msg);
-                throw new CommunicationException(msg);
-            }
-            try {
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                //no problem
-            }
-        }
-        return eventsRemoved;
-    }
-
-    @Override
-    public int triggerWorkflowRestartFromFirstFailure(T item, int maxTries,
-                                                      long waitTime) throws CommunicationException, NotFoundException {
-        return triggerWorkflowRestartFromFirstFailure(item, maxTries, waitTime, null);
+    public int triggerWorkflowRestartFromFirstFailure(T item) throws CommunicationException, NotFoundException {
+        return triggerWorkflowRestartFromFirstFailure(item, null);
     }
 
     /**
@@ -149,9 +172,10 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @return the number of events removed or -1 of there was a ConcurrentModificationException thrown.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    private int attemptWorkflowRestart(T item, String eventId) throws
-                                                                                            CommunicationException,
-                                                                                            NotFoundException {
+    @Override
+    public int triggerWorkflowRestartFromFirstFailure(T item, String eventId) throws
+                                                                              CommunicationException,
+                                                                              NotFoundException {
         String itemPid = item.getDomsID();
         if (itemPid == null) {
             try {
