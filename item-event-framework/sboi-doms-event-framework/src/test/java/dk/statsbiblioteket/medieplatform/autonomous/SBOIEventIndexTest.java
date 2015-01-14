@@ -50,12 +50,8 @@ public class SBOIEventIndexTest {
             oldEvent = null;
             for (Event event : it.getEventList()) {
                 Event existing = eventMap.get(event.getEventID());
-                if (existing == null) {
+                if (existing == null || existing.getDate().before(event.getDate())) {
                     eventMap.put(event.getEventID(), event);
-                } else {
-                    if (existing.getDate().before(event.getDate())) {
-                        eventMap.put(event.getEventID(), event);
-                    }
                 }
             }
             for (Event event : eventMap.values()) {
@@ -66,7 +62,7 @@ public class SBOIEventIndexTest {
                     oldEvent = event;
                 }
             }
-            if (upToDateEvent != null && oldEvent != null && !upToDateEvent.getEventID().equals(oldEvent.getEventID())) {
+            if (upToDateEvent != null && oldEvent != null ) {
                 item = it;
                 break;
             }
