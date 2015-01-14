@@ -35,7 +35,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.HAS_PART,
                                                                             DomsEventStorageFactory.EVENTS,
-                                                                            new BatchItemFactory(),1,100);
+                                                                            new BatchItemFactory());
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER + 1),
                                    "agent",
@@ -62,7 +62,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                             NewspaperDomsEventStorageFactory.HAS_PART,
                                                                             DomsEventStorageFactory.EVENTS,
-                                                                            new BatchItemFactory(),1,100);
+                                                                            new BatchItemFactory());
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
@@ -88,7 +88,7 @@ public class NewspaperDomsEventStorageTest {
                                                                      NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                      NewspaperDomsEventStorageFactory.HAS_PART,
                                                                      DomsEventStorageFactory.EVENTS,
-                                                                     new BatchItemFactory(),1,100);
+                                                                     new BatchItemFactory());
 
         doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
@@ -114,7 +114,7 @@ public class NewspaperDomsEventStorageTest {
                                                                               NewspaperDomsEventStorageFactory.ROUND_TRIP_TEMPLATE,
                                                                               NewspaperDomsEventStorageFactory.HAS_PART,
                                                                               DomsEventStorageFactory.EVENTS,
-                                                                              new BatchItemFactory(),1,100);
+                                                                              new BatchItemFactory());
         doms.createBatchRoundTrip(new Batch(BATCH_ID, ROUND_TRIP_NUMBER).getFullID());
         Assert.assertEquals(log.size(), 6);
         for (String s : log) {
@@ -144,10 +144,7 @@ public class NewspaperDomsEventStorageTest {
         pids.add("uuid:thepid");
         Mockito.when(enhancedFedora.findObjectFromDCIdentifier(Matchers.anyString())).thenReturn(pids);
 
-        //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
-        //is successful
-        Mockito.doThrow(new ConcurrentModificationException())
-               .doReturn(new Date())
+        Mockito.doReturn(new Date())
                .when(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
@@ -161,7 +158,7 @@ public class NewspaperDomsEventStorageTest {
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory(), 3,100);
+                                                            new BatchItemFactory());
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
         assertEquals(eventsRemoved, 6);
@@ -170,7 +167,7 @@ public class NewspaperDomsEventStorageTest {
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        Mockito.verify(enhancedFedora, Mockito.times(2))
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),
@@ -214,10 +211,7 @@ public class NewspaperDomsEventStorageTest {
         pids.add("uuid:thepid");
         Mockito.when(enhancedFedora.findObjectFromDCIdentifier(Matchers.anyString())).thenReturn(pids);
 
-        //The following call means that the 1st attempt to reset the events throws an exception, but the second attempt
-        //is successful
-        Mockito.doThrow(new ConcurrentModificationException())
-               .doReturn(new Date())
+        Mockito.doReturn(new Date())
                .when(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
@@ -231,7 +225,7 @@ public class NewspaperDomsEventStorageTest {
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory(), 3,100);
+                                                            new BatchItemFactory());
         //Make the call
         int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3), "e5");
         assertEquals(eventsRemoved, 4);
@@ -240,7 +234,7 @@ public class NewspaperDomsEventStorageTest {
         ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
 
         //There should be two calls to each of these methods, once for each attempt
-        Mockito.verify(enhancedFedora, Mockito.times(2))
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),
@@ -297,18 +291,13 @@ public class NewspaperDomsEventStorageTest {
                                                Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.anyLong());
-        final int MAX_ATTEMPTS = 10;
 
         DomsEventStorage<Batch> doms = new DomsEventStorage<>(enhancedFedora, PremisManipulatorFactory.TYPE,
                                                             DomsEventStorageFactory.EVENTS,
-                                                            new BatchItemFactory(), MAX_ATTEMPTS,100);
-        try {
-            int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
-            fail("Should have thrown a " + CommunicationException.class.getSimpleName());
-        } catch (CommunicationException e) {
-            //expected
-        }
-        Mockito.verify(enhancedFedora, Mockito.times(MAX_ATTEMPTS))
+                                                            new BatchItemFactory());
+        int eventsRemoved = doms.triggerWorkflowRestartFromFirstFailure(new Batch("foo", 3));
+        assertEquals(-1,eventsRemoved);
+        Mockito.verify(enhancedFedora)
                .modifyDatastreamByValue(Matchers.anyString(),
                                                Matchers.anyString(),
                                                Matchers.any(ChecksumType.class),

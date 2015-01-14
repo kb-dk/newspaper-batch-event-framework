@@ -27,15 +27,10 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     protected final PremisManipulatorFactory<T> premisFactory;
     private String addEventToItemComment = "Adding event to Item";
     private String removeEventToItemComment = "Removing event from item: ";
-    private int maxAttempts;
-    private long waitTime;
 
-    DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory,
-                     int maxAttempts, long waitTime) throws JAXBException {
+    DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
         this.eventsDatastream = eventsDatastream;
-        this.maxAttempts = maxAttempts;
-        this.waitTime = waitTime;
         premisFactory = new PremisManipulatorFactory<>(type, itemFactory);
     }
 
@@ -164,29 +159,6 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
     @Override
-    public int triggerWorkflowRestartFromFirstFailure(T item, String eventId) throws
-                                                                                     CommunicationException,
-                                                                                     NotFoundException {
-        int attempts = 0;
-        int eventsRemoved = -1;
-        while ((eventsRemoved = attemptWorkflowRestart(item, eventId)) < 0) {
-            attempts++;
-            if (attempts == maxAttempts) {
-                String msg = "Failed to trigger restart of item " + item.getFullID()+
-                             " after " + maxAttempts + " attempts. Giving up.";
-                log.error(msg);
-                throw new CommunicationException(msg);
-            }
-            try {
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                //no problem
-            }
-        }
-        return eventsRemoved;
-    }
-
-    @Override
     public int triggerWorkflowRestartFromFirstFailure(T item) throws CommunicationException, NotFoundException {
         return triggerWorkflowRestartFromFirstFailure(item, null);
     }
@@ -200,9 +172,10 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @return the number of events removed or -1 of there was a ConcurrentModificationException thrown.
      * @throws CommunicationException if there was a problem communicating with DOMS.
      */
-    private int attemptWorkflowRestart(T item, String eventId) throws
-                                                                                            CommunicationException,
-                                                                                            NotFoundException {
+    @Override
+    public int triggerWorkflowRestartFromFirstFailure(T item, String eventId) throws
+                                                                              CommunicationException,
+                                                                              NotFoundException {
         String itemPid = item.getDomsID();
         if (itemPid == null) {
             try {

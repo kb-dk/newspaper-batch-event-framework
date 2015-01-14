@@ -54,8 +54,7 @@ public interface EventStorer<T extends Item> {
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item,
-                                               String eventId) throws CommunicationException, NotFoundException;
+    int triggerWorkflowRestartFromFirstFailure(T item, String eventId) throws CommunicationException, NotFoundException;
 
     /**
      * This method
@@ -73,7 +72,5 @@ public interface EventStorer<T extends Item> {
      * @return the number of events removed.
      * @throws CommunicationException
      */
-    int triggerWorkflowRestartFromFirstFailure(T item) throws
-                                                                                                                 CommunicationException,
-                                                                                                                 NotFoundException;
+    int triggerWorkflowRestartFromFirstFailure(T item) throws CommunicationException, NotFoundException;
 }

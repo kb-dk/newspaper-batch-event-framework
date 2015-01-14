@@ -35,9 +35,9 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
     private final String addEventToBatchComment = "Adding event to natch round trip";
 
     public NewspaperDomsEventStorage(EnhancedFedora fedora, String type, String batchTemplate, String roundTripTemplate,
-                                     String hasPart_relation, String eventsDatastream, ItemFactory<Batch> itemFactory, int maxAttempts, long waitTime) throws JAXBException {
+                                     String hasPart_relation, String eventsDatastream, ItemFactory<Batch> itemFactory) throws JAXBException {
         super(fedora, type, eventsDatastream,
-                     itemFactory, maxAttempts, waitTime);
+                     itemFactory);
         this.batchTemplate = batchTemplate;
         this.roundTripTemplate = roundTripTemplate;
         this.hasPart_relation = hasPart_relation;

@@ -35,7 +35,7 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
             itemFactory = new BatchItemFactory();
         }
         return new NewspaperDomsEventStorage(fedora,
-                                                    premisIdentifierType, batchTemplate,roundTripTemplate,hasPartRelation,eventsDatastream, itemFactory, retries,delayBetweenRetries);
+                                                    premisIdentifierType, batchTemplate,roundTripTemplate,hasPartRelation,eventsDatastream, itemFactory);
     }
 
     public String getBatchTemplate() {
