@@ -1,6 +1,7 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -96,7 +97,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
 
             query.addSort(SBOIEventIndex.SORT_DATE, SolrQuery.ORDER.asc);
 
-            QueryResponse response = summaSearch.query(query);
+            QueryResponse response = summaSearch.query(query, SolrRequest.METHOD.POST);
             SolrDocumentList results = response.getResults();
             List<T> hits = new ArrayList<>();
             for (SolrDocument result : results) {
