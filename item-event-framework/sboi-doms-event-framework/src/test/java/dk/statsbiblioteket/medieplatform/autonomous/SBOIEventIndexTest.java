@@ -52,7 +52,7 @@ public class SBOIEventIndexTest {
                     oldEvent = event;
                 }
             }
-            if (upToDateEvent != null && oldEvent != null) {
+            if (upToDateEvent != null && oldEvent != null && !upToDateEvent.getEventID().equals(oldEvent.getEventID())) {
                 item = it;
                 break;
             }
