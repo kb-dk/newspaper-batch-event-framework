@@ -1,3 +1,6 @@
+2.2
+* SBOI queries use POST not GET to avoid 414 on long queries due to many potential batches from MFPAK
+
 2.1
 * Retry on Fedora 409 errors
 * Some cleanup in logging
