@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -41,10 +42,23 @@ public class SBOIEventIndexTest {
         Event oldEvent = null;
         Item item = null;
         while (items.hasNext()) {
+
             Item it = items.next();
+            HashMap<String, Event> eventMap = new HashMap<>();
+
             upToDateEvent = null;
             oldEvent = null;
             for (Event event : it.getEventList()) {
+                Event existing = eventMap.get(event.getEventID());
+                if (existing == null) {
+                    eventMap.put(event.getEventID(), event);
+                } else {
+                    if (existing.getDate().before(event.getDate())) {
+                        eventMap.put(event.getEventID(), event);
+                    }
+                }
+            }
+            for (Event event : eventMap.values()) {
                 if (event.isSuccess() && event.getDate().after(it.getLastModified())) {
                     upToDateEvent = event;
                 }
