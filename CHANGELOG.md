@@ -1,3 +1,6 @@
+2.3
+* Added remove event functionality
+
 2.2
 * SBOI queries use POST not GET to avoid 414 on long queries due to many potential batches from MFPAK
 
