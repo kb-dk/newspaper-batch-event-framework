@@ -33,6 +33,9 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             conf.setDomsLocation(props.getProperty(ConfigConstants.DOMS_URL));
             conf.setDomsUser(props.getProperty(ConfigConstants.DOMS_USERNAME));
             conf.setDomsPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
+            conf.setDomsPidGenLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
+            conf.setDomsRetries(props.getProperty(ConfigConstants.FEDORA_RETRIES, "3"));
+            conf.setDomsDelayBetweenRetries(props.getProperty(ConfigConstants.FEDORA_DELAY_BETWEEN_RETRIES, "100"));
             dataSource = new SBOIDatasource(conf);
 
             DomsEventStorageFactory<Batch> domsEventStorageFactory = new DomsEventStorageFactory<>();

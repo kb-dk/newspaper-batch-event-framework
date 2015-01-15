@@ -7,7 +7,10 @@ public class SBOIDatasourceConfiguration {
     private String domsLocation;
     private String domsUser;
     private String domsPassword;
+    private String domsPidGenLocation;
     private int sboiPageSize = 100;
+    private String domsRetries;
+    private String domsDelayBetweenRetries;
 
     public String getSummaLocation() {
         return summaLocation;
@@ -47,5 +50,29 @@ public class SBOIDatasourceConfiguration {
 
     public void setSboiPageSize(int sboiPageSize) {
         this.sboiPageSize = sboiPageSize;
+    }
+
+    public String getDomsPidGenLocation() {
+        return domsPidGenLocation;
+    }
+
+    public void setDomsPidGenLocation(String domsPidGenLocation) {
+        this.domsPidGenLocation = domsPidGenLocation;
+    }
+
+    public String getDomsRetries() {
+        return domsRetries;
+    }
+
+    public void setDomsRetries(String domsRetries) {
+        this.domsRetries = domsRetries;
+    }
+
+    public String getDomsDelayBetweenRetries() {
+        return domsDelayBetweenRetries;
+    }
+
+    public void setDomsDelayBetweenRetries(String domsDelayBetweenRetries) {
+        this.domsDelayBetweenRetries = domsDelayBetweenRetries;
     }
 }
