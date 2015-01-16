@@ -126,7 +126,20 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            return getDomsEventStorage().getItemFromFullID(Batch.formatFullID(batchID, roundTripNumber));
+            final DomsEventStorage<Batch> domsEventStorage = getDomsEventStorage();
+            if (roundTripNumber == null){
+
+                int i = 1;
+                for (;i < 100; i++) {
+                    try {
+                        domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, i));
+                    } catch (NotFoundException e){
+                        break;
+                    }
+                }
+                return domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, i - 1));
+            }
+            return domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, roundTripNumber));
         } catch (CommunicationException e) {
             throw new NotWorkingProperlyException(e);
         }
