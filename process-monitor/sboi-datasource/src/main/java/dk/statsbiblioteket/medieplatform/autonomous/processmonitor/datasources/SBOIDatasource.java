@@ -4,10 +4,10 @@ import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGenera
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.BatchItemFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.CommunicationException;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorage;
-import dk.statsbiblioteket.medieplatform.autonomous.DomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.Event;
 import dk.statsbiblioteket.medieplatform.autonomous.EventAccessor;
+import dk.statsbiblioteket.medieplatform.autonomous.NewspaperDomsEventStorage;
+import dk.statsbiblioteket.medieplatform.autonomous.NewspaperDomsEventStorageFactory;
 import dk.statsbiblioteket.medieplatform.autonomous.NewspaperSBOIEventStorage;
 import dk.statsbiblioteket.medieplatform.autonomous.NotFoundException;
 import dk.statsbiblioteket.medieplatform.autonomous.PremisManipulatorFactory;
@@ -46,14 +46,14 @@ public class SBOIDatasource implements DataSource {
         }
     }
 
-    private DomsEventStorage<Batch> getDomsEventStorage() {
-        DomsEventStorageFactory<Batch> factory = new DomsEventStorageFactory<>();
+    private NewspaperDomsEventStorage getDomsEventStorage() {
+        NewspaperDomsEventStorageFactory factory = new NewspaperDomsEventStorageFactory();
 
         factory.setFedoraLocation(configuration.getDomsLocation());
         factory.setUsername(configuration.getDomsUser());
         factory.setPassword(configuration.getDomsPassword());
         factory.setItemFactory(itemFactory);
-        DomsEventStorage<Batch> domsEventStorage;
+        NewspaperDomsEventStorage domsEventStorage;
         try {
             domsEventStorage = factory.createDomsEventStorage();
         } catch (JAXBException | MalformedURLException | PIDGeneratorException e) {
@@ -126,18 +126,10 @@ public class SBOIDatasource implements DataSource {
                                                                                            NotFoundException,
                                                                                            NotWorkingProperlyException {
         try {
-            final DomsEventStorage<Batch> domsEventStorage = getDomsEventStorage();
+            final NewspaperDomsEventStorage domsEventStorage = getDomsEventStorage();
             if (roundTripNumber == null){
-
-                int i = 1;
-                for (;i < 100; i++) {
-                    try {
-                        domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, i));
-                    } catch (NotFoundException e){
-                        break;
-                    }
-                }
-                return domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, i - 1));
+                List<Batch> roundTrips = domsEventStorage.getAllRoundTrips(batchID);
+                return roundTrips.get(roundTrips.size()-1);
             }
             return domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, roundTripNumber));
         } catch (CommunicationException e) {
