@@ -1,3 +1,6 @@
+2.5
+* Fixed a nullpointer error in SBOIDatasource
+
 2.4
 * Removed commons-logging and log4j from the autonoumous components
 * If finding an item in sboi which is not in doms, ignore it

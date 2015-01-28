@@ -129,7 +129,11 @@ public class SBOIDatasource implements DataSource {
             final NewspaperDomsEventStorage domsEventStorage = getDomsEventStorage();
             if (roundTripNumber == null){
                 List<Batch> roundTrips = domsEventStorage.getAllRoundTrips(batchID);
-                return roundTrips.get(roundTrips.size()-1);
+                if (roundTrips != null) {
+                    return roundTrips.get(roundTrips.size() - 1);
+                } else {
+                    throw new NotFoundException();
+                }
             }
             return domsEventStorage.getItemFromFullID(Batch.formatFullID(batchID, roundTripNumber));
         } catch (CommunicationException e) {
