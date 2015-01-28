@@ -1,3 +1,8 @@
+2.4
+* Removed commons-logging and log4j from the autonoumous components
+* If finding an item in sboi which is not in doms, ignore it
+* Find the latest roundtrip if not specified
+
 2.3
 * Added remove event functionality
 
