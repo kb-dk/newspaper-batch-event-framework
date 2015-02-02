@@ -1,4 +1,4 @@
-package dk.statsbibliokeket.newspaper.treenode;
+package dk.statsbiblioteket.newspaper.treenode;
 
 import java.util.ArrayList;
 import java.util.List;

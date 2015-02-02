@@ -1,4 +1,4 @@
-package dk.statsbibliokeket.newspaper.treenode;
+package dk.statsbiblioteket.newspaper.treenode;
 
 /**
  * Specialised subclass of TreeNodeState which uses TreeNodeWithChildren elements so that one

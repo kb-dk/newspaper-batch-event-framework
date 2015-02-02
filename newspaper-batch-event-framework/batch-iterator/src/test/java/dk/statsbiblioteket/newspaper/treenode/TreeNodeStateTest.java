@@ -1,4 +1,4 @@
-package dk.statsbibliokeket.newspaper.treenode;
+package dk.statsbiblioteket.newspaper.treenode;
 
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeBeginsParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.NodeEndParsingEvent;

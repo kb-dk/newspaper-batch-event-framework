@@ -1,4 +1,4 @@
-package dk.statsbibliokeket.newspaper.treenode;
+package dk.statsbiblioteket.newspaper.treenode;
 
 /**
  * Defines the types of nodes found in a batch.

@@ -1,4 +1,4 @@
-package dk.statsbibliokeket.newspaper.treenode;
+package dk.statsbiblioteket.newspaper.treenode;
 
 /**
  * Represents a node in a tree including parent structure.
