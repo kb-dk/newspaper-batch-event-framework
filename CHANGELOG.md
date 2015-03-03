@@ -1,3 +1,6 @@
+2.6
+* Fix naming typo 'statsbibliokeket' to statsbiblioteket
+
 2.5
 * Fixed a nullpointer error in SBOIDatasource
 
