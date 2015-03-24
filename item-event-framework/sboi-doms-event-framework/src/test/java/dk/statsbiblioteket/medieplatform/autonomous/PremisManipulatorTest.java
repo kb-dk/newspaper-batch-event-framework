@@ -23,12 +23,13 @@ public class PremisManipulatorTest {
 
 
     public static final String ITEM_ID = "B400022028241-RT1";
+    public static final int ONE_DAY_IN_MS = 24 * 60 * 60 * 1000; 
 
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
         Reader control = new InputStreamReader(getFile("objectOnlyBlob.xml"));
@@ -45,8 +46,8 @@ public class PremisManipulatorTest {
     @Test
     public void testAddEvent() throws Exception {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
-        Date date = new Date(0);
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        Date date = new Date(ONE_DAY_IN_MS);
 
         manipulator = manipulator.addEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
         StringReader test = new StringReader(manipulator.toXML());
@@ -62,6 +63,57 @@ public class PremisManipulatorTest {
         //Assert.assertTrue(diff.identical());
 
     }
+    
+    @Test
+    public void testAddEventToHead() throws Exception {
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        Date date = new Date(ONE_DAY_IN_MS);
+
+        manipulator = manipulator.addEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
+        StringReader test = new StringReader(manipulator.toXML());
+        Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreComments(true);
+        Diff diff = XMLUnit.compareXML(control, test);
+        if (!diff.identical()) {
+            System.out.println(manipulator.toXML());
+            System.out.println(diff.toString());
+        }
+        Assert.assertTrue(diff.similar());
+
+        Date headDate = new Date(0);
+        manipulator = manipulator.addEventToHead("roundtrip_prioritizer", headDate, "details here", "Prioritized", true);
+        StringReader testHead = new StringReader(manipulator.toXML());
+        Reader control2 = new InputStreamReader(getFile("eventAndPriorityAddedBlob.xml"));
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreComments(true);
+        Diff diff2 = XMLUnit.compareXML(control2, testHead);
+        if (!diff2.identical()) {
+            System.out.println(manipulator.toXML());
+            System.out.println(diff2.toString());
+        }
+        Assert.assertTrue(diff2.similar());
+    }
+    
+    @Test
+    public void testAddEventToHeadSequence() throws Exception {
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulator<Item> normalEventFirst = factory.createInitialPremisBlob(ITEM_ID);
+        PremisManipulator<Item> headEventFirst = factory.createInitialPremisBlob(ITEM_ID);
+        Date normalEventdate = new Date(ONE_DAY_IN_MS);
+        Date headEventDate = new Date(0);
+
+        normalEventFirst = normalEventFirst.addEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
+        normalEventFirst = normalEventFirst.addEventToHead("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
+        
+        headEventFirst = headEventFirst.addEventToHead("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
+        headEventFirst = headEventFirst.addEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
+        
+        List<Event> normalEventFirstEvents = normalEventFirst.toItem().getEventList();
+        List<Event> headEventFirstEvents = headEventFirst.toItem().getEventList();
+        Assert.assertEquals(normalEventFirstEvents, headEventFirstEvents);
+    }
 
     private InputStream getFile(String file) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
@@ -70,7 +122,7 @@ public class PremisManipulatorTest {
     @Test
     public void testGetAsBatch() throws Exception {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
+        PremisManipulator<Item> premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
         Item batch = premisBlob.toItem();
         Assert.assertEquals("B400022028241-RT1", batch.getFullID());
         List<Event> events = batch.getEventList();
@@ -92,7 +144,7 @@ public class PremisManipulatorTest {
     @Test
     public void testRemoveEventsAfterFailure() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
         manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
@@ -128,7 +180,7 @@ public class PremisManipulatorTest {
     @Test
     public void testRemoveEventsAfterNamedEvent() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
         manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
@@ -166,7 +218,7 @@ public class PremisManipulatorTest {
     @Test
     public void testRemoveNamedEvent() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
-        PremisManipulator manipulator = factory.createInitialPremisBlob(ITEM_ID);
+        PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
         manipulator = manipulator.addEvent("me", new Date(300), "details here", "e2", false);
@@ -200,7 +252,7 @@ public class PremisManipulatorTest {
     public void testNoDetails() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
         try {
-            PremisManipulator premisBlob = factory.createFromBlob(getFile("EventNoDetails.xml"));
+            PremisManipulator<Item> premisBlob = factory.createFromBlob(getFile("EventNoDetails.xml"));
         } catch (Exception e) {
             fail("Failed to read premis without details", e);
         }

@@ -8,6 +8,31 @@
     <event>
         <eventIdentifier>
             <eventIdentifierType>Newspaper_digitisation_project</eventIdentifierType>
+            <eventIdentifierValue>B400022028241-RT1-0</eventIdentifierValue>
+        </eventIdentifier>
+        <eventType>Prioritized</eventType>
+        <eventDateTime>1970-01-01T01:00:00.000+01:00</eventDateTime>
+        <eventOutcomeInformation>
+            <eventOutcome>success</eventOutcome>
+            <!--or failure-->
+            <eventOutcomeDetail>
+                <eventOutcomeDetailNote>details here</eventOutcomeDetailNote>
+            </eventOutcomeDetail>
+        </eventOutcomeInformation>
+
+        <linkingAgentIdentifier>
+            <linkingAgentIdentifierType>Newspaper_digitisation_project</linkingAgentIdentifierType>
+            <linkingAgentIdentifierValue>roundtrip_prioritizer</linkingAgentIdentifierValue>
+        </linkingAgentIdentifier>
+
+        <linkingObjectIdentifier>
+            <linkingObjectIdentifierType>Newspaper_digitisation_project</linkingObjectIdentifierType>
+            <linkingObjectIdentifierValue>B400022028241-RT1</linkingObjectIdentifierValue>
+        </linkingObjectIdentifier>
+    </event>
+    <event>
+        <eventIdentifier>
+            <eventIdentifierType>Newspaper_digitisation_project</eventIdentifierType>
             <eventIdentifierValue>B400022028241-RT1-86400000</eventIdentifierValue>
         </eventIdentifier>
         <eventType>Data_Received</eventType>
@@ -34,6 +59,13 @@
         <agentIdentifier>
             <agentIdentifierType>Newspaper_digitisation_project</agentIdentifierType>
             <agentIdentifierValue>batch_uploaded_trigger</agentIdentifierValue>
+            <!--Version embedded in identifier-->
+        </agentIdentifier>
+    </agent>
+    <agent>
+        <agentIdentifier>
+            <agentIdentifierType>Newspaper_digitisation_project</agentIdentifierType>
+            <agentIdentifierValue>roundtrip_prioritizer</agentIdentifierValue>
             <!--Version embedded in identifier-->
         </agentIdentifier>
     </agent>

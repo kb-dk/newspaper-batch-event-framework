@@ -162,11 +162,40 @@ public class PremisManipulator<T extends Item> {
      * @return the premis with the event added.
      */
     public PremisManipulator<T> addEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
-
         String eventID = getEventID(timestamp);
         if (eventExists(eventID)) {
             return this;
         }
+
+        EventComplexType event = createEvent(agent, timestamp, details, eventType, outcome);
+        premis.getEvent().add(event);
+        return this;
+    }
+    
+    /**
+     * Add an event to the head of the premis blob. Will return itself to allow for method chaining.
+     *
+     * @param agent     the agent that did it
+     * @param timestamp when the thing was done
+     * @param details   details about how it went
+     * @param eventType the kind of thing that was done
+     * @param outcome   was it successful?
+     *
+     * @return the premis with the event added to head.
+     */
+    public PremisManipulator<T> addEventToHead(String agent, Date timestamp, String details, String eventType, boolean outcome) {
+        String eventID = getEventID(timestamp);
+        if (eventExists(eventID)) {
+            return this;
+        }
+        
+        EventComplexType event = createEvent(agent, timestamp, details, eventType, outcome);
+        premis.getEvent().add(0, event);
+        return this;
+    }
+    
+    private EventComplexType createEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
+        String eventID = getEventID(timestamp);
         addAgentIfNessesary(premis.getAgent(), agent);
 
         ObjectFactory factory = new ObjectFactory();
@@ -200,10 +229,8 @@ public class PremisManipulator<T extends Item> {
         linkingObjectObject.setLinkingObjectIdentifierType(type);
         linkingObjectObject.setLinkingObjectIdentifierValue(getObjectID());
         event.getLinkingObjectIdentifier().add(linkingObjectObject);
-
-        premis.getEvent().add(event);
-        return this;
-
+        
+        return event;
     }
 
 
