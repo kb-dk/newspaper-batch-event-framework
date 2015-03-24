@@ -46,6 +46,14 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
                     throws CommunicationException {
                 return addEvent(item.getFullID(), timestamp, details, eventType, outcome);
             }
+            
+            @Override
+            public Date prependEventToItem(Item item, String agent, Date timestamp,
+                                         String details, String eventType, boolean outcome)
+                    throws CommunicationException {
+                throw new RuntimeException("Not implemented");
+                
+            }
 
             @Override
             public int removeEventFromItem(Item item, String eventType) throws

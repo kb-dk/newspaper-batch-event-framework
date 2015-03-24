@@ -39,6 +39,55 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     @Override
     public Date appendEventToItem(T item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
+        PremisManipulator<T> premisObject = getPremisForItem(item);
+        premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
+        try{
+            try {
+                return fedora.modifyDatastreamByValue(item.getDomsID(),
+                        eventsDatastream,
+                        null,
+                        null,
+                        premisObject.toXML().getBytes(),
+                        null,
+                        "text/xml",
+                        addEventToItemComment,
+                        null);
+            } catch (ConcurrentModificationException | BackendMethodFailedException | BackendInvalidCredsException e) {
+                throw new CommunicationException(e);    // TODO Auto-generated catch block
+            }
+        } catch (BackendInvalidResourceException e1) {
+            //But I just created the object, it must be there
+            throw new CommunicationException(e1);
+        }
+    }
+
+    @Override
+    public Date prependEventToItem(T item, String agent, Date timestamp, String details, String eventType,
+                               boolean outcome) throws CommunicationException {
+        PremisManipulator<T> premisObject = getPremisForItem(item);
+
+        premisObject = premisObject.addEventToHead(agent, timestamp, details, eventType, outcome);
+        try {
+            try {
+                return fedora.modifyDatastreamByValue(item.getDomsID(),
+                        eventsDatastream,
+                        null,
+                        null,
+                        premisObject.toXML().getBytes(),
+                        null,
+                        "text/xml",
+                        addEventToItemComment,
+                        null);
+            } catch (ConcurrentModificationException | BackendMethodFailedException | BackendInvalidCredsException e) {
+                throw new CommunicationException(e);    // TODO Auto-generated catch block
+            }
+        } catch (BackendInvalidResourceException e1) {
+            //But I just created the object, it must be there
+            throw new CommunicationException(e1);
+        }
+    }
+    
+    private PremisManipulator<T> getPremisForItem(T item) throws CommunicationException {
         try {
             String itemID = item.getDomsID();
             if (itemID == null){
@@ -48,7 +97,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                     throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
                 }
             }
-            PremisManipulator premisObject;
+            PremisManipulator<T> premisObject;
             try {
                 String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
 
@@ -57,26 +106,12 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                 //okay, no EVENTS datastream
                 premisObject = premisFactory.createInitialPremisBlob(itemID);
             }
-            premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
-            try {
-                return fedora.modifyDatastreamByValue(itemID,
-                        eventsDatastream,
-                        null,
-                        null,
-                        premisObject.toXML().getBytes(),
-                        null,
-                        "text/xml",
-                        addEventToItemComment,
-                        null);
-            } catch (BackendInvalidResourceException e1) {
-                //But I just created the object, it must be there
-                throw new CommunicationException(e1);
-            }
+            return premisObject;
         } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
             throw new CommunicationException(e);
         }
     }
-
+    
     /**
      * Removes all instances of events with the given type from the item
      * @param item        The item to remove events from
@@ -95,7 +130,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             if (itemID == null) {
                 itemID = getPidFromDCIdentifier(item.getFullID());
             }
-            PremisManipulator premisObject;
+            PremisManipulator<T> premisObject;
             String premisPreBlob = fedora.getXMLDatastreamContents(itemID, eventsDatastream, null);
             premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
 
@@ -188,7 +223,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         try {
             Date lastModifiedDate = fedora.getObjectProfile(itemPid, null).getObjectLastModifiedDate();
             String premisPreBlob = fedora.getXMLDatastreamContents(itemPid, eventsDatastream, null);
-            PremisManipulator premisObject
+            PremisManipulator<T> premisObject
                     = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             int eventsRemoved = premisObject.removeEventsFromFailureOrEvent(eventId);
             if (eventsRemoved > 0) {
