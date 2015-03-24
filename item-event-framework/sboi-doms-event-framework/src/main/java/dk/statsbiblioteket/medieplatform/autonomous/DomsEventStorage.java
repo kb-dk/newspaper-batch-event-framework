@@ -26,7 +26,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     protected final String eventsDatastream;
     protected final PremisManipulatorFactory<T> premisFactory;
     private String addEventToItemComment = "Adding event to Item";
-    private String removeEventToItemComment = "Removing event from item: ";
+    private String removeEventFromItemComment = "Removing event from item: ";
 
     DomsEventStorage(EnhancedFedora fedora, String type, String eventsDatastream, ItemFactory<T> itemFactory) throws JAXBException {
         this.fedora = fedora;
@@ -143,7 +143,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                                                       premisObject.toXML().getBytes(),
                                                       null,
                                                       "text/xml",
-                                                      removeEventToItemComment + eventType,
+                                                      removeEventFromItemComment + eventType,
                                                       null);
 
             }
