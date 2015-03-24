@@ -41,7 +41,7 @@ public class TestingComponent extends AbstractRunnableComponent<Item> {
     public EventStorer<Item> getEventStorer() {
         return new EventStorer<Item>() {
             @Override
-            public Date addEventToItem(Item item, String agent, Date timestamp,
+            public Date appendEventToItem(Item item, String agent, Date timestamp,
                                         String details, String eventType, boolean outcome)
                     throws CommunicationException {
                 return addEvent(item.getFullID(), timestamp, details, eventType, outcome);

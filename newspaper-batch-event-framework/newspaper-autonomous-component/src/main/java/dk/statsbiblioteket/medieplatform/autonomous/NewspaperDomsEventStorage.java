@@ -44,14 +44,14 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
     }
 
     @Override
-    public Date addEventToItem(Batch item, String agent, Date timestamp, String details, String eventType,
+    public Date appendEventToItem(Batch item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
         String itemID = item.getDomsID();
         if (itemID == null) {
             itemID = createBatchRoundTrip(item.getFullID());
             item.setDomsID(itemID);
         }
-        return super.addEventToItem(item, agent, timestamp, details, eventType, outcome);
+        return super.appendEventToItem(item, agent, timestamp, details, eventType, outcome);
     }
 
     /**

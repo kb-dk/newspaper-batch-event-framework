@@ -19,7 +19,7 @@ public interface EventStorer<T extends Item> {
      *
      * @throws CommunicationException if communication with doms failed
      */
-    Date addEventToItem(T item, String agent, Date timestamp, String details,
+    Date appendEventToItem(T item, String agent, Date timestamp, String details,
                          String eventType, boolean outcome) throws CommunicationException;
 
 

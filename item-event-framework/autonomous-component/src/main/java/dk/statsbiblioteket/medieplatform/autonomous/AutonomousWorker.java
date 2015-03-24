@@ -102,7 +102,7 @@ public class AutonomousWorker<T extends Item> implements Runnable {
                             result.toReport());
             return;
         }
-        eventStorer.addEventToItem(item,
+        eventStorer.appendEventToItem(item,
                                           getComponentFormattedName(),
                                           result.getTimestamp(),
                                           result.toReport(),

@@ -47,7 +47,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
 
 
         try {
-            domsEventStorage.addEventToItem(new Batch(batchId, roundTripNumber),
+            domsEventStorage.appendEventToItem(new Batch(batchId, roundTripNumber),
                                                    "agent",
                                                    timestamp,
                                                    details,
@@ -70,7 +70,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
 
 
             Integer newRoundTripNumber = roundTripNumber + 5;
-            domsEventStorage.addEventToItem(new Batch(batchId, newRoundTripNumber),
+            domsEventStorage.appendEventToItem(new Batch(batchId, newRoundTripNumber),
                                                    "agent",
                                                    timestamp,
                                                    details,
@@ -136,11 +136,11 @@ public class NewspaperDomsEventStorageIntegrationTest {
             n = 0;
         }
         final Batch item1 = new Batch(batchId, 1);
-        domsEventStorage.addEventToItem(item1, "agent", timestamp, details, eventID, true);
+        domsEventStorage.appendEventToItem(item1, "agent", timestamp, details, eventID, true);
         final Batch item4 = new Batch(batchId, 4);
-        domsEventStorage.addEventToItem(item4, "agent", timestamp, details, eventID, true);
+        domsEventStorage.appendEventToItem(item4, "agent", timestamp, details, eventID, true);
         final Batch item2 = new Batch(batchId, 2);
-        domsEventStorage.addEventToItem(item2, "agent", timestamp, details, eventID, true);
+        domsEventStorage.appendEventToItem(item2, "agent", timestamp, details, eventID, true);
         List<Batch> roundtrips = domsEventStorage.getAllRoundTrips(batchId);
         assertEquals(roundtrips.size(), 3 + n);
         //Note that the following asserts fail if the sorting step in getAllRoundTrips() is removed
@@ -185,7 +185,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
             String details = "Details here";
 
             final Batch batch = new Batch(batchId, roundTripNumber);
-            eventStorer.addEventToItem(batch, "agent", new Date(-1000L), details, "e1", false);
+            eventStorer.appendEventToItem(batch, "agent", new Date(-1000L), details, "e1", false);
 
             eventStorer.triggerWorkflowRestartFromFirstFailure(batch);
 

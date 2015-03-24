@@ -37,7 +37,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             DomsEventStorageFactory.EVENTS,
                                                                             new BatchItemFactory());
 
-        doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER + 1),
+        doms.appendEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER + 1),
                                    "agent",
                                    new Date(0),
                                    "Details here",
@@ -64,7 +64,7 @@ public class NewspaperDomsEventStorageTest {
                                                                             DomsEventStorageFactory.EVENTS,
                                                                             new BatchItemFactory());
 
-        doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
+        doms.appendEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
                                    new Date(0),
                                    "Details here",
@@ -90,7 +90,7 @@ public class NewspaperDomsEventStorageTest {
                                                                      DomsEventStorageFactory.EVENTS,
                                                                      new BatchItemFactory());
 
-        doms.addEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
+        doms.appendEventToItem(new Batch(BATCH_ID, ROUND_TRIP_NUMBER),
                                    "agent",
                                    new Date(0),
                                    "Details here",

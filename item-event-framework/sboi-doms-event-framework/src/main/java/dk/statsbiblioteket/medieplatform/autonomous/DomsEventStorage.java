@@ -37,7 +37,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
 
 
     @Override
-    public Date addEventToItem(T item, String agent, Date timestamp, String details, String eventType,
+    public Date appendEventToItem(T item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
         try {
             String itemID = item.getDomsID();
