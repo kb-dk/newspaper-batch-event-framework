@@ -93,6 +93,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             if (itemID == null){
                 try {
                     itemID = getPidFromDCIdentifier(item.getFullID());
+                    item.setDomsID(itemID);
                 } catch (BackendInvalidResourceException e) {
                     throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
                 }
