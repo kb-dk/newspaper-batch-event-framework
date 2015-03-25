@@ -319,14 +319,14 @@ public class NewspaperDomsEventStorageTest {
                                                                                         new BatchItemFactory());
         PremisManipulator manipulator = factory.createInitialPremisBlob(Batch.formatFullID(BATCH_ID,
                                                                                                   ROUND_TRIP_NUMBER));
-        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
-        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
-        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
-        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
-        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e5", true);
-        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e6", false);
-        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
-        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
+        manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.appendEvent("me", new Date(300), "details here", "e3", false);
+        manipulator = manipulator.appendEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.appendEvent("me", new Date(500), "details here", "e5", true);
+        manipulator = manipulator.appendEvent("me", new Date(600), "details here", "e6", false);
+        manipulator = manipulator.appendEvent("me", new Date(700), "details here", "e7", true);
+        manipulator = manipulator.appendEvent("me", new Date(800), "details here", "e8", true);
         return manipulator;
     }
 }

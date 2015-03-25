@@ -49,7 +49,7 @@ public class PremisManipulatorTest {
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         Date date = new Date(ONE_DAY_IN_MS);
 
-        manipulator = manipulator.addEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
+        manipulator = manipulator.appendEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
         StringReader test = new StringReader(manipulator.toXML());
         Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
@@ -70,7 +70,7 @@ public class PremisManipulatorTest {
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         Date date = new Date(ONE_DAY_IN_MS);
 
-        manipulator = manipulator.addEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
+        manipulator = manipulator.appendEvent("batch_uploaded_trigger", date, "details here", "Data_Received", true);
         StringReader test = new StringReader(manipulator.toXML());
         Reader control = new InputStreamReader(getFile("eventAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
@@ -83,7 +83,7 @@ public class PremisManipulatorTest {
         Assert.assertTrue(diff.similar());
 
         Date headDate = new Date(0);
-        manipulator = manipulator.addEventToHead("roundtrip_prioritizer", headDate, "details here", "Prioritized", true);
+        manipulator = manipulator.prependEvent("roundtrip_prioritizer", headDate, "details here", "Prioritized", true);
         StringReader testHead = new StringReader(manipulator.toXML());
         Reader control2 = new InputStreamReader(getFile("eventAndPriorityAddedBlob.xml"));
         XMLUnit.setIgnoreWhitespace(true);
@@ -104,11 +104,11 @@ public class PremisManipulatorTest {
         Date normalEventdate = new Date(ONE_DAY_IN_MS);
         Date headEventDate = new Date(0);
 
-        normalEventFirst = normalEventFirst.addEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
-        normalEventFirst = normalEventFirst.addEventToHead("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
+        normalEventFirst = normalEventFirst.appendEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
+        normalEventFirst = normalEventFirst.prependEvent("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
         
-        headEventFirst = headEventFirst.addEventToHead("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
-        headEventFirst = headEventFirst.addEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
+        headEventFirst = headEventFirst.prependEvent("roundtrip_prioritizer", headEventDate, "details here", "Prioritized", true);
+        headEventFirst = headEventFirst.appendEvent("batch_uploaded_trigger", normalEventdate, "details here", "Data_Received", true);
         
         List<Event> normalEventFirstEvents = normalEventFirst.toItem().getEventList();
         List<Event> headEventFirstEvents = headEventFirst.toItem().getEventList();
@@ -145,14 +145,14 @@ public class PremisManipulatorTest {
     public void testRemoveEventsAfterFailure() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
-        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
-        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
-        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
-        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
-        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e5", true);
-        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e6", false);
-        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
-        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
+        manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.appendEvent("me", new Date(300), "details here", "e3", false);
+        manipulator = manipulator.appendEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.appendEvent("me", new Date(500), "details here", "e5", true);
+        manipulator = manipulator.appendEvent("me", new Date(600), "details here", "e6", false);
+        manipulator = manipulator.appendEvent("me", new Date(700), "details here", "e7", true);
+        manipulator = manipulator.appendEvent("me", new Date(800), "details here", "e8", true);
         assertTrue(manipulator.toXML().contains("e7"));
         manipulator.removeEventsFromFailureOrEvent(null);
         String newXml = manipulator.toXML();
@@ -181,14 +181,14 @@ public class PremisManipulatorTest {
     public void testRemoveEventsAfterNamedEvent() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
-        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
-        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
-        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e3", false);
-        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
-        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e5", true);
-        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e6", false);
-        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e7", true);
-        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e8", true);
+        manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.appendEvent("me", new Date(300), "details here", "e3", false);
+        manipulator = manipulator.appendEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.appendEvent("me", new Date(500), "details here", "e5", true);
+        manipulator = manipulator.appendEvent("me", new Date(600), "details here", "e6", false);
+        manipulator = manipulator.appendEvent("me", new Date(700), "details here", "e7", true);
+        manipulator = manipulator.appendEvent("me", new Date(800), "details here", "e8", true);
         assertTrue(manipulator.toXML().contains("e7"));
         int eventsRemoved = manipulator.removeEventsFromFailureOrEvent("e5");
         assertEquals(eventsRemoved, 4);
@@ -219,14 +219,14 @@ public class PremisManipulatorTest {
     public void testRemoveNamedEvent() throws JAXBException {
         PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
-        manipulator = manipulator.addEvent("me", new Date(100), "details here", "e1", true);
-        manipulator = manipulator.addEvent("me", new Date(200), "details here", "e2", true);
-        manipulator = manipulator.addEvent("me", new Date(300), "details here", "e2", false);
-        manipulator = manipulator.addEvent("me", new Date(400), "details here", "e4", true);
-        manipulator = manipulator.addEvent("me", new Date(500), "details here", "e2", true);
-        manipulator = manipulator.addEvent("me", new Date(600), "details here", "e3", false);
-        manipulator = manipulator.addEvent("me", new Date(700), "details here", "e3", true);
-        manipulator = manipulator.addEvent("me", new Date(800), "details here", "e1", true);
+        manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
+        manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
+        manipulator = manipulator.appendEvent("me", new Date(300), "details here", "e2", false);
+        manipulator = manipulator.appendEvent("me", new Date(400), "details here", "e4", true);
+        manipulator = manipulator.appendEvent("me", new Date(500), "details here", "e2", true);
+        manipulator = manipulator.appendEvent("me", new Date(600), "details here", "e3", false);
+        manipulator = manipulator.appendEvent("me", new Date(700), "details here", "e3", true);
+        manipulator = manipulator.appendEvent("me", new Date(800), "details here", "e1", true);
         assertTrue(manipulator.toXML().contains("e1"));
         int eventsRemoved = manipulator.removeEvents("e1");
         assertEquals(eventsRemoved, 2);

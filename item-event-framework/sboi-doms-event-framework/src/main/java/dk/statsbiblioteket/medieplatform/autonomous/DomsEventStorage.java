@@ -40,7 +40,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     public Date appendEventToItem(T item, String agent, Date timestamp, String details, String eventType,
                                boolean outcome) throws CommunicationException {
         PremisManipulator<T> premisObject = getPremisForItem(item);
-        premisObject = premisObject.addEvent(agent, timestamp, details, eventType, outcome);
+        premisObject = premisObject.appendEvent(agent, timestamp, details, eventType, outcome);
         try{
             try {
                 return fedora.modifyDatastreamByValue(item.getDomsID(),
@@ -53,11 +53,11 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                         addEventToItemComment,
                         null);
             } catch (ConcurrentModificationException | BackendMethodFailedException | BackendInvalidCredsException e) {
-                throw new CommunicationException(e);    // TODO Auto-generated catch block
+                throw new CommunicationException("Failed appending event to item '" + item + "'", e);    
             }
         } catch (BackendInvalidResourceException e1) {
             //But I just created the object, it must be there
-            throw new CommunicationException(e1);
+            throw new CommunicationException("Failed appending event to item '" + item + "'", e1);
         }
     }
 
@@ -66,7 +66,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                                boolean outcome) throws CommunicationException {
         PremisManipulator<T> premisObject = getPremisForItem(item);
 
-        premisObject = premisObject.addEventToHead(agent, timestamp, details, eventType, outcome);
+        premisObject = premisObject.prependEvent(agent, timestamp, details, eventType, outcome);
         try {
             try {
                 return fedora.modifyDatastreamByValue(item.getDomsID(),
@@ -79,11 +79,11 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                         addEventToItemComment,
                         null);
             } catch (ConcurrentModificationException | BackendMethodFailedException | BackendInvalidCredsException e) {
-                throw new CommunicationException(e);    // TODO Auto-generated catch block
+                throw new CommunicationException("Failed prepending event to item '" + item + "'", e); 
             }
         } catch (BackendInvalidResourceException e1) {
             //But I just created the object, it must be there
-            throw new CommunicationException(e1);
+            throw new CommunicationException("Failed prepending event to item '" + item + "'", e1);
         }
     }
     

@@ -161,8 +161,8 @@ public class PremisManipulator<T extends Item> {
      *
      * @return the premis with the event added.
      */
-    public PremisManipulator<T> addEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
-        String eventID = getEventID(timestamp);
+    public PremisManipulator<T> appendEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
+        String eventID = constructEventID(timestamp);
         if (eventExists(eventID)) {
             return this;
         }
@@ -183,8 +183,8 @@ public class PremisManipulator<T extends Item> {
      *
      * @return the premis with the event added to head.
      */
-    public PremisManipulator<T> addEventToHead(String agent, Date timestamp, String details, String eventType, boolean outcome) {
-        String eventID = getEventID(timestamp);
+    public PremisManipulator<T> prependEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
+        String eventID = constructEventID(timestamp);
         if (eventExists(eventID)) {
             return this;
         }
@@ -195,7 +195,7 @@ public class PremisManipulator<T extends Item> {
     }
     
     private EventComplexType createEvent(String agent, Date timestamp, String details, String eventType, boolean outcome) {
-        String eventID = getEventID(timestamp);
+        String eventID = constructEventID(timestamp);
         addAgentIfNessesary(premis.getAgent(), agent);
 
         ObjectFactory factory = new ObjectFactory();
@@ -319,7 +319,7 @@ public class PremisManipulator<T extends Item> {
         return false;
     }
 
-    private String getEventID(Date timestamp) {
+    private String constructEventID(Date timestamp) {
         return getObjectID() + "-" + String.valueOf(timestamp.getTime());
     }
 

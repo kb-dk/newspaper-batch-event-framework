@@ -45,7 +45,7 @@ public class Event {
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -58,25 +58,33 @@ public class Event {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!(obj instanceof Event)) {
             return false;
+        }
         Event other = (Event) obj;
         if (date == null) {
-            if (other.date != null)
+            if (other.date != null) {
                 return false;
-        } else if (!date.equals(other.date))
+            }
+        } else if (!date.equals(other.date)) {
             return false;
+        }
         if (eventID == null) {
-            if (other.eventID != null)
+            if (other.eventID != null) {
                 return false;
-        } else if (!eventID.equals(other.eventID))
+            }
+        } else if (!eventID.equals(other.eventID)) {
             return false;
-        if (success != other.success)
+        }
+        if (success != other.success) {
             return false;
+        }
         return true;
     }
 
