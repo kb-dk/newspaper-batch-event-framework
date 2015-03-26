@@ -1,3 +1,6 @@
+2.7
+* Add method in EventStorer to prepend events to premis
+
 2.6
 * Fix naming typo 'statsbibliokeket' to statsbiblioteket
 
