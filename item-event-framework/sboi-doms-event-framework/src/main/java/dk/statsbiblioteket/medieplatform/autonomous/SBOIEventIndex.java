@@ -7,9 +7,11 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,11 +64,11 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      *
      * @return true if the item match all requirements
      */
-    private boolean match(T item, Query<T> query) {
+    protected boolean match(T item, Query<T> query) {
         Set<String> existingEvents = new HashSet<>();
         Set<String> successEvents = new HashSet<>();
         Set<String> oldEvents = new HashSet<>();
-        for (Event event : item.getEventList()) {
+        for (Event event : filterNewestEvent(item.getEventList())) {
             existingEvents.add(event.getEventID());
             if (event.isSuccess()) {
                 successEvents.add(event.getEventID());
@@ -94,6 +96,21 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
                                                                                                    .contains(item));
     }
 
+    /**
+     * Given a list of events, return only the newest event.
+     * @param eventList A list of events to filter.
+     * @return A list containing only the newest event.
+     */
+    protected List<Event> filterNewestEvent(List<Event> eventList) {
+        Map<String, Event> result = new HashMap<>();;
+        for (Event event : eventList) {
+            Event previousEvent = result.get(event.getEventID());
+            if (previousEvent == null || previousEvent.getDate().before(event.getDate())) {
+                result.put(event.getEventID(), event);
+            }
+        }
+        return new ArrayList<>(result.values());
+    }
 
     /**
      * Perform a search for items matching the given criteria
