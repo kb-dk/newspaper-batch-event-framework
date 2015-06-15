@@ -102,7 +102,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * @return A list containing only the newest event.
      */
     protected List<Event> filterNewestEvent(List<Event> eventList) {
-        Map<String, Event> result = new HashMap<>();;
+        Map<String, Event> result = new HashMap<>();
         for (Event event : eventList) {
             Event previousEvent = result.get(event.getEventID());
             if (previousEvent == null || previousEvent.getDate().before(event.getDate())) {

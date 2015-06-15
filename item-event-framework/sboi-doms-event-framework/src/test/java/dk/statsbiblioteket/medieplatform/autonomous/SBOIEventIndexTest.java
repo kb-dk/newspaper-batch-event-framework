@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 
@@ -40,9 +38,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchOldEventOneOldEvent() throws Exception {
-        Item item = createItem(Collections.singletonList(oldEvent));
-        EventTrigger.Query query = createQuery(Collections.singletonList(EVENT_ID), Collections.<String>emptyList(),
-                                               Collections.<String>emptyList());
+        Item item = createItem(oldEvent);
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getOldEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -51,9 +49,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchOldEventOneNewEvent() throws Exception {
-        Item item = createItem(Collections.singletonList(newEvent));
-        EventTrigger.Query query = createQuery(Collections.singletonList(EVENT_ID), Collections.<String>emptyList(),
-                                               Collections.<String>emptyList());
+        Item item = createItem(newEvent);
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getOldEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -62,9 +60,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchOldEventOneOldOneNewEvent() throws Exception {
-        Item item = createItem(Arrays.asList(oldEvent, newEvent));
-        EventTrigger.Query query = createQuery(Collections.singletonList(EVENT_ID), Collections.<String>emptyList(),
-                                               Collections.<String>emptyList());
+        Item item = createItem(oldEvent, newEvent);
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getOldEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -73,9 +71,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchFutureEventsFound() throws Exception {
-        Item item = createItem(Collections.singletonList(oldEvent));
-        EventTrigger.Query query = createQuery(Collections.<String>emptyList(), Collections.singletonList(EVENT_ID),
-                                               Collections.<String>emptyList());
+        Item item = createItem(oldEvent);
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getFutureEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -84,9 +82,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchFutureEventsNotFound() throws Exception {
-        Item item = createItem(Collections.<Event>emptyList());
-        EventTrigger.Query query = createQuery(Collections.<String>emptyList(), Collections.singletonList(EVENT_ID),
-                                               Collections.<String>emptyList());
+        Item item = createItem();
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getFutureEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -95,9 +93,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchOldSuccessfulEventsFound() throws Exception {
-        Item item = createItem(Collections.singletonList(oldEvent));
-        EventTrigger.Query query = createQuery(Collections.<String>emptyList(), Collections.<String>emptyList(),
-                                               Collections.singletonList(EVENT_ID));
+        Item item = createItem(oldEvent);
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getPastSuccessfulEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -106,9 +104,9 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testMatchOldSuccessfulEventsNotFound() throws Exception {
-        Item item = createItem(Collections.<Event>emptyList());
-        EventTrigger.Query query = createQuery(Collections.<String>emptyList(), Collections.<String>emptyList(),
-                                               Collections.singletonList(EVENT_ID));
+        Item item = createItem();
+        EventTrigger.Query query = new EventTrigger.Query();
+        query.getPastSuccessfulEvents().add(EVENT_ID);
 
         boolean match = sboiEventIndex.match(item, query);
 
@@ -117,31 +115,22 @@ public class SBOIEventIndexTest {
 
     @Test
     public void testFilterOnlyNewestEvent() throws Exception {
-        List list = sboiEventIndex.filterNewestEvent(Arrays.asList(oldEvent, newEvent));
+        List<Event> list = sboiEventIndex.filterNewestEvent(Arrays.asList(oldEvent, newEvent));
         assertEquals(Collections.singletonList(newEvent), list);
     }
 
-    private Item createItem(List<Event> eventList) {
+    private Item createItem(Event... events) {
         Item item = new Item();
         item.setLastModified(new Date(NOW_TIME));
-        item.setEventList(eventList);
+        item.setEventList(Arrays.asList(events));
         return item;
     }
 
     private Event createEvent(long date) {
         Event event = new Event();
         event.setDate(new Date(date));
-        event.setEventID("event");
+        event.setEventID(EVENT_ID);
         event.setSuccess(true);
         return event;
-    }
-
-    private EventTrigger.Query createQuery(List<String> oldEvents, List<String> futureEvents,
-                                           List<String> pastSuccessfulEvents) {
-        EventTrigger.Query query = new EventTrigger.Query();
-        query.getOldEvents().addAll(oldEvents);
-        query.getFutureEvents().addAll(futureEvents);
-        query.getPastSuccessfulEvents().addAll(pastSuccessfulEvents);
-        return query;
     }
 }
