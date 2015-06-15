@@ -1,3 +1,6 @@
+2.8
+* Use only newest event when comparing events for triggering
+
 2.7
 * Add method in EventStorer to prepend events to premis
 
