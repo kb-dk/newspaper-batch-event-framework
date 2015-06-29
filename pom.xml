@@ -19,6 +19,29 @@
         <module>process-monitor</module>
         <module>newspaper-batch-event-framework</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
