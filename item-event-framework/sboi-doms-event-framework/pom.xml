@@ -58,6 +58,10 @@
             <classifier>jdk15</classifier>
         </dependency>
         <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-bean-collections</artifactId>
+        </dependency>
+        <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <scope>test</scope>
