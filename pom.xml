@@ -45,20 +45,25 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.tomakehurst</groupId>
                 <artifactId>wiremock</artifactId>
                 <version>1.42</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
+                </exclusions>
                 <!-- Include this if you have dependency conflicts for Guava, Jetty, Jackson or Apache HTTP Client -->
                 <!--<classifier>standalone</classifier>-->
             </dependency>
             <dependency>
-            <groupId>xmlunit</groupId>
+                <groupId>xmlunit</groupId>
                 <artifactId>xmlunit</artifactId>
                 <version>1.5</version>
                 <scope>test</scope>
@@ -79,31 +84,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-<!--
-            <dependency>
-                <groupId>dk.statsbiblioteket.doms.central</groupId>
-                <artifactId>ecmTemplates</artifactId>
-                <version>1.0.2</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>log4j</artifactId>
-                        <groupId>log4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>dk.statsbiblioteket.sbutil</groupId>
-                        <artifactId>sbutil</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
--->
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
@@ -113,29 +93,6 @@
                         <artifactId>slf4j-log4j12</artifactId>
                         <groupId>org.slf4j</groupId>
                     </exclusion>
-                    <exclusion>
-                        <artifactId>log4j</artifactId>
-                        <groupId>log4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>dk.statsbiblioteket.sbutil</groupId>
-                        <artifactId>sbutil</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>dk.statsbiblioteket.doms.central</groupId>
-                <artifactId>summaSearch-interface</artifactId>
-                <version>1.16-SNAPSHOT</version><!--This should match central-lib above-->
-                <exclusions>
                     <exclusion>
                         <artifactId>log4j</artifactId>
                         <groupId>log4j</groupId>
@@ -224,7 +181,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.8.7</version>
+                <version>6.9.4</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
@@ -247,6 +204,18 @@
                 <version>2.0.2-alpha</version>
                 <exclusions>
                     <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                    <exclusion>
                         <groupId>log4j</groupId>
                         <artifactId>log4j</artifactId>
                     </exclusion>
@@ -262,59 +231,25 @@
                 <version>1.0.0</version>
                 <classifier>hadoop2</classifier>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.solr</groupId>
-                <artifactId>solr-core</artifactId>
-                <version>4.8.1</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-jdk14</artifactId>
+                        <groupId>org.mockito</groupId>
+                        <artifactId>mockito-all</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-morfologik</artifactId>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-core</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-kuromoji</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-phonetic</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-smartcn</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-stempel</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-analyzers-uima</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-highlighter</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.lucene</groupId>
-                        <artifactId>lucene-spatial</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.zookeeper</groupId>
-                        <artifactId>zookeeper</artifactId>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>
@@ -330,10 +265,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
-
         </dependencies>
-
     </dependencyManagement>
 
     <scm>

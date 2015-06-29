@@ -42,10 +42,6 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-core</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.solr</groupId>
