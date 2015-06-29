@@ -7,7 +7,10 @@ import dk.statsbiblioteket.doms.central.connectors.fedora.ChecksumType;
 import dk.statsbiblioteket.doms.central.connectors.fedora.generated.Validation;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
@@ -50,7 +53,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                                                BackendInvalidCredsException,
                                                                BackendInvalidResourceException,
                                                                ConcurrentModificationException {
-        addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+        try {
+            addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + IOUtils.toString(contents, StandardCharsets.UTF_8.name()) + "'");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new Date();
 
     }
@@ -63,7 +70,11 @@ public class FedoraMockupEmpty extends AbstractFedoraMockup {
                                                                                BackendInvalidCredsException,
                                                                                BackendInvalidResourceException,
                                                                                ConcurrentModificationException {
-        addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + contents + "'");
+        try {
+            addToLog("ModifiedDatastream in " + pid + "/" + datastream + " to contents '" + IOUtils.toString(contents, StandardCharsets.UTF_8.name()) + "'");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new Date();
     }
 

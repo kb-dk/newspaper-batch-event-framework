@@ -137,7 +137,7 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             List<Batch> roundtrips = new ArrayList<>();
             for (FedoraRelation roundtripRelation: roundtripRelations) {
                 try {
-                    final Batch itemFromDomsID = getItemFromDomsID(roundtripRelation.getObject());
+                    final Batch itemFromDomsID = getItemFromDomsID(toFedoraPID(roundtripRelation.getObject()));
                     if (itemFromDomsID != null) {
                         roundtrips.add(itemFromDomsID);
                     }
