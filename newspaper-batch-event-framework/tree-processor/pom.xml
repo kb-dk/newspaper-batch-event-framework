@@ -62,5 +62,9 @@
             <artifactId>centralWebservice-lib</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.util</groupId>
+            <artifactId>ws-commons-util</artifactId>
+        </dependency>
     </dependencies>
 </project>

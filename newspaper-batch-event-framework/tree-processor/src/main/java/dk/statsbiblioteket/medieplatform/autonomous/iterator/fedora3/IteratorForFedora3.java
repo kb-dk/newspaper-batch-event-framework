@@ -6,12 +6,16 @@ import dk.statsbiblioteket.medieplatform.autonomous.iterator.AbstractIterator;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.DelegatingTreeIterator;
 import dk.statsbiblioteket.util.xml.DOM;
-import dk.statsbiblioteket.util.xml.XPathSelector;
+import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -34,20 +38,18 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
     private static final String DATASTREAM_PROFILE_NAMESPACE = "http://www.fedora.info/definitions/1/0/management/";
     private static final String NTRIPLES = "ntriples";
     /** xpath used to pick out the datastream nodes from the list of datastreams */
-    private final String datastreamsXpath;
+    private final XPathExpression datastreamsXpath;
     /** Xpath used to select the dc identifier from the contents of a DC datastream */
-    private final String dcIdentifierXpath;
+    private final XPathExpression dcIdentifierXpath;
     /** Xpath used to pick out the checksum from a datastream profile */
-    private final String datastreamChecksumXpath;
+    private final XPathExpression datastreamChecksumXpath;
     /** Xpath used to pick out the datastream name from a datastream profile */
-    private final String datastreamNameXpath;
+    private final XPathExpression datastreamNameXpath;
     private final Client client;
     private final String restUrl;
     private final FedoraTreeFilter filter;
     private final String name;
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final XPathSelector xPath = DOM.createXPathSelector("dc", DC_NAMESPACE,
-            "dp", DATASTREAM_PROFILE_NAMESPACE);
 
 
     /**
@@ -67,11 +69,20 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         }
         this.restUrl = restUrl;
         this.filter = filter;
-            datastreamsXpath = "//@dsid";
-            dcIdentifierXpath = "//dc:identifier";
-            datastreamChecksumXpath = "//dp:dsChecksum";
-            datastreamNameXpath = "/dp:datastreamProfile/dp:dsAltID";
+        try {
+            XPath xPath = XPATH_FACTORY.newXPath();
+            NamespaceContextImpl context = new NamespaceContextImpl();
+            context.startPrefixMapping("dc", DC_NAMESPACE);
+            context.startPrefixMapping("dp", DATASTREAM_PROFILE_NAMESPACE);
+            xPath.setNamespaceContext(context);
+            datastreamsXpath = xPath.compile("//@dsid");
+            dcIdentifierXpath = xPath.compile("//dc:identifier");
+            datastreamChecksumXpath = xPath.compile("//dp:dsChecksum");
+            datastreamNameXpath = xPath.compile("/dp:datastreamProfile/dp:dsAltID");
 
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Illegal XPath. This is a programming error.", e);
+        }
         this.name = getNameFromId(id);
     }
 
@@ -86,7 +97,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
         WebResource resource = client.resource(restUrl);
         String dcContent = resource.path(id).path("/datastreams/DC/content").queryParam(FORMAT, XML).get(String.class);
         NodeList nodeList;
-        nodeList = xPath.selectNodeList(DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes()), true), dcIdentifierXpath);
+        try {
+            nodeList = (NodeList) dcIdentifierXpath.evaluate(
+                    DOM.streamToDOM(new ByteArrayInputStream(dcContent.getBytes()), true), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Invalid XPath. This is a programming error.", e);
+        }
         for (int i = 0; i < nodeList.getLength(); i++) {
             String textContent = nodeList.item(i).getTextContent();
             if (textContent.startsWith("path:")) {
@@ -106,7 +122,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
      */
     private List<String> parseDatastreamsFromXml(String datastreamXml) {
         NodeList nodeList;
-        nodeList = xPath.selectNodeList(DOM.streamToDOM(new ByteArrayInputStream(datastreamXml.getBytes()), true), datastreamsXpath);
+        try {
+            nodeList = (NodeList) datastreamsXpath.evaluate(
+                    DOM.streamToDOM(new ByteArrayInputStream(datastreamXml.getBytes()), true), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException("Invalid XPath. This is a programming error.", e);
+        }
         ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             String dsid = nodeList.item(i).getTextContent();
@@ -204,8 +225,12 @@ public class IteratorForFedora3 extends AbstractIterator<String> {
 
             String name = null;
             String checksum = null;
-            name = xPath.selectString(datastreamProfile,datastreamNameXpath);
-            checksum = xPath.selectString(datastreamProfile,datastreamChecksumXpath);
+            try {
+                name = datastreamNameXpath.evaluate(datastreamProfile);
+                checksum = datastreamChecksumXpath.evaluate(datastreamProfile);
+            } catch (XPathExpressionException e) {
+                throw new RuntimeException("Invalid XPath. This is a programming error.", e);
+            }
             return new JerseyAttributeParsingEvent(
                     name, checksum, client.resource(restUrl).path(nodeID).path("/datastreams/").path(attributeID));
         }
