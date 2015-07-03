@@ -287,32 +287,4 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         return fullID;
     }
 
-    /**
-     * Append "info:fedora/" to the fedora pid if needed
-     *
-     * @param fedoraPid the fedora pid
-     *
-     * @return duh
-     */
-    protected String toFedoraID(String fedoraPid) {
-        if (!fedoraPid.startsWith("info:fedora/")) {
-            return "info:fedora/" + fedoraPid;
-        }
-        return fedoraPid;
-    }
-
-    /**
-     * remove info:fedora/ from the ID if needed
-     *
-     * @param fedoraID the fedora id
-     *
-     * @return duh
-     */
-    protected String toFedoraPID(String fedoraID) {
-        if (fedoraID.startsWith("info:fedora/")) {
-            return fedoraID.replaceFirst("^"+ Pattern.quote("info:fedora/"),"");
-        }
-        return fedoraID;
-    }
-
 }

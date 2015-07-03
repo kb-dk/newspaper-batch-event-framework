@@ -7,6 +7,7 @@ import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
 import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import dk.statsbiblioteket.doms.central.connectors.fedora.structures.FedoraRelation;
 import dk.statsbiblioteket.doms.central.connectors.fedora.templates.ObjectIsWrongTypeException;
+import dk.statsbiblioteket.doms.central.connectors.fedora.utils.FedoraUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,9 +92,9 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             //connect batch object to round trip object
             fedora.addRelation(
                     batchObject,
-                    toFedoraID(batchObject),
+                    FedoraUtil.ensureURI(batchObject),
                     hasPart_relation,
-                    toFedoraID(roundTripObject),
+                    FedoraUtil.ensureURI(roundTripObject),
                     false,
                     createBatchRoundTripComment);
 
@@ -137,7 +138,7 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             List<Batch> roundtrips = new ArrayList<>();
             for (FedoraRelation roundtripRelation: roundtripRelations) {
                 try {
-                    final Batch itemFromDomsID = getItemFromDomsID(toFedoraPID(roundtripRelation.getObject()));
+                    final Batch itemFromDomsID = getItemFromDomsID(FedoraUtil.ensurePID(roundtripRelation.getObject()));
                     if (itemFromDomsID != null) {
                         roundtrips.add(itemFromDomsID);
                     }
