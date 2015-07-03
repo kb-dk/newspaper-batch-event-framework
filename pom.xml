@@ -58,6 +58,10 @@
                         <artifactId>log4j</artifactId>
                         <groupId>log4j</groupId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit-dep</artifactId>
+                    </exclusion>
                 </exclusions>
                 <!-- Include this if you have dependency conflicts for Guava, Jetty, Jackson or Apache HTTP Client -->
                 <!--<classifier>standalone</classifier>-->
