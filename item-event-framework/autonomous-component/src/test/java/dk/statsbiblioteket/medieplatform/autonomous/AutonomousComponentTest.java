@@ -4,7 +4,7 @@ import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.retry.ExponentialBackoffRetry;
 import com.netflix.curator.test.TestingServer;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -81,7 +81,7 @@ public class AutonomousComponentTest {
                 testEventFound = true;
             }
         }
-        Assert.assertFalse("Found test event before test, invalid test", testEventFound);
+        Assert.assertFalse(testEventFound,"Found test event before test, invalid test");
 
         autonoumous.call();
 
@@ -93,7 +93,7 @@ public class AutonomousComponentTest {
                 testEventFound = true;
             }
         }
-        Assert.assertTrue("Test event not found after test", testEventFound);
+        Assert.assertTrue(testEventFound,"Test event not found after test");
 
     }
 }

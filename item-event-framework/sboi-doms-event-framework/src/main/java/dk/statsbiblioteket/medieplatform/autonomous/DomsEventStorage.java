@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Access to DOMS batch and event storage using the Central Webservice library to communicate with DOMS.
@@ -286,17 +287,4 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
         return fullID;
     }
 
-    /**
-     * Append "info:fedora/" to the fedora pid if needed
-     *
-     * @param fedoraPid the fedora pid
-     *
-     * @return duh
-     */
-    protected String toFedoraID(String fedoraPid) {
-        if (!fedoraPid.startsWith("info:fedora/")) {
-            return "info:fedora/" + fedoraPid;
-        }
-        return fedoraPid;
-    }
 }

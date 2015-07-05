@@ -42,10 +42,6 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-core</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.solr</groupId>
@@ -56,6 +52,10 @@
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
             <classifier>jdk15</classifier>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-bean-collections</artifactId>
         </dependency>
         <dependency>
             <groupId>xmlunit</groupId>
