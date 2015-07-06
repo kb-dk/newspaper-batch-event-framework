@@ -1,5 +1,5 @@
 2.9
-* Use newest doms libraries and sbutil
+* Use newest doms libraries and sbutil. This removes the last remnants of SPARQL i iTQL.
 * Exclude some duplicate classes
 
 2.8
