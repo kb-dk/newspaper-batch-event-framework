@@ -1,3 +1,7 @@
+2.9
+* Use newest doms libraries and sbutil
+* Exclude some duplicate classes
+
 2.8
 * Use only newest event when comparing events for triggering
 
