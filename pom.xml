@@ -91,7 +91,7 @@
             <dependency>
                 <groupId>dk.statsbiblioteket.doms.central</groupId>
                 <artifactId>centralWebservice-lib</artifactId>
-                <version>1.17-SNAPSHOT</version>
+                <version>1.18-SNAPSHOT</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>slf4j-log4j12</artifactId>
