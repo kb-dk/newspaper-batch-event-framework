@@ -21,6 +21,7 @@ import org.testng.annotations.Test;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -106,6 +107,8 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
                 File file = new File(property);
                 if (file.exists()) {
                     properties.load(new FileReader(file));
+                } else {
+                    throw new FileNotFoundException(file.getAbsolutePath() + " (repo devel-config cloned there?)");
                 }
             }
 
@@ -130,6 +133,7 @@ public class IteratorForFedora3TestWireMocked extends AbstractTests {
                 } else {
                     //Go directly to Fedora
                     domsUrl = properties.getProperty(ConfigConstants.DOMS_URL);
+
                 }
                 EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                         new Credentials(
