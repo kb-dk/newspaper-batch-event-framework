@@ -52,7 +52,11 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             itemID = createBatchRoundTrip(item.getFullID());
             item.setDomsID(itemID);
         }
-        return super.appendEventToItem(item, agent, timestamp, details, eventType, outcome);
+        try {
+            return super.appendEventToItem(item, agent, timestamp, details, eventType, outcome);
+        } catch (NotFoundException e) {
+            throw new CommunicationException(e);
+        }
     }
 
     /**
@@ -68,7 +72,7 @@ public class NewspaperDomsEventStorage extends DomsEventStorage<Batch> {
             try {
                 //find the roundTrip Object
                 return getPidFromDCIdentifier(fullItemID);
-            } catch (BackendInvalidResourceException e) {
+            } catch (NotFoundException e) {
                 //no roundTripObject, so sad
                 //but alas, we can continue
             }

@@ -88,7 +88,7 @@ public class AutonomousWorker<T extends Item> implements Runnable {
      * @param item  the item worked on
      * @param result the result of the work
      */
-    private void preserveResult(T item, ResultCollector result) throws CommunicationException {
+    private void preserveResult(T item, ResultCollector result) throws CommunicationException, NotFoundException {
 
         while (pause && !stop) {
             try {

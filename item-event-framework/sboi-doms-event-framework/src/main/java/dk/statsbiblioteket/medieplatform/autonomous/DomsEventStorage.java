@@ -4,6 +4,7 @@ import dk.statsbiblioteket.doms.central.connectors.BackendInvalidCredsException;
 import dk.statsbiblioteket.doms.central.connectors.BackendInvalidResourceException;
 import dk.statsbiblioteket.doms.central.connectors.BackendMethodFailedException;
 import dk.statsbiblioteket.doms.central.connectors.EnhancedFedora;
+import dk.statsbiblioteket.doms.central.connectors.fedora.structures.ObjectProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
 
     @Override
     public Date appendEventToItem(T item, String agent, Date timestamp, String details, String eventType,
-                               boolean outcome) throws CommunicationException {
+                               boolean outcome) throws CommunicationException, NotFoundException {
         PremisManipulator<T> premisObject = getPremisForItem(item);
         premisObject = premisObject.appendEvent(agent, timestamp, details, eventType, outcome);
         try{
@@ -58,13 +59,13 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             }
         } catch (BackendInvalidResourceException e1) {
             //But I just created the object, it must be there
-            throw new CommunicationException("Failed appending event to item '" + item + "'", e1);
+            throw new NotFoundException("Failed appending event to item '" + item + "'", e1);
         }
     }
 
     @Override
     public Date prependEventToItem(T item, String agent, Date timestamp, String details, String eventType,
-                               boolean outcome) throws CommunicationException {
+                               boolean outcome) throws CommunicationException, NotFoundException {
         PremisManipulator<T> premisObject = getPremisForItem(item);
 
         premisObject = premisObject.prependEvent(agent, timestamp, details, eventType, outcome);
@@ -84,20 +85,16 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             }
         } catch (BackendInvalidResourceException e1) {
             //But I just created the object, it must be there
-            throw new CommunicationException("Failed prepending event to item '" + item + "'", e1);
+            throw new NotFoundException("Failed prepending event to item '" + item + "'", e1);
         }
     }
     
-    private PremisManipulator<T> getPremisForItem(T item) throws CommunicationException {
+    private PremisManipulator<T> getPremisForItem(T item) throws CommunicationException, NotFoundException {
         try {
             String itemID = item.getDomsID();
             if (itemID == null){
-                try {
-                    itemID = getPidFromDCIdentifier(item.getFullID());
-                    item.setDomsID(itemID);
-                } catch (BackendInvalidResourceException e) {
-                    throw new IllegalArgumentException("Trying to add an event to a non-existing item '" + item.toString() + "'");
-                }
+                itemID = getPidFromDCIdentifier(item.getFullID());
+                item.setDomsID(itemID);
             }
             PremisManipulator<T> premisObject;
             try {
@@ -106,7 +103,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                 premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
             } catch (BackendInvalidResourceException e) {
                 //okay, no EVENTS datastream
-                premisObject = premisFactory.createInitialPremisBlob(itemID);
+                premisObject = premisFactory.createInitialPremisBlob(item.getFullID());
             }
             return premisObject;
         } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
@@ -159,13 +156,8 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
 
 
     public T getItemFromFullID(String itemFullID) throws CommunicationException, NotFoundException {
-        String roundTripID;
-        try {
-            roundTripID = getPidFromDCIdentifier(itemFullID);
-            return getItemFromDomsID(roundTripID);
-        } catch (BackendInvalidResourceException e) {
-            throw new NotFoundException(e);
-        }
+        String roundTripID = getPidFromDCIdentifier(itemFullID);
+        return getItemFromDomsID(roundTripID);
     }
 
     /**
@@ -215,12 +207,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
                                                                               NotFoundException {
         String itemPid = item.getDomsID();
         if (itemPid == null) {
-            try {
-                itemPid = getPidFromDCIdentifier(item.getFullID());
-            } catch (BackendInvalidResourceException e) {
-                throw new NotFoundException("Could not find DOMS object for " + item.getFullID(),
-                                                   e);
-            }
+            itemPid = getPidFromDCIdentifier(item.getFullID());
         }
         try {
             Date lastModifiedDate = fedora.getObjectProfile(itemPid, null).getObjectLastModifiedDate();
@@ -266,7 +253,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      */
     String getPidFromDCIdentifier(String fullID) throws
                                                                CommunicationException,
-                                                               BackendInvalidResourceException {
+                                                               NotFoundException {
 
         try {
             final String dcIdentifier = toDCIdentifier(fullID);
@@ -274,7 +261,7 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
             if (founds.size() > 0) {
                 return founds.get(0);
             }
-            throw new BackendInvalidResourceException("Round Trip object not found for dc identifier " + dcIdentifier);
+            throw new NotFoundException("Doms Object not found for dc identifier " + dcIdentifier);
         } catch (BackendMethodFailedException | BackendInvalidCredsException e) {
             throw new CommunicationException(e);
         }

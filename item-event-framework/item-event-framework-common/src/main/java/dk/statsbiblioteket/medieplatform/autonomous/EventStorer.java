@@ -20,7 +20,7 @@ public interface EventStorer<T extends Item> {
      * @throws CommunicationException if communication with doms failed
      */
     Date appendEventToItem(T item, String agent, Date timestamp, String details,
-                         String eventType, boolean outcome) throws CommunicationException;
+                         String eventType, boolean outcome) throws CommunicationException, NotFoundException;
 
     /**
      * Prepend an event to a item in doms.
@@ -35,7 +35,7 @@ public interface EventStorer<T extends Item> {
      * @throws CommunicationException if communication with doms failed
      */
     Date prependEventToItem(T item, String agent, Date timestamp, String details,
-                         String eventType, boolean outcome) throws CommunicationException;
+                         String eventType, boolean outcome) throws CommunicationException, NotFoundException;
 
     /**
      * Remove one or more events from an item. If an event with a given type exists more than once in the item's eventList, remove all entries
