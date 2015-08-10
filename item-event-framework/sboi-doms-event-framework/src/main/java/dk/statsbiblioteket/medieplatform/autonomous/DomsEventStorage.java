@@ -170,20 +170,25 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
      * @throws CommunicationException if communication with doms failed
      */
     public T getItemFromDomsID(String domsId) throws CommunicationException, NotFoundException {
+        PremisManipulator<T> premisObject;
         try {
-            String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
-            PremisManipulator<T> premisObject
-                    = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            try {
+                String premisPreBlob = fedora.getXMLDatastreamContents(domsId, eventsDatastream, null);
+                premisObject = premisFactory.createFromBlob(new ByteArrayInputStream(premisPreBlob.getBytes()));
+            } catch (BackendInvalidResourceException e) { //This could be a missing datastream or object
+                try {
+                    ObjectProfile profile = fedora.getObjectProfile(domsId, null); //Get profile to check that the obejct is there
+                    premisObject = premisFactory.createInitialPremisBlob(domsId); //Okay, an object, create an empty premis block
+                } catch (BackendInvalidResourceException e1) { //Not event the object
+                    throw new NotFoundException(e1);
+                }
+            }
             T item = premisObject.toItem();
             item.setDomsID(domsId);
             return item;
-        } catch ( BackendMethodFailedException | JAXBException |
-                BackendInvalidCredsException e) {
+        } catch (BackendMethodFailedException | BackendInvalidCredsException | JAXBException e) {
             throw new CommunicationException(e);
-        } catch (BackendInvalidResourceException e){
-            throw new NotFoundException(e);
         }
-
 
     }
 
