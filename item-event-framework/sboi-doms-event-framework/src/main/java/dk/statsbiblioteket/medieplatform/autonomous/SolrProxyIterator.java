@@ -117,7 +117,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
                     try {
                         hit = domsEventStorage.getItemFromDomsID(uuid);
                     } catch (NotFoundException e) {
-                       continue;
+                        hit = premisManipulatorFactory.createInitialPremisBlob(uuid).toItem();
                     }
                 }
                 hit.setDomsID(uuid);
