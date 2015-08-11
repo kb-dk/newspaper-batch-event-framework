@@ -161,12 +161,13 @@ public class DomsEventStorage<T extends Item> implements EventStorer<T> {
     }
 
     /**
-     * Retrieve a batch
+     * Retrieve an Item. If the object exist in DOMS, but have no EVENTS datastream, create the ITEM with a blank
+     * Premis blob, with the domsId as object id.
      *
-     * @param domsId the id of the round trip object in doms
+     * @param domsId the id of the item object in doms
      *
-     * @return the batch
-     * @throws NotFoundException      if the batch is not found
+     * @return the Item
+     * @throws NotFoundException      if the Item object is not found
      * @throws CommunicationException if communication with doms failed
      */
     public T getItemFromDomsID(String domsId) throws CommunicationException, NotFoundException {
