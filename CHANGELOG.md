@@ -1,6 +1,5 @@
 2.10
 * Return an empty premis when an Item can be found but no Events datastream is present
-* Update to version 1.3 of parent pom, to allow for parrallel builds. 
 * Update to version 1.17 of doms centralWebservice-lib
 
 2.9
