@@ -1,7 +1,5 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
-import java.lang.String;
-
 public class ConfigConstants {
 
     //Doms
@@ -42,7 +40,11 @@ public class ConfigConstants {
      * i.e. the parent of the B4000..-RT1 folder
      */
     public static final String ITERATOR_FILESYSTEM_BATCHES_FOLDER = "iterator.filesystem.batches.folder";
-    /** The pattern used to determine if the current file/folder represents a datafile */
+    /**
+     * The pattern used to determine if the current file/folder represents a datafile.
+     * <p>
+     * A datafile will go in BitMagasinet (with a DOMS object to represent it).  A non-datafile will go in DOMS directly.
+     */
     public static final String ITERATOR_DATAFILEPATTERN = "iterator.datafilePattern";
     /** The character that separates the prefix and the postfix in a filename. Normally '.' */
     public static final String ITERATOR_FILESYSTEM_GROUPINGCHAR = "iterator.filesystem.groupingChar";
