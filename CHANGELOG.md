@@ -1,3 +1,6 @@
+master
+* Refactored binding between autonomous component and ResultCollector allowing dpaviser statistics.
+
 2.10
 * Return an empty premis when an Item can be found but no Events datastream is present
 * Update to version 1.5 of newspaper parent
