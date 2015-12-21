@@ -4,6 +4,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -74,4 +79,32 @@ public class ResultCollectorTest {
 
     }
 
+    /**
+     * Test that invoking addFailure in parallel works as expected
+     * @throws InterruptedException
+     */
+    @Test
+    public void testParallelResultCollector() throws InterruptedException {
+        final ResultCollector resultCollector1 = new ResultCollector("check1", "0.1");
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for (int i = 0; i < 2000; i++) {
+            final String description = "error" + i;
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    resultCollector1.addFailure("a", "b", "c", description);
+                }
+            });
+        }
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
+
+        Matcher matcher = Pattern.compile("error").matcher(resultCollector1.toReport());
+        int matches = 0;
+        while(matcher.find()) {
+            matches++;
+        }
+
+        assertEquals(2000, matches);
+    }
 }
