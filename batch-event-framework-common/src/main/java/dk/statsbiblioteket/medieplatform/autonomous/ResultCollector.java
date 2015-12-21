@@ -114,7 +114,7 @@ public class ResultCollector {
      * @param description Description of the failure.
      * @param details     additional details, can be null
      */
-    public void addFailure(String reference, String type, String component, String description, String... details) {
+    public synchronized void addFailure(String reference, String type, String component, String description, String... details) {
         resultCount++; //The count of the current failure, starting at 1.
         log.info(
                 "Adding failure for " +
