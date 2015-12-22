@@ -1,3 +1,6 @@
+1.10.1
+* Fix bug: Do not corrupt results when failures are added simultaneaously from different threads
+
 1.10
 * Add AbstractDomsReducer class for reduce operations that interact with with doms. 
 * Updated to version 1.5 of doms central 
