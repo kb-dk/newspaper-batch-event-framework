@@ -5,7 +5,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>hadoop-helpers</artifactId>
-        <version>1.10.1</version>
+        <version>1.10.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>hadoop-file-converters</artifactId>
@@ -32,9 +32,4 @@
         </dependency>
 
     </dependencies>
-
-
-  <scm>
-    <tag>newspaper-batch-event-framework-1.10.1</tag>
-  </scm>
 </project>
