@@ -5,7 +5,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>process-monitor-datasource</artifactId>
-        <version>1.10.2-SNAPSHOT</version>
+        <version>1.10</version>
     </parent>
 
     <artifactId>process-monitor-datasource-interfaces</artifactId>
@@ -17,4 +17,6 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+
 </project>
