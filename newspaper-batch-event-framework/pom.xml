@@ -21,6 +21,7 @@
         <module>hadoop-helpers</module>
         <module>sample-autonomous-component</module>
         <module>tree-processor</module>
+        <module>tree-processor-sax-decorator</module>
         <module>tree-processor-runnable-component</module>
     </modules>
 </project>

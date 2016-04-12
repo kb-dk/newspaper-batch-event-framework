@@ -1,0 +1,297 @@
+<node name="B400022028241-RT1" shortName="B400022028241-RT1">
+    <node name="B400022028241-RT1/400022028241-14" shortName="400022028241-14">
+        <attribute name="B400022028241-RT1/400022028241-14/adresseavisen1759-400022028241-14.film.xml"
+                   shortName="adresseavisen1759-400022028241-14.film.xml"
+                   checksum="a54c6bc260bc6f089648ae67216c23a2"/>
+        <node name="B400022028241-RT1/400022028241-14/FILM-ISO-target" shortName="FILM-ISO-target">
+            <node name="B400022028241-RT1/400022028241-14/FILM-ISO-target/adresseavisen1759-400022028241-14-ISO-0001"
+                  shortName="adresseavisen1759-400022028241-14-ISO-0001">
+                <attribute name="B400022028241-RT1/400022028241-14/FILM-ISO-target/adresseavisen1759-400022028241-14-ISO-0001.mix.xml"
+                           shortName="adresseavisen1759-400022028241-14-ISO-0001.mix.xml"
+                           checksum="5eee92c0edeadaadcd38b86361f744ec"/>
+                <node name="B400022028241-RT1/400022028241-14/FILM-ISO-target/adresseavisen1759-400022028241-14-ISO-0001.jp2"
+                      shortName="adresseavisen1759-400022028241-14-ISO-0001.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/FILM-ISO-target/adresseavisen1759-400022028241-14-ISO-0001.jp2/contents"
+                               shortName="contents"
+                               checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+                </node>
+            </node>
+        </node>
+        <node name="B400022028241-RT1/400022028241-14/1795-06-01" shortName="1795-06-01">
+            <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01.edition.xml"
+                       shortName="adresseavisen1759-1795-06-01.edition.xml"
+                       checksum="2d1641d51f2b1d5f579cf4af8749da3e"/>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006"
+                  shortName="adresseavisen1759-1795-06-01-0006">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006.alto.xml"
+                           shortName="adresseavisen1759-1795-06-01-0006.alto.xml"
+                           checksum="9d52e1955a0d123e9cba7e497c789083"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006.mods.xml"
+                           shortName="adresseavisen1759-1795-06-01-0006.mods.xml"
+                           checksum="0971f9de9ec0783a75fba69f29f1d13b"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006.mix.xml"
+                           shortName="adresseavisen1759-1795-06-01-0006.mix.xml"
+                           checksum="a84be81101c09b5afeb900a3934f779f"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006.jp2"
+                      shortName="adresseavisen1759-1795-06-01-0006.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006.jp2/contents"
+                               shortName="contents"
+                               checksum="7ed748249def3bcaadd825ae17dc817a"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B"
+                  shortName="adresseavisen1759-1795-06-01-0007B">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B.mix.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007B.mix.xml"
+                           checksum="84c0bfe8ad8ee7b15dbc0e5f5a688589"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B.mods.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007B.mods.xml"
+                           checksum="e34007591a7912d7f4fd2bd2975944ef"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B.alto.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007B.alto.xml"
+                           checksum="cb201ff383f0ce0693c79929ad08f87f"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B.jp2"
+                      shortName="adresseavisen1759-1795-06-01-0007B.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007B.jp2/contents"
+                               shortName="contents"
+                               checksum="6d6b520765e50c42e9b9068121ffcfdc"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006-brik"
+                  shortName="adresseavisen1759-1795-06-01-0006-brik">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006-brik.mix.xml"
+                           shortName="adresseavisen1759-1795-06-01-0006-brik.mix.xml"
+                           checksum="0469dbf42b1b22130edba64279c8af14"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006-brik.jp2"
+                      shortName="adresseavisen1759-1795-06-01-0006-brik.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0006-brik.jp2/contents"
+                               shortName="contents"
+                               checksum="58fafc93cac73e08c832db4497e814ff"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A"
+                  shortName="adresseavisen1759-1795-06-01-0007A">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A.mods.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007A.mods.xml"
+                           checksum="2e55e363cec35ccf3cef92b388d572fc"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A.alto.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007A.alto.xml"
+                           checksum="e9bac64bd4e9e1b2a75ccd770f9b06b1"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A.mix.xml"
+                           shortName="adresseavisen1759-1795-06-01-0007A.mix.xml"
+                           checksum="66c8bff716d21e8fee36d830c8e54292"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A.jp2"
+                      shortName="adresseavisen1759-1795-06-01-0007A.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-01/adresseavisen1759-1795-06-01-0007A.jp2/contents"
+                               shortName="contents"
+                               checksum="51657f7ad2bea3f76915e3c9020ad6c8"/>
+                </node>
+            </node>
+        </node>
+        <node name="B400022028241-RT1/400022028241-14/1795-06-15-02" shortName="1795-06-15-02">
+            <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02.edition.xml"
+                       shortName="adresseavisen1759-1795-06-15-02.edition.xml"
+                       checksum="0a61b959d140dc7f70b3727030ae4c2f"/>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A"
+                  shortName="adresseavisen1759-1795-06-15-02-0005A">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005A.mods.xml"
+                           checksum="b245f021bf71f57c970b0fc43ac080ff"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005A.alto.xml"
+                           checksum="9aca37ad9b11f9673eace5ec576e8011"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005A.mix.xml"
+                           checksum="3b3fb9993ee59ba929348924fab4ee01"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A.jp2"
+                      shortName="adresseavisen1759-1795-06-15-02-0005A.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005A.jp2/contents"
+                               shortName="contents"
+                               checksum="52a824bd1852d9312f45464ea4b705d8"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B"
+                  shortName="adresseavisen1759-1795-06-15-02-0005B">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005B.mods.xml"
+                           checksum="c3f7077f160948a06a7b2a3372aa3e4a"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005B.mix.xml"
+                           checksum="cf015c9ec03f424afd90c396e938df15"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005B.alto.xml"
+                           checksum="0bbc6b42afe84ad814682ff41aafb303"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B.jp2"
+                      shortName="adresseavisen1759-1795-06-15-02-0005B.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005B.jp2/contents"
+                               shortName="contents"
+                               checksum="3428be7527604bc2f57de520d0857091"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005-brik"
+                  shortName="adresseavisen1759-1795-06-15-02-0005-brik">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005-brik.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0005-brik.mix.xml"
+                           checksum="4b7d0a0b17e7bbeb3d74af26ec44e13e"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005-brik.jp2"
+                      shortName="adresseavisen1759-1795-06-15-02-0005-brik.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0005-brik.jp2/contents"
+                               shortName="contents"
+                               checksum="58fafc93cac73e08c832db4497e814ff"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004"
+                  shortName="adresseavisen1759-1795-06-15-02-0004">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0004.mix.xml"
+                           checksum="7429d0d6826977ab2e7a6998ea2d4367"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0004.alto.xml"
+                           checksum="a2ab66ea8fa9653a2bf490ddb3a8c222"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-02-0004.mods.xml"
+                           checksum="10e0ab414e97293019efbae37b338cfd"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004.jp2"
+                      shortName="adresseavisen1759-1795-06-15-02-0004.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-02/adresseavisen1759-1795-06-15-02-0004.jp2/contents"
+                               shortName="contents"
+                               checksum="0bec6b48e365b6b4a9953d6c6fb51306"/>
+                </node>
+            </node>
+        </node>
+        <node name="B400022028241-RT1/400022028241-14/UNMATCHED" shortName="UNMATCHED">
+            <node name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001"
+                  shortName="adresseavisen1759-400022028241-14-0001">
+                <attribute name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001.mods.xml"
+                           shortName="adresseavisen1759-400022028241-14-0001.mods.xml"
+                           checksum="158744403032f32eea5f2e83e94432be"/>
+                <attribute name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001.mix.xml"
+                           shortName="adresseavisen1759-400022028241-14-0001.mix.xml"
+                           checksum="5c42d16b0af85c956d5db5ed799eb892"/>
+                <attribute name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001.alto.xml"
+                           shortName="adresseavisen1759-400022028241-14-0001.alto.xml"
+                           checksum="a2954c19aa74e7e5c472ea28fecf8977"/>
+                <node name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001.jp2"
+                      shortName="adresseavisen1759-400022028241-14-0001.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/UNMATCHED/adresseavisen1759-400022028241-14-0001.jp2/contents"
+                               shortName="contents"
+                               checksum="724f04357caf4cb1d6879a8d5b8433d8"/>
+                </node>
+            </node>
+        </node>
+        <node name="B400022028241-RT1/400022028241-14/1795-06-15-01" shortName="1795-06-15-01">
+            <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01.edition.xml"
+                       shortName="adresseavisen1759-1795-06-15-01.edition.xml"
+                       checksum="b7299abbeef3fd3f29255d3ba9bec90c"/>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003-brik"
+                  shortName="adresseavisen1759-1795-06-15-01-0003-brik">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003-brik.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003-brik.mix.xml"
+                           checksum="b800f1a079fbdeafd93fa857b611f376"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003-brik.jp2"
+                      shortName="adresseavisen1759-1795-06-15-01-0003-brik.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003-brik.jp2/contents"
+                               shortName="contents"
+                               checksum="58fafc93cac73e08c832db4497e814ff"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002"
+                  shortName="adresseavisen1759-1795-06-15-01-0002">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0002.mods.xml"
+                           checksum="158744403032f32eea5f2e83e94432be"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0002.mix.xml"
+                           checksum="5c42d16b0af85c956d5db5ed799eb892"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0002.alto.xml"
+                           checksum="a2954c19aa74e7e5c472ea28fecf8977"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002.jp2"
+                      shortName="adresseavisen1759-1795-06-15-01-0002.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0002.jp2/contents"
+                               shortName="contents"
+                               checksum="7e3fd545a69f324d8810adfc982149b3"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A"
+                  shortName="adresseavisen1759-1795-06-15-01-0003A">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003A.alto.xml"
+                           checksum="50996080396e6c145f1c285d7d24ddd6"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003A.mix.xml"
+                           checksum="de47bb50ed5fd10443d4cccdda509c36"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003A.mods.xml"
+                           checksum="d3d880b2f2436862727f813ec684e495"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A.jp2"
+                      shortName="adresseavisen1759-1795-06-15-01-0003A.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003A.jp2/contents"
+                               shortName="contents"
+                               checksum="23c36d942f74d128a79d1222ce3bad91"/>
+                </node>
+            </node>
+            <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B"
+                  shortName="adresseavisen1759-1795-06-15-01-0003B">
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B.mods.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003B.mods.xml"
+                           checksum="d387844de5c1000c991ed441d8a80642"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B.alto.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003B.alto.xml"
+                           checksum="b9add8199a5331708ff3a75260dfe8e0"/>
+                <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B.mix.xml"
+                           shortName="adresseavisen1759-1795-06-15-01-0003B.mix.xml"
+                           checksum="ada0611e28cd723139150138d6e7f21f"/>
+                <node name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B.jp2"
+                      shortName="adresseavisen1759-1795-06-15-01-0003B.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-14/1795-06-15-01/adresseavisen1759-1795-06-15-01-0003B.jp2/contents"
+                               shortName="contents"
+                               checksum="8937dbf02babae0a72f37453492461cc"/>
+                </node>
+            </node>
+        </node>
+    </node>
+    <node name="B400022028241-RT1/400022028241-15" shortName="400022028241-15">
+        <attribute name="B400022028241-RT1/400022028241-15/adresseavisen1759-400022028241-15.film.xml"
+                   shortName="adresseavisen1759-400022028241-15.film.xml"
+                   checksum="a54c6bc260bc6f089648ae67216c23a2"/>
+        <node name="B400022028241-RT1/400022028241-15/FILM-ISO-target" shortName="FILM-ISO-target">
+        </node>
+        <node name="B400022028241-RT1/400022028241-15/1795-06-01" shortName="1795-06-01">
+            <attribute name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01.edition.xml"
+                       shortName="adresseavisen1759-1795-06-01.edition.xml"
+                       checksum="2d1641d51f2b1d5f579cf4af8749da3e"/>
+            <node name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010"
+                  shortName="adresseavisen1759-1795-06-01-0010">
+                <attribute name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010.alto.xml"
+                           shortName="adresseavisen1759-1795-06-01-0010.alto.xml"
+                           checksum="9d52e1955a0d123e9cba7e497c789083"/>
+                <attribute name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010.mods.xml"
+                           shortName="adresseavisen1759-1795-06-01-0010.mods.xml"
+                           checksum="0971f9de9ec0783a75fba69f29f1d13b"/>
+                <attribute name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010.mix.xml"
+                           shortName="adresseavisen1759-1795-06-01-0010.mix.xml"
+                           checksum="a84be81101c09b5afeb900a3934f779f"/>
+                <node name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010.jp2"
+                      shortName="adresseavisen1759-1795-06-01-0010.jp2">
+                    <attribute name="B400022028241-RT1/400022028241-15/1795-06-01/adresseavisen1759-1795-06-01-0010.jp2/contents"
+                               shortName="contents"
+                               checksum="7ed748249def3bcaadd825ae17dc817a"/>
+                </node>
+            </node>
+        </node>
+    </node>
+    <node name="B400022028241-RT1/WORKSHIFT-ISO-TARGET" shortName="WORKSHIFT-ISO-TARGET">
+        <node name="B400022028241-RT1/WORKSHIFT-ISO-TARGET/Target-000001-0001" shortName="Target-000001-0001">
+            <attribute name="B400022028241-RT1/WORKSHIFT-ISO-TARGET/Target-000001-0001.mix.xml"
+                       shortName="Target-000001-0001.mix.xml"
+                       checksum="e80b9a4e7ba134284dde4cb010639740"/>
+            <node name="B400022028241-RT1/WORKSHIFT-ISO-TARGET/Target-000001-0001.jp2"
+                  shortName="Target-000001-0001.jp2">
+                <attribute name="B400022028241-RT1/WORKSHIFT-ISO-TARGET/Target-000001-0001.jp2/contents"
+                           shortName="contents"
+                           checksum="aac20a9ace772bc5a92b7d7b00048b91"/>
+            </node>
+        </node>
+    </node>
+</node>
