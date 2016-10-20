@@ -72,7 +72,7 @@ public class SBOIDomsAutonomousComponentUtils extends AutonomousComponentUtils {
         domsEventStorageFactory.setPassword(properties.getProperty(ConfigConstants.DOMS_PASSWORD));
         domsEventStorageFactory.setItemFactory(itemFactory);
         try {
-            return domsEventStorageFactory.createDomsEventStorage();
+            return domsEventStorageFactory.build();
         } catch (Exception e) {
             log.error("Unable to initialize event storage", e);
             throw new InitialisationException("Unable to initialize event storage", e);

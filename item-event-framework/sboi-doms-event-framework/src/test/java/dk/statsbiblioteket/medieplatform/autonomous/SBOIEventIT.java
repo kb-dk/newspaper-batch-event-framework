@@ -1,9 +1,8 @@
 package dk.statsbiblioteket.medieplatform.autonomous;
 
+import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import dk.statsbiblioteket.doms.central.connectors.fedora.pidGenerator.PIDGeneratorException;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileInputStream;
@@ -201,17 +200,19 @@ public class SBOIEventIT {
                                                            MalformedURLException,
                                                            JAXBException,
                                                            PIDGeneratorException {
+        ItemFactory<Item> itemFactory = Item::new;
 
-        DomsEventStorageFactory<Item> factory = new DomsEventStorageFactory<>();
-        factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
-        factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
-        factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
-        factory.setItemFactory(new DomsItemFactory());
-        DomsEventStorage<Item> domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Item> domsEventStorage =
+                new DomsEventStorageFactory<>()
+                        .setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL))
+                        .setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME))
+                        .setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD))
+                        .setItemFactory(itemFactory)
+                        .build();
 
         return new SBOIEventIndex<>(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
                                            new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
-                                                                                 new DomsItemFactory()),
+                                                                          itemFactory),
                                            domsEventStorage,
                                            Integer.parseInt(props.getProperty(ConfigConstants.SBOI_PAGESIZE, "100")));
     }

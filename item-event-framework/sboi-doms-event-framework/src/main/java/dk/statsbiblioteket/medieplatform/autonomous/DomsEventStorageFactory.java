@@ -44,17 +44,13 @@ public class DomsEventStorageFactory<T extends Item> {
      * @throws MalformedURLException if any of the urls were broken
      */
     @SuppressWarnings("deprecation")//Credentials
-    public DomsEventStorage<T> createDomsEventStorage() throws JAXBException, PIDGeneratorException, MalformedURLException {
+    public DomsEventStorage<T> build() throws JAXBException, PIDGeneratorException, MalformedURLException {
         Credentials creds = new Credentials(username, password);
         EnhancedFedoraImpl fedora = new EnhancedFedoraImpl(
                 creds, fedoraLocation.replaceFirst("/(objects)?/?$", ""), pidGeneratorLocation, null, retries, delayBetweenRetries);
         return new DomsEventStorage<>(
                 fedora, premisIdentifierType, eventsDatastream,
                 itemFactory);
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     /**
@@ -64,12 +60,9 @@ public class DomsEventStorageFactory<T extends Item> {
      *
      * @see #USERNAME
      */
-    public void setUsername(String username) {
+    public DomsEventStorageFactory<T> setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
+        return this;
     }
 
     /**
@@ -77,12 +70,9 @@ public class DomsEventStorageFactory<T extends Item> {
      *
      * @param password the password
      */
-    public void setPassword(String password) {
+    public DomsEventStorageFactory<T> setPassword(String password) {
         this.password = password;
-    }
-
-    public String getFedoraLocation() {
-        return fedoraLocation;
+        return this;
     }
 
     /**
@@ -90,12 +80,9 @@ public class DomsEventStorageFactory<T extends Item> {
      *
      * @param fedoraLocation fedora location
      */
-    public void setFedoraLocation(String fedoraLocation) {
+    public DomsEventStorageFactory<T> setFedoraLocation(String fedoraLocation) {
         this.fedoraLocation = fedoraLocation;
-    }
-
-    public String getPidGeneratorLocation() {
-        return pidGeneratorLocation;
+        return this;
     }
 
     /**
@@ -107,16 +94,9 @@ public class DomsEventStorageFactory<T extends Item> {
         this.pidGeneratorLocation = pidGeneratorLocation;
     }
 
-    public ItemFactory<T> getItemFactory() {
-        return itemFactory;
-    }
-
-    public void setItemFactory(ItemFactory<T> itemFactory) {
+    public DomsEventStorageFactory<T> setItemFactory(ItemFactory<T> itemFactory) {
         this.itemFactory = itemFactory;
-    }
-
-    public String getPremisIdentifierType() {
-        return premisIdentifierType;
+        return this;
     }
 
     /**
@@ -131,10 +111,6 @@ public class DomsEventStorageFactory<T extends Item> {
     }
 
 
-    public String getEventsDatastream() {
-        return eventsDatastream;
-    }
-
     /**
      * The name of the premis events datastream in the round trip objects. Default EVENTS
      *
@@ -144,16 +120,8 @@ public class DomsEventStorageFactory<T extends Item> {
         this.eventsDatastream = eventsDatastream;
     }
 
-    public int getRetries() {
-        return retries;
-    }
-
     public void setRetries(int retries) {
         this.retries = retries;
-    }
-
-    public int getDelayBetweenRetries() {
-        return delayBetweenRetries;
     }
 
     public void setDelayBetweenRetries(int delayBetweenRetries) {

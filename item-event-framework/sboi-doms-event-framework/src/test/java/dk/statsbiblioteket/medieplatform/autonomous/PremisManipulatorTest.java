@@ -28,7 +28,8 @@ public class PremisManipulatorTest {
     @Test
     public void testCreateInitialPremisBlob() throws Exception {
 
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,
+                                                                                Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         String blobString = manipulator.toXML();
         StringReader test = new StringReader(blobString);
@@ -45,7 +46,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testAddEvent() throws Exception {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         Date date = new Date(ONE_DAY_IN_MS);
 
@@ -66,7 +67,7 @@ public class PremisManipulatorTest {
     
     @Test
     public void testAddEventToHead() throws Exception {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         Date date = new Date(ONE_DAY_IN_MS);
 
@@ -98,7 +99,7 @@ public class PremisManipulatorTest {
     
     @Test
     public void testAddEventToHeadSequence() throws Exception {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> normalEventFirst = factory.createInitialPremisBlob(ITEM_ID);
         PremisManipulator<Item> headEventFirst = factory.createInitialPremisBlob(ITEM_ID);
         Date normalEventdate = new Date(ONE_DAY_IN_MS);
@@ -121,7 +122,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testGetAsBatch() throws Exception {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> premisBlob = factory.createFromBlob(getFile("eventAddedBlob.xml"));
         Item batch = premisBlob.toItem();
         Assert.assertEquals("B400022028241-RT1", batch.getFullID());
@@ -143,7 +144,7 @@ public class PremisManipulatorTest {
      */
     @Test
     public void testRemoveEventsAfterFailure() throws JAXBException {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
@@ -179,7 +180,7 @@ public class PremisManipulatorTest {
      */
     @Test
     public void testRemoveEventsAfterNamedEvent() throws JAXBException {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
@@ -217,7 +218,7 @@ public class PremisManipulatorTest {
      */
     @Test
     public void testRemoveNamedEvent() throws JAXBException {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         PremisManipulator<Item> manipulator = factory.createInitialPremisBlob(ITEM_ID);
         manipulator = manipulator.appendEvent("me", new Date(100), "details here", "e1", true);
         manipulator = manipulator.appendEvent("me", new Date(200), "details here", "e2", true);
@@ -250,7 +251,7 @@ public class PremisManipulatorTest {
 
     @Test
     public void testNoDetails() throws JAXBException {
-        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, new DomsItemFactory());
+        PremisManipulatorFactory<Item> factory = new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE, Item::new);
         try {
             PremisManipulator<Item> premisBlob = factory.createFromBlob(getFile("EventNoDetails.xml"));
         } catch (Exception e) {

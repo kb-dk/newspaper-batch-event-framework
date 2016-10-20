@@ -46,7 +46,7 @@ public class SBOIDatasourceTest extends TCKTestSuite {
             domsEventStorageFactory.setItemFactory(new BatchItemFactory());
             DomsEventStorage<Batch> domsClient;
             try {
-                domsClient = domsEventStorageFactory.createDomsEventStorage();
+                domsClient = domsEventStorageFactory.build();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

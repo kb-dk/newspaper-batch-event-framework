@@ -20,7 +20,7 @@ public class NewspaperDomsEventStorageFactory extends DomsEventStorageFactory<Ba
 
     @Override
     @SuppressWarnings("deprecation")  //Credentials
-    public NewspaperDomsEventStorage createDomsEventStorage() throws
+    public NewspaperDomsEventStorage build() throws
                                                             JAXBException,
                                                             PIDGeneratorException,
                                                             MalformedURLException {

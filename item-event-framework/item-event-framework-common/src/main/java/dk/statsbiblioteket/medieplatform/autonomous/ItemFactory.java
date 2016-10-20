@@ -6,6 +6,7 @@ package dk.statsbiblioteket.medieplatform.autonomous;
  *
  * @param <T> the subclass of Item that this factory uses
  */
+@FunctionalInterface
 public interface  ItemFactory<T extends Item> {
 
     /**

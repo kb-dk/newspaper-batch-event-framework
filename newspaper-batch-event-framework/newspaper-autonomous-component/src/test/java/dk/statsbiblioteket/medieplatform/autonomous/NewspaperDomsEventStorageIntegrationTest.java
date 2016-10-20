@@ -30,7 +30,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
         factory.setItemFactory(new BatchItemFactory());
 
-        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.build();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;
@@ -121,7 +121,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
         factory.setItemFactory(new BatchItemFactory());
 
-        NewspaperDomsEventStorage domsEventStorage = factory.createDomsEventStorage();
+        NewspaperDomsEventStorage domsEventStorage = factory.build();
 
         String batchId = getRandomBatchId();
         Date timestamp = new Date(0);
@@ -170,7 +170,7 @@ public class NewspaperDomsEventStorageIntegrationTest {
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
         factory.setPidGeneratorLocation(props.getProperty(ConfigConstants.DOMS_PIDGENERATOR_URL));
 
-        NewspaperDomsEventStorage eventStorer = factory.createDomsEventStorage();
+        NewspaperDomsEventStorage eventStorer = factory.build();
 
         String batchId = getRandomBatchId();
         Integer roundTripNumber = 1;

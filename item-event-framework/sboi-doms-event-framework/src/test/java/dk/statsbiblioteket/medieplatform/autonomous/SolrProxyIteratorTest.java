@@ -150,6 +150,6 @@ public class SolrProxyIteratorTest {
                 + "  OR  ( +newspapr_batch_id:B400026103612 )\n" + "  OR  ( +newspapr_batch_id:B400027131512 )\n"
                 + "  OR  ( +newspapr_batch_id:B400026954701 )\n" + "  )\n"
                 + "  AND  -event:\"Roundtrip_Approved\"  AND  -event:\"Manually_stopped\" ";
-        new SolrProxyIterator("item_uuid:*" + longstring, false, new HttpSolrServer("http://prod-search-avis/newspapr/sbsolr/"),new PremisManipulatorFactory("doms:ContentModel_Item", new DomsItemFactory()), new DomsEventStorageFactory().createDomsEventStorage(), 10);
+        new SolrProxyIterator("item_uuid:*" + longstring, false, new HttpSolrServer("http://prod-search-avis/newspapr/sbsolr/"),new PremisManipulatorFactory("doms:ContentModel_Item", Item::new), new DomsEventStorageFactory().build(), 10);
     }
 }

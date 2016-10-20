@@ -98,7 +98,7 @@ public class NewspaperSBOIEventStorageTest {
         factory.setFedoraLocation(props.getProperty(ConfigConstants.DOMS_URL));
         factory.setUsername(props.getProperty(ConfigConstants.DOMS_USERNAME));
         factory.setPassword(props.getProperty(ConfigConstants.DOMS_PASSWORD));
-        DomsEventStorage<Batch> domsEventStorage = factory.createDomsEventStorage();
+        DomsEventStorage<Batch> domsEventStorage = factory.build();
 
         return new NewspaperSBOIEventStorage(props.getProperty(ConfigConstants.AUTONOMOUS_SBOI_URL),
                                                     new PremisManipulatorFactory<>(PremisManipulatorFactory.TYPE,

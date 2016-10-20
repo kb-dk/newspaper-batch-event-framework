@@ -55,7 +55,7 @@ public class SBOIDatasource implements DataSource {
         factory.setItemFactory(itemFactory);
         NewspaperDomsEventStorage domsEventStorage;
         try {
-            domsEventStorage = factory.createDomsEventStorage();
+            domsEventStorage = factory.build();
         } catch (JAXBException | MalformedURLException | PIDGeneratorException e) {
             throw new RuntimeException(e);
         }
