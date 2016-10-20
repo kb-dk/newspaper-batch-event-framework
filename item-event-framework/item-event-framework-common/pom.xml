@@ -15,6 +15,11 @@
             <groupId>dk.statsbiblioteket.sbutil</groupId>
             <artifactId>sbutil-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.slieb</groupId>
+            <artifactId>throwable-interfaces</artifactId>
+            <version>1.10</version>
+        </dependency>
     </dependencies>
 
     <build>

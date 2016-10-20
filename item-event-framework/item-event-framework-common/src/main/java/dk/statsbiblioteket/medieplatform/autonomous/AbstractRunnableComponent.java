@@ -16,15 +16,4 @@ public abstract class AbstractRunnableComponent<T extends Item> implements Runna
         return properties;
     }
 
-    @Override
-    public final String getComponentName() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public final String getComponentVersion() {
-        return getClass().getPackage().getImplementationVersion();
-    }
-
-
 }
