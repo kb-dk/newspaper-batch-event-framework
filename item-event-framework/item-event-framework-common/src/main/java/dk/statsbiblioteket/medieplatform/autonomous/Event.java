@@ -14,6 +14,13 @@ public class Event {
     public Event() {
     }
 
+    public Event(String eventID, boolean success, String details, Date date) {
+        this.eventID = eventID;
+        this.success = success;
+        this.details = details;
+        this.date = date;
+    }
+
     public String getEventID() {
         return eventID;
     }
