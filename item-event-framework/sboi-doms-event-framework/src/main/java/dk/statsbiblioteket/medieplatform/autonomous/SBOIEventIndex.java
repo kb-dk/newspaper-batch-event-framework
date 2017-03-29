@@ -20,17 +20,13 @@ import java.util.Set;
  */
 public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
 
-    public static final String RECORD_BASE = "recordBase:doms_sboiCollection";
     public static final String UUID = "item_uuid";
-    public static final String SORT_DATE = "initial_date";
-    public static final String PREMIS_NO_DETAILS = "premis_no_details";
-    public static final String LAST_MODIFIED = "lastmodified_date";
 
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SBOIEventIndex.class);
-    private final PremisManipulatorFactory<T> premisManipulatorFactory;
-    private DomsEventStorage<T> domsEventStorage;
-    private final HttpSolrServer summaSearch;
-    private final int pageSize;
+    protected final PremisManipulatorFactory<T> premisManipulatorFactory;
+    protected final DomsEventStorage<T> domsEventStorage;
+    protected final HttpSolrServer summaSearch;
+    protected final int pageSize;
 
     public SBOIEventIndex(String summaLocation, PremisManipulatorFactory<T> premisManipulatorFactory,
                           DomsEventStorage<T> domsEventStorage, int pageSize) throws MalformedURLException {
@@ -119,7 +115,11 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * @throws CommunicationException if the communication failed
      */
     public Iterator<T> search(boolean details, Query<T> query) throws CommunicationException {
-       return new SolrProxyIterator<>(toQueryString(query),details,summaSearch,premisManipulatorFactory,domsEventStorage,pageSize);
+       return search(details, toQueryString(query));
+    }
+
+    public Iterator<T> search(boolean details, String freeFormSearchString) throws CommunicationException {
+        return new SolrProxyIterator<>(freeFormSearchString,details,summaSearch,premisManipulatorFactory,domsEventStorage,pageSize);
     }
 
 
@@ -131,7 +131,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         return "\"" + string.replaceAll("\"","\\\"") + "\"";
     }
 
-    public static String anded(List<String> events) {
+    protected static String anded(List<String> events) {
         StringBuilder result = new StringBuilder();
         for (String event : events) {
             result.append(" AND ").append(event);
@@ -160,7 +160,7 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
      * @return the query string
      */
     protected String toQueryString(Query<T> query) {
-        String base = spaced(RECORD_BASE);
+        String base = based();
 
         String itemsString = "";
 
@@ -189,6 +189,10 @@ public class SBOIEventIndex<T extends Item> implements EventTrigger<T> {
         }
 
         return base + itemsString + anded(events);
+    }
+
+    protected String based() {
+        return spaced("recordBase:doms_sboiCollection");
     }
 
     protected String getResultRestrictions(Collection<T> items) {

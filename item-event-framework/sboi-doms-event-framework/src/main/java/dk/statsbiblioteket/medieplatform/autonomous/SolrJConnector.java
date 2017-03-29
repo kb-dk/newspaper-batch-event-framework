@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SolrJConnector {
 
-    private HttpSolrServer solrServer;
+    protected HttpSolrServer solrServer;
 
     private static final Logger log = LoggerFactory.getLogger(SolrJConnector.class);
 

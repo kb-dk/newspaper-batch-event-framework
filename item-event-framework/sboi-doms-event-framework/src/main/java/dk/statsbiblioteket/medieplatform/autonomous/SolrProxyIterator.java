@@ -8,7 +8,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,20 +27,23 @@ import java.util.NoSuchElementException;
  * @param <T> the type of items
  */
 public class SolrProxyIterator<T extends Item> implements Iterator<T> {
+    public static final String PREMIS_NO_DETAILS = "premis_no_details";
+    public static final String LAST_MODIFIED = "lastmodified_date";
+    public static final String SORT_DATE = "initial_date";
     private static Logger log = org.slf4j.LoggerFactory.getLogger(SolrProxyIterator.class);
 
 
-    private Iterator<T> items = null;
+    protected Iterator<T> items = null;
 
 
-    private final String queryString;
-    private final boolean details;
-    private final HttpSolrServer summaSearch;
-    private final PremisManipulatorFactory<T> premisManipulatorFactory;
-    private final DomsEventStorage<T> domsEventStorage;
-    private final int rows;
-    private int start = 0;
-    private int position = 0;
+    protected final String queryString;
+    protected final boolean details;
+    protected final HttpSolrServer summaSearch;
+    protected final PremisManipulatorFactory<T> premisManipulatorFactory;
+    protected final DomsEventStorage<T> domsEventStorage;
+    protected final int rows;
+    protected int start = 0;
+    protected int position = 0;
 
 
     /**
@@ -82,7 +84,7 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
      * Perform a search in sboi and replace the field items with the result of this search
      * @see #items
      */
-    private void search() {
+    protected void search() {
         try {
             SolrQuery query = new SolrQuery();
             query.setQuery(queryString);
@@ -90,12 +92,12 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
             query.setStart(start);
             //IMPORTANT!Only use facets if needed.
             query.set("facet", "false"); //very important. Must overwrite to false. Facets are very slow and expensive.
-            query.setFields(SBOIEventIndex.UUID, SBOIEventIndex.LAST_MODIFIED);
+            query.setFields(SBOIEventIndex.UUID, LAST_MODIFIED);
             if (!details) {
-                query.addField(SBOIEventIndex.PREMIS_NO_DETAILS);
+                query.addField(PREMIS_NO_DETAILS);
             }
 
-            query.addSort(SBOIEventIndex.SORT_DATE, SolrQuery.ORDER.asc);
+            query.addSort(SORT_DATE, SolrQuery.ORDER.asc);
 
             QueryResponse response = summaSearch.query(query, SolrRequest.METHOD.POST);
             SolrDocumentList results = response.getResults();
@@ -103,14 +105,14 @@ public class SolrProxyIterator<T extends Item> implements Iterator<T> {
             for (SolrDocument result : results) {
                 T hit;
                 String uuid = result.getFirstValue(SBOIEventIndex.UUID).toString();
-                String lastModified = result.getFirstValue(SBOIEventIndex.LAST_MODIFIED).toString();
+                String lastModified = result.getFirstValue(LAST_MODIFIED).toString();
 
                 if (!details) { //no details, so we can retrieve everything from Summa
                     String blob;
-                    if (result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS) == null) {
+                    if (result.getFirstValue(PREMIS_NO_DETAILS) == null) {
                         hit = premisManipulatorFactory.createInitialPremisBlob(uuid).toItem();
                     } else {
-                        blob = result.getFirstValue(SBOIEventIndex.PREMIS_NO_DETAILS).toString();
+                        blob = result.getFirstValue(PREMIS_NO_DETAILS).toString();
                         hit = premisManipulatorFactory.createFromStringBlob(blob).toItem();
                     }
                 } else {//Details requested so go to DOMS
